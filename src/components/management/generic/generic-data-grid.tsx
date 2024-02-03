@@ -13,6 +13,9 @@ const StyledDataGrid = styled(DataGrid, {
     backgroundColor: "#EDF3F5",
     borderRight: "1px solid rgba(0, 0, 0, 0.12)",
   },
+  "& .MuiDataGrid-footerContainer": {
+    border: "none",
+  },
 }));
 
 const GenericDataGrid = ({ columns, rows }: DataGridProps) => {

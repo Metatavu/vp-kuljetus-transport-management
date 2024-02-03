@@ -1,4 +1,4 @@
-import { Stack, Paper, List, ListItemButton, ListItemIcon, Typography, Divider } from "@mui/material";
+import { Paper, Tabs, Tab } from "@mui/material";
 import { useMatches, useNavigate } from "@tanstack/react-router";
 import { SideNavigationItem } from "src/types";
 
@@ -7,41 +7,32 @@ type Props = {
 };
 
 const SideNavigation = ({ navigationItems }: Props) => {
-  const matches = useMatches();
   const navigate = useNavigate();
+  useMatches();
 
-  const renderDivider = (selected: boolean) => {
-    if (selected) {
-      return <Divider flexItem orientation="vertical" sx={{ borderRightWidth: "2px", borderColor: "#00414F" }} />;
-    }
-  };
-
-  const renderNavigationItem = (item: SideNavigationItem) => {
-    const selected = matches.some((match) => match.pathname === item.path);
-    const color = selected ? "#00414F" : undefined;
-
-    return (
-      <Stack direction="row" justifyContent="space-between">
-        <ListItemButton
-          selected={selected}
-          key={item.path}
-          dense
-          sx={{ justifyContent: "flex-start", padding: "9px 16px" }}
-          onClick={() => navigate({ to: item.path })}
-        >
-          <ListItemIcon sx={{ color: color }}>{item.icon}</ListItemIcon>
-          <Typography textTransform="uppercase" color={color} fontSize="14px">
-            {item.title}
-          </Typography>
-        </ListItemButton>
-        {renderDivider(selected)}
-      </Stack>
-    );
-  };
+  const selectedRouteIndex = navigationItems.findIndex((navigtionItem) =>
+    location.pathname.startsWith(navigtionItem.path),
+  );
 
   return (
     <Paper sx={{ width: "248px", position: "sticky", borderRadius: 0 }}>
-      <List dense>{navigationItems.map(renderNavigationItem)}</List>
+      <Tabs
+        orientation="vertical"
+        variant="scrollable"
+        value={selectedRouteIndex}
+        sx={{ justifyContent: "flex-start", alignContent: "flex-start" }}
+      >
+        {navigationItems.map(({ title, path, Icon }, index) => (
+          <Tab
+            icon={<Icon />}
+            label={title}
+            value={index}
+            onClick={() => navigate({ to: path })}
+            iconPosition="start"
+            sx={{ justifyContent: "flex-start", minHeight: "42px" }}
+          />
+        ))}
+      </Tabs>
     </Paper>
   );
 };

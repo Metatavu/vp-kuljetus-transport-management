@@ -20,17 +20,17 @@ function ManagementLayoutComponent() {
     {
       title: t("managementLinks.customerSites"),
       path: "/management/customer-sites",
-      icon: <TodayRounded />,
+      Icon: TodayRounded,
     },
     {
       title: t("managementLinks.towables"),
       path: "/management/towables",
-      icon: <ListAltRounded />,
+      Icon: ListAltRounded,
     },
     {
       title: t("managementLinks.vehicles"),
       path: "/management/vehicles",
-      icon: <EventNoteRounded />,
+      Icon: EventNoteRounded,
     },
   ] as const;
 
