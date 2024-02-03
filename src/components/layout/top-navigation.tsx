@@ -5,7 +5,7 @@ import logo from "assets/vp-kuljetus-logo.jpeg";
 import { useAtomValue } from "jotai";
 import { bindMenu, bindTrigger, usePopupState } from "material-ui-popup-state/hooks";
 import { useTranslation } from "react-i18next";
-import { authAtom } from "../atoms/auth";
+import { authAtom } from "../../atoms/auth";
 
 const TopNavigation = () => {
   const auth = useAtomValue(authAtom);
@@ -16,11 +16,11 @@ const TopNavigation = () => {
   const accountMenuState = usePopupState({ variant: "popover", popupId: "accountMenu" });
 
   const routeLinks = [
-    ["/vehicle-list", t("vehicleList")],
-    ["/vehicle-info", t("vehicleInfo")],
-    ["/drive-planning", t("drivePlanning")],
-    ["/working-time", t("workingTime")],
-    ["/management", t("management")],
+    ["/vehicle-list", t("header.vehicleList")],
+    ["/vehicle-info", t("header.vehicleInfo")],
+    ["/drive-planning", t("header.drivePlanning")],
+    ["/working-time", t("header.workingTime")],
+    ["/management", t("header.management")],
   ] as const;
 
   const selectedRouteIndex = routeLinks.findIndex(([route]) => location.pathname.startsWith(route));

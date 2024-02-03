@@ -1,8 +1,27 @@
 {
   "logout": "Kirjaudu ulos",
-  "vehicleList": "Ajoneuvolista",
-  "vehicleInfo": "Ajoneuvon tiedot",
-  "drivePlanning": "Ajojärjestely",
-  "workingTime": "Työaika",
-  "management": "Hallinta"
+  "header": {
+    "vehicleList": "Ajoneuvolista",
+    "vehicleInfo": "Ajoneuvon tiedot",
+    "drivePlanning": "Ajojärjestely",
+    "workingTime": "Työaika",
+    "management": "Hallinta"
+  },
+  "managementLinks": {
+    "customerSites": "Asiakaspaikat",
+    "towables": "Kalusto",
+    "vehicles": "Ajoneuvot"
+  },
+  "breadcrumbs": {
+    "home": "Etusivu",
+    "vehicle-list": "Ajoneuvolista",
+    "vehicle-info": "Ajoneuvon tiedot",
+    "drive-planning": "Ajojärjestely",
+    "working-time": "Työaika",
+    "management": "Hallinta",
+    "customer-sites": "Asiakaspaikat",
+    "towables": "Kalusto",
+    "vehicles": "Ajoneuvot"
+  },
+  "customerSites": {}
 }

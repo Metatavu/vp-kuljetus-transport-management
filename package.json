@@ -17,6 +17,7 @@
     "@fontsource/roboto": "5.0.8",
     "@mui/icons-material": "5.15.4",
     "@mui/material": "5.15.4",
+    "@mui/x-data-grid": "6.19.3",
     "@tanstack/react-router": "1.4.6",
     "@tanstack/router-devtools": "1.4.6",
     "@tanstack/router-vite-plugin": "1.4.6",
