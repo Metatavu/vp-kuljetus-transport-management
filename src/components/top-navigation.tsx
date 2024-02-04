@@ -13,11 +13,11 @@ const TopNavigation = () => {
   const accountMenuState = usePopupState({ variant: "popover", popupId: "accountMenu" });
 
   const routeLinks = [
-    ["/vehicle-list", t("vehicleList")],
-    ["/vehicle-info", t("vehicleInfo")],
-    ["/drive-planning", t("drivePlanning")],
-    ["/working-time", t("workingTime")],
-    ["/management", t("management")],
+    ["/vehicle-list", t("topNavigation.vehicleList")],
+    ["/vehicle-info", t("topNavigation.vehicleInfo")],
+    ["/drive-planning", t("topNavigation.drivePlanning")],
+    ["/working-time", t("topNavigation.workingTime")],
+    ["/management", t("topNavigation.management")],
   ] as const;
 
   const selectedRouteIndex = routeLinks.findIndex(([route]) => location.pathname.startsWith(route));
@@ -41,7 +41,7 @@ const TopNavigation = () => {
           </IconButton>
           <Menu {...bindMenu(accountMenuState)}>
             <MenuItem onClick={accountMenuState.close}>
-              <Typography textAlign="center">{t("logout")}</Typography>
+              <Typography textAlign="center">{t("topNavigation.logout")}</Typography>
             </MenuItem>
           </Menu>
         </div>

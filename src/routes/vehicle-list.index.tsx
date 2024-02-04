@@ -1,4 +1,6 @@
+import { Paper } from "@mui/material";
 import { FileRoute } from "@tanstack/react-router";
+import VehicleListScreen from "components/vehicle-list-screen";
 
 export const Route = new FileRoute("/vehicle-list/").createRoute({
   component: VehicleListIndexRoute,
@@ -6,8 +8,8 @@ export const Route = new FileRoute("/vehicle-list/").createRoute({
 
 function VehicleListIndexRoute() {
   return (
-    <div>
-      <p>Vehicle list route</p>
-    </div>
+    <Paper style={{ margin: 15 }}>
+      <VehicleListScreen />
+    </Paper>
   );
 }

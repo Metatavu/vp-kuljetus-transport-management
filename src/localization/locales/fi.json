@@ -1,8 +1,13 @@
 {
-  "logout": "Kirjaudu ulos",
-  "vehicleList": "Ajoneuvolista",
-  "vehicleInfo": "Ajoneuvon tiedot",
-  "drivePlanning": "Ajojärjestely",
-  "workingTime": "Työaika",
-  "management": "Hallinta"
+  "topNavigation": {
+    "logout": "Kirjaudu ulos",
+    "vehicleList": "Ajoneuvolista",
+    "vehicleInfo": "Ajoneuvon tiedot",
+    "drivePlanning": "Ajojärjestely",
+    "workingTime": "Työaika",
+    "management": "Hallinta"
+  },
+  "errorHandling": {
+    "vehicleListing": "Ajoneuvolistaukssessa tapahtui virhe"
+  }
 }
