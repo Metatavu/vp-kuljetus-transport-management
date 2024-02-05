@@ -1,27 +1,34 @@
 {
+  "save": "Tallenna",
+  "cancel": "Peruuta",
   "logout": "Kirjaudu ulos",
-  "header": {
-    "vehicleList": "Ajoneuvolista",
-    "vehicleInfo": "Ajoneuvon tiedot",
-    "drivePlanning": "Ajojärjestely",
-    "workingTime": "Työaika",
-    "management": "Hallinta"
-  },
-  "managementLinks": {
-    "customerSites": "Asiakaspaikat",
-    "towables": "Kalusto",
-    "vehicles": "Ajoneuvot"
-  },
-  "breadcrumbs": {
-    "home": "Etusivu",
-    "vehicle-list": "Ajoneuvolista",
-    "vehicle-info": "Ajoneuvon tiedot",
-    "drive-planning": "Ajojärjestely",
-    "working-time": "Työaika",
-    "management": "Hallinta",
-    "customer-sites": "Asiakaspaikat",
-    "towables": "Kalusto",
-    "vehicles": "Ajoneuvot"
-  },
-  "customerSites": {}
+  "edit": "Muokkaa",
+  "delete": "Poista",
+  "vehicleList": "Ajoneuvolista",
+  "vehicleInfo": "Ajoneuvon tiedot",
+  "drivePlanning": "Ajojärjestely",
+  "workingTime": "Työaika",
+  "management": "Hallinta",
+  "towables": "Kalusto",
+  "vehicles": "Ajoneuvot",
+  "addNew": "Lisää uusi",
+  "customerSites": {
+    "title": "Asiakaspaikat",
+    "new": "Uusi asiakaspaikka",
+    "modify": "Muokkaa asiakaspaikkaa",
+    "type": "Tyyppi",
+    "name": "Nimi",
+    "address": "Osoite",
+    "postalCode": "Postinumero",
+    "municipality": "Paikkakunta",
+    "additionalInfo": "Lisätiedot",
+    "errorMessages": {
+      "nameMissing": "Nimi on pakollinen",
+      "addressMissing": "Osoite on pakollinen",
+      "postalCodeMissing": "Postinumero on pakollinen",
+      "postalCodeTooShort": "Postinumeron tulee olla 5-merkkiä pitkä",
+      "postalCodeInvalidFormat": "Postinumero saa sisältää vain numeroita",
+      "municipalityMissing": "Paikkakunta on pakollinen"
+    }
+  }
 }
