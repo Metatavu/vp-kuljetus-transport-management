@@ -1,18 +1,18 @@
 import { Paper, Tabs, Tab } from "@mui/material";
 import { useMatches, useNavigate } from "@tanstack/react-router";
-import { SideNavigationItem } from "src/types";
+import { useTranslation } from "react-i18next";
+import { NavigationItem } from "src/types";
 
 type Props = {
-  navigationItems: SideNavigationItem[];
+  navigationItems: NavigationItem[];
 };
 
 const SideNavigation = ({ navigationItems }: Props) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   useMatches();
 
-  const selectedRouteIndex = navigationItems.findIndex((navigtionItem) =>
-    location.pathname.startsWith(navigtionItem.path),
-  );
+  const selectedRouteIndex = navigationItems.findIndex(([route]) => location.pathname.startsWith(route));
 
   return (
     <Paper sx={{ width: "248px", position: "sticky", borderRadius: 0 }}>
@@ -20,16 +20,24 @@ const SideNavigation = ({ navigationItems }: Props) => {
         orientation="vertical"
         variant="scrollable"
         value={selectedRouteIndex}
-        sx={{ justifyContent: "flex-start", alignContent: "flex-start" }}
+        sx={{
+          justifyContent: "flex-start",
+          alignContent: "flex-start",
+        }}
       >
-        {navigationItems.map(({ title, path, Icon }, index) => (
+        {navigationItems.map(([path, title, Icon], index) => (
           <Tab
-            icon={<Icon />}
-            label={title}
+            key={path}
+            icon={Icon && <Icon />}
+            label={t(title)}
             value={index}
-            onClick={() => navigate({ to: path })}
+            onClick={() => navigate({ to: path, params: {} })}
             iconPosition="start"
-            sx={{ justifyContent: "flex-start", minHeight: "42px" }}
+            sx={{
+              justifyContent: "flex-start",
+              minHeight: "42px",
+              backgroundColor: selectedRouteIndex === index ? "rgba(0, 65, 79, 0.1)" : "transparent",
+            }}
           />
         ))}
       </Tabs>

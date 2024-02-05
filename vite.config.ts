@@ -19,6 +19,7 @@ export default defineConfig({
       pages: "/src/pages",
       theme: "/src/theme",
       types: "/src/types",
+      utils: "/src/utils",
     },
   },
 });

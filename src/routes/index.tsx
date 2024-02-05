@@ -1,5 +1,5 @@
-import { FileRoute, Navigate } from "@tanstack/react-router";
+import { Navigate, createFileRoute } from "@tanstack/react-router";
 
-export const Route = new FileRoute("/").createRoute({
+export const Route = createFileRoute("/")({
   component: () => <Navigate to="/vehicle-list" />,
 });

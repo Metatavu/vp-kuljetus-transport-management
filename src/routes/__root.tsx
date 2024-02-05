@@ -1,9 +1,15 @@
 import { Box } from "@mui/material";
-import { Outlet, RootRoute } from "@tanstack/react-router";
+import { Outlet, createRootRouteWithContext } from "@tanstack/react-router";
 import BreadcrumbsBar from "components/layout/breadcrumbs-bar";
 import TopNavigation from "components/layout/top-navigation";
+import { _DefaultNamespace } from "react-i18next/TransWithoutContext";
+import { LocalizedLabelKey } from "src/types";
 
-export const Route = new RootRoute({
+export type RouterContext = {
+  breadcrumb?: LocalizedLabelKey;
+};
+
+export const Route = createRootRouteWithContext<RouterContext>()({
   component: RootLayout,
 });
 

@@ -1,7 +1,11 @@
-import { FileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
+import { RouterContext } from "./__root";
 
-export const Route = new FileRoute("/vehicle-list/").createRoute({
+export const Route = createFileRoute("/vehicle-list/")({
   component: VehicleListIndexRoute,
+  beforeLoad: (): RouterContext => ({
+    breadcrumb: "vehicleList",
+  }),
 });
 
 function VehicleListIndexRoute() {
