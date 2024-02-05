@@ -4,4 +4,4 @@ import { DefaultNamespace, ParseKeys } from "i18next";
 
 export type LocalizedLabelKey = ParseKeys<DefaultNamespace> | TemplateStringsArray;
 
-export type NavigationItem = [RoutePaths<RegisteredRouter["routeTree"]>, LocalizedLabelKey, typeof SvgIcon | undefined];
+export type NavigationItem = readonly [RoutePaths<RegisteredRouter["routeTree"]>, LocalizedLabelKey, typeof SvgIcon | undefined];

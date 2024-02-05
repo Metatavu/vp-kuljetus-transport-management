@@ -22,7 +22,6 @@ function CustomerSiteComponent() {
   const navigate = useNavigate();
 
   const {
-    handleSubmit,
     register,
     formState: { errors },
   } = useForm<typeof CUSTOMER_SITE_FORM>({

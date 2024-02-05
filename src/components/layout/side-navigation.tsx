@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { NavigationItem } from "src/types";
 
 type Props = {
-  navigationItems: NavigationItem[];
+  navigationItems: readonly NavigationItem[];
 };
 
 const SideNavigation = ({ navigationItems }: Props) => {

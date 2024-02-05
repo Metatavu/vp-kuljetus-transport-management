@@ -1,7 +1,6 @@
 import { EventNoteRounded, ListAltRounded, TodayRounded } from "@mui/icons-material";
 import { Stack } from "@mui/material";
 import { Outlet, createFileRoute } from "@tanstack/react-router";
-import { useTranslation } from "react-i18next";
 import SideNavigation from "components/layout/side-navigation";
 import ViewContainer from "components/layout/view-container";
 import { RouterContext } from "./__root";
@@ -15,7 +14,7 @@ export const Route = createFileRoute("/management")({
 });
 
 function ManagementLayoutComponent() {
-  const sideNavigationItems: NavigationItem[] = [
+  const sideNavigationItems: readonly NavigationItem[] = [
     ["/management/customer-sites", "customerSites.title", TodayRounded],
     ["/management/towables", "towables", ListAltRounded],
     ["/management/vehicles", "vehicles", EventNoteRounded],
