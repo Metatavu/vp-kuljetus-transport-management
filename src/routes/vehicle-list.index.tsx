@@ -8,7 +8,7 @@ export const Route = new FileRoute("/vehicle-list/").createRoute({
 
 function VehicleListIndexRoute() {
   return (
-    <Paper style={{ margin: 15 }}>
+    <Paper style={{ margin: 15, padding: 20 }}>
       <VehicleListScreen />
     </Paper>
   );

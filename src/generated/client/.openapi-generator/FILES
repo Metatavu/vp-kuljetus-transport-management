@@ -1,0 +1,17 @@
+.openapi-generator-ignore
+apis/RoutesApi.ts
+apis/SpecAppApi.ts
+apis/SpecExternalApi.ts
+apis/SpecManagementUIApi.ts
+apis/TrailersApi.ts
+apis/TrucksApi.ts
+apis/VehiclesApi.ts
+apis/index.ts
+index.ts
+models/ModelError.ts
+models/Route.ts
+models/Trailer.ts
+models/Truck.ts
+models/Vehicle.ts
+models/index.ts
+runtime.ts

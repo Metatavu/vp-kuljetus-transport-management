@@ -30,9 +30,9 @@ const VehicleListScreen: FC = () => {
    * @returns grid columns
    */
   const setGridColumns = async () => {
-    const managementListColumns = ["TYYPPI", "NIMI", "TUNNUS", "LÄMPÖTILA", "OSOITE", "SIJAINTI", "TILA", "HUOLTO", "KALUSTO/LÄMPÖTILA", "KULJETTAJA"];
+    const vehicleListColumns = ["TYYPPI", "NIMI", "TUNNUS", "LÄMPÖTILA", "OSOITE", "SIJAINTI", "TILA", "HUOLTO", "KALUSTO/LÄMPÖTILA", "KULJETTAJA"];
 
-    const gridColumns = managementListColumns.map<GridColDef>(column => {
+    const gridColumns = vehicleListColumns.map<GridColDef>(column => {
       const columnName = column ?? "";
       return ({
         field: columnName,
@@ -43,7 +43,7 @@ const VehicleListScreen: FC = () => {
         renderHeader: params => {
           return (
             <Stack direction="row">
-              <Typography sx={{ fontWeight: "bold" }}>{params.colDef.headerName}</Typography>
+              <Typography fontWeight={"bold"} fontSize={14}>{params.colDef.headerName}</Typography>
             </Stack>
           );
         },
@@ -82,7 +82,6 @@ const VehicleListScreen: FC = () => {
 
     try {
       const vehicleRows = buildRow();
-
       setTotalResults(100);
       setRows([vehicleRows]);
       await setGridColumns();
@@ -99,6 +98,8 @@ const VehicleListScreen: FC = () => {
 
   return (
     <DataGrid
+      showCellVerticalBorder
+      showColumnVerticalBorder
       disableColumnMenu
       disableColumnSelector
       localeText={fiFI.components.MuiDataGrid.defaultProps.localeText}
