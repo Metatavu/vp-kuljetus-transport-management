@@ -1,11 +1,11 @@
-import { useCallback, useEffect } from "react";
+import { ReactNode, useCallback, useEffect } from "react";
 import Keycloak from "keycloak-js";
 import { useAtom, useSetAtom } from "jotai";
 import { authAtom, userProfileAtom } from "../../atoms/auth";
 import config from "../../app/config";
 
 type Props = {
-  children: JSX.Element;
+  children: ReactNode;
 };
 
 const keycloak = new Keycloak(config.auth);
@@ -15,19 +15,21 @@ const AuthenticationProvider = ({ children }: Props) => {
   const setUserProfile = useSetAtom(userProfileAtom);
 
   const updateAuthData = useCallback(() => {
+    if (!(keycloak.tokenParsed && keycloak.token)) return;
+
     setAuth({
-      token: keycloak.tokenParsed!,
-      tokenRaw: keycloak.token!,
-      logout: () => keycloak.logout({ redirectUri: `${window.location.origin}` })
+      token: keycloak.tokenParsed,
+      tokenRaw: keycloak.token,
+      logout: () => keycloak.logout({ redirectUri: `${window.location.origin}` }),
     });
 
     setUserProfile(keycloak.profile);
-  }, [auth]);
+  }, [setAuth, setUserProfile]);
 
   const clearAuthData = useCallback(() => {
     setAuth(undefined);
     setUserProfile(undefined);
-  }, [auth]);
+  }, [setAuth, setUserProfile]);
 
   const initAuth = useCallback(async () => {
     try {
@@ -54,16 +56,17 @@ const AuthenticationProvider = ({ children }: Props) => {
 
       await keycloak.init({
         onLoad: "login-required",
-        checkLoginIframe: false
+        checkLoginIframe: false,
       });
     } catch (error) {
       console.error(error);
     }
-  }, [auth]);
+  }, [clearAuthData, updateAuthData]);
 
   /**
    * Initializes authentication when component mounts
    */
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (keycloak.authenticated === undefined) initAuth();
   }, []);
