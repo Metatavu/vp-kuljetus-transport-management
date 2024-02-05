@@ -9,5 +9,21 @@
   },
   "errorHandling": {
     "vehicleListing": "Ajoneuvolistaukssessa tapahtui virhe"
+  },
+  "vehicleListScreen": {
+    "vehicleList": {
+      "headings": {
+        "type": "Tyyppi",
+        "name": "Nimi",
+        "plate": "Tunnus",
+        "temperature": "Lämpötila",
+        "address": "Osoite",
+        "location": "Sijainti",
+        "status": "Tila",
+        "maintenance": "Huolto",
+        "trailer_temperature": "Kalusto/Lämpötila",
+        "driver": "Kuljettaja"
+      }
+    }
   }
 }

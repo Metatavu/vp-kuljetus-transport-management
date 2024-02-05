@@ -9,5 +9,21 @@
   },
   "errorHandling": {
     "vehicleListing": "Error when listing vehicles"
+  },
+  "vehicleListScreen": {
+    "vehicleList": {
+      "headings": {
+        "type": "Type",
+        "name": "Name",
+        "plate": "Plate",
+        "temperature": "Temperature",
+        "address": "Address",
+        "location": "Location",
+        "status": "Status",
+        "maintenance": "Maintenance",
+        "trailer_temperature": "Trailer/Temperature",
+        "driver": "Driver"
+      }
+    }
   }
 }
