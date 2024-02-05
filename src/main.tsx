@@ -10,6 +10,7 @@ import "@fontsource/roboto/700.css";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { theme } from "./theme";
 import "localization/i18n";
+import AuthenticationProvider from "components/auth/auth-provider";
 
 const client = new ApolloClient({
   uri: import.meta.env.VITE_GRAPHQL_API_URL,
@@ -35,7 +36,9 @@ if (!rootElement.innerHTML) {
       <ApolloProvider client={client}>
         <ThemeProvider theme={theme}>
           <CssBaseline />
-          <RouterProvider router={router} />
+          <AuthenticationProvider>
+            <RouterProvider router={router} />
+          </AuthenticationProvider>
         </ThemeProvider>
       </ApolloProvider>
     </StrictMode>,

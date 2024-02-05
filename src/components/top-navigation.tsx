@@ -2,10 +2,13 @@ import { AccountCircle as AccountCircleIcon } from "@mui/icons-material";
 import { AppBar, Toolbar, Typography, IconButton, Menu, MenuItem, Stack, Tabs, Tab } from "@mui/material";
 import { useMatches, useNavigate } from "@tanstack/react-router";
 import logo from "assets/vp-kuljetus-logo.jpeg";
+import { useAtomValue } from "jotai";
 import { bindMenu, bindTrigger, usePopupState } from "material-ui-popup-state/hooks";
 import { useTranslation } from "react-i18next";
+import { authAtom } from "../atoms/auth";
 
 const TopNavigation = () => {
+  const auth = useAtomValue(authAtom);
   const { t } = useTranslation();
   const navigate = useNavigate();
   useMatches();
@@ -40,7 +43,7 @@ const TopNavigation = () => {
             <AccountCircleIcon />
           </IconButton>
           <Menu {...bindMenu(accountMenuState)}>
-            <MenuItem onClick={accountMenuState.close}>
+            <MenuItem onClick={auth?.logout}>
               <Typography textAlign="center">{t("logout")}</Typography>
             </MenuItem>
           </Menu>
