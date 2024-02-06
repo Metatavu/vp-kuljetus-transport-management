@@ -44,6 +44,8 @@
     "@types/react": "18.2.43",
     "@types/react-dom": "18.2.17",
     "@vitejs/plugin-react-swc": "3.5.0",
+    "dotenv": "16.4.1",
+    "infisical-node": "1.5.1",
     "typescript": "5.2.2",
     "vite": "5.0.8",
     "vite-plugin-graphql-codegen": "3.3.6"
