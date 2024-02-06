@@ -4,6 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "build-dev": "node infisical.js && npm run build",
+    "test": "infisical export --token st.3e91b78a-adce-45f9-8831-69da2ca318f0.670b295e56d945dddae71006f396121b.7f5be642204c3a984e8b3858e36de6fb --path /transport-management",
     "start": "eval $(grep '^INFISICAL_SECRET_PATH' .env) && infisical run --path $INFISICAL_SECRET_PATH -- npm run dev",
     "dev": "tsc --noEmit --skipLibCheck && vite --open",
     "build": "tsc && vite build",
@@ -43,6 +45,8 @@
     "@types/react": "18.2.43",
     "@types/react-dom": "18.2.17",
     "@vitejs/plugin-react-swc": "3.5.0",
+    "dotenv": "16.4.1",
+    "infisical-node": "1.5.1",
     "typescript": "5.2.2",
     "vite": "5.0.8",
     "vite-plugin-graphql-codegen": "3.3.6"
