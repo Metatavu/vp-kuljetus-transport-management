@@ -3,6 +3,9 @@ import * as dotenv from "dotenv";
 
 dotenv.config();
 
+/**
+ * This script is used to load secrets from Infisical into the environment.
+ */
 const main = async () => {
   console.log("Starting Infisical...");
   const { INFISICAL_TOKEN, INFISICAL_SECRET_PATH } = process.env;
