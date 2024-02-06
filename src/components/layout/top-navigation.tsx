@@ -19,9 +19,9 @@ const TopNavigation = () => {
   const routeLinks: readonly NavigationItem[] = [
     ["/vehicle-list", "vehicleList", undefined],
     ["/vehicle-info", "vehicleInfo", undefined],
-    ["/drive-planning", "drivePlanning", undefined],
+    ["/drive-planning/freights", "drivePlanning.title", undefined],
     ["/working-time", "workingTime", undefined],
-    ["/management/customer-sites", "management", undefined],
+    ["/management/customer-sites", "management.title", undefined],
   ] as const;
 
   const selectedRouteIndex = routeLinks.findIndex(([route]) =>

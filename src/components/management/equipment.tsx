@@ -3,36 +3,31 @@ import { useNavigate } from "@tanstack/react-router";
 import ToolbarRow from "components/generic/toolbar-row";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import CustomerSiteForm from "./customer-site-form";
 import { Close, SaveAlt } from "@mui/icons-material";
+import EquipmentForm from "./equipment-form";
 
 // To be replaced with actual type once API/spec is ready
-export const CUSTOMER_SITE_FORM = {
+export const EQUIPMENT_FORM = {
   type: "",
-  customer: "",
-  name: "",
-  address: "",
-  postalNumber: "",
-  municipality: "",
-  additionalInfo: "",
+  licensePlate: "",
 };
 
-function CustomerSiteComponent() {
+function EquipmentComponent() {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
   const {
     register,
     formState: { errors },
-  } = useForm<typeof CUSTOMER_SITE_FORM>({
+  } = useForm<typeof EQUIPMENT_FORM>({
     mode: "onChange",
-    defaultValues: CUSTOMER_SITE_FORM,
+    defaultValues: EQUIPMENT_FORM,
     shouldFocusError: true,
   });
 
   const renderToolbarButtons = () => (
     <Stack direction="row" spacing={1}>
-      <Button variant="text" startIcon={<Close />} onClick={() => navigate({ to: "/management/customer-sites" })}>
+      <Button variant="text" startIcon={<Close />} onClick={() => navigate({ to: "/management/equipment" })}>
         {t("cancel")}
       </Button>
       <Button variant="contained" startIcon={<SaveAlt />}>
@@ -43,9 +38,9 @@ function CustomerSiteComponent() {
 
   return (
     <Paper sx={{ height: "100%" }}>
-      <ToolbarRow title={t("management.customerSites.new")} backButtonVisible toolbarButtons={renderToolbarButtons()} />
+      <ToolbarRow title={t("management.equipment.new")} backButtonVisible toolbarButtons={renderToolbarButtons()} />
       <Stack direction="row">
-        <CustomerSiteForm errors={errors} register={register} />
+        <EquipmentForm errors={errors} register={register} />
         <Box minHeight="100%" flex={1} alignContent="center" justifyContent="center">
           <Typography>Not yet implemented</Typography>
         </Box>
@@ -54,4 +49,4 @@ function CustomerSiteComponent() {
   );
 }
 
-export default CustomerSiteComponent;
+export default EquipmentComponent;

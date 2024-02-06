@@ -6,11 +6,8 @@
   "delete": "Delete",
   "vehicleList": "Vehicle list",
   "vehicleInfo": "Vehicle information",
-  "drivePlanning": "Drive planning",
   "workingTime": "Working time",
   "management": "Management",
-  "towables": "Towables",
-  "vehicles": "Vehicles",
   "addNew": "Add new",
   "customerSites": {
     "title": "Customer sites",
@@ -29,6 +26,36 @@
       "postalCodeTooShort": "Postal code needs to be atleast 5 characters long",
       "postalCodeInvalidFormat": "Postal code can only contain numers",
       "municipalityMissing": "Municipality is required"
+    }
+  },
+  "equipment": {
+    "title": "Equipment",
+    "new": "New equipment",
+    "modify": "Modify equipment",
+    "type": "Type",
+    "name": "Name",
+    "licensePlate": "License plate",
+    "errorMessages": {
+      "nameMissing": "Name is required",
+      "licensePlateMissing": "License plate is required"
+    }
+  },
+  "vehicles": {
+    "title": "Vehicles",
+    "new": "New vehicle",
+    "modify": "Modify vehicle",
+    "type": "Type",
+    "name": "Name",
+    "licensePlate": "License plate",
+    "errorMessages": {
+      "nameMissing": "Name is required",
+      "licensePlateMissing": "License plate is required"
+    }
+  },
+  "drivePlanning": {
+    "title": "Drive planning",
+    "freights": {
+      "title": "Freight"
     }
   }
 }

@@ -11,7 +11,7 @@ import { useMemo } from "react";
 export const Route = createFileRoute("/management/customer-sites")({
   component: ManagementCustomerSites,
   beforeLoad: (): RouterContext => ({
-    breadcrumb: "customerSites.title",
+    breadcrumb: "management.customerSites.title",
   }),
 });
 
@@ -22,30 +22,30 @@ function ManagementCustomerSites() {
   const columns: GridColDef[] = useMemo(
     () => [
       {
-        field: "name",
+        field: "type",
         headerAlign: "center",
-        headerName: t("customerSites.type"),
+        headerName: t("management.customerSites.type"),
         sortable: false,
         flex: 1,
       },
       {
         field: "type",
         headerAlign: "center",
-        headerName: t("customerSites.type"),
+        headerName: t("management.customerSites.type"),
         sortable: false,
         flex: 1,
       },
       {
         field: "postalNumber",
         headerAlign: "center",
-        headerName: t("customerSites.postalCode"),
+        headerName: t("management.customerSites.postalCode"),
         sortable: false,
         flex: 1,
       },
       {
         field: "locality",
         headerAlign: "center",
-        headerName: t("customerSites.municipality"),
+        headerName: t("management.customerSites.municipality"),
         sortable: false,
         flex: 1,
       },
@@ -72,9 +72,10 @@ function ManagementCustomerSites() {
   return (
     <Paper sx={{ height: "100%" }}>
       <ToolbarRow
-        title={t("customerSites.title")}
+        title={t("management.customerSites.title")}
         toolbarButtons={
           <Button
+            size="small"
             variant="contained"
             startIcon={<Add />}
             onClick={() =>

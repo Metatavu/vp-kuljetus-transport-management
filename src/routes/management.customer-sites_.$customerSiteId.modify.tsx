@@ -5,6 +5,6 @@ import { RouterContext } from "src/routes/__root";
 export const Route = createFileRoute("/management/customer-sites/$customerSiteId/modify")({
   component: () => <CustomerSiteComponent />,
   beforeLoad: (): RouterContext => ({
-    breadcrumb: "customerSites.modify",
+    breadcrumb: "management.customerSites.modify",
   }),
 });
