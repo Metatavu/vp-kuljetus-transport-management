@@ -4,6 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "build-prod": "node infisical.js >> .env.production && npm run build",
+    "start": "eval $(grep '^INFISICAL_SECRET_PATH' .env) && infisical run --path $INFISICAL_SECRET_PATH -- npm run dev",
     "dev": "tsc --noEmit --skipLibCheck && vite --open",
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
@@ -42,6 +44,8 @@
     "@types/react": "18.2.43",
     "@types/react-dom": "18.2.17",
     "@vitejs/plugin-react-swc": "3.5.0",
+    "dotenv": "16.4.1",
+    "infisical-node": "1.5.1",
     "typescript": "5.2.2",
     "vite": "5.0.8",
     "vite-plugin-graphql-codegen": "3.3.6"
