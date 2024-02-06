@@ -40,6 +40,19 @@ const theme = createTheme({
         color: "primary",
       },
     },
+    MuiTextField: {
+      defaultProps: {
+        variant: "standard",
+        fullWidth: true,
+        InputLabelProps: { shrink: true },
+        InputProps: { disableUnderline: true },
+        inputProps: {
+          style: {
+            backgroundColor: "rgba(0, 0, 0, 0.06)",
+            borderRadius: "4px"
+        }}
+      }
+    },
   },
 });
 

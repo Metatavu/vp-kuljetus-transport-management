@@ -1,8 +1,34 @@
 {
+  "save": "Save",
+  "cancel": "Cancel",
   "logout": "Logout",
+  "edit": "Edit",
+  "delete": "Delete",
   "vehicleList": "Vehicle list",
   "vehicleInfo": "Vehicle information",
   "drivePlanning": "Drive planning",
   "workingTime": "Working time",
-  "management": "Management"
+  "management": "Management",
+  "towables": "Towables",
+  "vehicles": "Vehicles",
+  "addNew": "Add new",
+  "customerSites": {
+    "title": "Customer sites",
+    "new": "New customer site",
+    "modify": "Modify customer site",
+    "type": "Type",
+    "name": "Name",
+    "address": "Address",
+    "postalCode": "Postal code",
+    "municipality": "Municipality",
+    "additionalInfo": "Additional info",
+    "errorMessages": {
+      "nameMissing": "Name is required",
+      "addressMissing": "Address is required",
+      "postalCodeMissing": "Postal code is required",
+      "postalCodeTooShort": "Postal code needs to be atleast 5 characters long",
+      "postalCodeInvalidFormat": "Postal code can only contain numers",
+      "municipalityMissing": "Municipality is required"
+    }
+  }
 }

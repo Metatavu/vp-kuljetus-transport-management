@@ -1,4 +1,4 @@
-import { Router, RouterProvider } from "@tanstack/react-router";
+import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import { routeTree } from "generated/router/routeTree.gen";
@@ -17,7 +17,7 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
-const router = new Router({ routeTree });
+const router = createRouter({ routeTree });
 
 declare module "@tanstack/react-router" {
   interface Register {

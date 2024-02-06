@@ -5,7 +5,8 @@ import logo from "assets/vp-kuljetus-logo.jpeg";
 import { useAtomValue } from "jotai";
 import { bindMenu, bindTrigger, usePopupState } from "material-ui-popup-state/hooks";
 import { useTranslation } from "react-i18next";
-import { authAtom } from "../atoms/auth";
+import { authAtom } from "../../atoms/auth";
+import { NavigationItem } from "src/types";
 
 const TopNavigation = () => {
   const auth = useAtomValue(authAtom);
@@ -15,15 +16,17 @@ const TopNavigation = () => {
 
   const accountMenuState = usePopupState({ variant: "popover", popupId: "accountMenu" });
 
-  const routeLinks = [
-    ["/vehicle-list", t("vehicleList")],
-    ["/vehicle-info", t("vehicleInfo")],
-    ["/drive-planning", t("drivePlanning")],
-    ["/working-time", t("workingTime")],
-    ["/management", t("management")],
+  const routeLinks: readonly NavigationItem[] = [
+    ["/vehicle-list", "vehicleList", undefined],
+    ["/vehicle-info", "vehicleInfo", undefined],
+    ["/drive-planning", "drivePlanning", undefined],
+    ["/working-time", "workingTime", undefined],
+    ["/management/customer-sites", "management", undefined],
   ] as const;
 
-  const selectedRouteIndex = routeLinks.findIndex(([route]) => location.pathname.startsWith(route));
+  const selectedRouteIndex = routeLinks.findIndex(([route]) =>
+    route.split("/")[1].startsWith(location.pathname.split("/")[1]),
+  );
 
   return (
     <AppBar position="static" sx={{ height: "54px" }}>
@@ -33,7 +36,12 @@ const TopNavigation = () => {
         <Stack direction="row" gap={3} sx={{ ml: 3, flexGrow: 1 }}>
           <Tabs value={selectedRouteIndex}>
             {routeLinks.map(([route, label], routeIndex) => (
-              <Tab key={route} label={label} value={routeIndex} onClick={() => navigate({ to: route })} />
+              <Tab
+                key={route}
+                label={t(label)}
+                value={routeIndex}
+                onClick={() => navigate({ to: route, params: {} })}
+              />
             ))}
           </Tabs>
         </Stack>
