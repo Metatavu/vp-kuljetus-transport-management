@@ -8,23 +8,54 @@
   "vehicleInfo": "Ajoneuvon tiedot",
   "workingTime": "Työaika",
   "addNew": "Lisää uusi",
-  "customerSites": {
-    "title": "Asiakaspaikat",
-    "new": "Uusi asiakaspaikka",
-    "modify": "Muokkaa asiakaspaikkaa",
-    "type": "Tyyppi",
-    "name": "Nimi",
-    "address": "Osoite",
-    "postalCode": "Postinumero",
-    "municipality": "Paikkakunta",
-    "additionalInfo": "Lisätiedot",
-    "errorMessages": {
-      "nameMissing": "Nimi on pakollinen",
-      "addressMissing": "Osoite on pakollinen",
-      "postalCodeMissing": "Postinumero on pakollinen",
-      "postalCodeTooShort": "Postinumeron tulee olla 5 merkkiä pitkä",
-      "postalCodeInvalidFormat": "Postinumero saa sisältää vain numeroita",
-      "municipalityMissing": "Paikkakunta on pakollinen"
+  "management": {
+    "title": "Hallinta",
+    "customerSites": {
+      "title": "Asiakaspaikat",
+      "new": "Uusi asiakaspaikka",
+      "modify": "Muokkaa asiakaspaikkaa",
+      "type": "Tyyppi",
+      "name": "Nimi",
+      "address": "Osoite",
+      "postalCode": "Postinumero",
+      "municipality": "Paikkakunta",
+      "additionalInfo": "Lisätiedot",
+      "errorMessages": {
+        "nameMissing": "Nimi on pakollinen",
+        "addressMissing": "Osoite on pakollinen",
+        "postalCodeMissing": "Postinumero on pakollinen",
+        "postalCodeTooShort": "Postinumeron tulee olla 5-merkkiä pitkä",
+        "postalCodeInvalidFormat": "Postinumero saa sisältää vain numeroita",
+        "municipalityMissing": "Paikkakunta on pakollinen"
+      }
+    },
+    "equipment": {
+      "title": "Kalusto",
+      "new": "Uusi kalusto",
+      "modify": "Muokkaa kalustoa",
+      "type": "Tyyppi",
+      "name": "Nimi",
+      "licensePlate": "Rekisterinumero",
+      "errorMessages": {
+        "licensePlateMissing": "Rekisterinumero on pakollinen"
+      }
+    },
+    "vehicles": {
+      "title": "Ajoneuvot",
+      "new": "Uusi ajoneuvo",
+      "modify": "Muokkaa ajoneuvoa",
+      "type": "Tyyppi",
+      "name": "Nimi",
+      "licensePlate": "Rekisterinumero",
+      "errorMessages": {
+        "licensePlateMissing": "Rekisterinumero on pakollinen"
+      }
+    }
+  },
+  "drivePlanning": {
+    "title": "Ajojärjestely",
+    "freights": {
+      "title": "Kuormat"
     }
   }
 }
