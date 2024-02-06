@@ -2,7 +2,9 @@ import config from "../app/config";
 import {
   Configuration,
   ConfigurationParameters,
-  VehiclesApi
+  VehiclesApi,
+  TrucksApi,
+  TrailersApi
 } from "../generated/client";
 
 type ConfigConstructor<T> = new (_params: ConfigurationParameters) => T;
@@ -20,6 +22,8 @@ export const getApiClient = (accessToken?: string) => {
   const getConfiguration = getConfigurationFactory(Configuration, config.api.baseUrl, accessToken);
 
   return {
-    vehiclesApi: new VehiclesApi(getConfiguration())
+    vehiclesApi: new VehiclesApi(getConfiguration()),
+    trucksApi: new TrucksApi(getConfiguration()),
+    trailersApi: new TrailersApi(getConfiguration())
   };
 };

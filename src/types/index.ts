@@ -4,7 +4,7 @@
 export enum VehicleListColumns {
     Type = "type",
     Name = "name",
-    Code = "plate",
+    PlateNumber = "plateNumber",
     Temperature = "temperature",
     Address = "address",
     Location = "location",

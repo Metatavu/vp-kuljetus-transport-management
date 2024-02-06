@@ -15,7 +15,7 @@
       "headings": {
         "type": "Tyyppi",
         "name": "Nimi",
-        "plate": "Tunnus",
+        "plateNumber": "Tunnus",
         "temperature": "Lämpötila",
         "address": "Osoite",
         "location": "Sijainti",

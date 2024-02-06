@@ -15,7 +15,7 @@
       "headings": {
         "type": "Type",
         "name": "Name",
-        "plate": "Plate",
+        "plateNumber": "Plate",
         "temperature": "Temperature",
         "address": "Address",
         "location": "Location",
