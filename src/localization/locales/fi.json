@@ -26,7 +26,7 @@
       "nameMissing": "Nimi on pakollinen",
       "addressMissing": "Osoite on pakollinen",
       "postalCodeMissing": "Postinumero on pakollinen",
-      "postalCodeTooShort": "Postinumeron tulee olla 5-merkkiä pitkä",
+      "postalCodeTooShort": "Postinumeron tulee olla 5 merkkiä pitkä",
       "postalCodeInvalidFormat": "Postinumero saa sisältää vain numeroita",
       "municipalityMissing": "Paikkakunta on pakollinen"
     }
