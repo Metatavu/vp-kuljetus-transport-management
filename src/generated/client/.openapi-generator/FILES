@@ -1,0 +1,16 @@
+.openapi-generator-ignore
+apis/DriversApi.ts
+apis/RoutesApi.ts
+apis/TowablesApi.ts
+apis/TrucksApi.ts
+apis/VehiclesApi.ts
+apis/index.ts
+index.ts
+models/Driver.ts
+models/ModelError.ts
+models/Route.ts
+models/Towable.ts
+models/Truck.ts
+models/Vehicle.ts
+models/index.ts
+runtime.ts
