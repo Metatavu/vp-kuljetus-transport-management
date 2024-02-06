@@ -9,55 +9,50 @@ type Props = {
 };
 
 const CustomerSiteForm = ({ errors, register }: Props) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation("translation", { keyPrefix: "management.customerSites" });
 
   const validatePostalCode = (value: string) => {
     if (value.length !== 5) {
-      return t("customerSites.errorMessages.postalCodeTooShort");
+      return t("errorMessages.postalCodeTooShort");
     }
     if (!/^\d+$/.test(value)) {
-      return t("customerSites.errorMessages.postalCodeInvalidFormat");
+      return t("errorMessages.postalCodeInvalidFormat");
     }
     return true;
   };
 
   return (
     <Stack width={356} padding="16px" gap="16px">
+      <TextField select label={t("type")} InputProps={{ disableUnderline: false }} {...register("type")} />
       <TextField
-        select
-        label={t("customerSites.type")}
-        InputProps={{ disableUnderline: false }}
-        {...register("type")}
-      />
-      <TextField
-        label={t("customerSites.name")}
+        label={t("name")}
         error={!!errors.name}
         helperText={errors.name?.message}
-        {...register("name", { required: t("customerSites.errorMessages.nameMissing") })}
+        {...register("name", { required: t("errorMessages.nameMissing") })}
       />
       <TextField
-        label={t("customerSites.address")}
+        label={t("address")}
         error={!!errors.address}
         helperText={errors.address?.message}
-        {...register("address", { required: t("customerSites.errorMessages.addressMissing") })}
+        {...register("address", { required: t("errorMessages.addressMissing") })}
       />
       <TextField
-        label={t("customerSites.postalCode")}
+        label={t("postalCode")}
         error={!!errors.postalNumber}
         helperText={errors.postalNumber?.message}
         {...register("postalNumber", { validate: validatePostalCode })}
       />
       <TextField
-        label={t("customerSites.municipality")}
+        label={t("municipality")}
         error={!!errors.municipality}
         helperText={errors.municipality?.message}
-        {...register("municipality", { required: t("customerSites.errorMessages.municipalityMissing") })}
+        {...register("municipality", { required: t("errorMessages.municipalityMissing") })}
       />
       <TextField
         fullWidth
         multiline
         minRows={9}
-        label={t("customerSites.additionalInfo")}
+        label={t("additionalInfo")}
         variant="standard"
         {...register("additionalInfo")}
       />

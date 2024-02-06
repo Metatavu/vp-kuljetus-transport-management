@@ -9,15 +9,15 @@ import { NavigationItem } from "src/types";
 export const Route = createFileRoute("/management")({
   component: ManagementLayoutComponent,
   beforeLoad: (): RouterContext => ({
-    breadcrumb: "management",
+    breadcrumb: "management.title",
   }),
 });
 
 function ManagementLayoutComponent() {
   const sideNavigationItems: readonly NavigationItem[] = [
-    ["/management/customer-sites", "customerSites.title", TodayRounded],
-    ["/management/towables", "towables", ListAltRounded],
-    ["/management/vehicles", "vehicles", EventNoteRounded],
+    ["/management/customer-sites", "management.customerSites.title", TodayRounded],
+    ["/management/equipment", "management.equipment.title", ListAltRounded],
+    ["/management/vehicles", "management.vehicles.title", EventNoteRounded],
   ] as const;
 
   return (

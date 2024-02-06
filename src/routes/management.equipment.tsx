@@ -7,14 +7,14 @@ import { GridColDef } from "@mui/x-data-grid";
 import { useMemo } from "react";
 import GenericDataGrid from "components/generic/generic-data-grid";
 
-export const Route = createFileRoute("/management/vehicles")({
-  component: ManagementVehicles,
+export const Route = createFileRoute("/management/equipment")({
+  component: ManagementEquipment,
   beforeLoad: (): RouterContext => ({
-    breadcrumb: "management.vehicles.title",
+    breadcrumb: "management.equipment.title",
   }),
 });
 
-function ManagementVehicles() {
+function ManagementEquipment() {
   const { t } = useTranslation();
 
   const columns: GridColDef[] = useMemo(
@@ -22,14 +22,14 @@ function ManagementVehicles() {
       {
         field: "name",
         headerAlign: "center",
-        headerName: t("management.vehicles.name"),
+        headerName: t("management.equipment.name"),
         sortable: false,
         flex: 1,
       },
       {
         field: "type",
         headerAlign: "center",
-        headerName: t("management.vehicles.type"),
+        headerName: t("management.equipment.type"),
         sortable: false,
         flex: 1,
       },
@@ -55,7 +55,7 @@ function ManagementVehicles() {
 
   return (
     <Paper sx={{ height: "100%" }}>
-      <ToolbarRow title={t("management.vehicles.title")} />
+      <ToolbarRow title={t("management.equipment.title")} />
       <GenericDataGrid rows={[]} columns={columns} />
     </Paper>
   );

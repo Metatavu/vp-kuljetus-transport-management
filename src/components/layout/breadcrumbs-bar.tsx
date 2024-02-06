@@ -5,7 +5,7 @@ import { RouterContext } from "src/routes/__root";
 import DataValidation from "utils/data-validation-utils";
 
 const BreadcrumbsBar = () => {
-  const { t } = useTranslation("translation");
+  const { t } = useTranslation();
   const router = useRouter();
   const breadcrumbs = router.state.matches
     .map(({ routeContext }) => (routeContext as RouterContext).breadcrumb)
