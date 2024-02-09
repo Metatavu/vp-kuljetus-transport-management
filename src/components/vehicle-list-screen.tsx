@@ -3,21 +3,22 @@ import { GridColDef } from "@mui/x-data-grid";
 import { useEffect, useState, FC } from "react";
 import { useTranslation } from "react-i18next";
 
-import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import { useApi } from "../hooks/use-api";
-import { Towable, Truck, Vehicle } from "generated/client";
-import { VehicleListColumns } from "../types";
+import { Truck } from "generated/client";
 import GenericDataGrid from "./generic/generic-data-grid";
+import { VehicleListColumns } from "../types";
+import { useNavigate } from "@tanstack/react-router";
 
 /**
  * Form replies screen component
  */
 const VehicleListScreen: FC = () => {
-  //const { vehiclesApi, trucksApi, trailersApi } = useApi();
+  const { trucksApi } = useApi();
 
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [rows, setRows] = useState<any[]>([]);
-  const [vehicles, setVehicles] = useState<any[]>([]);
+  //const [vehicles, setVehicles] = useState<any[]>([]);
   const [columns, setColumns] = useState<GridColDef[]>([]);
   const [loading, setLoading] = useState(false);
   const resultsPerPage = 25;
@@ -30,13 +31,13 @@ const VehicleListScreen: FC = () => {
    * @returns grid columns
    */
   const setGridColumns = async () => {
-    const vehicleListColumns = Object.values(t("vehicleListScreen.vehicleList.headings", { returnObjects: true }));
-
+    const vehicleListColumns = Object.values(VehicleListColumns);
     const gridColumns = vehicleListColumns.map<GridColDef>(column => {
       const columnName = column ?? "";
+
       return ({
         field: columnName,
-        headerName: column,
+        headerName: t(`vehicleListScreen.vehicleList.headings.${columnName}`),
         allowProps: true,
         flex: 1,
         type: "string",
@@ -49,16 +50,10 @@ const VehicleListScreen: FC = () => {
         },
         renderCell: params => {
           switch (columnName) {
-            case t("vehicleListScreen.vehicleList.headings.type"):
+            case VehicleListColumns.Name:
               return (
                 <Stack>
-                  <LocalShippingIcon />
-                </Stack>
-              );
-            case t("vehicleListScreen.vehicleList.headings.plateNumber"):
-              return (
-                <Stack sx={{ background: "black" }}>
-                  <Link href={"/vehicle-list"}>{params.row["plateNumber"]}</Link>
+                  <Link onClick={() => navigate({ to: `/vehicle-info`, params: { id: params.row.id } })}>{params.row["name"]}</Link>
                 </Stack>
               );
             default:
@@ -84,9 +79,13 @@ const VehicleListScreen: FC = () => {
     const row: { [key: string]: string | number } = {};
 
     row.id = truck.id!;
-    row.plateNumber = truck.plateNumber;
-    row.name = "Volvo"
-    row.type = t("vehicleListScreen.vehicleList.headings.type");
+    row.name = truck.plateNumber
+    row.number = truck.vin;
+    row.address = "-";
+    row.location = "-";
+    row.status = "-";
+    row.trailer = "-";
+    row.driver = "-";
     return row;
   };
 
@@ -97,20 +96,9 @@ const VehicleListScreen: FC = () => {
     setLoading(true);
 
     try {
-      //const vehicles = await vehiclesApi.listVehiclesWithHeaders({ first: page * resultsPerPage, max: resultsPerPage });
-      //console.log(vehicles);
-      //const trucks: Truck[] = await trucksApi.listTrucks();
-      //const trailers: Trailer[] = await trailersApi.listTrailers();
-      const vehicles: Vehicle[] = [{ id: "0001", truckId: "1234", towableIds: ["5678"] }];
-      const trucks: Truck[] = [
-        { id: "1234-3", plateNumber: "ABC-123", type: "TRUCK", vin: "1234567890" },
-        { id: "5678-2", plateNumber: "DEF-456", type: "TRUCK", vin: "6516516516" },
-        { id: "9101-1", plateNumber: "GHI-789", type: "TRUCK", vin: "6546546546" },
-      ];
-      const trailers: Towable[] = [{ id: "5678", plateNumber: "DEF-456", type: "TRAILER", vin: "32131321321" }];
-
+      const trucks: Truck[] = await trucksApi.listTrucks({});
       const vehicleRows = trucks.map((truck) => buildRow(truck));
-      console.log(vehicleRows)
+
       setTotalResults(50);
       setRows(vehicleRows);
       await setGridColumns();

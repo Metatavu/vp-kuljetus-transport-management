@@ -65,14 +65,14 @@
     "vehicleList": {
       "headings": {
         "type": "Tyyppi",
-        "name": "Nimi",
-        "plateNumber": "Tunnus",
+        "name": "Auto",
+        "number": "Tunnus",
         "temperature": "Lämpötila",
         "address": "Osoite",
         "location": "Sijainti",
         "status": "Tila",
         "maintenance": "Huolto",
-        "trailer_temperature": "Kalusto/Lämpötila",
+        "trailer": "Kalusto",
         "driver": "Kuljettaja"
       }
     }

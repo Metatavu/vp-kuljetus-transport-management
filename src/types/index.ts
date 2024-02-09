@@ -10,14 +10,11 @@ export type NavigationItem = readonly [RoutePaths<RegisteredRouter["routeTree"]>
  * Enum for vehicle list columns
  */
 export enum VehicleListColumns {
-  Type = "type",
   Name = "name",
-  PlateNumber = "plateNumber",
-  Temperature = "temperature",
+  Number = "number",
   Address = "address",
   Location = "location",
   Status = "status",
-  Maintenance = "maintenance",
-  TrailerTemperature = "trailer_temperature",
+  Trailer = "trailer",
   Driver = "driver"
 }
