@@ -94,7 +94,7 @@ const VehicleListScreen: FC = () => {
 
     try {
       const trucks = await trucksApi.listTrucks({});
-      const vehicleRows = trucks.map((truck) => buildRow(truck));
+      const vehicleRows = trucks.map(buildRow);
 
       setTotalResults(50);
       setRows(vehicleRows);
