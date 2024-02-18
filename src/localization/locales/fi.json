@@ -59,7 +59,7 @@
     }
   },
   "errorHandling": {
-    "vehicleListing": "Ajoneuvolistaukssessa tapahtui virhe"
+    "vehicleListing": "Ajoneuvolistauksessa tapahtui virhe"
   },
   "vehicleListScreen": {
     "vehicleList": {
