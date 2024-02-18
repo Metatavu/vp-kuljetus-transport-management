@@ -74,17 +74,16 @@ const VehicleListScreen: FC = () => {
    * @param vehicles - vehicles
    */
   const buildRow = (truck: Truck) => {
-    const row: { [key: string]: string | number } = {};
-
-    row.id = truck.id!;
-    row.name = truck.plateNumber
-    row.number = truck.vin;
-    row.address = "-";
-    row.location = "-";
-    row.status = "-";
-    row.trailer = "-";
-    row.driver = "-";
-    return row;
+    return {
+      id: truck.id,
+      name: truck.plateNumber,
+      number: truck.vin,
+      address: "-",
+      location: "-",
+      status: "-",
+      trailer: "-",
+      driver: "-"
+    } as const;
   };
 
   /**
