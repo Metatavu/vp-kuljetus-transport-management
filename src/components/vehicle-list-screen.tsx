@@ -41,13 +41,11 @@ const VehicleListScreen: FC = () => {
         allowProps: true,
         flex: 1,
         type: "string",
-        renderHeader: params => {
-          return (
-            <Stack direction="row">
-              <Typography fontWeight={"bold"} fontSize={14}>{params.colDef.headerName}</Typography>
-            </Stack>
-          );
-        },
+        renderHeader: params => (
+          <Stack direction="row">
+            <Typography fontWeight={"bold"} fontSize={14}>{params.colDef.headerName}</Typography>
+          </Stack>
+        ),
         renderCell: params => {
           switch (columnName) {
             case VehicleListColumns.Name:
