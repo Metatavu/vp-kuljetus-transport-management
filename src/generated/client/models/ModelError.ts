@@ -32,6 +32,30 @@ export interface ModelError {
      * @memberof ModelError
      */
     message: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ModelError
+     */
+    readonly creatorId?: string;
+    /**
+     * 
+     * @type {Date}
+     * @memberof ModelError
+     */
+    readonly createdAt?: Date;
+    /**
+     * 
+     * @type {string}
+     * @memberof ModelError
+     */
+    readonly lastModifierId?: string;
+    /**
+     * 
+     * @type {Date}
+     * @memberof ModelError
+     */
+    readonly modifiedAt?: Date;
 }
 
 /**
@@ -56,6 +80,10 @@ export function ModelErrorFromJSONTyped(json: any, ignoreDiscriminator: boolean)
         
         'status': !exists(json, 'status') ? undefined : json['status'],
         'message': json['message'],
+        'creatorId': !exists(json, 'creatorId') ? undefined : json['creatorId'],
+        'createdAt': !exists(json, 'createdAt') ? undefined : (new Date(json['createdAt'])),
+        'lastModifierId': !exists(json, 'lastModifierId') ? undefined : json['lastModifierId'],
+        'modifiedAt': !exists(json, 'modifiedAt') ? undefined : (new Date(json['modifiedAt'])),
     };
 }
 

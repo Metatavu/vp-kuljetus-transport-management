@@ -36,6 +36,8 @@ export interface FindRouteRequest {
 export interface ListRoutesRequest {
     vehicleId?: string;
     driverId?: string;
+    departureAfter?: Date;
+    departureBefore?: Date;
     first?: number;
     max?: number;
 }
@@ -49,7 +51,6 @@ export interface UpdateRouteRequest {
  * 
  */
 export class RoutesApi extends runtime.BaseAPI {
-
     /**
      * Create new route
      * Create route
@@ -58,13 +59,16 @@ export class RoutesApi extends runtime.BaseAPI {
         if (requestParameters.route === null || requestParameters.route === undefined) {
             throw new runtime.RequiredError('route','Required parameter requestParameters.route was null or undefined when calling createRoute.');
         }
-
         const queryParameters: any = {};
-
         const headerParameters: runtime.HTTPHeaders = {};
-
         headerParameters['Content-Type'] = 'application/json';
-
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("BearerAuth", ["manager"]);
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
         const response = await this.request({
             path: `/work-planning/v1/routes`,
             method: 'POST',
@@ -72,10 +76,8 @@ export class RoutesApi extends runtime.BaseAPI {
             query: queryParameters,
             body: RouteToJSON(requestParameters.route),
         });
-
         return new runtime.JSONApiResponse(response, (jsonValue) => RouteFromJSON(jsonValue));
     }
-
     /**
      * Create new route
      * Create route
@@ -84,7 +86,6 @@ export class RoutesApi extends runtime.BaseAPI {
         const response = await this.createRouteRaw(requestParameters);
         return await response.value();
     }
-
     /**
      * Create new route
      * Create route
@@ -94,7 +95,6 @@ export class RoutesApi extends runtime.BaseAPI {
         const value = await response.value(); 
         return [ value, response.raw.headers ];
     }
-
     /**
      * Deletes route
      * Deletes route
@@ -103,21 +103,23 @@ export class RoutesApi extends runtime.BaseAPI {
         if (requestParameters.routeId === null || requestParameters.routeId === undefined) {
             throw new runtime.RequiredError('routeId','Required parameter requestParameters.routeId was null or undefined when calling deleteRoute.');
         }
-
         const queryParameters: any = {};
-
         const headerParameters: runtime.HTTPHeaders = {};
-
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("BearerAuth", ["manager"]);
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
         const response = await this.request({
             path: `/work-planning/v1/routes/{routeId}`.replace(`{${"routeId"}}`, encodeURIComponent(String(requestParameters.routeId))),
             method: 'DELETE',
             headers: headerParameters,
             query: queryParameters,
         });
-
         return new runtime.VoidApiResponse(response);
     }
-
     /**
      * Deletes route
      * Deletes route
@@ -125,7 +127,6 @@ export class RoutesApi extends runtime.BaseAPI {
     async deleteRoute(requestParameters: DeleteRouteRequest): Promise<void> {
         await this.deleteRouteRaw(requestParameters);
     }
-
     /**
      * Deletes route
      * Deletes route
@@ -134,7 +135,6 @@ export class RoutesApi extends runtime.BaseAPI {
         const response = await this.deleteRouteRaw(requestParameters);
         return response.raw.headers;
     }
-
     /**
      * Finds a route by id.
      * Find a route.
@@ -143,21 +143,23 @@ export class RoutesApi extends runtime.BaseAPI {
         if (requestParameters.routeId === null || requestParameters.routeId === undefined) {
             throw new runtime.RequiredError('routeId','Required parameter requestParameters.routeId was null or undefined when calling findRoute.');
         }
-
         const queryParameters: any = {};
-
         const headerParameters: runtime.HTTPHeaders = {};
-
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("BearerAuth", ["driver", "manager"]);
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
         const response = await this.request({
             path: `/work-planning/v1/routes/{routeId}`.replace(`{${"routeId"}}`, encodeURIComponent(String(requestParameters.routeId))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
         });
-
         return new runtime.JSONApiResponse(response, (jsonValue) => RouteFromJSON(jsonValue));
     }
-
     /**
      * Finds a route by id.
      * Find a route.
@@ -166,7 +168,6 @@ export class RoutesApi extends runtime.BaseAPI {
         const response = await this.findRouteRaw(requestParameters);
         return await response.value();
     }
-
     /**
      * Finds a route by id.
      * Find a route.
@@ -176,42 +177,46 @@ export class RoutesApi extends runtime.BaseAPI {
         const value = await response.value(); 
         return [ value, response.raw.headers ];
     }
-
     /**
      * Lists Routes.
      * List Routes.
      */
     async listRoutesRaw(requestParameters: ListRoutesRequest): Promise<runtime.ApiResponse<Array<Route>>> {
         const queryParameters: any = {};
-
         if (requestParameters.vehicleId !== undefined) {
             queryParameters['vehicleId'] = requestParameters.vehicleId;
         }
-
         if (requestParameters.driverId !== undefined) {
             queryParameters['driverId'] = requestParameters.driverId;
         }
-
+        if (requestParameters.departureAfter !== undefined) {
+            queryParameters['departureAfter'] = (requestParameters.departureAfter as any).toISOString();
+        }
+        if (requestParameters.departureBefore !== undefined) {
+            queryParameters['departureBefore'] = (requestParameters.departureBefore as any).toISOString();
+        }
         if (requestParameters.first !== undefined) {
             queryParameters['first'] = requestParameters.first;
         }
-
         if (requestParameters.max !== undefined) {
             queryParameters['max'] = requestParameters.max;
         }
-
         const headerParameters: runtime.HTTPHeaders = {};
-
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("BearerAuth", ["driver", "manager"]);
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
         const response = await this.request({
             path: `/work-planning/v1/routes`,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
         });
-
         return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(RouteFromJSON));
     }
-
     /**
      * Lists Routes.
      * List Routes.
@@ -220,7 +225,6 @@ export class RoutesApi extends runtime.BaseAPI {
         const response = await this.listRoutesRaw(requestParameters);
         return await response.value();
     }
-
     /**
      * Lists Routes.
      * List Routes.
@@ -230,7 +234,6 @@ export class RoutesApi extends runtime.BaseAPI {
         const value = await response.value(); 
         return [ value, response.raw.headers ];
     }
-
     /**
      * Updates single route
      * Updates routes
@@ -239,17 +242,19 @@ export class RoutesApi extends runtime.BaseAPI {
         if (requestParameters.route === null || requestParameters.route === undefined) {
             throw new runtime.RequiredError('route','Required parameter requestParameters.route was null or undefined when calling updateRoute.');
         }
-
         if (requestParameters.routeId === null || requestParameters.routeId === undefined) {
             throw new runtime.RequiredError('routeId','Required parameter requestParameters.routeId was null or undefined when calling updateRoute.');
         }
-
         const queryParameters: any = {};
-
         const headerParameters: runtime.HTTPHeaders = {};
-
         headerParameters['Content-Type'] = 'application/json';
-
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("BearerAuth", ["manager"]);
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
         const response = await this.request({
             path: `/work-planning/v1/routes/{routeId}`.replace(`{${"routeId"}}`, encodeURIComponent(String(requestParameters.routeId))),
             method: 'PUT',
@@ -257,10 +262,8 @@ export class RoutesApi extends runtime.BaseAPI {
             query: queryParameters,
             body: RouteToJSON(requestParameters.route),
         });
-
         return new runtime.JSONApiResponse(response, (jsonValue) => RouteFromJSON(jsonValue));
     }
-
     /**
      * Updates single route
      * Updates routes
@@ -269,7 +272,6 @@ export class RoutesApi extends runtime.BaseAPI {
         const response = await this.updateRouteRaw(requestParameters);
         return await response.value();
     }
-
     /**
      * Updates single route
      * Updates routes
@@ -279,5 +281,4 @@ export class RoutesApi extends runtime.BaseAPI {
         const value = await response.value(); 
         return [ value, response.raw.headers ];
     }
-
 }

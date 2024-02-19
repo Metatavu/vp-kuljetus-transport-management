@@ -25,16 +25,13 @@ export interface CreateTowableRequest {
     towable: Towable;
 }
 
-export interface DeleteTowableRequest {
-    towableId: string;
-}
-
 export interface FindTowableRequest {
     towableId: string;
 }
 
 export interface ListTowablesRequest {
     plateNumber?: string;
+    archived?: boolean;
     first?: number;
     max?: number;
 }
@@ -48,7 +45,6 @@ export interface UpdateTowableRequest {
  * 
  */
 export class TowablesApi extends runtime.BaseAPI {
-
     /**
      * Create new towable
      * Create towable
@@ -57,13 +53,16 @@ export class TowablesApi extends runtime.BaseAPI {
         if (requestParameters.towable === null || requestParameters.towable === undefined) {
             throw new runtime.RequiredError('towable','Required parameter requestParameters.towable was null or undefined when calling createTowable.');
         }
-
         const queryParameters: any = {};
-
         const headerParameters: runtime.HTTPHeaders = {};
-
         headerParameters['Content-Type'] = 'application/json';
-
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("BearerAuth", ["manager"]);
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
         const response = await this.request({
             path: `/vehicle-management/v1/towables`,
             method: 'POST',
@@ -71,10 +70,8 @@ export class TowablesApi extends runtime.BaseAPI {
             query: queryParameters,
             body: TowableToJSON(requestParameters.towable),
         });
-
         return new runtime.JSONApiResponse(response, (jsonValue) => TowableFromJSON(jsonValue));
     }
-
     /**
      * Create new towable
      * Create towable
@@ -83,7 +80,6 @@ export class TowablesApi extends runtime.BaseAPI {
         const response = await this.createTowableRaw(requestParameters);
         return await response.value();
     }
-
     /**
      * Create new towable
      * Create towable
@@ -93,47 +89,6 @@ export class TowablesApi extends runtime.BaseAPI {
         const value = await response.value(); 
         return [ value, response.raw.headers ];
     }
-
-    /**
-     * Deletes towable
-     * Deletes towable
-     */
-    async deleteTowableRaw(requestParameters: DeleteTowableRequest): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters.towableId === null || requestParameters.towableId === undefined) {
-            throw new runtime.RequiredError('towableId','Required parameter requestParameters.towableId was null or undefined when calling deleteTowable.');
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        const response = await this.request({
-            path: `/vehicle-management/v1/towables/{towableId}`.replace(`{${"towableId"}}`, encodeURIComponent(String(requestParameters.towableId))),
-            method: 'DELETE',
-            headers: headerParameters,
-            query: queryParameters,
-        });
-
-        return new runtime.VoidApiResponse(response);
-    }
-
-    /**
-     * Deletes towable
-     * Deletes towable
-     */
-    async deleteTowable(requestParameters: DeleteTowableRequest): Promise<void> {
-        await this.deleteTowableRaw(requestParameters);
-    }
-
-    /**
-     * Deletes towable
-     * Deletes towable
-     */
-    async deleteTowableWithHeaders(requestParameters: DeleteTowableRequest): Promise<Headers> {
-        const response = await this.deleteTowableRaw(requestParameters);
-        return response.raw.headers;
-    }
-
     /**
      * Finds a towable by id.
      * Find a towable.
@@ -142,21 +97,23 @@ export class TowablesApi extends runtime.BaseAPI {
         if (requestParameters.towableId === null || requestParameters.towableId === undefined) {
             throw new runtime.RequiredError('towableId','Required parameter requestParameters.towableId was null or undefined when calling findTowable.');
         }
-
         const queryParameters: any = {};
-
         const headerParameters: runtime.HTTPHeaders = {};
-
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("BearerAuth", ["driver", "manager"]);
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
         const response = await this.request({
             path: `/vehicle-management/v1/towables/{towableId}`.replace(`{${"towableId"}}`, encodeURIComponent(String(requestParameters.towableId))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
         });
-
         return new runtime.JSONApiResponse(response, (jsonValue) => TowableFromJSON(jsonValue));
     }
-
     /**
      * Finds a towable by id.
      * Find a towable.
@@ -165,7 +122,6 @@ export class TowablesApi extends runtime.BaseAPI {
         const response = await this.findTowableRaw(requestParameters);
         return await response.value();
     }
-
     /**
      * Finds a towable by id.
      * Find a towable.
@@ -175,38 +131,40 @@ export class TowablesApi extends runtime.BaseAPI {
         const value = await response.value(); 
         return [ value, response.raw.headers ];
     }
-
     /**
      * Lists Towables.
      * List Towables.
      */
     async listTowablesRaw(requestParameters: ListTowablesRequest): Promise<runtime.ApiResponse<Array<Towable>>> {
         const queryParameters: any = {};
-
         if (requestParameters.plateNumber !== undefined) {
             queryParameters['plateNumber'] = requestParameters.plateNumber;
         }
-
+        if (requestParameters.archived !== undefined) {
+            queryParameters['archived'] = requestParameters.archived;
+        }
         if (requestParameters.first !== undefined) {
             queryParameters['first'] = requestParameters.first;
         }
-
         if (requestParameters.max !== undefined) {
             queryParameters['max'] = requestParameters.max;
         }
-
         const headerParameters: runtime.HTTPHeaders = {};
-
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("BearerAuth", ["driver", "manager"]);
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
         const response = await this.request({
             path: `/vehicle-management/v1/towables`,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
         });
-
         return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(TowableFromJSON));
     }
-
     /**
      * Lists Towables.
      * List Towables.
@@ -215,7 +173,6 @@ export class TowablesApi extends runtime.BaseAPI {
         const response = await this.listTowablesRaw(requestParameters);
         return await response.value();
     }
-
     /**
      * Lists Towables.
      * List Towables.
@@ -225,7 +182,6 @@ export class TowablesApi extends runtime.BaseAPI {
         const value = await response.value(); 
         return [ value, response.raw.headers ];
     }
-
     /**
      * Updates single towable
      * Updates towables
@@ -234,17 +190,19 @@ export class TowablesApi extends runtime.BaseAPI {
         if (requestParameters.towable === null || requestParameters.towable === undefined) {
             throw new runtime.RequiredError('towable','Required parameter requestParameters.towable was null or undefined when calling updateTowable.');
         }
-
         if (requestParameters.towableId === null || requestParameters.towableId === undefined) {
             throw new runtime.RequiredError('towableId','Required parameter requestParameters.towableId was null or undefined when calling updateTowable.');
         }
-
         const queryParameters: any = {};
-
         const headerParameters: runtime.HTTPHeaders = {};
-
         headerParameters['Content-Type'] = 'application/json';
-
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("BearerAuth", ["manager"]);
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
         const response = await this.request({
             path: `/vehicle-management/v1/towables/{towableId}`.replace(`{${"towableId"}}`, encodeURIComponent(String(requestParameters.towableId))),
             method: 'PUT',
@@ -252,10 +210,8 @@ export class TowablesApi extends runtime.BaseAPI {
             query: queryParameters,
             body: TowableToJSON(requestParameters.towable),
         });
-
         return new runtime.JSONApiResponse(response, (jsonValue) => TowableFromJSON(jsonValue));
     }
-
     /**
      * Updates single towable
      * Updates towables
@@ -264,7 +220,6 @@ export class TowablesApi extends runtime.BaseAPI {
         const response = await this.updateTowableRaw(requestParameters);
         return await response.value();
     }
-
     /**
      * Updates single towable
      * Updates towables
@@ -274,5 +229,4 @@ export class TowablesApi extends runtime.BaseAPI {
         const value = await response.value(); 
         return [ value, response.raw.headers ];
     }
-
 }

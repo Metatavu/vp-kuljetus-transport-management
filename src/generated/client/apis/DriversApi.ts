@@ -26,6 +26,7 @@ export interface FindDriverRequest {
 }
 
 export interface ListDriversRequest {
+    archived?: boolean;
     first?: number;
     max?: number;
 }
@@ -34,7 +35,6 @@ export interface ListDriversRequest {
  * 
  */
 export class DriversApi extends runtime.BaseAPI {
-
     /**
      * Finds a driver by id.
      * Find a driver.
@@ -43,21 +43,23 @@ export class DriversApi extends runtime.BaseAPI {
         if (requestParameters.driverId === null || requestParameters.driverId === undefined) {
             throw new runtime.RequiredError('driverId','Required parameter requestParameters.driverId was null or undefined when calling findDriver.');
         }
-
         const queryParameters: any = {};
-
         const headerParameters: runtime.HTTPHeaders = {};
-
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("BearerAuth", ["driver", "manager"]);
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
         const response = await this.request({
             path: `/user-management/v1/drivers/{driverId}`.replace(`{${"driverId"}}`, encodeURIComponent(String(requestParameters.driverId))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
         });
-
         return new runtime.JSONApiResponse(response, (jsonValue) => DriverFromJSON(jsonValue));
     }
-
     /**
      * Finds a driver by id.
      * Find a driver.
@@ -66,7 +68,6 @@ export class DriversApi extends runtime.BaseAPI {
         const response = await this.findDriverRaw(requestParameters);
         return await response.value();
     }
-
     /**
      * Finds a driver by id.
      * Find a driver.
@@ -76,34 +77,37 @@ export class DriversApi extends runtime.BaseAPI {
         const value = await response.value(); 
         return [ value, response.raw.headers ];
     }
-
     /**
      * Lists Drivers.
      * List Drivers.
      */
     async listDriversRaw(requestParameters: ListDriversRequest): Promise<runtime.ApiResponse<Array<Driver>>> {
         const queryParameters: any = {};
-
+        if (requestParameters.archived !== undefined) {
+            queryParameters['archived'] = requestParameters.archived;
+        }
         if (requestParameters.first !== undefined) {
             queryParameters['first'] = requestParameters.first;
         }
-
         if (requestParameters.max !== undefined) {
             queryParameters['max'] = requestParameters.max;
         }
-
         const headerParameters: runtime.HTTPHeaders = {};
-
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("BearerAuth", ["manager"]);
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
         const response = await this.request({
             path: `/user-management/v1/drivers`,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
         });
-
         return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(DriverFromJSON));
     }
-
     /**
      * Lists Drivers.
      * List Drivers.
@@ -112,7 +116,6 @@ export class DriversApi extends runtime.BaseAPI {
         const response = await this.listDriversRaw(requestParameters);
         return await response.value();
     }
-
     /**
      * Lists Drivers.
      * List Drivers.
@@ -122,5 +125,4 @@ export class DriversApi extends runtime.BaseAPI {
         const value = await response.value(); 
         return [ value, response.raw.headers ];
     }
-
 }

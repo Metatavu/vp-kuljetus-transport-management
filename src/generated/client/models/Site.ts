@@ -15,101 +15,95 @@
 
 import { exists, mapValues } from '../runtime';
 /**
- * Represent single planned route for single truck driver
+ * Represents a single customer site
  * @export
- * @interface Route
+ * @interface Site
  */
-export interface Route {
+export interface Site {
     /**
      * 
      * @type {string}
-     * @memberof Route
+     * @memberof Site
      */
     readonly id?: string;
     /**
-     * Vehicle id
+     * Site name
      * @type {string}
-     * @memberof Route
-     */
-    vehicleId?: string;
-    /**
-     * Driver id
-     * @type {string}
-     * @memberof Route
-     */
-    driverId?: string;
-    /**
-     * Name of the route
-     * @type {string}
-     * @memberof Route
+     * @memberof Site
      */
     name: string;
     /**
-     * Departure time of the route
-     * @type {Date}
-     * @memberof Route
+     * Site location as well-known text Point
+     * @type {string}
+     * @memberof Site
      */
-    departureTime: Date;
+    location: string;
     /**
      * 
      * @type {string}
-     * @memberof Route
+     * @memberof Site
      */
     readonly creatorId?: string;
     /**
      * 
      * @type {Date}
-     * @memberof Route
+     * @memberof Site
      */
     readonly createdAt?: Date;
     /**
      * 
      * @type {string}
-     * @memberof Route
+     * @memberof Site
      */
     readonly lastModifierId?: string;
     /**
      * 
      * @type {Date}
-     * @memberof Route
+     * @memberof Site
      */
     readonly modifiedAt?: Date;
+    /**
+     * Setting the archivedAt time marks the site as archived. Sites marked as archived will not appear in list requests unless archived filter is set to true. Archived site cannot be updated, unless archivedAt is first set to null.
+     * 
+     * @type {Date}
+     * @memberof Site
+     */
+    archivedAt?: Date;
 }
 
 /**
- * Check if a given object implements the Route interface.
+ * Check if a given object implements the Site interface.
  */
-export function instanceOfRoute(value: object): boolean {
+export function instanceOfSite(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "name" in value;
-    isInstance = isInstance && "departureTime" in value;
+    isInstance = isInstance && "location" in value;
 
     return isInstance;
 }
 
-export function RouteFromJSON(json: any): Route {
-    return RouteFromJSONTyped(json, false);
+export function SiteFromJSON(json: any): Site {
+    return SiteFromJSONTyped(json, false);
 }
 
-export function RouteFromJSONTyped(json: any, ignoreDiscriminator: boolean): Route {
+export function SiteFromJSONTyped(json: any, ignoreDiscriminator: boolean): Site {
     if ((json === undefined) || (json === null)) {
         return json;
     }
     return {
         
         'id': !exists(json, 'id') ? undefined : json['id'],
-        'vehicleId': !exists(json, 'vehicleId') ? undefined : json['vehicleId'],
-        'driverId': !exists(json, 'driverId') ? undefined : json['driverId'],
         'name': json['name'],
-        'departureTime': (new Date(json['departureTime'])),
+        'location': json['location'],
         'creatorId': !exists(json, 'creatorId') ? undefined : json['creatorId'],
         'createdAt': !exists(json, 'createdAt') ? undefined : (new Date(json['createdAt'])),
         'lastModifierId': !exists(json, 'lastModifierId') ? undefined : json['lastModifierId'],
         'modifiedAt': !exists(json, 'modifiedAt') ? undefined : (new Date(json['modifiedAt'])),
+        'archivedAt': !exists(json, 'archivedAt') ? undefined : (new Date(json['archivedAt'])),
     };
 }
 
-export function RouteToJSON(value?: Route | null): any {
+export function SiteToJSON(value?: Site | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -118,10 +112,9 @@ export function RouteToJSON(value?: Route | null): any {
     }
     return {
         
-        'vehicleId': value.vehicleId,
-        'driverId': value.driverId,
         'name': value.name,
-        'departureTime': (value.departureTime.toISOString()),
+        'location': value.location,
+        'archivedAt': value.archivedAt === undefined ? undefined : (value.archivedAt.toISOString()),
     };
 }
 

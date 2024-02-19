@@ -15,114 +15,110 @@
 
 import { exists, mapValues } from '../runtime';
 /**
- * Represent single truck
+ * Represents a single freight unit in a freight shipment.
  * @export
- * @interface Truck
+ * @interface FreightUnit
  */
-export interface Truck {
+export interface FreightUnit {
     /**
      * 
      * @type {string}
-     * @memberof Truck
+     * @memberof FreightUnit
      */
     readonly id?: string;
     /**
-     * 
+     * Id of the freight shipment
      * @type {string}
-     * @memberof Truck
+     * @memberof FreightUnit
      */
-    plateNumber: string;
+    freightId: string;
+    /**
+     * Type of the unit
+     * @type {string}
+     * @memberof FreightUnit
+     */
+    type: string;
+    /**
+     * Quantity of the unit
+     * @type {string}
+     * @memberof FreightUnit
+     */
+    quantity: string;
+    /**
+     * Quantity unit of the unit
+     * @type {string}
+     * @memberof FreightUnit
+     */
+    quantityUnit: string;
+    /**
+     * Reservations for the unit
+     * @type {string}
+     * @memberof FreightUnit
+     */
+    reservations?: string;
     /**
      * 
      * @type {string}
-     * @memberof Truck
-     */
-    type: TruckTypeEnum;
-    /**
-     * Truck identification number. This is unique for each truck and should be used as a hardware identifier for this specific truck
-     * @type {string}
-     * @memberof Truck
-     */
-    vin: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof Truck
+     * @memberof FreightUnit
      */
     readonly creatorId?: string;
     /**
      * 
      * @type {Date}
-     * @memberof Truck
+     * @memberof FreightUnit
      */
     readonly createdAt?: Date;
     /**
      * 
      * @type {string}
-     * @memberof Truck
+     * @memberof FreightUnit
      */
     readonly lastModifierId?: string;
     /**
      * 
      * @type {Date}
-     * @memberof Truck
+     * @memberof FreightUnit
      */
     readonly modifiedAt?: Date;
-    /**
-     * Setting the archivedAt time marks the truck as archived. Trucks marked as archived will not appear in list requests unless archived filter is set to true. Archived truck cannot be updated, unless archivedAt is first set to null.
-     * 
-     * @type {Date}
-     * @memberof Truck
-     */
-    archivedAt?: Date;
 }
 
-
 /**
- * @export
+ * Check if a given object implements the FreightUnit interface.
  */
-export const TruckTypeEnum = {
-    Truck: 'TRUCK',
-    SemiTruck: 'SEMI_TRUCK'
-} as const;
-export type TruckTypeEnum = typeof TruckTypeEnum[keyof typeof TruckTypeEnum];
-
-
-/**
- * Check if a given object implements the Truck interface.
- */
-export function instanceOfTruck(value: object): boolean {
+export function instanceOfFreightUnit(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "plateNumber" in value;
+    isInstance = isInstance && "freightId" in value;
     isInstance = isInstance && "type" in value;
-    isInstance = isInstance && "vin" in value;
+    isInstance = isInstance && "quantity" in value;
+    isInstance = isInstance && "quantityUnit" in value;
 
     return isInstance;
 }
 
-export function TruckFromJSON(json: any): Truck {
-    return TruckFromJSONTyped(json, false);
+export function FreightUnitFromJSON(json: any): FreightUnit {
+    return FreightUnitFromJSONTyped(json, false);
 }
 
-export function TruckFromJSONTyped(json: any, ignoreDiscriminator: boolean): Truck {
+export function FreightUnitFromJSONTyped(json: any, ignoreDiscriminator: boolean): FreightUnit {
     if ((json === undefined) || (json === null)) {
         return json;
     }
     return {
         
         'id': !exists(json, 'id') ? undefined : json['id'],
-        'plateNumber': json['plateNumber'],
+        'freightId': json['freightId'],
         'type': json['type'],
-        'vin': json['vin'],
+        'quantity': json['quantity'],
+        'quantityUnit': json['quantityUnit'],
+        'reservations': !exists(json, 'reservations') ? undefined : json['reservations'],
         'creatorId': !exists(json, 'creatorId') ? undefined : json['creatorId'],
         'createdAt': !exists(json, 'createdAt') ? undefined : (new Date(json['createdAt'])),
         'lastModifierId': !exists(json, 'lastModifierId') ? undefined : json['lastModifierId'],
         'modifiedAt': !exists(json, 'modifiedAt') ? undefined : (new Date(json['modifiedAt'])),
-        'archivedAt': !exists(json, 'archivedAt') ? undefined : (new Date(json['archivedAt'])),
     };
 }
 
-export function TruckToJSON(value?: Truck | null): any {
+export function FreightUnitToJSON(value?: FreightUnit | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -131,10 +127,11 @@ export function TruckToJSON(value?: Truck | null): any {
     }
     return {
         
-        'plateNumber': value.plateNumber,
+        'freightId': value.freightId,
         'type': value.type,
-        'vin': value.vin,
-        'archivedAt': value.archivedAt === undefined ? undefined : (value.archivedAt.toISOString()),
+        'quantity': value.quantity,
+        'quantityUnit': value.quantityUnit,
+        'reservations': value.reservations,
     };
 }
 

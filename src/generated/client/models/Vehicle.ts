@@ -39,6 +39,37 @@ export interface Vehicle {
      * @memberof Vehicle
      */
     towableIds: Array<string>;
+    /**
+     * 
+     * @type {string}
+     * @memberof Vehicle
+     */
+    readonly creatorId?: string;
+    /**
+     * 
+     * @type {Date}
+     * @memberof Vehicle
+     */
+    readonly createdAt?: Date;
+    /**
+     * 
+     * @type {string}
+     * @memberof Vehicle
+     */
+    readonly lastModifierId?: string;
+    /**
+     * 
+     * @type {Date}
+     * @memberof Vehicle
+     */
+    readonly modifiedAt?: Date;
+    /**
+     * Setting the archivedAt time marks the vehicle as archived. Vehicles marked as archived will not appear in list requests unless archived filter is set to true. Archived vehicle cannot be updated, unless archivedAt is first set to null.
+     * 
+     * @type {Date}
+     * @memberof Vehicle
+     */
+    archivedAt?: Date;
 }
 
 /**
@@ -65,6 +96,11 @@ export function VehicleFromJSONTyped(json: any, ignoreDiscriminator: boolean): V
         'id': !exists(json, 'id') ? undefined : json['id'],
         'truckId': json['truckId'],
         'towableIds': json['towableIds'],
+        'creatorId': !exists(json, 'creatorId') ? undefined : json['creatorId'],
+        'createdAt': !exists(json, 'createdAt') ? undefined : (new Date(json['createdAt'])),
+        'lastModifierId': !exists(json, 'lastModifierId') ? undefined : json['lastModifierId'],
+        'modifiedAt': !exists(json, 'modifiedAt') ? undefined : (new Date(json['modifiedAt'])),
+        'archivedAt': !exists(json, 'archivedAt') ? undefined : (new Date(json['archivedAt'])),
     };
 }
 
@@ -79,6 +115,7 @@ export function VehicleToJSON(value?: Vehicle | null): any {
         
         'truckId': value.truckId,
         'towableIds': value.towableIds,
+        'archivedAt': value.archivedAt === undefined ? undefined : (value.archivedAt.toISOString()),
     };
 }
 

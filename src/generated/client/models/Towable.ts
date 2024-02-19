@@ -44,6 +44,37 @@ export interface Towable {
      * @memberof Towable
      */
     vin: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Towable
+     */
+    readonly creatorId?: string;
+    /**
+     * 
+     * @type {Date}
+     * @memberof Towable
+     */
+    readonly createdAt?: Date;
+    /**
+     * 
+     * @type {string}
+     * @memberof Towable
+     */
+    readonly lastModifierId?: string;
+    /**
+     * 
+     * @type {Date}
+     * @memberof Towable
+     */
+    readonly modifiedAt?: Date;
+    /**
+     * Setting the archivedAt time marks the towable as archived. Towables marked as archived will not appear in list requests unless archived filter is set to true. Archived towable cannot be updated, unless archivedAt is first set to null.
+     * 
+     * @type {Date}
+     * @memberof Towable
+     */
+    archivedAt?: Date;
 }
 
 
@@ -84,6 +115,11 @@ export function TowableFromJSONTyped(json: any, ignoreDiscriminator: boolean): T
         'plateNumber': json['plateNumber'],
         'type': json['type'],
         'vin': json['vin'],
+        'creatorId': !exists(json, 'creatorId') ? undefined : json['creatorId'],
+        'createdAt': !exists(json, 'createdAt') ? undefined : (new Date(json['createdAt'])),
+        'lastModifierId': !exists(json, 'lastModifierId') ? undefined : json['lastModifierId'],
+        'modifiedAt': !exists(json, 'modifiedAt') ? undefined : (new Date(json['modifiedAt'])),
+        'archivedAt': !exists(json, 'archivedAt') ? undefined : (new Date(json['archivedAt'])),
     };
 }
 
@@ -99,6 +135,7 @@ export function TowableToJSON(value?: Towable | null): any {
         'plateNumber': value.plateNumber,
         'type': value.type,
         'vin': value.vin,
+        'archivedAt': value.archivedAt === undefined ? undefined : (value.archivedAt.toISOString()),
     };
 }
 

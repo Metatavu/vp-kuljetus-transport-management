@@ -32,6 +32,13 @@ export interface Driver {
      * @memberof Driver
      */
     displayName?: string;
+    /**
+     * Setting the archivedAt time marks the driver as archived. Drivers marked as archived will not appear in list requests unless archived filter is set to true. Archived driver cannot be updated, unless archivedAt is first set to null.
+     * 
+     * @type {Date}
+     * @memberof Driver
+     */
+    archivedAt?: Date;
 }
 
 /**
@@ -55,6 +62,7 @@ export function DriverFromJSONTyped(json: any, ignoreDiscriminator: boolean): Dr
         
         'id': !exists(json, 'id') ? undefined : json['id'],
         'displayName': !exists(json, 'displayName') ? undefined : json['displayName'],
+        'archivedAt': !exists(json, 'archivedAt') ? undefined : (new Date(json['archivedAt'])),
     };
 }
 
@@ -68,6 +76,7 @@ export function DriverToJSON(value?: Driver | null): any {
     return {
         
         'displayName': value.displayName,
+        'archivedAt': value.archivedAt === undefined ? undefined : (value.archivedAt.toISOString()),
     };
 }
 

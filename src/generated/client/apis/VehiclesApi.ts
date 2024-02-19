@@ -25,16 +25,13 @@ export interface CreateVehicleRequest {
     vehicle: Vehicle;
 }
 
-export interface DeleteVehicleRequest {
-    vehicleId: string;
-}
-
 export interface FindVehicleRequest {
     vehicleId: string;
 }
 
 export interface ListVehiclesRequest {
     truckId?: string;
+    archived?: boolean;
     first?: number;
     max?: number;
 }
@@ -48,7 +45,6 @@ export interface UpdateVehicleRequest {
  * 
  */
 export class VehiclesApi extends runtime.BaseAPI {
-
     /**
      * Create new vehicle
      * Create vehicle
@@ -57,13 +53,16 @@ export class VehiclesApi extends runtime.BaseAPI {
         if (requestParameters.vehicle === null || requestParameters.vehicle === undefined) {
             throw new runtime.RequiredError('vehicle','Required parameter requestParameters.vehicle was null or undefined when calling createVehicle.');
         }
-
         const queryParameters: any = {};
-
         const headerParameters: runtime.HTTPHeaders = {};
-
         headerParameters['Content-Type'] = 'application/json';
-
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("BearerAuth", ["manager"]);
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
         const response = await this.request({
             path: `/vehicle-management/v1/vehicles`,
             method: 'POST',
@@ -71,10 +70,8 @@ export class VehiclesApi extends runtime.BaseAPI {
             query: queryParameters,
             body: VehicleToJSON(requestParameters.vehicle),
         });
-
         return new runtime.JSONApiResponse(response, (jsonValue) => VehicleFromJSON(jsonValue));
     }
-
     /**
      * Create new vehicle
      * Create vehicle
@@ -83,7 +80,6 @@ export class VehiclesApi extends runtime.BaseAPI {
         const response = await this.createVehicleRaw(requestParameters);
         return await response.value();
     }
-
     /**
      * Create new vehicle
      * Create vehicle
@@ -93,47 +89,6 @@ export class VehiclesApi extends runtime.BaseAPI {
         const value = await response.value(); 
         return [ value, response.raw.headers ];
     }
-
-    /**
-     * Deletes vehicle
-     * Deletes vehicle
-     */
-    async deleteVehicleRaw(requestParameters: DeleteVehicleRequest): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters.vehicleId === null || requestParameters.vehicleId === undefined) {
-            throw new runtime.RequiredError('vehicleId','Required parameter requestParameters.vehicleId was null or undefined when calling deleteVehicle.');
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        const response = await this.request({
-            path: `/vehicle-management/v1/vehicles/{vehicleId}`.replace(`{${"vehicleId"}}`, encodeURIComponent(String(requestParameters.vehicleId))),
-            method: 'DELETE',
-            headers: headerParameters,
-            query: queryParameters,
-        });
-
-        return new runtime.VoidApiResponse(response);
-    }
-
-    /**
-     * Deletes vehicle
-     * Deletes vehicle
-     */
-    async deleteVehicle(requestParameters: DeleteVehicleRequest): Promise<void> {
-        await this.deleteVehicleRaw(requestParameters);
-    }
-
-    /**
-     * Deletes vehicle
-     * Deletes vehicle
-     */
-    async deleteVehicleWithHeaders(requestParameters: DeleteVehicleRequest): Promise<Headers> {
-        const response = await this.deleteVehicleRaw(requestParameters);
-        return response.raw.headers;
-    }
-
     /**
      * Finds a vehicle by id.
      * Find a vehicle.
@@ -142,21 +97,23 @@ export class VehiclesApi extends runtime.BaseAPI {
         if (requestParameters.vehicleId === null || requestParameters.vehicleId === undefined) {
             throw new runtime.RequiredError('vehicleId','Required parameter requestParameters.vehicleId was null or undefined when calling findVehicle.');
         }
-
         const queryParameters: any = {};
-
         const headerParameters: runtime.HTTPHeaders = {};
-
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("BearerAuth", ["driver", "manager"]);
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
         const response = await this.request({
             path: `/vehicle-management/v1/vehicles/{vehicleId}`.replace(`{${"vehicleId"}}`, encodeURIComponent(String(requestParameters.vehicleId))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
         });
-
         return new runtime.JSONApiResponse(response, (jsonValue) => VehicleFromJSON(jsonValue));
     }
-
     /**
      * Finds a vehicle by id.
      * Find a vehicle.
@@ -165,7 +122,6 @@ export class VehiclesApi extends runtime.BaseAPI {
         const response = await this.findVehicleRaw(requestParameters);
         return await response.value();
     }
-
     /**
      * Finds a vehicle by id.
      * Find a vehicle.
@@ -175,38 +131,40 @@ export class VehiclesApi extends runtime.BaseAPI {
         const value = await response.value(); 
         return [ value, response.raw.headers ];
     }
-
     /**
      * Lists Vehicles.
      * List Vehicles.
      */
     async listVehiclesRaw(requestParameters: ListVehiclesRequest): Promise<runtime.ApiResponse<Array<Vehicle>>> {
         const queryParameters: any = {};
-
         if (requestParameters.truckId !== undefined) {
             queryParameters['truckId'] = requestParameters.truckId;
         }
-
+        if (requestParameters.archived !== undefined) {
+            queryParameters['archived'] = requestParameters.archived;
+        }
         if (requestParameters.first !== undefined) {
             queryParameters['first'] = requestParameters.first;
         }
-
         if (requestParameters.max !== undefined) {
             queryParameters['max'] = requestParameters.max;
         }
-
         const headerParameters: runtime.HTTPHeaders = {};
-
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("BearerAuth", ["driver", "manager"]);
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
         const response = await this.request({
             path: `/vehicle-management/v1/vehicles`,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
         });
-
         return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(VehicleFromJSON));
     }
-
     /**
      * Lists Vehicles.
      * List Vehicles.
@@ -215,7 +173,6 @@ export class VehiclesApi extends runtime.BaseAPI {
         const response = await this.listVehiclesRaw(requestParameters);
         return await response.value();
     }
-
     /**
      * Lists Vehicles.
      * List Vehicles.
@@ -225,7 +182,6 @@ export class VehiclesApi extends runtime.BaseAPI {
         const value = await response.value(); 
         return [ value, response.raw.headers ];
     }
-
     /**
      * Updates single vehicle
      * Updates vehicles
@@ -234,17 +190,19 @@ export class VehiclesApi extends runtime.BaseAPI {
         if (requestParameters.vehicle === null || requestParameters.vehicle === undefined) {
             throw new runtime.RequiredError('vehicle','Required parameter requestParameters.vehicle was null or undefined when calling updateVehicle.');
         }
-
         if (requestParameters.vehicleId === null || requestParameters.vehicleId === undefined) {
             throw new runtime.RequiredError('vehicleId','Required parameter requestParameters.vehicleId was null or undefined when calling updateVehicle.');
         }
-
         const queryParameters: any = {};
-
         const headerParameters: runtime.HTTPHeaders = {};
-
         headerParameters['Content-Type'] = 'application/json';
-
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("BearerAuth", ["manager"]);
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
         const response = await this.request({
             path: `/vehicle-management/v1/vehicles/{vehicleId}`.replace(`{${"vehicleId"}}`, encodeURIComponent(String(requestParameters.vehicleId))),
             method: 'PUT',
@@ -252,10 +210,8 @@ export class VehiclesApi extends runtime.BaseAPI {
             query: queryParameters,
             body: VehicleToJSON(requestParameters.vehicle),
         });
-
         return new runtime.JSONApiResponse(response, (jsonValue) => VehicleFromJSON(jsonValue));
     }
-
     /**
      * Updates single vehicle
      * Updates vehicles
@@ -264,7 +220,6 @@ export class VehiclesApi extends runtime.BaseAPI {
         const response = await this.updateVehicleRaw(requestParameters);
         return await response.value();
     }
-
     /**
      * Updates single vehicle
      * Updates vehicles
@@ -274,5 +229,4 @@ export class VehiclesApi extends runtime.BaseAPI {
         const value = await response.value(); 
         return [ value, response.raw.headers ];
     }
-
 }
