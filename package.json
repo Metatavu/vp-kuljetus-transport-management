@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "build-prod": "node infisical.js >> .env.production && npm run build",
-    "start": "eval $(grep '^INFISICAL_SECRET_PATH' .env) && infisical run --path $INFISICAL_SECRET_PATH -- npm run dev",
+    "start": "infisical run --path /transport-management -- npm run dev",
     "dev": "tsc --noEmit --skipLibCheck && vite --open",
     "build": "tsc && vite build",
     "build-client": "openapi-generator-cli generate -i vp-kuljetus-transport-management-specs/specs/management.yaml -o src/generated/client -c generator-config.json -g typescript-fetch",
