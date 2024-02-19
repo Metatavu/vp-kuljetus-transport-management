@@ -57,5 +57,24 @@
     "freights": {
       "title": "Freight"
     }
+  },
+  "errorHandling": {
+    "vehicleListing": "Error when listing vehicles"
+  },
+  "vehicleListScreen": {
+    "vehicleList": {
+      "headings": {
+        "type": "Type",
+        "name": "Name",
+        "number": "Plate",
+        "temperature": "Temperature",
+        "address": "Address",
+        "location": "Location",
+        "status": "Status",
+        "maintenance": "Maintenance",
+        "trailer": "Trailer",
+        "driver": "Driver"
+      }
+    }
   }
 }

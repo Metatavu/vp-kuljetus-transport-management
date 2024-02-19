@@ -57,5 +57,24 @@
     "freights": {
       "title": "Kuormat"
     }
+  },
+  "errorHandling": {
+    "vehicleListing": "Ajoneuvolistauksessa tapahtui virhe"
+  },
+  "vehicleListScreen": {
+    "vehicleList": {
+      "headings": {
+        "type": "Tyyppi",
+        "name": "Auto",
+        "number": "Tunnus",
+        "temperature": "Lämpötila",
+        "address": "Osoite",
+        "location": "Sijainti",
+        "status": "Tila",
+        "maintenance": "Huolto",
+        "trailer": "Kalusto",
+        "driver": "Kuljettaja"
+      }
+    }
   }
 }
