@@ -16,6 +16,9 @@ const StyledDataGrid = styled(DataGrid, {
   "& .MuiDataGrid-footerContainer": {
     border: "none",
   },
+  "& .MuiDataGrid-virtualScroller": {
+    overflow: "hidden",
+  },
 }));
 
 const GenericDataGrid = ({ columns, rows }: DataGridProps) => {

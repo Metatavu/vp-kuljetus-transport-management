@@ -34,7 +34,7 @@ export interface FindRouteRequest {
 }
 
 export interface ListRoutesRequest {
-    vehicleId?: string;
+    truckId?: string;
     driverId?: string;
     departureAfter?: Date;
     departureBefore?: Date;
@@ -183,8 +183,8 @@ export class RoutesApi extends runtime.BaseAPI {
      */
     async listRoutesRaw(requestParameters: ListRoutesRequest): Promise<runtime.ApiResponse<Array<Route>>> {
         const queryParameters: any = {};
-        if (requestParameters.vehicleId !== undefined) {
-            queryParameters['vehicleId'] = requestParameters.vehicleId;
+        if (requestParameters.truckId !== undefined) {
+            queryParameters['truckId'] = requestParameters.truckId;
         }
         if (requestParameters.driverId !== undefined) {
             queryParameters['driverId'] = requestParameters.driverId;

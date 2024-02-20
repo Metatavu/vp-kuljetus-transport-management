@@ -31,6 +31,12 @@ export interface Truck {
      * @type {string}
      * @memberof Truck
      */
+    name?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Truck
+     */
     plateNumber: string;
     /**
      * 
@@ -39,11 +45,19 @@ export interface Truck {
      */
     type: TruckTypeEnum;
     /**
-     * Truck identification number. This is unique for each truck and should be used as a hardware identifier for this specific truck
+     * Truck identification number. This is unique for each truck and should be used as a hardware identifier for this specific truck.
+     * 
      * @type {string}
      * @memberof Truck
      */
     vin: string;
+    /**
+     * Active vehicle id. This is the current vehicle that the truck is part of. It updates whenever the vehicle structure is updated.
+     * 
+     * @type {string}
+     * @memberof Truck
+     */
+    readonly activeVehicleId: string;
     /**
      * 
      * @type {string}
@@ -96,6 +110,7 @@ export function instanceOfTruck(value: object): boolean {
     isInstance = isInstance && "plateNumber" in value;
     isInstance = isInstance && "type" in value;
     isInstance = isInstance && "vin" in value;
+    isInstance = isInstance && "activeVehicleId" in value;
 
     return isInstance;
 }
@@ -111,9 +126,11 @@ export function TruckFromJSONTyped(json: any, ignoreDiscriminator: boolean): Tru
     return {
         
         'id': !exists(json, 'id') ? undefined : json['id'],
+        'name': !exists(json, 'name') ? undefined : json['name'],
         'plateNumber': json['plateNumber'],
         'type': json['type'],
         'vin': json['vin'],
+        'activeVehicleId': json['activeVehicleId'],
         'creatorId': !exists(json, 'creatorId') ? undefined : json['creatorId'],
         'createdAt': !exists(json, 'createdAt') ? undefined : (new Date(json['createdAt'])),
         'lastModifierId': !exists(json, 'lastModifierId') ? undefined : json['lastModifierId'],
@@ -131,6 +148,7 @@ export function TruckToJSON(value?: Truck | null): any {
     }
     return {
         
+        'name': value.name,
         'plateNumber': value.plateNumber,
         'type': value.type,
         'vin': value.vin,

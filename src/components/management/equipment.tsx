@@ -38,7 +38,11 @@ function EquipmentComponent() {
 
   return (
     <Paper sx={{ height: "100%" }}>
-      <ToolbarRow title={t("management.equipment.new")} backButtonVisible toolbarButtons={renderToolbarButtons()} />
+      <ToolbarRow
+        title={t("management.equipment.new")}
+        navigateBack={() => navigate({ to: "/management/equipment" })}
+        toolbarButtons={renderToolbarButtons()}
+      />
       <Stack direction="row">
         <EquipmentForm errors={errors} register={register} />
         <Box minHeight="100%" flex={1} alignContent="center" justifyContent="center">

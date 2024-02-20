@@ -31,6 +31,12 @@ export interface Towable {
      * @type {string}
      * @memberof Towable
      */
+    name?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Towable
+     */
     plateNumber: string;
     /**
      * 
@@ -39,7 +45,8 @@ export interface Towable {
      */
     type: TowableTypeEnum;
     /**
-     * Towable identification number. This is unique for each towable and should be used as a hardware identifier for this specific towable
+     * Towable identification number. This is unique for each towable and should be used as a hardware identifier for this specific towable.
+     * 
      * @type {string}
      * @memberof Towable
      */
@@ -112,6 +119,7 @@ export function TowableFromJSONTyped(json: any, ignoreDiscriminator: boolean): T
     return {
         
         'id': !exists(json, 'id') ? undefined : json['id'],
+        'name': !exists(json, 'name') ? undefined : json['name'],
         'plateNumber': json['plateNumber'],
         'type': json['type'],
         'vin': json['vin'],
@@ -132,6 +140,7 @@ export function TowableToJSON(value?: Towable | null): any {
     }
     return {
         
+        'name': value.name,
         'plateNumber': value.plateNumber,
         'type': value.type,
         'vin': value.vin,

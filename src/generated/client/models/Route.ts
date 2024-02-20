@@ -27,11 +27,11 @@ export interface Route {
      */
     readonly id?: string;
     /**
-     * Vehicle id
+     * Truck id
      * @type {string}
      * @memberof Route
      */
-    vehicleId?: string;
+    truckId?: string;
     /**
      * Driver id
      * @type {string}
@@ -98,7 +98,7 @@ export function RouteFromJSONTyped(json: any, ignoreDiscriminator: boolean): Rou
     return {
         
         'id': !exists(json, 'id') ? undefined : json['id'],
-        'vehicleId': !exists(json, 'vehicleId') ? undefined : json['vehicleId'],
+        'truckId': !exists(json, 'truckId') ? undefined : json['truckId'],
         'driverId': !exists(json, 'driverId') ? undefined : json['driverId'],
         'name': json['name'],
         'departureTime': (new Date(json['departureTime'])),
@@ -118,7 +118,7 @@ export function RouteToJSON(value?: Route | null): any {
     }
     return {
         
-        'vehicleId': value.vehicleId,
+        'truckId': value.truckId,
         'driverId': value.driverId,
         'name': value.name,
         'departureTime': (value.departureTime.toISOString()),

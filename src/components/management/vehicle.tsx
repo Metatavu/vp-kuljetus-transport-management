@@ -38,7 +38,11 @@ function VehicleComponent() {
 
   return (
     <Paper sx={{ height: "100%" }}>
-      <ToolbarRow title={t("management.vehicles.new")} backButtonVisible toolbarButtons={renderToolbarButtons()} />
+      <ToolbarRow
+        title={t("management.vehicles.new")}
+        navigateBack={() => navigate({ to: "/management/vehicles" })}
+        toolbarButtons={renderToolbarButtons()}
+      />
       <Stack direction="row">
         <EquipmentForm errors={errors} register={register} />
         <Box minHeight="100%" flex={1} alignContent="center" justifyContent="center">

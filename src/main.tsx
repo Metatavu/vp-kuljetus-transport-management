@@ -11,6 +11,8 @@ import { CssBaseline, ThemeProvider } from "@mui/material";
 import { theme } from "./theme";
 import "localization/i18n";
 import AuthenticationProvider from "components/auth/auth-provider";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import DialogProvider from "components/contexts/dialog-context";
 
 const client = new ApolloClient({
   uri: import.meta.env.VITE_GRAPHQL_API_URL,
@@ -18,6 +20,8 @@ const client = new ApolloClient({
 });
 
 const router = createRouter({ routeTree });
+
+const queryClient = new QueryClient();
 
 declare module "@tanstack/react-router" {
   interface Register {
@@ -37,7 +41,11 @@ if (!rootElement.innerHTML) {
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <AuthenticationProvider>
-            <RouterProvider router={router} />
+            <QueryClientProvider client={queryClient}>
+              <DialogProvider>
+                <RouterProvider router={router} />
+              </DialogProvider>
+            </QueryClientProvider>
           </AuthenticationProvider>
         </ThemeProvider>
       </ApolloProvider>

@@ -5,15 +5,15 @@ import { ReactNode } from "react";
 type Props = {
   title: string;
   toolbarButtons?: ReactNode;
-  backButtonVisible?: boolean;
+  navigateBack?: () => void;
 };
 
-const ToolbarRow = ({ title, toolbarButtons, backButtonVisible }: Props) => {
+const ToolbarRow = ({ title, toolbarButtons, navigateBack }: Props) => {
   const renderBackButton = () => {
-    if (!backButtonVisible) return null;
+    if (!navigateBack) return null;
 
     return (
-      <IconButton sx={{ padding: "5px" }} onClick={() => history.back()}>
+      <IconButton sx={{ padding: "5px" }} onClick={navigateBack}>
         <ArrowBackIcon />
       </IconButton>
     );

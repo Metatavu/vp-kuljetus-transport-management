@@ -4,6 +4,8 @@
   "logout": "Kirjaudu ulos",
   "edit": "Muokkaa",
   "delete": "Poista",
+  "archive": "Arkistoi",
+  "open": "Avaa",
   "vehicleList": "Ajoneuvolista",
   "vehicleInfo": "Ajoneuvon tiedot",
   "workingTime": "Työaika",
@@ -27,6 +29,10 @@
         "postalCodeTooShort": "Postinumeron tulee olla 5-merkkiä pitkä",
         "postalCodeInvalidFormat": "Postinumero saa sisältää vain numeroita",
         "municipalityMissing": "Paikkakunta on pakollinen"
+      },
+      "archiveDialog": {
+        "title": "Arkistoi asiakaspaikka",
+        "description": "Haluatko varmasti arkistoida asiakaspaikan {{name}}?"
       }
     },
     "equipment": {
