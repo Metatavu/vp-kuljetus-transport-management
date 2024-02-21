@@ -63,19 +63,19 @@ function ManagementCustomerSites() {
         headerAlign: "center",
         headerName: t("management.customerSites.postalCode"),
         sortable: false,
-        flex: 1,
+        width: 180,
       },
       {
         field: "locality",
         headerAlign: "center",
         headerName: t("management.customerSites.municipality"),
         sortable: false,
-        flex: 1,
+        width: 180,
       },
       {
         field: "actions",
         type: "actions",
-        flex: 0.7,
+        width: 66,
         renderHeader: () => null,
         renderCell: ({ id }) => (
           <Stack direction="row" spacing={1}>
@@ -123,6 +123,7 @@ function ManagementCustomerSites() {
           rows={customerSites.data ?? []}
           columns={columns}
           rowCount={totalResults}
+          disableRowSelectionOnClick
           paginationMode="server"
           paginationModel={paginationModel}
           onPaginationModelChange={setPaginationModel}

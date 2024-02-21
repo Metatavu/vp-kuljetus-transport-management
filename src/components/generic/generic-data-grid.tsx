@@ -27,6 +27,7 @@ const GenericDataGrid = ({
   paginationMode,
   paginationModel,
   rowCount,
+  disableRowSelectionOnClick,
   onPaginationModelChange,
 }: DataGridProps) => {
   return (
@@ -36,6 +37,7 @@ const GenericDataGrid = ({
       columnHeaderHeight={30}
       rowHeight={38}
       disableColumnMenu
+      disableRowSelectionOnClick={disableRowSelectionOnClick}
       rowCount={rowCount}
       paginationMode={paginationMode}
       paginationModel={paginationModel}
