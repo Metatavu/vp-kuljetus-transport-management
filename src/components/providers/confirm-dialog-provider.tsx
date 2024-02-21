@@ -2,7 +2,7 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/
 import { ReactNode, createContext, useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-type DialogOptions = {
+type ConfirmDialogOptions = {
   title: string;
   description: string;
   positiveButtonText?: string;
@@ -10,16 +10,16 @@ type DialogOptions = {
   onPositiveClick: () => void | Promise<void>;
 };
 
-type ShowDialogHandler = (options: DialogOptions) => void;
+type ShowConfirmDialogHandler = (options: ConfirmDialogOptions) => void;
 
-const DialogContext = createContext<ShowDialogHandler>(() => {
+const ConfirmDialogContext = createContext<ShowConfirmDialogHandler>(() => {
   throw new Error("Component must be wrapped with DialogProvider");
 });
 
-const DialogProvider = ({ children }: { children: ReactNode }) => {
+const ConfirmDialogProvider = ({ children }: { children: ReactNode }) => {
   const [open, setOpen] = useState(false);
-  const [options, setOptions] = useState<DialogOptions>();
-  const showDialog = (options: DialogOptions) => {
+  const [options, setOptions] = useState<ConfirmDialogOptions>();
+  const showDialog = (options: ConfirmDialogOptions) => {
     setOpen(true);
     setOptions(options);
   };
@@ -43,13 +43,13 @@ const DialogProvider = ({ children }: { children: ReactNode }) => {
           </Button>
         </DialogActions>
       </Dialog>
-      <DialogContext.Provider value={showDialog}>{children}</DialogContext.Provider>
+      <ConfirmDialogContext.Provider value={showDialog}>{children}</ConfirmDialogContext.Provider>
     </>
   );
 };
 
-export const useDialog = () => {
-  return useContext(DialogContext);
+export const useConfirmDialog = () => {
+  return useContext(ConfirmDialogContext);
 };
 
-export default DialogProvider;
+export default ConfirmDialogProvider;

@@ -8,7 +8,7 @@ import Mapbox from "components/mapbox";
 import { SyntheticEvent, useState } from "react";
 import { stringify } from "wellknown";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useDialog } from "components/providers/dialog-provider";
+import { useConfirmDialog } from "components/providers/confirm-dialog-provider";
 import { useApi } from "../../hooks/use-api";
 import { useNavigate } from "@tanstack/react-router";
 
@@ -30,7 +30,7 @@ const CustomerSiteForm = ({ errors, customerSite, register, setFormValue, watch 
   const { t } = useTranslation();
   const [debouncedSearchTerm, _, setSearchTerm] = useDebounce("", 500);
   const [autocompleteValue, setAutocompleteValue] = useState<AutocompleteLocationOption>({ title: watch("address") });
-  const showDialog = useDialog();
+  const showConfirmDialog = useConfirmDialog();
   const { sitesApi } = useApi();
   const navigate = useNavigate();
 
@@ -146,7 +146,7 @@ const CustomerSiteForm = ({ errors, customerSite, register, setFormValue, watch 
         <Button
           variant="outlined"
           onClick={() =>
-            showDialog({
+            showConfirmDialog({
               title: t("management.customerSites.archiveDialog.title"),
               description: t("management.customerSites.archiveDialog.description", { name: watch("name") }),
               onPositiveClick: () => archiveCustomerSite.mutate(customerSite),

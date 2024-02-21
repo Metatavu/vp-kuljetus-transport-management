@@ -12,7 +12,7 @@ import { theme } from "./theme";
 import "localization/i18n";
 import AuthenticationProvider from "components/auth/auth-provider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import DialogProvider from "components/providers/dialog-provider";
+import ConfirmDialogProvider from "components/providers/confirm-dialog-provider";
 
 const client = new ApolloClient({
   uri: import.meta.env.VITE_GRAPHQL_API_URL,
@@ -42,9 +42,9 @@ if (!rootElement.innerHTML) {
           <CssBaseline />
           <AuthenticationProvider>
             <QueryClientProvider client={queryClient}>
-              <DialogProvider>
+              <ConfirmDialogProvider>
                 <RouterProvider router={router} />
-              </DialogProvider>
+              </ConfirmDialogProvider>
             </QueryClientProvider>
           </AuthenticationProvider>
         </ThemeProvider>
