@@ -36,7 +36,7 @@
       }
     },
     "equipment": {
-      "title": "Kalusto",
+      "title": "Kalustoluettelo",
       "new": "Uusi kalusto",
       "modify": "Muokkaa kalustoa",
       "type": "Tyyppi",

@@ -35,7 +35,7 @@
     }
   },
   "equipment": {
-    "title": "Equipment",
+    "title": "Equipment list",
     "new": "New equipment",
     "modify": "Modify equipment",
     "type": "Type",
