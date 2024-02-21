@@ -21,7 +21,14 @@ const StyledDataGrid = styled(DataGrid, {
   },
 }));
 
-const GenericDataGrid = ({ columns, rows }: DataGridProps) => {
+const GenericDataGrid = ({
+  columns,
+  rows,
+  paginationMode,
+  paginationModel,
+  rowCount,
+  onPaginationModelChange,
+}: DataGridProps) => {
   return (
     <StyledDataGrid
       columns={columns}
@@ -29,6 +36,10 @@ const GenericDataGrid = ({ columns, rows }: DataGridProps) => {
       columnHeaderHeight={30}
       rowHeight={38}
       disableColumnMenu
+      rowCount={rowCount}
+      paginationMode={paginationMode}
+      paginationModel={paginationModel}
+      onPaginationModelChange={onPaginationModelChange}
       autoHeight
       localeText={fiFI.components.MuiDataGrid.defaultProps.localeText}
     />

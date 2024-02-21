@@ -21,5 +21,5 @@ const CustomerSiteAdd = () => {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["sites"] }),
   });
 
-  return <CustomerSiteComponent formType="MODIFY" onSave={createSite} />;
+  return <CustomerSiteComponent formType="ADD" onSave={createSite} />;
 };

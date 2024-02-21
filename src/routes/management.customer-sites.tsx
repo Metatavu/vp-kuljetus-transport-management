@@ -1,15 +1,14 @@
 import { Add } from "@mui/icons-material";
 import { Button, Paper, Stack } from "@mui/material";
-import { GridColDef } from "@mui/x-data-grid";
+import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import GenericDataGrid from "components/generic/generic-data-grid";
 import ToolbarRow from "components/generic/toolbar-row";
 import { useTranslation } from "react-i18next";
 import { RouterContext } from "./__root";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useApi } from "../hooks/use-api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useDialog } from "components/contexts/dialog-context";
 import LoaderWrapper from "components/generic/loader-wrapper";
 import { Site } from "generated/client";
 
@@ -25,15 +24,28 @@ function ManagementCustomerSites() {
   const navigate = useNavigate();
   const { sitesApi } = useApi();
   const queryClient = useQueryClient();
-  const showDialog = useDialog();
+
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({ page: 0, pageSize: 25 });
+  const [totalResults, setTotalResults] = useState(0);
 
   const customerSites = useQuery({
-    queryKey: ["sites"],
-    queryFn: () => sitesApi.listSites({}),
+    queryKey: ["sites", paginationModel],
+    queryFn: async () => {
+      const [sites, headers] = await sitesApi.listSitesWithHeaders({
+        first: paginationModel.pageSize * paginationModel.page,
+        max: paginationModel.pageSize * paginationModel.page + paginationModel.pageSize,
+      });
+      const count = parseInt(headers.get("x-total-count") ?? "0");
+      setTotalResults(count);
+      return sites;
+    },
   });
 
   const deleteCustomerSite = useMutation({
-    mutationFn: (site: Site) => sitesApi.updateSite({ siteId: site.id!, site: { ...site, archivedAt: new Date() } }),
+    mutationFn: (site: Site) => {
+      if (!site.id) return Promise.reject();
+      return sitesApi.updateSite({ siteId: site.id, site: { ...site, archivedAt: new Date() } });
+    },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["sites"] }),
   });
 
@@ -65,7 +77,7 @@ function ManagementCustomerSites() {
         type: "actions",
         flex: 0.7,
         renderHeader: () => null,
-        renderCell: ({ row: { id, name } }) => (
+        renderCell: ({ id }) => (
           <Stack direction="row" spacing={1}>
             <Button
               variant="text"
@@ -80,27 +92,11 @@ function ManagementCustomerSites() {
             >
               {t("open")}
             </Button>
-            <Button
-              variant="text"
-              color="error"
-              size="small"
-              onClick={() => {
-                showDialog({
-                  title: t("management.customerSites.archiveDialog.title"),
-                  description: t("management.customerSites.archiveDialog.description", { name: name }),
-                  positiveButtonText: t("archive"),
-                  cancelButtonEnabled: true,
-                  onPositiveClick: () => deleteCustomerSite.mutate(id),
-                });
-              }}
-            >
-              {t("archive")}
-            </Button>
           </Stack>
         ),
       },
     ],
-    [t, navigate, showDialog, deleteCustomerSite],
+    [t, navigate],
   );
 
   return (
@@ -123,7 +119,14 @@ function ManagementCustomerSites() {
             </Button>
           }
         />
-        <GenericDataGrid rows={customerSites.data ?? []} columns={columns} />
+        <GenericDataGrid
+          rows={customerSites.data ?? []}
+          columns={columns}
+          rowCount={totalResults}
+          paginationMode="server"
+          paginationModel={paginationModel}
+          onPaginationModelChange={setPaginationModel}
+        />
       </Paper>
     </LoaderWrapper>
   );

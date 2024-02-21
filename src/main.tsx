@@ -12,7 +12,7 @@ import { theme } from "./theme";
 import "localization/i18n";
 import AuthenticationProvider from "components/auth/auth-provider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import DialogProvider from "components/contexts/dialog-context";
+import DialogProvider from "components/providers/dialog-provider";
 
 const client = new ApolloClient({
   uri: import.meta.env.VITE_GRAPHQL_API_URL,

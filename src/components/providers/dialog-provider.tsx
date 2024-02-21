@@ -2,7 +2,7 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/
 import { ReactNode, createContext, useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-type TDialogOptions = {
+type DialogOptions = {
   title: string;
   description: string;
   positiveButtonText?: string;
@@ -10,7 +10,7 @@ type TDialogOptions = {
   onPositiveClick: () => void | Promise<void>;
 };
 
-type ShowDialogHandler = (options: TDialogOptions) => void;
+type ShowDialogHandler = (options: DialogOptions) => void;
 
 const DialogContext = createContext<ShowDialogHandler>(() => {
   throw new Error("Component must be wrapped with DialogProvider");
@@ -18,8 +18,8 @@ const DialogContext = createContext<ShowDialogHandler>(() => {
 
 const DialogProvider = ({ children }: { children: ReactNode }) => {
   const [open, setOpen] = useState(false);
-  const [options, setOptions] = useState<TDialogOptions>();
-  const showDialog = (options: TDialogOptions) => {
+  const [options, setOptions] = useState<DialogOptions>();
+  const showDialog = (options: DialogOptions) => {
     setOpen(true);
     setOptions(options);
   };

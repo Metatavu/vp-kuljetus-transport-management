@@ -1,20 +1,43 @@
 import { SessionToken } from "@mapbox/search-js-core";
 import config from "../../app/config";
 
+/**
+ * Mapbox API wrapper
+ *
+ * @see https://docs.mapbox.com/api/search/
+ */
 namespace Mapbox {
   const { mapbox: { baseUrl, publicApiKey }} = config;
   const DEFAULT_COUNTRY = "fi";
   const DEFAULT_LIMIT = 10;
 
+  /**
+   * Retrieves Mapbox suggestions based on the query
+   *
+   * Suggestions doesn't contain location data, but they contain mapbox_id which can be used to retrieve the location data with {@link retrieveSuggestion}
+   *
+   * @see https://docs.mapbox.com/api/search/search-box/#get-suggested-results
+   * @param query Search query
+   * @param sessionToken Session token
+   * @returns Array of {@link MapboxFeatureProperties}
+   */
   export const getSuggestions = async (query: string, sessionToken: SessionToken) => {
     const suggestions = await doRequest<MapboxSuggestionResponse>(`suggest?q=${query}&session_token=${sessionToken}&language=${DEFAULT_COUNTRY}&limit=${DEFAULT_LIMIT}`);
-    console.log(suggestions?.suggestions);
+
     return suggestions?.suggestions ?? [];
   };
 
+  /**
+   * Retrieves location data based on the mapbox_id
+   *
+   * @see https://docs.mapbox.com/api/search/search-box/#retrieve-a-suggested-feature
+   * @param id Mapbox id
+   * @param sessionToken Session token
+   * @returns Location data {@link MapBoxFeature} or null if not found
+   */
   export const retrieveSuggestion = async (id: string, sessionToken: SessionToken) => {
     const feature = await doRequest<MapboxFeatureResponse>(`retrieve/${id}?session_token=${sessionToken}`);
-    console.log(feature);
+
     return feature?.features.at(0) ?? null;
   };
 
@@ -43,18 +66,18 @@ type MapboxFeatureResponse = {
   attribution: string;
 };
 
-export type MapBoxFeature = MapboxFeatureGeometry & {
+type MapBoxFeature = MapboxFeatureGeometry & {
   properties: MapboxFeatureProperties;
 };
 
-export type MapboxFeatureGeometry = {
+type MapboxFeatureGeometry = {
   geometry: {
     coordinates: number[];
     type: string;
   };
 };
 
-export type MapboxFeatureProperties = {
+type MapboxFeatureProperties = {
   name: string,
   mapbox_id: string,
   feature_type: string,
