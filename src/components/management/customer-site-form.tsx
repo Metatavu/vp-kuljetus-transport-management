@@ -26,6 +26,8 @@ type AutocompleteLocationOption = {
   value?: string;
 };
 
+const mapboxSessionToken = new SessionToken();
+
 const CustomerSiteForm = ({ errors, customerSite, register, setFormValue, watch }: Props) => {
   const { t } = useTranslation();
   const [debouncedSearchTerm, _, setSearchTerm] = useDebounce("", 500);
@@ -33,8 +35,6 @@ const CustomerSiteForm = ({ errors, customerSite, register, setFormValue, watch 
   const showConfirmDialog = useConfirmDialog();
   const { sitesApi } = useApi();
   const navigate = useNavigate();
-
-  const mapboxSessionToken = new SessionToken();
 
   const validatePostalCode = (value: string) => {
     if (value.length !== 5) {
