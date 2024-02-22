@@ -6,6 +6,8 @@
   "delete": "Poista",
   "archive": "Arkistoi",
   "open": "Avaa",
+  "noSelection": "Ei valintaa",
+  "actions": "Toiminnot",
   "vehicleList": "Ajoneuvolista",
   "vehicleInfo": "Ajoneuvon tiedot",
   "workingTime": "Työaika",
@@ -60,8 +62,34 @@
   },
   "drivePlanning": {
     "title": "Ajojärjestely",
+    "routes": {
+      "title": "Reitit"
+    },
     "freights": {
-      "title": "Kuormat"
+      "title": "Rahtikirjalistaus",
+      "new": "Uusi rahtikirja",
+      "freightNumber": "Rahtikirjan numero",
+      "sender": "Lähettäjä",
+      "recipient": "Vastaanottaja",
+      "pointOfDeparture": "Lähtöpaikka",
+      "destination": "Määräpaikka",
+      "freightUnits": "Sisältö",
+      "dialog": {
+        "title": "Rahtikirja {{freightNumber}}",
+        "save": "Tallenna rahtikirja"
+      },
+      "errorMessages": {
+        "senderSiteMissing": "Lähettäjä on pakollinen",
+        "recipientSiteMissing": "Vastaanottaja on pakollinen",
+        "pointOfDepartureMissing": "Lähtöpaikka on pakollinen",
+        "destinationSiteMissing": "Määräpaikka on pakollinen"
+      }
+    },
+    "freightUnits": {
+      "type": "Tyyppi",
+      "quantity": "Määrä",
+      "content": "Sisältö",
+      "addRow": "Lisää rivi"
     }
   },
   "errorHandling": {

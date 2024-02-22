@@ -27,8 +27,10 @@ const GenericDataGrid = ({
   paginationMode,
   paginationModel,
   rowCount,
+  hideFooter,
   disableRowSelectionOnClick,
   onPaginationModelChange,
+  getRowId,
 }: DataGridProps) => {
   return (
     <StyledDataGrid
@@ -37,11 +39,13 @@ const GenericDataGrid = ({
       columnHeaderHeight={30}
       rowHeight={38}
       disableColumnMenu
+      hideFooter={hideFooter}
       disableRowSelectionOnClick={disableRowSelectionOnClick}
       rowCount={rowCount}
       paginationMode={paginationMode}
       paginationModel={paginationModel}
       onPaginationModelChange={onPaginationModelChange}
+      getRowId={getRowId}
       autoHeight
       localeText={fiFI.components.MuiDataGrid.defaultProps.localeText}
     />
