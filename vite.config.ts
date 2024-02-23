@@ -22,4 +22,7 @@ export default defineConfig({
       utils: "/src/utils",
     },
   },
+  optimizeDeps: {
+    exclude: ["@mapbox/search-js-core"]
+  }
 });

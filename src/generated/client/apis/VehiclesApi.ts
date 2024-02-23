@@ -36,17 +36,12 @@ export interface ListVehiclesRequest {
     max?: number;
 }
 
-export interface UpdateVehicleRequest {
-    vehicle: Vehicle;
-    vehicleId: string;
-}
-
 /**
  * 
  */
 export class VehiclesApi extends runtime.BaseAPI {
     /**
-     * Create new vehicle
+     * Create new vehicle. Vehicles are the history of the combinations of towables behind a truck. When a vehicle structure needs to be updated, a new vehicle with updated structure should be created. This updates the active vehicle for the truck and archives the previous one. 
      * Create vehicle
      */
     async createVehicleRaw(requestParameters: CreateVehicleRequest): Promise<runtime.ApiResponse<Vehicle>> {
@@ -58,7 +53,7 @@ export class VehiclesApi extends runtime.BaseAPI {
         headerParameters['Content-Type'] = 'application/json';
         if (this.configuration && this.configuration.accessToken) {
             const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", ["manager"]);
+            const tokenString = await token("BearerAuth", ["driver", "manager"]);
             if (tokenString) {
                 headerParameters["Authorization"] = `Bearer ${tokenString}`;
             }
@@ -73,7 +68,7 @@ export class VehiclesApi extends runtime.BaseAPI {
         return new runtime.JSONApiResponse(response, (jsonValue) => VehicleFromJSON(jsonValue));
     }
     /**
-     * Create new vehicle
+     * Create new vehicle. Vehicles are the history of the combinations of towables behind a truck. When a vehicle structure needs to be updated, a new vehicle with updated structure should be created. This updates the active vehicle for the truck and archives the previous one. 
      * Create vehicle
      */
     async createVehicle(requestParameters: CreateVehicleRequest): Promise<Vehicle> {
@@ -81,7 +76,7 @@ export class VehiclesApi extends runtime.BaseAPI {
         return await response.value();
     }
     /**
-     * Create new vehicle
+     * Create new vehicle. Vehicles are the history of the combinations of towables behind a truck. When a vehicle structure needs to be updated, a new vehicle with updated structure should be created. This updates the active vehicle for the truck and archives the previous one. 
      * Create vehicle
      */
     async createVehicleWithHeaders(requestParameters: CreateVehicleRequest): Promise<[ Vehicle, Headers ]> {
@@ -179,53 +174,6 @@ export class VehiclesApi extends runtime.BaseAPI {
      */
     async listVehiclesWithHeaders(requestParameters: ListVehiclesRequest): Promise<[ Array<Vehicle>, Headers ]> {
         const response = await this.listVehiclesRaw(requestParameters);
-        const value = await response.value(); 
-        return [ value, response.raw.headers ];
-    }
-    /**
-     * Updates single vehicle
-     * Updates vehicles
-     */
-    async updateVehicleRaw(requestParameters: UpdateVehicleRequest): Promise<runtime.ApiResponse<Vehicle>> {
-        if (requestParameters.vehicle === null || requestParameters.vehicle === undefined) {
-            throw new runtime.RequiredError('vehicle','Required parameter requestParameters.vehicle was null or undefined when calling updateVehicle.');
-        }
-        if (requestParameters.vehicleId === null || requestParameters.vehicleId === undefined) {
-            throw new runtime.RequiredError('vehicleId','Required parameter requestParameters.vehicleId was null or undefined when calling updateVehicle.');
-        }
-        const queryParameters: any = {};
-        const headerParameters: runtime.HTTPHeaders = {};
-        headerParameters['Content-Type'] = 'application/json';
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", ["manager"]);
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-        const response = await this.request({
-            path: `/vehicle-management/v1/vehicles/{vehicleId}`.replace(`{${"vehicleId"}}`, encodeURIComponent(String(requestParameters.vehicleId))),
-            method: 'PUT',
-            headers: headerParameters,
-            query: queryParameters,
-            body: VehicleToJSON(requestParameters.vehicle),
-        });
-        return new runtime.JSONApiResponse(response, (jsonValue) => VehicleFromJSON(jsonValue));
-    }
-    /**
-     * Updates single vehicle
-     * Updates vehicles
-     */
-    async updateVehicle(requestParameters: UpdateVehicleRequest): Promise<Vehicle> {
-        const response = await this.updateVehicleRaw(requestParameters);
-        return await response.value();
-    }
-    /**
-     * Updates single vehicle
-     * Updates vehicles
-     */
-    async updateVehicleWithHeaders(requestParameters: UpdateVehicleRequest): Promise<[ Vehicle, Headers ]> {
-        const response = await this.updateVehicleRaw(requestParameters);
         const value = await response.value(); 
         return [ value, response.raw.headers ];
     }

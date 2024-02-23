@@ -1,12 +1,16 @@
 import { Add } from "@mui/icons-material";
 import { Button, Paper, Stack } from "@mui/material";
-import { GridColDef } from "@mui/x-data-grid";
+import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import GenericDataGrid from "components/generic/generic-data-grid";
 import ToolbarRow from "components/generic/toolbar-row";
 import { useTranslation } from "react-i18next";
 import { RouterContext } from "./__root";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import { useApi } from "../hooks/use-api";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import LoaderWrapper from "components/generic/loader-wrapper";
+import { Site } from "generated/client";
 
 export const Route = createFileRoute("/management/customer-sites")({
   component: ManagementCustomerSites,
@@ -18,77 +22,113 @@ export const Route = createFileRoute("/management/customer-sites")({
 function ManagementCustomerSites() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { sitesApi } = useApi();
+  const queryClient = useQueryClient();
+
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({ page: 0, pageSize: 25 });
+  const [totalResults, setTotalResults] = useState(0);
+
+  const customerSites = useQuery({
+    queryKey: ["sites", paginationModel],
+    queryFn: async () => {
+      const [sites, headers] = await sitesApi.listSitesWithHeaders({
+        first: paginationModel.pageSize * paginationModel.page,
+        max: paginationModel.pageSize * paginationModel.page + paginationModel.pageSize,
+      });
+      const count = parseInt(headers.get("x-total-count") ?? "0");
+      setTotalResults(count);
+      return sites;
+    },
+  });
+
+  const deleteCustomerSite = useMutation({
+    mutationFn: (site: Site) => {
+      if (!site.id) return Promise.reject();
+      return sitesApi.updateSite({ siteId: site.id, site: { ...site, archivedAt: new Date() } });
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["sites"] }),
+  });
 
   const columns: GridColDef[] = useMemo(
     () => [
       {
-        field: "type",
+        field: "name",
         headerAlign: "center",
-        headerName: t("management.customerSites.type"),
+        headerName: t("management.customerSites.name"),
         sortable: false,
         flex: 1,
       },
       {
-        field: "type",
-        headerAlign: "center",
-        headerName: t("management.customerSites.type"),
-        sortable: false,
-        flex: 1,
-      },
-      {
-        field: "postalNumber",
+        field: "postalCode",
         headerAlign: "center",
         headerName: t("management.customerSites.postalCode"),
         sortable: false,
-        flex: 1,
+        width: 180,
       },
       {
         field: "locality",
         headerAlign: "center",
         headerName: t("management.customerSites.municipality"),
         sortable: false,
-        flex: 1,
+        width: 180,
       },
       {
         field: "actions",
         type: "actions",
-        flex: 0.7,
+        width: 66,
         renderHeader: () => null,
-        renderCell: () => (
+        renderCell: ({ id }) => (
           <Stack direction="row" spacing={1}>
-            <Button variant="text" color="primary" size="small">
-              {t("edit")}
-            </Button>
-            <Button variant="text" color="error" size="small">
-              {t("delete")}
+            <Button
+              variant="text"
+              color="primary"
+              size="small"
+              onClick={() =>
+                navigate({
+                  to: "/management/customer-sites/$customerSiteId/modify",
+                  params: { customerSiteId: id as string },
+                })
+              }
+            >
+              {t("open")}
             </Button>
           </Stack>
         ),
       },
     ],
-    [t],
+    [t, navigate],
   );
 
   return (
-    <Paper sx={{ height: "100%" }}>
-      <ToolbarRow
-        title={t("management.customerSites.title")}
-        toolbarButtons={
-          <Button
-            size="small"
-            variant="contained"
-            startIcon={<Add />}
-            onClick={() =>
-              navigate({
-                to: "/management/customer-sites/add-customer-site",
-              })
-            }
-          >
-            {t("addNew")}
-          </Button>
-        }
-      />
-      <GenericDataGrid rows={[]} columns={columns} />
-    </Paper>
+    <LoaderWrapper loading={deleteCustomerSite.isPending || customerSites.isLoading}>
+      <Paper sx={{ height: "100%" }}>
+        <ToolbarRow
+          title={t("management.customerSites.title")}
+          toolbarButtons={
+            <Button
+              size="small"
+              variant="contained"
+              startIcon={<Add />}
+              onClick={() =>
+                navigate({
+                  to: "/management/customer-sites/add-customer-site",
+                })
+              }
+            >
+              {t("addNew")}
+            </Button>
+          }
+        />
+        <GenericDataGrid
+          rows={customerSites.data ?? []}
+          columns={columns}
+          rowCount={totalResults}
+          disableRowSelectionOnClick
+          paginationMode="server"
+          paginationModel={paginationModel}
+          onPaginationModelChange={setPaginationModel}
+        />
+      </Paper>
+    </LoaderWrapper>
   );
 }

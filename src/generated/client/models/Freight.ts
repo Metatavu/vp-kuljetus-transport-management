@@ -27,6 +27,12 @@ export interface Freight {
      */
     readonly id?: string;
     /**
+     * Freight number. Unique and auto-incremented.
+     * @type {number}
+     * @memberof Freight
+     */
+    readonly freightNumber?: number;
+    /**
      * Sender of the shipment
      * @type {string}
      * @memberof Freight
@@ -130,6 +136,7 @@ export function FreightFromJSONTyped(json: any, ignoreDiscriminator: boolean): F
     return {
         
         'id': !exists(json, 'id') ? undefined : json['id'],
+        'freightNumber': !exists(json, 'freightNumber') ? undefined : json['freightNumber'],
         'sender': json['sender'],
         'recipient': json['recipient'],
         'payer': !exists(json, 'payer') ? undefined : json['payer'],

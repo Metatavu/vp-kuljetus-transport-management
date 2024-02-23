@@ -4,6 +4,8 @@
   "logout": "Logout",
   "edit": "Edit",
   "delete": "Delete",
+  "archive": "Archive",
+  "open": "Open",
   "vehicleList": "Vehicle list",
   "vehicleInfo": "Vehicle information",
   "workingTime": "Working time",
@@ -26,10 +28,14 @@
       "postalCodeTooShort": "Postal code needs to be atleast 5 characters long",
       "postalCodeInvalidFormat": "Postal code can only contain numers",
       "municipalityMissing": "Municipality is required"
+    },
+    "archiveDialog": {
+      "title": "Archive customer site",
+      "description": "Are you sure you want to archive customer site {{name}}?"
     }
   },
   "equipment": {
-    "title": "Equipment",
+    "title": "Equipment list",
     "new": "New equipment",
     "modify": "Modify equipment",
     "type": "Type",
