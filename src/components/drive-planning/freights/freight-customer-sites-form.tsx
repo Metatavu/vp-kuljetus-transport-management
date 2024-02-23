@@ -1,16 +1,15 @@
-import { Stack, TextField, MenuItem } from "@mui/material";
+import { Stack, MenuItem } from "@mui/material";
+import GenericFormTextfield from "components/generic/form-text-field";
 import { Freight, Site } from "generated/client";
-import { FieldErrors, UseFormRegister, UseFormWatch } from "react-hook-form";
+import { Control } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
 type Props = {
   customerSites: Site[];
-  errors: FieldErrors<Freight>;
-  register: UseFormRegister<Freight>;
-  watch: UseFormWatch<Freight>;
+  control: Control<Freight, unknown, Freight>;
 };
 
-const FreightCustomerSitesForm = ({ customerSites, errors, register, watch }: Props) => {
+const FreightCustomerSitesForm = ({ customerSites, control }: Props) => {
   const { t } = useTranslation();
 
   const renderCustomerSite = (site: Site) => (
@@ -26,65 +25,69 @@ const FreightCustomerSitesForm = ({ customerSites, errors, register, watch }: Pr
     ...customerSites.map(renderCustomerSite),
   ];
 
-  const validateSiteId = (value: string) => value !== "EMPTY";
+  const validateSiteId = (value: unknown) => value !== "EMPTY";
 
   return (
     <Stack spacing={2} paddingX={2} paddingTop={3}>
       <Stack direction="row" spacing={2}>
-        <TextField
-          {...register("senderSiteId", {
+        <GenericFormTextfield
+          control={control}
+          rules={{
             required: t("drivePlanning.freights.errorMessages.senderSiteMissing"),
             validate: validateSiteId,
-          })}
-          error={!!errors.senderSiteId}
-          helperText={errors.senderSiteId?.message}
-          defaultValue={watch("senderSiteId") || "EMPTY"}
-          select
-          label={t("drivePlanning.freights.sender")}
+          }}
+          name="senderSiteId"
+          textFieldProps={{
+            select: true,
+            label: t("drivePlanning.freights.sender"),
+          }}
         >
           {renderMenuItems()}
-        </TextField>
-        <TextField
-          {...register("recipientSiteId", {
+        </GenericFormTextfield>
+        <GenericFormTextfield
+          control={control}
+          rules={{
             required: t("drivePlanning.freights.errorMessages.recipientSiteMissing"),
             validate: validateSiteId,
-          })}
-          error={!!errors.recipientSiteId}
-          helperText={errors.recipientSiteId?.message}
-          defaultValue={watch("recipientSiteId") || "EMPTY"}
-          select
-          label={t("drivePlanning.freights.recipient")}
+          }}
+          name="recipientSiteId"
+          textFieldProps={{
+            select: true,
+            label: t("drivePlanning.freights.recipient"),
+          }}
         >
           {renderMenuItems()}
-        </TextField>
+        </GenericFormTextfield>
       </Stack>
       <Stack direction="row" spacing={2}>
-        <TextField
-          {...register("pointOfDepartureSiteId", {
+        <GenericFormTextfield
+          control={control}
+          rules={{
             required: t("drivePlanning.freights.errorMessages.pointOfDepartureMissing"),
             validate: validateSiteId,
-          })}
-          defaultValue={watch("pointOfDepartureSiteId") || "EMPTY"}
-          error={!!errors.pointOfDepartureSiteId}
-          helperText={errors.pointOfDepartureSiteId?.message}
-          select
-          label={t("drivePlanning.freights.pointOfDeparture")}
+          }}
+          name="pointOfDepartureSiteId"
+          textFieldProps={{
+            select: true,
+            label: t("drivePlanning.freights.pointOfDeparture"),
+          }}
         >
           {renderMenuItems()}
-        </TextField>
-        <TextField
-          {...register("destinationSiteId", {
+        </GenericFormTextfield>
+        <GenericFormTextfield
+          control={control}
+          rules={{
             required: t("drivePlanning.freights.errorMessages.destinationSiteMissing"),
             validate: validateSiteId,
-          })}
-          defaultValue={watch("destinationSiteId") || "EMPTY"}
-          error={!!errors.destinationSiteId}
-          helperText={errors.destinationSiteId?.message}
-          select
-          label={t("drivePlanning.freights.destination")}
+          }}
+          name="destinationSiteId"
+          textFieldProps={{
+            select: true,
+            label: t("drivePlanning.freights.pointOfDeparture"),
+          }}
         >
           {renderMenuItems()}
-        </TextField>
+        </GenericFormTextfield>
       </Stack>
     </Stack>
   );

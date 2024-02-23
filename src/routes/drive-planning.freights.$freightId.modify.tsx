@@ -3,7 +3,6 @@ import { RouterContext } from "./__root";
 import FreightDialog from "components/drive-planning/freights/freight-dialog";
 import { useApi } from "hooks/use-api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import LoaderWrapper from "components/generic/loader-wrapper";
 import { Freight } from "generated/client";
 
 export const Route = createFileRoute("/drive-planning/freights/$freightId/modify")({
@@ -35,9 +34,5 @@ function ModifyFreight() {
     },
   });
 
-  return (
-    <LoaderWrapper loading={freight.isLoading}>
-      <FreightDialog type="MODIFY" initialData={freight.data} onSave={saveFreight} />
-    </LoaderWrapper>
-  );
+  return <FreightDialog type="MODIFY" initialDataQuery={freight} onSave={saveFreight} />;
 }
