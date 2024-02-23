@@ -57,6 +57,10 @@ function CustomerSiteComponent({ formType, initialData, onSave }: Props) {
 
   const onCustomerSiteSave = async (site: Site) => onSave.mutate(site);
 
+  const geoJsonPointToLatLng = ({ coordinates }: GeoJSONPoint) => {
+    return latLng(coordinates);
+  };
+
   const renderToolbarButtons = () => (
     <Stack direction="row" spacing={1}>
       {isDirty && (
@@ -74,10 +78,6 @@ function CustomerSiteComponent({ formType, initialData, onSave }: Props) {
       </Button>
     </Stack>
   );
-
-  const geoJsonPointToLatLng = ({ coordinates }: GeoJSONPoint) => {
-    return latLng(coordinates);
-  };
 
   return (
     <LoaderWrapper loading={onSave.isPending}>
