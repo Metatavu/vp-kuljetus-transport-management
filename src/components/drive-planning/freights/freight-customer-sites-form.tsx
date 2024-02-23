@@ -1,15 +1,16 @@
 import { Stack, TextField, MenuItem } from "@mui/material";
 import { Freight, Site } from "generated/client";
-import { FieldErrors, UseFormRegister } from "react-hook-form";
+import { FieldErrors, UseFormRegister, UseFormWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
 type Props = {
   customerSites: Site[];
   errors: FieldErrors<Freight>;
   register: UseFormRegister<Freight>;
+  watch: UseFormWatch<Freight>;
 };
 
-const FreightCustomerSitesForm = ({ customerSites, errors, register }: Props) => {
+const FreightCustomerSitesForm = ({ customerSites, errors, register, watch }: Props) => {
   const { t } = useTranslation();
 
   const renderCustomerSite = (site: Site) => (
@@ -25,24 +26,32 @@ const FreightCustomerSitesForm = ({ customerSites, errors, register }: Props) =>
     ...customerSites.map(renderCustomerSite),
   ];
 
+  const validateSiteId = (value: string) => value !== "EMPTY";
+
   return (
     <Stack spacing={2} paddingX={2} paddingTop={3}>
       <Stack direction="row" spacing={2}>
         <TextField
-          {...register("senderSiteId", { required: t("drivePlanning.freights.errorMessages.senderSiteMissing") })}
+          {...register("senderSiteId", {
+            required: t("drivePlanning.freights.errorMessages.senderSiteMissing"),
+            validate: validateSiteId,
+          })}
           error={!!errors.senderSiteId}
           helperText={errors.senderSiteId?.message}
-          defaultValue="EMPTY"
+          defaultValue={watch("senderSiteId") || "EMPTY"}
           select
           label={t("drivePlanning.freights.sender")}
         >
           {renderMenuItems()}
         </TextField>
         <TextField
-          {...register("recipientSiteId", { required: t("drivePlanning.freights.errorMessages.recipientSiteMissing") })}
+          {...register("recipientSiteId", {
+            required: t("drivePlanning.freights.errorMessages.recipientSiteMissing"),
+            validate: validateSiteId,
+          })}
           error={!!errors.recipientSiteId}
           helperText={errors.recipientSiteId?.message}
-          defaultValue="EMPTY"
+          defaultValue={watch("recipientSiteId") || "EMPTY"}
           select
           label={t("drivePlanning.freights.recipient")}
         >
@@ -53,8 +62,9 @@ const FreightCustomerSitesForm = ({ customerSites, errors, register }: Props) =>
         <TextField
           {...register("pointOfDepartureSiteId", {
             required: t("drivePlanning.freights.errorMessages.pointOfDepartureMissing"),
+            validate: validateSiteId,
           })}
-          defaultValue="EMPTY"
+          defaultValue={watch("pointOfDepartureSiteId") || "EMPTY"}
           error={!!errors.pointOfDepartureSiteId}
           helperText={errors.pointOfDepartureSiteId?.message}
           select
@@ -65,8 +75,9 @@ const FreightCustomerSitesForm = ({ customerSites, errors, register }: Props) =>
         <TextField
           {...register("destinationSiteId", {
             required: t("drivePlanning.freights.errorMessages.destinationSiteMissing"),
+            validate: validateSiteId,
           })}
-          defaultValue="EMPTY"
+          defaultValue={watch("destinationSiteId") || "EMPTY"}
           error={!!errors.destinationSiteId}
           helperText={errors.destinationSiteId?.message}
           select

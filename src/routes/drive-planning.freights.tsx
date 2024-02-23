@@ -3,12 +3,14 @@ import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router";
 import ToolbarRow from "components/generic/toolbar-row";
 import { RouterContext } from "./__root";
 import { useTranslation } from "react-i18next";
-import { useApi } from "../hooks/use-api";
-import { useQuery } from "@tanstack/react-query";
+import { useApi } from "hooks/use-api";
+import { useQueries, useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
+import { GridColDef, GridPaginationModel, GridRenderCellParams, GridTreeNodeWithRender } from "@mui/x-data-grid";
 import { Add } from "@mui/icons-material";
 import GenericDataGrid from "components/generic/generic-data-grid";
+import { Freight } from "generated/client";
+import LoaderWrapper from "components/generic/loader-wrapper";
 
 export const Route = createFileRoute("/drive-planning/freights")({
   component: DrivePlanningFreights,
@@ -20,13 +22,10 @@ export const Route = createFileRoute("/drive-planning/freights")({
 function DrivePlanningFreights() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { freightsApi } = useApi();
-  // const queryClient = useQueryClient();
+  const { freightsApi, sitesApi, freightUnitsApi } = useApi();
 
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({ page: 0, pageSize: 25 });
   const [totalResults, setTotalResults] = useState(0);
-  // const [dialogOpen, setDialogOpen] = useState(false);
-  // const [selectedFreight, setSelectedFreight] = useState<Freight>();
 
   const freights = useQuery({
     queryKey: ["freights", paginationModel],
@@ -41,10 +40,41 @@ function DrivePlanningFreights() {
     },
   });
 
-  // const createFreight = useMutation({
-  //   mutationKey: ["createFreight"],
-  //   mutationFn: async (freight: Freight) => await freightsApi.createFreight({ freight }),
-  // });
+  const customerSites = useQuery({
+    queryKey: ["customerSites"],
+    queryFn: async () => await sitesApi.listSites(),
+    enabled: !!freights.data,
+  });
+
+  const freightUnitsQueries = useQueries({
+    queries:
+      freights.data?.map((freight) => ({
+        queryKey: ["freightUnits", freight.id],
+        queryFn: () => freightUnitsApi.listFreightUnits({ freightId: freight.id }),
+      })) ?? [],
+  });
+
+  const renderCustomerSiteCell = ({
+    row,
+    field,
+  }: GridRenderCellParams<Freight, unknown, unknown, GridTreeNodeWithRender>) => {
+    const site = customerSites.data?.find((site) => site.id === row[field as keyof Freight]);
+
+    return site?.name;
+  };
+
+  const renderFreightUnitsCell = ({
+    row: { id },
+  }: GridRenderCellParams<Freight, unknown, unknown, GridTreeNodeWithRender>) => {
+    const freightsUnits = freightUnitsQueries.find((query) =>
+      query.data?.some((freightUnits) => freightUnits.freightId === id),
+    )?.data;
+
+    return freightsUnits
+      ?.map((freightUnit) => freightUnit.contents)
+      .filter((content) => content)
+      .join(", ");
+  };
 
   const columns: GridColDef[] = useMemo(
     () => [
@@ -56,32 +86,36 @@ function DrivePlanningFreights() {
         flex: 1,
       },
       {
-        field: "sender",
+        field: "senderSiteId",
         headerAlign: "center",
         headerName: t("drivePlanning.freights.sender"),
         sortable: false,
         flex: 1,
+        renderCell: renderCustomerSiteCell,
       },
       {
-        field: "recipient",
-        headerAlign: "center",
-        headerName: t("drivePlanning.freights.freightNumber"),
-        sortable: false,
-        flex: 1,
-      },
-      {
-        field: "pointOfDeparture",
+        field: "pointOfDepartureSiteId",
         headerAlign: "center",
         headerName: t("drivePlanning.freights.pointOfDeparture"),
         sortable: false,
         flex: 1,
+        renderCell: renderCustomerSiteCell,
       },
       {
-        field: "destination",
+        field: "recipientSiteId",
+        headerAlign: "center",
+        headerName: t("drivePlanning.freights.recipient"),
+        sortable: false,
+        flex: 1,
+        renderCell: renderCustomerSiteCell,
+      },
+      {
+        field: "destinationSiteId",
         headerAlign: "center",
         headerName: t("drivePlanning.freights.destination"),
         sortable: false,
         flex: 1,
+        renderCell: renderCustomerSiteCell,
       },
       {
         field: "freightUnits",
@@ -89,18 +123,21 @@ function DrivePlanningFreights() {
         headerName: t("drivePlanning.freights.freightUnits"),
         sortable: false,
         flex: 1,
+        renderCell: renderFreightUnitsCell,
       },
       {
         field: "actions",
         type: "actions",
         renderHeader: () => null,
-        renderCell: () => (
+        renderCell: ({ id }) => (
           <Stack direction="row" spacing={1}>
             <Button
               variant="text"
               color="primary"
               size="small"
-              // onClick={() =>navigate({to: "/management/customer-sites/$customerSiteId/modify",params: { customerSiteId: id as string },})}
+              onClick={() =>
+                navigate({ to: "/drive-planning/freights/$freightId/modify", params: { freightId: id as string } })
+              }
             >
               {t("open")}
             </Button>
@@ -108,16 +145,14 @@ function DrivePlanningFreights() {
         ),
       },
     ],
-    [t],
+    [t, navigate, renderCustomerSiteCell, renderFreightUnitsCell],
   );
 
   return (
     <>
       <Outlet />
-      {/* <FreightDialog open={dialogOpen} onClose={() => setDialogOpen(false)} /> */}
       <Paper sx={{ height: "100%" }}>
         <ToolbarRow
-          title={t("drivePlanning.freights.title")}
           toolbarButtons={
             <Button
               size="small"
@@ -129,15 +164,17 @@ function DrivePlanningFreights() {
             </Button>
           }
         />
-        <GenericDataGrid
-          rows={freights.data ?? []}
-          columns={columns}
-          rowCount={totalResults}
-          disableRowSelectionOnClick
-          paginationMode="server"
-          paginationModel={paginationModel}
-          onPaginationModelChange={setPaginationModel}
-        />
+        <LoaderWrapper loading={freights.isLoading || customerSites.isLoading}>
+          <GenericDataGrid
+            rows={freights.data ?? []}
+            columns={columns}
+            rowCount={totalResults}
+            disableRowSelectionOnClick
+            paginationMode="server"
+            paginationModel={paginationModel}
+            onPaginationModelChange={setPaginationModel}
+          />
+        </LoaderWrapper>
       </Paper>
     </>
   );

@@ -90,6 +90,15 @@
       "quantity": "Quantity",
       "content": "Content",
       "addRow": "Add row"
+    },
+    "tasks": {
+      "tasks": "TAasks",
+      "groupNumber": "Group number",
+      "customerSite": "Customer site",
+      "route": "Route",
+      "date": "Date",
+      "loadTaskType": "Load",
+      "unloadTaskType": "Unload"
     }
   },
   "errorHandling": {

@@ -1,20 +1,68 @@
 import { Add } from "@mui/icons-material";
-import { Button, MenuItem, TextField } from "@mui/material";
-import { GridColDef } from "@mui/x-data-grid";
+import { Button } from "@mui/material";
+import { GridCellParams, GridColDef, GridRowModes, GridRowModesModel } from "@mui/x-data-grid";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import GenericDataGrid from "components/generic/generic-data-grid";
 import { FreightUnit } from "generated/client";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useApi } from "hooks/use-api";
 
 const FREIGHT_UNIT_TYPES = ["EUR", "FIN", "RLK"] as const;
 
-const FreightUnits = () => {
-  const { t } = useTranslation();
-  const [rows, setRows] = useState<FreightUnit[]>([]);
+type Props = {
+  freightUnits: FreightUnit[];
+  freightId: string;
+  onEditFreightUnit: (freightUnit: FreightUnit) => void;
+};
 
-  const addFreightUnit = () => {
-    setRows([...rows, { freightId: (Math.random() * 1000).toString(), type: "", quantity: 0, contents: "" }]);
+const FreightUnits = ({ freightUnits, freightId, onEditFreightUnit }: Props) => {
+  const { t } = useTranslation();
+  const { freightUnitsApi } = useApi();
+  const queryClient = useQueryClient();
+
+  const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
+
+  const createFreightUnit = useMutation({
+    mutationFn: async () =>
+      await freightUnitsApi.createFreightUnit({
+        freightUnit: {
+          freightId: freightId,
+          type: "EUR",
+        },
+      }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["freightUnits", freightId] }),
+  });
+
+  const deleteFreightUnit = useMutation({
+    mutationFn: async (id: string) => await freightUnitsApi.deleteFreightUnit({ freightUnitId: id }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["freightUnits", freightId] });
+      queryClient.fetchQuery({ queryKey: ["freightUnits", freightId] });
+    },
+  });
+
+  const handleRowModelsChange = useCallback((newModel: GridRowModesModel) => setRowModesModel(newModel), []);
+
+  const processRowUpdate = (newRow: FreightUnit) => {
+    onEditFreightUnit(newRow);
+    return newRow;
   };
+
+  const handleCellClick = useCallback((params: GridCellParams) => {
+    if (!params.isEditable) return;
+    setRowModesModel((previousModel) => ({
+      ...Object.keys(previousModel).reduce(
+        (acc, id) => ({
+          // biome-ignore lint/performance/noAccumulatingSpread: <explanation>
+          ...acc,
+          [id]: { mode: GridRowModes.View },
+        }),
+        {},
+      ),
+      [params.row.id]: { mode: GridRowModes.Edit },
+    }));
+  }, []);
 
   const columns: GridColDef[] = useMemo(
     () => [
@@ -23,24 +71,20 @@ const FreightUnits = () => {
         headerAlign: "center",
         headerName: t("drivePlanning.freightUnits.type"),
         sortable: false,
+        editable: true,
+        type: "singleSelect",
+        valueOptions: FREIGHT_UNIT_TYPES,
         flex: 1,
-        renderCell: ({ row }) => (
-          <TextField select>
-            {FREIGHT_UNIT_TYPES.map((type) => (
-              <MenuItem key={type} value={type}>
-                {type}
-              </MenuItem>
-            ))}
-          </TextField>
-        ),
       },
       {
         field: "quantity",
         headerAlign: "center",
         headerName: t("drivePlanning.freightUnits.quantity"),
         sortable: false,
+        editable: true,
+        type: "number",
+        align: "left",
         flex: 1,
-        renderCell: ({ row }) => <TextField type="number" />,
       },
       {
         field: "contents",
@@ -48,7 +92,8 @@ const FreightUnits = () => {
         headerName: t("drivePlanning.freightUnits.content"),
         sortable: false,
         flex: 3,
-        renderCell: ({ row }) => <TextField />,
+        editable: true,
+        type: "string",
       },
       {
         field: "actions",
@@ -56,22 +101,27 @@ const FreightUnits = () => {
         headerAlign: "center",
         headerName: t("actions"),
         sortable: false,
-        renderCell: () => (
-          <Button variant="text" color="error" size="small">
+        renderCell: ({ row: { id } }) => (
+          <Button variant="text" color="error" size="small" onClick={() => deleteFreightUnit.mutate(id)}>
             {t("delete")}
           </Button>
         ),
       },
     ],
-    [t],
+    [t, deleteFreightUnit],
   );
+
   return (
     <>
       <GenericDataGrid
+        editMode="row"
+        processRowUpdate={processRowUpdate}
+        onCellClick={handleCellClick}
+        rowModesModel={rowModesModel}
+        onRowModesModelChange={handleRowModelsChange}
         columns={columns}
-        rows={rows}
+        rows={freightUnits}
         hideFooter
-        getRowId={(row) => row.freightId}
         disableRowSelectionOnClick
       />
       <Button
@@ -80,7 +130,7 @@ const FreightUnits = () => {
         size="small"
         startIcon={<Add />}
         sx={{ alignSelf: "flex-end" }}
-        onClick={addFreightUnit}
+        onClick={() => createFreightUnit.mutate()}
       >
         {t("drivePlanning.freightUnits.addRow")}
       </Button>

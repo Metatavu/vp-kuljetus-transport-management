@@ -3,7 +3,7 @@ import { IconButton, Stack, Typography } from "@mui/material";
 import { ReactNode } from "react";
 
 type Props = {
-  title: string;
+  title?: string;
   toolbarButtons?: ReactNode;
   navigateBack?: () => void;
 };

@@ -90,6 +90,15 @@
       "quantity": "Määrä",
       "content": "Sisältö",
       "addRow": "Lisää rivi"
+    },
+    "tasks": {
+      "tasks": "Tehtävät",
+      "groupNumber": "Tunnus",
+      "customerSite": "Asiakaspaikka",
+      "route": "Reitti",
+      "date": "Päivä",
+      "loadTaskType": "Lastaus",
+      "unloadTaskType": "Purku"
     }
   },
   "errorHandling": {
