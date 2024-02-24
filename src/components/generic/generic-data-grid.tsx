@@ -41,9 +41,9 @@ const GenericDataGrid = ({
       rowCount={rowCount}
       paginationMode={paginationMode}
       paginationModel={paginationModel}
-      onPaginationModelChange={onPaginationModelChange}
       autoHeight
       localeText={fiFI.components.MuiDataGrid.defaultProps.localeText}
+      onPaginationModelChange={onPaginationModelChange}
     />
   );
 };

@@ -39,17 +39,17 @@ export interface FreightUnit {
      */
     type: string;
     /**
-     * Quantity of the unit
-     * @type {string}
+     * Quantity of the unit, can be a decimal number
+     * @type {number}
      * @memberof FreightUnit
      */
-    quantity: string;
+    quantity?: number;
     /**
-     * Quantity unit of the unit
+     * Description of contents of the unit
      * @type {string}
      * @memberof FreightUnit
      */
-    quantityUnit: string;
+    contents?: string;
     /**
      * Reservations for the unit
      * @type {string}
@@ -89,8 +89,6 @@ export function instanceOfFreightUnit(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "freightId" in value;
     isInstance = isInstance && "type" in value;
-    isInstance = isInstance && "quantity" in value;
-    isInstance = isInstance && "quantityUnit" in value;
 
     return isInstance;
 }
@@ -108,8 +106,8 @@ export function FreightUnitFromJSONTyped(json: any, ignoreDiscriminator: boolean
         'id': !exists(json, 'id') ? undefined : json['id'],
         'freightId': json['freightId'],
         'type': json['type'],
-        'quantity': json['quantity'],
-        'quantityUnit': json['quantityUnit'],
+        'quantity': !exists(json, 'quantity') ? undefined : json['quantity'],
+        'contents': !exists(json, 'contents') ? undefined : json['contents'],
         'reservations': !exists(json, 'reservations') ? undefined : json['reservations'],
         'creatorId': !exists(json, 'creatorId') ? undefined : json['creatorId'],
         'createdAt': !exists(json, 'createdAt') ? undefined : (new Date(json['createdAt'])),
@@ -130,7 +128,7 @@ export function FreightUnitToJSON(value?: FreightUnit | null): any {
         'freightId': value.freightId,
         'type': value.type,
         'quantity': value.quantity,
-        'quantityUnit': value.quantityUnit,
+        'contents': value.contents,
         'reservations': value.reservations,
     };
 }

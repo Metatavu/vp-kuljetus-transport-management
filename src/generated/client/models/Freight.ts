@@ -33,59 +33,29 @@ export interface Freight {
      */
     readonly freightNumber?: number;
     /**
-     * Sender of the shipment
+     * Shipment sender site
      * @type {string}
      * @memberof Freight
      */
-    sender: string;
+    senderSiteId: string;
     /**
-     * Receiver of the shipment
+     * Shipment receiver site
      * @type {string}
      * @memberof Freight
      */
-    recipient: string;
+    recipientSiteId: string;
     /**
-     * Payer of the shipment
+     * Point of departure site
      * @type {string}
      * @memberof Freight
      */
-    payer?: string;
+    pointOfDepartureSiteId: string;
     /**
-     * Point of departure
+     * Point of arrival site
      * @type {string}
      * @memberof Freight
      */
-    pointOfDeparture: string;
-    /**
-     * Point of arrival
-     * @type {string}
-     * @memberof Freight
-     */
-    destination: string;
-    /**
-     * Shipment info
-     * @type {string}
-     * @memberof Freight
-     */
-    shipmentInfo?: string;
-    /**
-     * Minimum temperature of the shipment
-     * @type {number}
-     * @memberof Freight
-     */
-    temperatureMin?: number;
-    /**
-     * Maximum temperature of the shipment
-     * @type {number}
-     * @memberof Freight
-     */
-    temperatureMax?: number;
-    /**
-     * Reservations for the shipment
-     * @type {string}
-     * @memberof Freight
-     */
-    reservations?: string;
+    destinationSiteId: string;
     /**
      * 
      * @type {string}
@@ -117,10 +87,10 @@ export interface Freight {
  */
 export function instanceOfFreight(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "sender" in value;
-    isInstance = isInstance && "recipient" in value;
-    isInstance = isInstance && "pointOfDeparture" in value;
-    isInstance = isInstance && "destination" in value;
+    isInstance = isInstance && "senderSiteId" in value;
+    isInstance = isInstance && "recipientSiteId" in value;
+    isInstance = isInstance && "pointOfDepartureSiteId" in value;
+    isInstance = isInstance && "destinationSiteId" in value;
 
     return isInstance;
 }
@@ -137,15 +107,10 @@ export function FreightFromJSONTyped(json: any, ignoreDiscriminator: boolean): F
         
         'id': !exists(json, 'id') ? undefined : json['id'],
         'freightNumber': !exists(json, 'freightNumber') ? undefined : json['freightNumber'],
-        'sender': json['sender'],
-        'recipient': json['recipient'],
-        'payer': !exists(json, 'payer') ? undefined : json['payer'],
-        'pointOfDeparture': json['pointOfDeparture'],
-        'destination': json['destination'],
-        'shipmentInfo': !exists(json, 'shipmentInfo') ? undefined : json['shipmentInfo'],
-        'temperatureMin': !exists(json, 'temperatureMin') ? undefined : json['temperatureMin'],
-        'temperatureMax': !exists(json, 'temperatureMax') ? undefined : json['temperatureMax'],
-        'reservations': !exists(json, 'reservations') ? undefined : json['reservations'],
+        'senderSiteId': json['senderSiteId'],
+        'recipientSiteId': json['recipientSiteId'],
+        'pointOfDepartureSiteId': json['pointOfDepartureSiteId'],
+        'destinationSiteId': json['destinationSiteId'],
         'creatorId': !exists(json, 'creatorId') ? undefined : json['creatorId'],
         'createdAt': !exists(json, 'createdAt') ? undefined : (new Date(json['createdAt'])),
         'lastModifierId': !exists(json, 'lastModifierId') ? undefined : json['lastModifierId'],
@@ -162,15 +127,10 @@ export function FreightToJSON(value?: Freight | null): any {
     }
     return {
         
-        'sender': value.sender,
-        'recipient': value.recipient,
-        'payer': value.payer,
-        'pointOfDeparture': value.pointOfDeparture,
-        'destination': value.destination,
-        'shipmentInfo': value.shipmentInfo,
-        'temperatureMin': value.temperatureMin,
-        'temperatureMax': value.temperatureMax,
-        'reservations': value.reservations,
+        'senderSiteId': value.senderSiteId,
+        'recipientSiteId': value.recipientSiteId,
+        'pointOfDepartureSiteId': value.pointOfDepartureSiteId,
+        'destinationSiteId': value.destinationSiteId,
     };
 }
 

@@ -58,6 +58,13 @@ export interface Task {
      */
     type: TaskType;
     /**
+     * Group number of the task. Gets a value of 0 by default. Can be updated from the management UI. All tasks with the same freightId, customerSiteId, type and group number are shown as grouped together in the driver app.
+     * 
+     * @type {number}
+     * @memberof Task
+     */
+    groupNumber: number;
+    /**
      * 
      * @type {TaskStatus}
      * @memberof Task
@@ -75,6 +82,20 @@ export interface Task {
      * @memberof Task
      */
     routeId?: string;
+    /**
+     * Time the task was started at. Filled when task status is changed from TODO to IN_PROGRESS.
+     * 
+     * @type {Date}
+     * @memberof Task
+     */
+    readonly startedAt?: Date;
+    /**
+     * Time the task was finished at. Filled when task status is changed from IN_PROGRESS to DONE.
+     * 
+     * @type {Date}
+     * @memberof Task
+     */
+    readonly finishedAt?: Date;
     /**
      * 
      * @type {string}
@@ -109,6 +130,7 @@ export function instanceOfTask(value: object): boolean {
     isInstance = isInstance && "freightId" in value;
     isInstance = isInstance && "customerSiteId" in value;
     isInstance = isInstance && "type" in value;
+    isInstance = isInstance && "groupNumber" in value;
     isInstance = isInstance && "status" in value;
 
     return isInstance;
@@ -128,9 +150,12 @@ export function TaskFromJSONTyped(json: any, ignoreDiscriminator: boolean): Task
         'freightId': json['freightId'],
         'customerSiteId': json['customerSiteId'],
         'type': TaskTypeFromJSON(json['type']),
+        'groupNumber': json['groupNumber'],
         'status': TaskStatusFromJSON(json['status']),
         'remarks': !exists(json, 'remarks') ? undefined : json['remarks'],
         'routeId': !exists(json, 'routeId') ? undefined : json['routeId'],
+        'startedAt': !exists(json, 'startedAt') ? undefined : (new Date(json['startedAt'])),
+        'finishedAt': !exists(json, 'finishedAt') ? undefined : (new Date(json['finishedAt'])),
         'creatorId': !exists(json, 'creatorId') ? undefined : json['creatorId'],
         'createdAt': !exists(json, 'createdAt') ? undefined : (new Date(json['createdAt'])),
         'lastModifierId': !exists(json, 'lastModifierId') ? undefined : json['lastModifierId'],
@@ -150,6 +175,7 @@ export function TaskToJSON(value?: Task | null): any {
         'freightId': value.freightId,
         'customerSiteId': value.customerSiteId,
         'type': TaskTypeToJSON(value.type),
+        'groupNumber': value.groupNumber,
         'status': TaskStatusToJSON(value.status),
         'remarks': value.remarks,
         'routeId': value.routeId,
