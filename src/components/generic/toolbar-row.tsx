@@ -18,13 +18,21 @@ const ToolbarRow = ({ title, toolbarButtons, navigateBack }: Props) => {
       </IconButton>
     );
   };
+
+  const renderTitle = () => {
+    if (!title) return null;
+
+    return (
+      <Typography variant="h6" sx={{ opacity: 0.87 }} alignSelf="center">
+        {title}
+      </Typography>
+      );
+  };
   return (
     <Stack direction="row" justifyContent="space-between" padding="8px 16px">
       <Stack direction="row" spacing={1}>
         {renderBackButton()}
-        <Typography variant="h6" sx={{ opacity: 0.87 }} alignSelf="center">
-          {title}
-        </Typography>
+        {renderTitle()}
       </Stack>
       <Stack direction="row" spacing={1}>
         {toolbarButtons}

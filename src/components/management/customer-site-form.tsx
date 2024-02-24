@@ -3,13 +3,13 @@ import { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from "rea
 import { useTranslation } from "react-i18next";
 import { Site } from "generated/client";
 import { SessionToken } from "@mapbox/search-js-core";
-import { useDebounce } from "../../hooks/use-debounce";
+import { useDebounce } from "hooks/use-debounce";
 import Mapbox from "components/mapbox";
 import { SyntheticEvent, useState } from "react";
 import { stringify } from "wellknown";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useConfirmDialog } from "components/providers/confirm-dialog-provider";
-import { useApi } from "../../hooks/use-api";
+import { useApi } from "hooks/use-api";
 import { useNavigate } from "@tanstack/react-router";
 
 type Props = {

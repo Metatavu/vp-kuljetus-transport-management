@@ -65,6 +65,9 @@
     "routes": {
       "title": "Routes"
     },
+    "routes": {
+      "title": "Routes"
+    },
     "freights": {
       "title": "Freights list",
       "new": "New freight",
