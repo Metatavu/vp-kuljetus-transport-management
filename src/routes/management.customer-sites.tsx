@@ -7,7 +7,7 @@ import ToolbarRow from "components/generic/toolbar-row";
 import { useTranslation } from "react-i18next";
 import { RouterContext } from "./__root";
 import { useMemo, useState } from "react";
-import { useApi } from "../hooks/use-api";
+import { useApi } from "hooks/use-api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import LoaderWrapper from "components/generic/loader-wrapper";
 import { Site } from "generated/client";

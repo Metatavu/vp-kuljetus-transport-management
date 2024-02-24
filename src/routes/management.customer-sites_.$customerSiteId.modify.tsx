@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import CustomerSiteComponent from "components/management/customer-site";
-import { useApi } from "../hooks/use-api";
+import { useApi } from "hooks/use-api";
 import { RouterContext } from "src/routes/__root";
 import LoaderWrapper from "components/generic/loader-wrapper";
 import { Site } from "generated/client";
