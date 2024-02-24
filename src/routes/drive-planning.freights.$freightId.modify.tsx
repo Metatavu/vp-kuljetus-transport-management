@@ -23,7 +23,7 @@ function ModifyFreight() {
     queryFn: async () => await freightsApi.findFreight({ freightId }),
   });
 
-  const saveFreight = useMutation({
+  const updateFreight = useMutation({
     mutationFn: async (freight: Freight) => {
       await freightsApi.updateFreight({ freightId, freight });
       navigate({ to: "/drive-planning/freights" });
@@ -34,5 +34,5 @@ function ModifyFreight() {
     },
   });
 
-  return <FreightDialog type="MODIFY" initialDataQuery={freight} onSave={saveFreight} />;
+  return <FreightDialog type="MODIFY" initialDataQuery={freight} onSave={updateFreight} />;
 }

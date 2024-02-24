@@ -9,7 +9,7 @@ import FreightCustomerSitesForm from "./freight-customer-sites-form";
 import { useForm } from "react-hook-form";
 import FreightUnits from "./freight-units";
 import FreightTasks from "./freight-tasks";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import LoaderWrapper from "components/generic/loader-wrapper";
 
 type Props = {
@@ -30,7 +30,7 @@ const FreightDialog = ({ type, initialDataQuery, onSave }: Props) => {
 
   const {
     handleSubmit,
-    setValue,
+    reset,
     control,
     formState: { errors },
   } = useForm<Freight>({
@@ -44,10 +44,8 @@ const FreightDialog = ({ type, initialDataQuery, onSave }: Props) => {
   });
 
   useEffect(() => {
-    for (const key in initialDataQuery?.data) {
-      setValue(key as keyof Freight, initialDataQuery?.data[key as keyof Freight]);
-    }
-  }, [initialDataQuery?.data, setValue]);
+    reset(initialDataQuery?.data);
+  }, [initialDataQuery?.data, reset]);
 
   const customerSites = useQuery({
     queryKey: ["customerSites"],
@@ -112,15 +110,17 @@ const FreightDialog = ({ type, initialDataQuery, onSave }: Props) => {
 
   const handleClose = () => navigate({ to: "/drive-planning/freights" });
 
-  const renderFreightContent = () => {
-    if (type === "ADD" || !freightUnits.data || !tasks.data) return null;
-    return (
-      <>
-        <FreightUnits freightUnits={freightUnits.data} freightId={freightId} onEditFreightUnit={onEditFreightUnit} />
-        <FreightTasks customerSites={customerSites.data ?? []} tasks={tasks.data} onEditTask={onEditTask} />
-      </>
-    );
-  };
+  const renderFreightContent = () =>
+    // biome-ignore lint/correctness/useExhaustiveDependencies: <Biome seems to in-correctly think that no other than type is required as a dependency for this hook.>
+    useCallback(() => {
+      if (type === "ADD" || !freightUnits.data || !tasks.data || !customerSites.data) return null;
+      return (
+        <>
+          <FreightUnits freightUnits={freightUnits.data} freightId={freightId} onEditFreightUnit={onEditFreightUnit} />
+          <FreightTasks customerSites={customerSites.data} tasks={tasks.data} onEditTask={onEditTask} />
+        </>
+      );
+    }, [type, freightUnits.data, tasks.data, customerSites.data])();
 
   const isSaveEnabled = !Object.keys(errors).length;
 

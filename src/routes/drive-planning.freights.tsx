@@ -5,12 +5,13 @@ import { RouterContext } from "./__root";
 import { useTranslation } from "react-i18next";
 import { useApi } from "hooks/use-api";
 import { useQueries, useQuery } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { GridColDef, GridPaginationModel, GridRenderCellParams, GridTreeNodeWithRender } from "@mui/x-data-grid";
 import { Add } from "@mui/icons-material";
 import GenericDataGrid from "components/generic/generic-data-grid";
 import { Freight } from "generated/client";
 import LoaderWrapper from "components/generic/loader-wrapper";
+import DataValidation from "utils/data-validation-utils";
 
 export const Route = createFileRoute("/drive-planning/freights")({
   component: DrivePlanningFreights,
@@ -46,35 +47,24 @@ function DrivePlanningFreights() {
     enabled: !!freights.data,
   });
 
-  const freightUnitsQueries = useQueries({
-    queries:
-      freights.data?.map((freight) => ({
-        queryKey: ["freightUnits", freight.id],
-        queryFn: () => freightUnitsApi.listFreightUnits({ freightId: freight.id }),
-      })) ?? [],
+  const freightUnits = useQueries({
+    queries: (freights.data ?? []).map((freight) => ({
+      queryKey: ["freightUnits", freight.id],
+      queryFn: () => freightUnitsApi.listFreightUnits({ freightId: freight.id }),
+    })),
+    combine: (results) => ({
+      data: results.flatMap((result) => result.data).filter(DataValidation.validateValueIsNotUndefinedNorNull),
+    }),
   });
 
-  const renderCustomerSiteCell = ({
-    row,
-    field,
-  }: GridRenderCellParams<Freight, unknown, unknown, GridTreeNodeWithRender>) => {
-    const site = customerSites.data?.find((site) => site.id === row[field as keyof Freight]);
+  const renderCustomerSiteCell = useCallback(
+    ({ row, field }: GridRenderCellParams<Freight, unknown, unknown, GridTreeNodeWithRender>) => {
+      const site = customerSites.data?.find((site) => site.id === row[field as keyof Freight]);
 
-    return site?.name;
-  };
-
-  const renderFreightUnitsCell = ({
-    row: { id },
-  }: GridRenderCellParams<Freight, unknown, unknown, GridTreeNodeWithRender>) => {
-    const freightsUnits = freightUnitsQueries.find((query) =>
-      query.data?.some((freightUnits) => freightUnits.freightId === id),
-    )?.data;
-
-    return freightsUnits
-      ?.map((freightUnit) => freightUnit.contents)
-      .filter((content) => content)
-      .join(", ");
-  };
+      return site?.name;
+    },
+    [customerSites.data],
+  );
 
   const columns: GridColDef[] = useMemo(
     () => [
@@ -123,7 +113,14 @@ function DrivePlanningFreights() {
         headerName: t("drivePlanning.freights.freightUnits"),
         sortable: false,
         flex: 1,
-        renderCell: renderFreightUnitsCell,
+        renderCell: ({ row: { id } }: GridRenderCellParams<Freight, unknown, unknown, GridTreeNodeWithRender>) => {
+          const freightsUnits = freightUnits.data.filter((freightUnit) => freightUnit.freightId === id);
+
+          return freightsUnits
+            ?.map((freightUnit) => freightUnit.contents)
+            .filter((content) => content)
+            .join(", ");
+        },
       },
       {
         field: "actions",
@@ -145,7 +142,7 @@ function DrivePlanningFreights() {
         ),
       },
     ],
-    [t, navigate, renderCustomerSiteCell, renderFreightUnitsCell],
+    [t, navigate, renderCustomerSiteCell, freightUnits],
   );
 
   return (
