@@ -9,7 +9,6 @@ import { Route as ManagementVehiclesImport } from "./../../routes/management.veh
 import { Route as ManagementEquipmentImport } from "./../../routes/management.equipment"
 import { Route as ManagementCustomerSitesImport } from "./../../routes/management.customer-sites"
 import { Route as DrivePlanningRoutesImport } from "./../../routes/drive-planning.routes"
-import { Route as DrivePlanningRoutesImport } from "./../../routes/drive-planning.routes"
 import { Route as DrivePlanningFreightsImport } from "./../../routes/drive-planning.freights"
 import { Route as ManagementCustomerSitesAddCustomerSiteImport } from "./../../routes/management.customer-sites_.add-customer-site_"
 import { Route as DrivePlanningFreightsAddFreightImport } from "./../../routes/drive-planning.freights.add-freight"
