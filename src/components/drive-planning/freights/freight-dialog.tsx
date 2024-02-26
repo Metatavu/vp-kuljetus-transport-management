@@ -37,25 +37,25 @@ const FreightDialog = ({ freightId, onSave }: Props) => {
 
   const customerSitesQuery = useQuery({
     queryKey: ["customerSites"],
-    queryFn: async () => await sitesApi.listSites(),
+    queryFn: () => sitesApi.listSites(),
     enabled: !freightQuery?.isLoading,
   });
 
   const tasksQuery = useQuery({
     queryKey: ["tasks, freightId"],
-    queryFn: async () => await tasksApi.listTasks({ freightId: freightId }),
+    queryFn: () => tasksApi.listTasks({ freightId: freightId }),
     enabled: !!freightId,
   });
 
   const freightUnitsQuery = useQuery({
     queryKey: ["freightUnits", freightId],
-    queryFn: async () => await freightUnitsApi.listFreightUnits({ freightId }),
+    queryFn: () => freightUnitsApi.listFreightUnits({ freightId }),
     enabled: !!freightId,
   });
 
   const saveFreightUnits = useMutation({
-    mutationFn: async () =>
-      await Promise.all(
+    mutationFn: () =>
+      Promise.all(
         pendingFreightUnits.map((freightUnit) => {
           if (!freightUnit.id) return Promise.reject();
           freightUnitsApi.updateFreightUnit({ freightUnitId: freightUnit.id, freightUnit: freightUnit });
@@ -67,8 +67,8 @@ const FreightDialog = ({ freightId, onSave }: Props) => {
   });
 
   const saveTasks = useMutation({
-    mutationFn: async () =>
-      await Promise.all(
+    mutationFn: () =>
+      Promise.all(
         pendingTasks.map((task) => {
           if (!task.id) return Promise.reject();
           tasksApi.updateTask({ taskId: task.id, task: task });
@@ -121,7 +121,7 @@ const FreightDialog = ({ freightId, onSave }: Props) => {
 
   const handleClose = () => navigate({ to: "/drive-planning/freights" });
 
-  const renderFreightContent = () =>
+  const renderFreightContent =
     // biome-ignore lint/correctness/useExhaustiveDependencies: <Biome seems to in-correctly think that no other than type is required as a dependency for this hook.>
     useCallback(() => {
       if (!freightId || !freightUnitsQuery.data || !tasksQuery.data || !customerSitesQuery.data) return null;
@@ -135,7 +135,7 @@ const FreightDialog = ({ freightId, onSave }: Props) => {
           <FreightTasks customerSites={customerSitesQuery.data} tasks={tasksQuery.data} onEditTask={onEditTask} />
         </>
       );
-    }, [freightId, freightUnitsQuery.data, tasksQuery.data, customerSitesQuery.data])();
+    }, [freightId, freightUnitsQuery.data, tasksQuery.data, customerSitesQuery.data]);
 
   const isSaveEnabled = !Object.keys(errors).length;
 

@@ -20,11 +20,11 @@ const FreightTasks = ({ tasks, customerSites, onEditTask }: Props) => {
 
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
 
-  const routes = useQuery({
+  const routesQuery = useQuery({
     queryKey: ["routes"],
-    queryFn: async () => {
+    queryFn: () => {
       const yesterday = DateTime.now().minus({ days: 1 }).toJSDate();
-      return await routesApi.listRoutes({ departureAfter: yesterday });
+      return routesApi.listRoutes({ departureAfter: yesterday });
     },
   });
 
@@ -90,10 +90,10 @@ const FreightTasks = ({ tasks, customerSites, onEditTask }: Props) => {
         sortable: false,
         editable: true,
         type: "singleSelect",
-        valueOptions: routes.data?.map((route) => route.id) ?? [],
-        getOptionLabel: (option) => routes.data?.find((route) => route.id === option)?.name,
+        valueOptions: routesQuery.data?.map((route) => route.id) ?? [],
+        getOptionLabel: (option) => routesQuery.data?.find((route) => route.id === option)?.name,
         getOptionValue: (option) => option,
-        valueGetter: ({ row: { routeId } }) => routes.data?.find((route) => route.id === routeId)?.name,
+        valueGetter: ({ row: { routeId } }) => routesQuery.data?.find((route) => route.id === routeId)?.name,
       },
       {
         field: "date",
@@ -102,14 +102,14 @@ const FreightTasks = ({ tasks, customerSites, onEditTask }: Props) => {
         flex: 1,
         sortable: false,
         valueGetter: ({ row: { routeId } }) => {
-          const departureTime = routes.data?.find((route) => route.id === routeId)?.departureTime;
+          const departureTime = routesQuery.data?.find((route) => route.id === routeId)?.departureTime;
           if (!departureTime) return "";
 
           return DateTime.fromJSDate(departureTime).toLocaleString(DateTime.DATE_SHORT);
         },
       },
     ],
-    [t, customerSites, routes],
+    [t, customerSites, routesQuery],
   );
 
   return (
