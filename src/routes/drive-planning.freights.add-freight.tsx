@@ -46,5 +46,5 @@ function AddFreight() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["freights"] }),
   });
 
-  return <FreightDialog type="ADD" onSave={createFreight} />;
+  return <FreightDialog onSave={createFreight} />;
 }

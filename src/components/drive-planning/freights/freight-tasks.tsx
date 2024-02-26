@@ -58,7 +58,7 @@ const FreightTasks = ({ tasks, customerSites, onEditTask }: Props) => {
         headerName: t("drivePlanning.tasks.tasks"),
         flex: 1,
         sortable: false,
-        renderCell: ({ row: { type } }) => LocalizationUtils.getLocalizedTaskType(type),
+        renderCell: ({ row: { type } }) => LocalizationUtils.getLocalizedTaskType(type, t),
       },
       {
         field: "groupNumber",
