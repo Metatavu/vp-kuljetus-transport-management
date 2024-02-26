@@ -28,7 +28,7 @@ function DrivePlanningFreights() {
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({ page: 0, pageSize: 25 });
   const [totalResults, setTotalResults] = useState(0);
 
-  const freights = useQuery({
+  const freightsQuery = useQuery({
     queryKey: ["freights", paginationModel],
     queryFn: async () => {
       const [freights, headers] = await freightsApi.listFreightsWithHeaders({
@@ -41,14 +41,14 @@ function DrivePlanningFreights() {
     },
   });
 
-  const customerSites = useQuery({
+  const customerSitesQuery = useQuery({
     queryKey: ["customerSites"],
-    queryFn: async () => await sitesApi.listSites(),
-    enabled: !!freights.data,
+    queryFn: () => sitesApi.listSites(),
+    enabled: !!freightsQuery.data,
   });
 
-  const freightUnits = useQueries({
-    queries: (freights.data ?? []).map((freight) => ({
+  const freightUnitsQuery = useQueries({
+    queries: (freightsQuery.data ?? []).map((freight) => ({
       queryKey: ["freightUnits", freight.id],
       queryFn: () => freightUnitsApi.listFreightUnits({ freightId: freight.id }),
     })),
@@ -59,11 +59,11 @@ function DrivePlanningFreights() {
 
   const renderCustomerSiteCell = useCallback(
     ({ row, field }: GridRenderCellParams<Freight, unknown, unknown, GridTreeNodeWithRender>) => {
-      const site = customerSites.data?.find((site) => site.id === row[field as keyof Freight]);
+      const site = customerSitesQuery.data?.find((site) => site.id === row[field as keyof Freight]);
 
       return site?.name;
     },
-    [customerSites.data],
+    [customerSitesQuery.data],
   );
 
   const columns: GridColDef[] = useMemo(
@@ -114,7 +114,7 @@ function DrivePlanningFreights() {
         sortable: false,
         flex: 1,
         renderCell: ({ row: { id } }: GridRenderCellParams<Freight, unknown, unknown, GridTreeNodeWithRender>) => {
-          const freightsUnits = freightUnits.data.filter((freightUnit) => freightUnit.freightId === id);
+          const freightsUnits = freightUnitsQuery.data.filter((freightUnit) => freightUnit.freightId === id);
 
           return freightsUnits
             ?.map((freightUnit) => freightUnit.contents)
@@ -142,7 +142,7 @@ function DrivePlanningFreights() {
         ),
       },
     ],
-    [t, navigate, renderCustomerSiteCell, freightUnits],
+    [t, navigate, renderCustomerSiteCell, freightUnitsQuery],
   );
 
   return (
@@ -151,19 +151,14 @@ function DrivePlanningFreights() {
       <Paper sx={{ height: "100%" }}>
         <ToolbarRow
           toolbarButtons={
-            <Button
-              size="small"
-              variant="text"
-              startIcon={<Add />}
-              onClick={() => navigate({ to: "/drive-planning/freights/add-freight" })}
-            >
+            <Button size="small" variant="text" startIcon={<Add />}>
               {t("drivePlanning.freights.new")}
             </Button>
           }
         />
-        <LoaderWrapper loading={freights.isLoading || customerSites.isLoading}>
+        <LoaderWrapper loading={freightsQuery.isLoading || customerSitesQuery.isLoading}>
           <GenericDataGrid
-            rows={freights.data ?? []}
+            rows={freightsQuery.data ?? []}
             columns={columns}
             rowCount={totalResults}
             disableRowSelectionOnClick
