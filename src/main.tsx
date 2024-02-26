@@ -12,6 +12,8 @@ import "localization/i18n";
 import AuthenticationProvider from "components/auth/auth-provider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ConfirmDialogProvider from "components/providers/confirm-dialog-provider";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterLuxon } from "@mui/x-date-pickers/AdapterLuxon";
 
 const router = createRouter({ routeTree });
 
@@ -32,14 +34,16 @@ if (!rootElement.innerHTML) {
   ReactDOM.createRoot(rootElement).render(
     <StrictMode>
       <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <AuthenticationProvider>
-          <QueryClientProvider client={queryClient}>
-            <ConfirmDialogProvider>
-              <RouterProvider router={router} />
-            </ConfirmDialogProvider>
-          </QueryClientProvider>
-        </AuthenticationProvider>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <CssBaseline />
+          <AuthenticationProvider>
+            <QueryClientProvider client={queryClient}>
+              <ConfirmDialogProvider>
+                <RouterProvider router={router} />
+              </ConfirmDialogProvider>
+            </QueryClientProvider>
+          </AuthenticationProvider>
+        </LocalizationProvider>
       </ThemeProvider>
     </StrictMode>,
   );
