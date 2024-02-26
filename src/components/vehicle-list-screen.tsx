@@ -3,7 +3,7 @@ import { GridColDef } from "@mui/x-data-grid";
 import { useEffect, useState, FC } from "react";
 import { useTranslation } from "react-i18next";
 
-import { useApi } from "../hooks/use-api";
+import { useApi } from "hooks/use-api";
 import { Truck } from "generated/client";
 import GenericDataGrid from "./generic/generic-data-grid";
 import { VehicleListColumns } from "../types";

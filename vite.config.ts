@@ -6,7 +6,6 @@ import { TanStackRouterVite } from "@tanstack/router-vite-plugin";
 export default defineConfig({
   plugins: [
     react(),
-    // codegen(),
     TanStackRouterVite(),
   ],
   resolve: {
@@ -20,6 +19,7 @@ export default defineConfig({
       theme: "/src/theme",
       types: "/src/types",
       utils: "/src/utils",
+      hooks: "/src/hooks",
     },
   },
   optimizeDeps: {

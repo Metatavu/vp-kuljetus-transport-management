@@ -2,7 +2,6 @@ import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import { routeTree } from "generated/router/routeTree.gen";
-import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
@@ -13,11 +12,6 @@ import "localization/i18n";
 import AuthenticationProvider from "components/auth/auth-provider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ConfirmDialogProvider from "components/providers/confirm-dialog-provider";
-
-const client = new ApolloClient({
-  uri: import.meta.env.VITE_GRAPHQL_API_URL,
-  cache: new InMemoryCache(),
-});
 
 const router = createRouter({ routeTree });
 
@@ -37,18 +31,16 @@ if (!rootElement) throw new Error("No root element in index.html");
 if (!rootElement.innerHTML) {
   ReactDOM.createRoot(rootElement).render(
     <StrictMode>
-      <ApolloProvider client={client}>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <AuthenticationProvider>
-            <QueryClientProvider client={queryClient}>
-              <ConfirmDialogProvider>
-                <RouterProvider router={router} />
-              </ConfirmDialogProvider>
-            </QueryClientProvider>
-          </AuthenticationProvider>
-        </ThemeProvider>
-      </ApolloProvider>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <AuthenticationProvider>
+          <QueryClientProvider client={queryClient}>
+            <ConfirmDialogProvider>
+              <RouterProvider router={router} />
+            </ConfirmDialogProvider>
+          </QueryClientProvider>
+        </AuthenticationProvider>
+      </ThemeProvider>
     </StrictMode>,
   );
 }

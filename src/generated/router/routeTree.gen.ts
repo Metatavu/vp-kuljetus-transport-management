@@ -8,6 +8,7 @@ import { Route as VehicleInfoIndexImport } from "./../../routes/vehicle-info.ind
 import { Route as ManagementVehiclesImport } from "./../../routes/management.vehicles"
 import { Route as ManagementEquipmentImport } from "./../../routes/management.equipment"
 import { Route as ManagementCustomerSitesImport } from "./../../routes/management.customer-sites"
+import { Route as DrivePlanningRoutesImport } from "./../../routes/drive-planning.routes"
 import { Route as DrivePlanningFreightsImport } from "./../../routes/drive-planning.freights"
 import { Route as ManagementCustomerSitesAddCustomerSiteImport } from "./../../routes/management.customer-sites_.add-customer-site_"
 import { Route as ManagementCustomerSitesCustomerSiteIdModifyImport } from "./../../routes/management.customer-sites_.$customerSiteId.modify"
@@ -57,6 +58,11 @@ const ManagementCustomerSitesRoute = ManagementCustomerSitesImport.update({
   getParentRoute: () => ManagementRoute,
 } as any)
 
+const DrivePlanningRoutesRoute = DrivePlanningRoutesImport.update({
+  path: "/routes",
+  getParentRoute: () => DrivePlanningRoute,
+} as any)
+
 const DrivePlanningFreightsRoute = DrivePlanningFreightsImport.update({
   path: "/freights",
   getParentRoute: () => DrivePlanningRoute,
@@ -89,6 +95,10 @@ declare module "@tanstack/react-router" {
     }
     "/drive-planning/freights": {
       preLoaderRoute: typeof DrivePlanningFreightsImport
+      parentRoute: typeof DrivePlanningImport
+    }
+    "/drive-planning/routes": {
+      preLoaderRoute: typeof DrivePlanningRoutesImport
       parentRoute: typeof DrivePlanningImport
     }
     "/management/customer-sites": {
@@ -127,7 +137,10 @@ declare module "@tanstack/react-router" {
 }
 export const routeTree = rootRoute.addChildren([
   IndexRoute,
-  DrivePlanningRoute.addChildren([DrivePlanningFreightsRoute]),
+  DrivePlanningRoute.addChildren([
+    DrivePlanningFreightsRoute,
+    DrivePlanningRoutesRoute,
+  ]),
   ManagementRoute.addChildren([
     ManagementCustomerSitesRoute,
     ManagementEquipmentRoute,

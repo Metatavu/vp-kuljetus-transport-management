@@ -60,8 +60,28 @@
   },
   "drivePlanning": {
     "title": "Drive planning",
+    "routes": {
+      "title": "Routes"
+    },
     "freights": {
-      "title": "Freight"
+      "title": "Freights list",
+      "new": "New freight",
+      "freightNumber": "Freight number",
+      "sender": "Sender",
+      "recipient": "Recipient",
+      "pointOfDeparture": "Point of departure",
+      "destination": "Destination",
+      "freightUnits": "Contents",
+      "dialog": {
+        "title": "Freight {{freightNumber}}",
+        "save": "Save freight"
+      },
+      "errorMessages": {
+        "senderSiteMissing": "Sender is required",
+        "recipientSiteMissing": "Recipient is required",
+        "pointOfDepartureMissing": "Point of departure is required",
+        "destinationSiteMissing": "Destination is required"
+      }
     }
   },
   "errorHandling": {

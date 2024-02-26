@@ -9,10 +9,10 @@ import { Site } from "generated/client";
 import { MapContainer, Marker, TileLayer } from "react-leaflet";
 import { useEffect, useRef } from "react";
 import { Map as LeafletMap, latLng } from "leaflet";
-import { GeoJSONPoint, parse } from "wellknown";
 import { UseMutationResult } from "@tanstack/react-query";
 import LoaderWrapper from "components/generic/loader-wrapper";
 import config from "../../app/config";
+import LocationUtils from "utils/location-utils";
 
 type Props = {
   formType: "ADD" | "MODIFY";
@@ -44,21 +44,19 @@ function CustomerSiteComponent({ formType, initialData, onSave }: Props) {
     shouldFocusError: true,
   });
 
-  const markerPosition = watch("location") ? parse(watch("location")) : undefined;
+  const markerPosition = watch("location") ? LocationUtils.wellKnownPointToLatLng(watch("location")) : undefined;
 
   useEffect(() => {
     if (mapRef.current && markerPosition) {
-      const location = (markerPosition as GeoJSONPoint).coordinates;
-      mapRef.current.setView(latLng(location));
+      mapRef.current.setView(latLng(markerPosition));
     }
   }, [markerPosition]);
 
   const isSaveDisabled = (errors && !markerPosition) || !isDirty;
 
-  const onCustomerSiteSave = async (site: Site) => onSave.mutate(site);
-
-  const geoJsonPointToLatLng = ({ coordinates }: GeoJSONPoint) => {
-    return latLng(coordinates);
+  const onCustomerSiteSave = async (site: Site) => {
+    await onSave.mutateAsync(site);
+    navigate({ to: "/management/customer-sites" });
   };
 
   const renderToolbarButtons = () => (
@@ -101,7 +99,7 @@ function CustomerSiteComponent({ formType, initialData, onSave }: Props) {
                 attribution='<a href="https://www.mapbox.com/about/maps/">© Mapbox</a> <a href="https://www.openstreetmap.org/copyright">© OpenStreetMap</a> <a href="https://www.mapbox.com/map-feedback/">Improve this map</a>'
                 url={`https://api.mapbox.com/styles/v1/metatavu/clsszigf302jx01qy0e4q0c7e/tiles/{z}/{x}/{y}@2x?access_token=${publicApiKey}`}
               />
-              {markerPosition && <Marker position={geoJsonPointToLatLng(markerPosition as GeoJSONPoint)} />}
+              {markerPosition && <Marker position={markerPosition} />}
             </MapContainer>
           </Box>
         </Stack>
