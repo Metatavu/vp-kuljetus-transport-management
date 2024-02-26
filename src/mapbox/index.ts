@@ -22,7 +22,7 @@ namespace Mapbox {
    * @returns Array of {@link MapboxFeatureProperties}
    */
   export const getSuggestions = async (query: string, sessionToken: SessionToken) => {
-    const suggestions = await doRequest<MapboxSuggestionResponse>(`suggest?q=${query}&session_token=${sessionToken}&language=${DEFAULT_COUNTRY}&limit=${DEFAULT_LIMIT}`);
+    const suggestions = await doRequest<MapboxSuggestionResponse>(`/search/searchbox/v1/suggest?q=${query}&session_token=${sessionToken}&language=${DEFAULT_COUNTRY}&limit=${DEFAULT_LIMIT}`);
 
     return suggestions?.suggestions ?? [];
   };
@@ -36,7 +36,7 @@ namespace Mapbox {
    * @returns Location data {@link MapBoxFeature} or null if not found
    */
   export const retrieveSuggestion = async (id: string, sessionToken: SessionToken) => {
-    const feature = await doRequest<MapboxFeatureResponse>(`retrieve/${id}?session_token=${sessionToken}`);
+    const feature = await doRequest<MapboxFeatureResponse>(`/search/searchbox/v1/retrieve/${id}?session_token=${sessionToken}`);
 
     return feature?.features.at(0) ?? null;
   };
