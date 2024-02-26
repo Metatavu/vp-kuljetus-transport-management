@@ -1,5 +1,5 @@
 import { SessionToken } from "@mapbox/search-js-core";
-import config from "../../app/config";
+import config from "../app/config";
 
 /**
  * Mapbox API wrapper

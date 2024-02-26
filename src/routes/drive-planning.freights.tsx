@@ -42,7 +42,7 @@ function DrivePlanningFreights() {
 
   const customerSitesQuery = useQuery({
     queryKey: ["customerSites"],
-    queryFn: async () => await sitesApi.listSites(),
+    queryFn: () => sitesApi.listSites(),
     enabled: !!freightsQuery.data,
   });
 
@@ -127,11 +127,7 @@ function DrivePlanningFreights() {
         renderHeader: () => null,
         renderCell: () => (
           <Stack direction="row" spacing={1}>
-            <Button
-              variant="text"
-              color="primary"
-              size="small"
-            >
+            <Button variant="text" color="primary" size="small">
               {t("open")}
             </Button>
           </Stack>
@@ -145,11 +141,7 @@ function DrivePlanningFreights() {
     <Paper sx={{ height: "100%" }}>
       <ToolbarRow
         toolbarButtons={
-          <Button
-            size="small"
-            variant="text"
-            startIcon={<Add />}
-          >
+          <Button size="small" variant="text" startIcon={<Add />}>
             {t("drivePlanning.freights.new")}
           </Button>
         }
