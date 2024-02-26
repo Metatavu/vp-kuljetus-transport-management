@@ -1,7 +1,6 @@
 import { Route as rootRoute } from "./../../routes/__root"
 import { Route as ManagementImport } from "./../../routes/management"
 import { Route as DrivePlanningImport } from "./../../routes/drive-planning"
-import { Route as IndexImport } from "./../../routes/index"
 import { Route as WorkingTimeIndexImport } from "./../../routes/working-time.index"
 import { Route as VehicleListIndexImport } from "./../../routes/vehicle-list.index"
 import { Route as VehicleInfoIndexImport } from "./../../routes/vehicle-info.index"
@@ -20,11 +19,6 @@ const ManagementRoute = ManagementImport.update({
 
 const DrivePlanningRoute = DrivePlanningImport.update({
   path: "/drive-planning",
-  getParentRoute: () => rootRoute,
-} as any)
-
-const IndexRoute = IndexImport.update({
-  path: "/",
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -81,10 +75,6 @@ const ManagementCustomerSitesCustomerSiteIdModifyRoute =
   } as any)
 declare module "@tanstack/react-router" {
   interface FileRoutesByPath {
-    "/": {
-      preLoaderRoute: typeof IndexImport
-      parentRoute: typeof rootRoute
-    }
     "/drive-planning": {
       preLoaderRoute: typeof DrivePlanningImport
       parentRoute: typeof rootRoute
@@ -136,7 +126,6 @@ declare module "@tanstack/react-router" {
   }
 }
 export const routeTree = rootRoute.addChildren([
-  IndexRoute,
   DrivePlanningRoute.addChildren([
     DrivePlanningFreightsRoute,
     DrivePlanningRoutesRoute,
