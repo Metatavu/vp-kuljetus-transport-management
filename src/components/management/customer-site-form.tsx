@@ -98,6 +98,7 @@ const CustomerSiteForm = ({ errors, customerSite, register, setFormValue, watch 
         <Autocomplete
           options={suggestions.data ?? []}
           value={autocompleteValue}
+          noOptionsText={t("noResults")}
           {...register("address", { required: t("management.customerSites.errorMessages.addressMissing") })}
           renderOption={(props, option) => (
             <ListItem {...props} key={option.value}>
