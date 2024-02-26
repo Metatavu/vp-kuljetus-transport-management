@@ -1,8 +1,8 @@
 import { SvgIcon } from "@mui/material";
 import { RegisteredRouter, RoutePaths } from "@tanstack/react-router";
-import { DefaultNamespace, ParseKeys } from "i18next";
+import { DefaultNamespace, KeyPrefix, ParseKeys, TOptions } from "i18next";
 
-export type LocalizedLabelKey = ParseKeys<DefaultNamespace> | TemplateStringsArray;
+export type LocalizedLabelKey<KPrefix extends KeyPrefix<DefaultNamespace> = KeyPrefix<DefaultNamespace>> = ParseKeys<DefaultNamespace, TOptions, KPrefix> | TemplateStringsArray;
 
 export type NavigationItem = readonly [RoutePaths<RegisteredRouter["routeTree"]>, LocalizedLabelKey, typeof SvgIcon | undefined];
 
