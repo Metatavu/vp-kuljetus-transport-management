@@ -28,10 +28,7 @@ const FreightDialog = ({ freightId, onSave }: Props) => {
 
   const freightQuery = useQuery({
     queryKey: ["freights", freightId],
-    queryFn: async () => {
-      if (!freightId) return;
-      return await freightsApi.findFreight({ freightId: freightId });
-    },
+    queryFn: () => (freightId ? freightsApi.findFreight({ freightId: freightId }) : undefined),
     enabled: !!freightId,
   });
 
@@ -121,23 +118,20 @@ const FreightDialog = ({ freightId, onSave }: Props) => {
 
   const handleClose = () => navigate({ to: "/drive-planning/freights" });
 
-  const renderFreightContent =
-    // biome-ignore lint/correctness/useExhaustiveDependencies: <Biome seems to in-correctly think that no other than type is required as a dependency for this hook.>
-    useCallback(() => {
-      if (!freightId || !freightUnitsQuery.data || !tasksQuery.data || !customerSitesQuery.data) return null;
-      return (
-        <>
-          <FreightUnits
-            freightUnits={freightUnitsQuery.data}
-            freightId={freightId}
-            onEditFreightUnit={onEditFreightUnit}
-          />
-          <FreightTasks customerSites={customerSitesQuery.data} tasks={tasksQuery.data} onEditTask={onEditTask} />
-        </>
-      );
-    }, [freightId, freightUnitsQuery.data, tasksQuery.data, customerSitesQuery.data]);
+  const renderFreightContent = useCallback(() => {
+    if (!freightId || !freightUnitsQuery.data || !tasksQuery.data || !customerSitesQuery.data) return null;
 
-  const isSaveEnabled = !Object.keys(errors).length;
+    return (
+      <>
+        <FreightUnits
+          freightUnits={freightUnitsQuery.data}
+          freightId={freightId}
+          onEditFreightUnit={onEditFreightUnit}
+        />
+        <FreightTasks customerSites={customerSitesQuery.data} tasks={tasksQuery.data} onEditTask={onEditTask} />
+      </>
+    );
+  }, [freightId, freightUnitsQuery.data, tasksQuery.data, customerSitesQuery.data, onEditFreightUnit, onEditTask]);
 
   return (
     <Dialog open={true} onClose={handleClose} PaperProps={{ sx: { minWidth: "50%", borderRadius: 0 } }}>
@@ -172,7 +166,7 @@ const FreightDialog = ({ freightId, onSave }: Props) => {
           <Button variant="text" onClick={handleClose}>
             {t("cancel")}
           </Button>
-          <Button variant="contained" disabled={!isSaveEnabled} onClick={handleSubmit(onSaveClick)}>
+          <Button variant="contained" disabled={!!Object.keys(errors).length} onClick={handleSubmit(onSaveClick)}>
             {t("drivePlanning.freights.dialog.save")}
           </Button>
         </DialogActions>
