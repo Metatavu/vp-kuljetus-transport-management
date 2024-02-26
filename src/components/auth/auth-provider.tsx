@@ -20,7 +20,7 @@ const AuthenticationProvider = ({ children }: Props) => {
     setAuth({
       token: keycloak.tokenParsed,
       tokenRaw: keycloak.token,
-      logout: () => keycloak.logout({ redirectUri: `${window.location.origin}/vehicle-list` }),
+      logout: () => keycloak.logout({ redirectUri: `${window.location.origin}` }),
     });
 
     setUserProfile(keycloak.profile);
@@ -57,7 +57,6 @@ const AuthenticationProvider = ({ children }: Props) => {
       await keycloak.init({
         onLoad: "login-required",
         checkLoginIframe: false,
-        redirectUri: `${window.location.origin}/vehicle-list`,
       });
     } catch (error) {
       console.error(error);
