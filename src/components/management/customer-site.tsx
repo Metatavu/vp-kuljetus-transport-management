@@ -54,7 +54,10 @@ function CustomerSiteComponent({ formType, initialData, onSave }: Props) {
 
   const isSaveDisabled = (errors && !markerPosition) || !isDirty;
 
-  const onCustomerSiteSave = async (site: Site) => onSave.mutate(site);
+  const onCustomerSiteSave = async (site: Site) => {
+    await onSave.mutateAsync(site);
+    navigate({ to: "/management/customer-sites" });
+  };
 
   const renderToolbarButtons = () => (
     <Stack direction="row" spacing={1}>
