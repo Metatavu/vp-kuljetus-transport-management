@@ -6,11 +6,11 @@ import { useApi } from "hooks/use-api";
 import { UseMutationResult, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Freight, FreightUnit, Task } from "generated/client";
 import FreightCustomerSitesForm from "./freight-customer-sites-form";
-import { useForm } from "react-hook-form";
 import FreightUnits from "./freight-units";
 import FreightTasks from "./freight-tasks";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import LoaderWrapper from "components/generic/loader-wrapper";
+import { FormProvider, useForm } from "react-hook-form";
 
 type Props = {
   freightId?: string;
@@ -31,6 +31,8 @@ const FreightDialog = ({ freightId, onSave }: Props) => {
     queryFn: () => (freightId ? freightsApi.findFreight({ freightId: freightId }) : undefined),
     enabled: !!freightId,
   });
+
+  const form = useForm<Freight>({ mode: "onChange", defaultValues: freightQuery.data });
 
   const customerSitesQuery = useQuery({
     queryKey: ["customerSites"],
@@ -75,25 +77,6 @@ const FreightDialog = ({ freightId, onSave }: Props) => {
       queryClient.invalidateQueries({ queryKey: ["tasks", freightId] });
     },
   });
-
-  const {
-    handleSubmit,
-    reset,
-    control,
-    formState: { errors },
-  } = useForm<Freight>({
-    mode: "onChange",
-    defaultValues: {
-      destinationSiteId: freightQuery?.data?.destinationSiteId ?? "EMPTY",
-      pointOfDepartureSiteId: freightQuery?.data?.pointOfDepartureSiteId ?? "EMPTY",
-      senderSiteId: freightQuery?.data?.senderSiteId ?? "EMPTY",
-      recipientSiteId: freightQuery?.data?.recipientSiteId ?? "EMPTY",
-    },
-  });
-
-  useEffect(() => {
-    reset(freightQuery?.data);
-  }, [freightQuery?.data, reset]);
 
   const onEditFreightUnit = (updatedFreightUnit: FreightUnit) => {
     const filteredTempFreightUnits = pendingFreightUnits.filter(
@@ -156,20 +139,24 @@ const FreightDialog = ({ freightId, onSave }: Props) => {
             <Close htmlColor="#ffffff" />
           </IconButton>
         </Stack>
-        <DialogContent sx={{ padding: 0 }}>
-          <Stack spacing={2}>
-            <FreightCustomerSitesForm customerSites={customerSitesQuery.data ?? []} control={control} />
-            {renderFreightContent()}
-          </Stack>
-        </DialogContent>
-        <DialogActions>
-          <Button variant="text" onClick={handleClose}>
-            {t("cancel")}
-          </Button>
-          <Button variant="contained" disabled={!!Object.keys(errors).length} onClick={handleSubmit(onSaveClick)}>
-            {t("drivePlanning.freights.dialog.save")}
-          </Button>
-        </DialogActions>
+        <FormProvider {...form}>
+          <form onSubmit={form.handleSubmit(onSaveClick)}>
+            <DialogContent sx={{ padding: 0 }}>
+              <Stack spacing={2}>
+                <FreightCustomerSitesForm freight={freightQuery.data} customerSites={customerSitesQuery.data ?? []} />
+                {renderFreightContent()}
+              </Stack>
+            </DialogContent>
+            <DialogActions>
+              <Button variant="text" onClick={handleClose}>
+                {t("cancel")}
+              </Button>
+              <Button variant="contained" disabled={!!Object.keys(form.formState.errors).length} type="submit">
+                {t("drivePlanning.freights.dialog.save")}
+              </Button>
+            </DialogActions>
+          </form>
+        </FormProvider>
       </LoaderWrapper>
     </Dialog>
   );
