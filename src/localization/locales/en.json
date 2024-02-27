@@ -6,6 +6,9 @@
   "delete": "Delete",
   "archive": "Archive",
   "open": "Open",
+  "noSelection": "No selection",
+  "noResults": "No results",
+  "actions": "Actions",
   "vehicleList": "Vehicle list",
   "vehicleInfo": "Vehicle information",
   "workingTime": "Working time",
@@ -63,6 +66,9 @@
     "routes": {
       "title": "Routes"
     },
+    "routes": {
+      "title": "Routes"
+    },
     "freights": {
       "title": "Freights list",
       "new": "New freight",
@@ -82,6 +88,21 @@
         "pointOfDepartureMissing": "Point of departure is required",
         "destinationSiteMissing": "Destination is required"
       }
+    },
+    "freightUnits": {
+      "type": "Type",
+      "quantity": "Quantity",
+      "content": "Content",
+      "addRow": "Add row"
+    },
+    "tasks": {
+      "tasks": "TAasks",
+      "groupNumber": "Group number",
+      "customerSite": "Customer site",
+      "route": "Route",
+      "date": "Date",
+      "loadTaskType": "Load",
+      "unloadTaskType": "Unload"
     }
   },
   "errorHandling": {

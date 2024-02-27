@@ -6,6 +6,9 @@
   "delete": "Poista",
   "archive": "Arkistoi",
   "open": "Avaa",
+  "noSelection": "Ei valintaa",
+  "noResults": "Ei tuloksia",
+  "actions": "Toiminnot",
   "vehicleList": "Ajoneuvolista",
   "vehicleInfo": "Ajoneuvon tiedot",
   "workingTime": "Työaika",
@@ -63,6 +66,9 @@
     "routes": {
       "title": "Reitit"
     },
+    "routes": {
+      "title": "Reitit"
+    },
     "freights": {
       "title": "Rahtikirjalistaus",
       "new": "Uusi rahtikirja",
@@ -82,6 +88,21 @@
         "pointOfDepartureMissing": "Lähtöpaikka on pakollinen",
         "destinationSiteMissing": "Määräpaikka on pakollinen"
       }
+    },
+    "freightUnits": {
+      "type": "Tyyppi",
+      "quantity": "Määrä",
+      "content": "Sisältö",
+      "addRow": "Lisää rivi"
+    },
+    "tasks": {
+      "tasks": "Tehtävät",
+      "groupNumber": "Tunnus",
+      "customerSite": "Asiakaspaikka",
+      "route": "Reitti",
+      "date": "Päivä",
+      "loadTaskType": "Lastaus",
+      "unloadTaskType": "Purku"
     }
   },
   "errorHandling": {

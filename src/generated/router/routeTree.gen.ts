@@ -11,7 +11,9 @@ import { Route as ManagementCustomerSitesImport } from "./../../routes/managemen
 import { Route as DrivePlanningRoutesImport } from "./../../routes/drive-planning.routes"
 import { Route as DrivePlanningFreightsImport } from "./../../routes/drive-planning.freights"
 import { Route as ManagementCustomerSitesAddCustomerSiteImport } from "./../../routes/management.customer-sites_.add-customer-site_"
+import { Route as DrivePlanningFreightsAddFreightImport } from "./../../routes/drive-planning.freights.add-freight"
 import { Route as ManagementCustomerSitesCustomerSiteIdModifyImport } from "./../../routes/management.customer-sites_.$customerSiteId.modify"
+import { Route as DrivePlanningFreightsFreightIdModifyImport } from "./../../routes/drive-planning.freights.$freightId.modify"
 
 const ManagementRoute = ManagementImport.update({
   path: "/management",
@@ -74,10 +76,22 @@ const ManagementCustomerSitesAddCustomerSiteRoute =
     getParentRoute: () => ManagementRoute,
   } as any)
 
+const DrivePlanningFreightsAddFreightRoute =
+  DrivePlanningFreightsAddFreightImport.update({
+    path: "/add-freight",
+    getParentRoute: () => DrivePlanningFreightsRoute,
+  } as any)
+
 const ManagementCustomerSitesCustomerSiteIdModifyRoute =
   ManagementCustomerSitesCustomerSiteIdModifyImport.update({
     path: "/customer-sites/$customerSiteId/modify",
     getParentRoute: () => ManagementRoute,
+  } as any)
+
+const DrivePlanningFreightsFreightIdModifyRoute =
+  DrivePlanningFreightsFreightIdModifyImport.update({
+    path: "/$freightId/modify",
+    getParentRoute: () => DrivePlanningFreightsRoute,
   } as any)
 declare module "@tanstack/react-router" {
   interface FileRoutesByPath {
@@ -125,9 +139,17 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof WorkingTimeIndexImport
       parentRoute: typeof rootRoute
     }
+    "/drive-planning/freights/add-freight": {
+      preLoaderRoute: typeof DrivePlanningFreightsAddFreightImport
+      parentRoute: typeof DrivePlanningFreightsImport
+    }
     "/management/customer-sites/add-customer-site": {
       preLoaderRoute: typeof ManagementCustomerSitesAddCustomerSiteImport
       parentRoute: typeof ManagementImport
+    }
+    "/drive-planning/freights/$freightId/modify": {
+      preLoaderRoute: typeof DrivePlanningFreightsFreightIdModifyImport
+      parentRoute: typeof DrivePlanningFreightsImport
     }
     "/management/customer-sites/$customerSiteId/modify": {
       preLoaderRoute: typeof ManagementCustomerSitesCustomerSiteIdModifyImport
@@ -138,7 +160,10 @@ declare module "@tanstack/react-router" {
 export const routeTree = rootRoute.addChildren([
   IndexRoute,
   DrivePlanningRoute.addChildren([
-    DrivePlanningFreightsRoute,
+    DrivePlanningFreightsRoute.addChildren([
+      DrivePlanningFreightsAddFreightRoute,
+      DrivePlanningFreightsFreightIdModifyRoute,
+    ]),
     DrivePlanningRoutesRoute,
   ]),
   ManagementRoute.addChildren([

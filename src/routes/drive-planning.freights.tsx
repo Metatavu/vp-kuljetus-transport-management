@@ -1,5 +1,5 @@
 import { Button, Paper, Stack } from "@mui/material";
-import { createFileRoute } from "@tanstack/react-router";
+import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router";
 import ToolbarRow from "components/generic/toolbar-row";
 import { RouterContext } from "./__root";
 import { useTranslation } from "react-i18next";
@@ -12,7 +12,6 @@ import GenericDataGrid from "components/generic/generic-data-grid";
 import { Freight } from "generated/client";
 import LoaderWrapper from "components/generic/loader-wrapper";
 import DataValidation from "utils/data-validation-utils";
-import ServerSidePaginationUtils from "utils/server-side-pagination-utils";
 
 export const Route = createFileRoute("/drive-planning/freights")({
   component: DrivePlanningFreights,
@@ -23,6 +22,7 @@ export const Route = createFileRoute("/drive-planning/freights")({
 
 function DrivePlanningFreights() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { freightsApi, sitesApi, freightUnitsApi } = useApi();
 
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({ page: 0, pageSize: 25 });
@@ -32,7 +32,8 @@ function DrivePlanningFreights() {
     queryKey: ["freights", paginationModel],
     queryFn: async () => {
       const [freights, headers] = await freightsApi.listFreightsWithHeaders({
-        ...ServerSidePaginationUtils.paginationModelToRange(paginationModel),
+        first: paginationModel.pageSize * paginationModel.page,
+        max: paginationModel.pageSize * paginationModel.page + paginationModel.pageSize,
       });
       const count = parseInt(headers.get("x-total-count") ?? "0");
       setTotalResults(count);
@@ -125,38 +126,53 @@ function DrivePlanningFreights() {
         field: "actions",
         type: "actions",
         renderHeader: () => null,
-        renderCell: () => (
+        renderCell: ({ id }) => (
           <Stack direction="row" spacing={1}>
-            <Button variant="text" color="primary" size="small">
+            <Button
+              variant="text"
+              color="primary"
+              size="small"
+              onClick={() =>
+                navigate({ to: "/drive-planning/freights/$freightId/modify", params: { freightId: id as string } })
+              }
+            >
               {t("open")}
             </Button>
           </Stack>
         ),
       },
     ],
-    [t, renderCustomerSiteCell, freightUnitsQuery],
+    [t, navigate, renderCustomerSiteCell, freightUnitsQuery],
   );
 
   return (
-    <Paper sx={{ height: "100%" }}>
-      <ToolbarRow
-        toolbarButtons={
-          <Button size="small" variant="text" startIcon={<Add />}>
-            {t("drivePlanning.freights.new")}
-          </Button>
-        }
-      />
-      <LoaderWrapper loading={freightsQuery.isLoading || customerSitesQuery.isLoading}>
-        <GenericDataGrid
-          rows={freightsQuery.data ?? []}
-          columns={columns}
-          rowCount={totalResults}
-          disableRowSelectionOnClick
-          paginationMode="server"
-          paginationModel={paginationModel}
-          onPaginationModelChange={setPaginationModel}
+    <>
+      <Outlet />
+      <Paper sx={{ height: "100%" }}>
+        <ToolbarRow
+          toolbarButtons={
+            <Button
+              size="small"
+              variant="text"
+              startIcon={<Add />}
+              onClick={() => navigate({ to: "/drive-planning/freights/add-freight" })}
+            >
+              {t("drivePlanning.freights.new")}
+            </Button>
+          }
         />
-      </LoaderWrapper>
-    </Paper>
+        <LoaderWrapper loading={freightsQuery.isLoading || customerSitesQuery.isLoading}>
+          <GenericDataGrid
+            rows={freightsQuery.data ?? []}
+            columns={columns}
+            rowCount={totalResults}
+            disableRowSelectionOnClick
+            paginationMode="server"
+            paginationModel={paginationModel}
+            onPaginationModelChange={setPaginationModel}
+          />
+        </LoaderWrapper>
+      </Paper>
+    </>
   );
 }

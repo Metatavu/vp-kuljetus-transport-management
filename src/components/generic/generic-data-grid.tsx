@@ -27,8 +27,20 @@ const GenericDataGrid = ({
   paginationMode,
   paginationModel,
   rowCount,
+  hideFooter,
   disableRowSelectionOnClick,
+  slots,
+  autoHeight = true,
+  cellModesModel,
+  rowModesModel,
+  editMode,
   onPaginationModelChange,
+  getRowId,
+  processRowUpdate,
+  onCellClick,
+  onCellEditStop,
+  onCellModesModelChange,
+  onRowModesModelChange,
 }: DataGridProps) => {
   return (
     <StyledDataGrid
@@ -37,13 +49,24 @@ const GenericDataGrid = ({
       columnHeaderHeight={30}
       rowHeight={38}
       disableColumnMenu
+      hideFooter={hideFooter}
       disableRowSelectionOnClick={disableRowSelectionOnClick}
       rowCount={rowCount}
       paginationMode={paginationMode}
       paginationModel={paginationModel}
-      autoHeight
+      editMode={editMode}
+      cellModesModel={cellModesModel}
+      rowModesModel={rowModesModel}
+      autoHeight={autoHeight}
+      slots={slots}
       localeText={fiFI.components.MuiDataGrid.defaultProps.localeText}
+      processRowUpdate={processRowUpdate}
+      onCellModesModelChange={onCellModesModelChange}
+      onRowModesModelChange={onRowModesModelChange}
+      onCellEditStop={onCellEditStop}
+      onCellClick={onCellClick}
       onPaginationModelChange={onPaginationModelChange}
+      getRowId={getRowId}
     />
   );
 };
