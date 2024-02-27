@@ -1,6 +1,5 @@
-import { Button, Dialog, DialogActions, DialogContent, IconButton, Stack, Typography } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, Stack } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { Close } from "@mui/icons-material";
 import { useNavigate } from "@tanstack/react-router";
 import { useApi } from "hooks/use-api";
 import { UseMutationResult, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -11,6 +10,7 @@ import FreightTasks from "./freight-tasks";
 import { useCallback, useState } from "react";
 import LoaderWrapper from "components/generic/loader-wrapper";
 import { FormProvider, useForm } from "react-hook-form";
+import DialogHeader from "components/styled/dialog-header";
 
 type Props = {
   freightId?: string;
@@ -57,7 +57,10 @@ const FreightDialog = ({ freightId, onSave }: Props) => {
       Promise.all(
         pendingFreightUnits.map((freightUnit) => {
           if (!freightUnit.id) return Promise.reject();
-          freightUnitsApi.updateFreightUnit({ freightUnitId: freightUnit.id, freightUnit: freightUnit });
+          freightUnitsApi.updateFreightUnit({
+            freightUnitId: freightUnit.id,
+            freightUnit: { ...freightUnit, quantity: freightUnit.quantity || undefined },
+          });
         }),
       ),
     onSuccess: () => {
@@ -123,22 +126,14 @@ const FreightDialog = ({ freightId, onSave }: Props) => {
           freightQuery?.isLoading || customerSitesQuery.isLoading || tasksQuery.isLoading || freightUnitsQuery.isLoading
         }
       >
-        <Stack
-          padding="0px 8px 0px 16px"
-          direction="row"
-          height="42px"
-          bgcolor="#4E8A9C"
-          justifyContent="space-between"
-        >
-          <Typography alignSelf="center" variant="h6" sx={{ color: "#ffffff" }}>
-            {freightId
+        <DialogHeader
+          title={
+            freightId
               ? t("drivePlanning.freights.dialog.title", { freightNumber: freightQuery?.data?.freightNumber })
-              : t("drivePlanning.freights.new")}
-          </Typography>
-          <IconButton onClick={handleClose}>
-            <Close htmlColor="#ffffff" />
-          </IconButton>
-        </Stack>
+              : t("drivePlanning.freights.new")
+          }
+          onClose={handleClose}
+        />
         <FormProvider {...form}>
           <form onSubmit={form.handleSubmit(onSaveClick)}>
             <DialogContent sx={{ padding: 0 }}>

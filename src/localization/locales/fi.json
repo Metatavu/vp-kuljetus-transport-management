@@ -81,7 +81,19 @@
   "drivePlanning": {
     "title": "Ajojärjestely",
     "routes": {
-      "title": "Reitit"
+      "title": "Reitit",
+      "date": "Päivämäärä",
+      "newRoute": "Uusi reitti",
+      "name": "Nimi",
+      "truck": "Auto",
+      "driver": "Kuljettaja",
+      "tasks": "Tehtävät",
+      "helperText": "Voit valita tämän myöhemmin",
+      "dialog": {
+        "title": "Muokkaa reittiä",
+        "saveNewRoute": "Lisää reitti",
+        "saveExistingRoute": "Tallenna reitti"
+      }
     },
     "freights": {
       "title": "Rahtikirjalistaus",

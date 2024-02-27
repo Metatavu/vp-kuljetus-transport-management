@@ -12,6 +12,7 @@ import { Route as DrivePlanningRoutesImport } from "./../../routes/drive-plannin
 import { Route as DrivePlanningFreightsImport } from "./../../routes/drive-planning.freights"
 import { Route as ManagementEquipmentAddEquipmentImport } from "./../../routes/management.equipment_.add-equipment"
 import { Route as ManagementCustomerSitesAddCustomerSiteImport } from "./../../routes/management.customer-sites_.add-customer-site_"
+import { Route as DrivePlanningRoutesAddRouteImport } from "./../../routes/drive-planning.routes.add-route"
 import { Route as DrivePlanningFreightsAddFreightImport } from "./../../routes/drive-planning.freights.add-freight"
 import { Route as ManagementEquipmentEquipmentIdModifyImport } from "./../../routes/management.equipment_.$equipmentId.modify"
 import { Route as ManagementCustomerSitesCustomerSiteIdModifyImport } from "./../../routes/management.customer-sites_.$customerSiteId.modify"
@@ -82,6 +83,12 @@ const ManagementCustomerSitesAddCustomerSiteRoute =
   ManagementCustomerSitesAddCustomerSiteImport.update({
     path: "/customer-sites/add-customer-site",
     getParentRoute: () => ManagementRoute,
+  } as any)
+
+const DrivePlanningRoutesAddRouteRoute =
+  DrivePlanningRoutesAddRouteImport.update({
+    path: "/add-route",
+    getParentRoute: () => DrivePlanningRoutesRoute,
   } as any)
 
 const DrivePlanningFreightsAddFreightRoute =
@@ -157,6 +164,10 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof DrivePlanningFreightsAddFreightImport
       parentRoute: typeof DrivePlanningFreightsImport
     }
+    "/drive-planning/routes/add-route": {
+      preLoaderRoute: typeof DrivePlanningRoutesAddRouteImport
+      parentRoute: typeof DrivePlanningRoutesImport
+    }
     "/management/customer-sites/add-customer-site": {
       preLoaderRoute: typeof ManagementCustomerSitesAddCustomerSiteImport
       parentRoute: typeof ManagementImport
@@ -186,7 +197,7 @@ export const routeTree = rootRoute.addChildren([
       DrivePlanningFreightsAddFreightRoute,
       DrivePlanningFreightsFreightIdModifyRoute,
     ]),
-    DrivePlanningRoutesRoute,
+    DrivePlanningRoutesRoute.addChildren([DrivePlanningRoutesAddRouteRoute]),
   ]),
   ManagementRoute.addChildren([
     ManagementCustomerSitesRoute,

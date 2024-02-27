@@ -1,12 +1,13 @@
 import { Add } from "@mui/icons-material";
 import { Button } from "@mui/material";
-import { GridCellParams, GridColDef, GridRowModes, GridRowModesModel } from "@mui/x-data-grid";
+import { GridColDef } from "@mui/x-data-grid";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import GenericDataGrid from "components/generic/generic-data-grid";
 import { FreightUnit } from "generated/client";
-import { useCallback, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useApi } from "hooks/use-api";
+import { useSingleClickRowEditMode } from "hooks/use-single-click-row-edit-mode";
 
 const FREIGHT_UNIT_TYPES = ["EUR", "FIN", "RLK"] as const;
 
@@ -21,7 +22,7 @@ const FreightUnits = ({ freightUnits, freightId, onEditFreightUnit }: Props) => 
   const { freightUnitsApi } = useApi();
   const queryClient = useQueryClient();
 
-  const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
+  const { rowModesModel, handleCellClick, handleRowModelsChange } = useSingleClickRowEditMode();
 
   const createFreightUnit = useMutation({
     mutationFn: () =>
@@ -42,27 +43,10 @@ const FreightUnits = ({ freightUnits, freightId, onEditFreightUnit }: Props) => 
     },
   });
 
-  const handleRowModelsChange = useCallback((newModel: GridRowModesModel) => setRowModesModel(newModel), []);
-
   const processRowUpdate = (newRow: FreightUnit) => {
     onEditFreightUnit(newRow);
     return newRow;
   };
-
-  const handleCellClick = useCallback((params: GridCellParams) => {
-    if (!params.isEditable) return;
-    setRowModesModel((previousModel) => ({
-      ...Object.keys(previousModel).reduce(
-        (acc, id) => ({
-          // biome-ignore lint/performance/noAccumulatingSpread: <explanation>
-          ...acc,
-          [id]: { mode: GridRowModes.View },
-        }),
-        {},
-      ),
-      [params.row.id]: { mode: GridRowModes.Edit },
-    }));
-  }, []);
 
   const columns: GridColDef[] = useMemo(
     () => [

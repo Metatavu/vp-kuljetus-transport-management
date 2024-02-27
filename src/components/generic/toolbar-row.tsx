@@ -37,7 +37,7 @@ const ToolbarRow = ({ title, toolbarButtons, leftToolbar, navigateBack }: Props)
   };
 
   return (
-    <Stack direction="row" justifyContent="space-between" padding="8px 16px">
+    <Stack direction="row" justifyContent="space-between" padding="8px 16px" height="42px">
       <Stack direction="row" spacing={1}>
         {renderBackButton()}
         {renderLeftToolbar()}

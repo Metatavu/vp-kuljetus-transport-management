@@ -1,66 +1,95 @@
-import {
-  Box,
-  Button,
-  Collapse,
-  IconButton,
-  Paper,
-  Stack,
-  Table,
-  TableCell,
-  TableContainer,
-  TableHead,
-  Typography,
-} from "@mui/material";
-import { createFileRoute } from "@tanstack/react-router";
+import { Button, IconButton, Paper, Stack, Typography } from "@mui/material";
+import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router";
 import ToolbarRow from "components/generic/toolbar-row";
 import { RouterContext } from "./__root";
-import { Add, ArrowBack, ArrowForward } from "@mui/icons-material";
+import { Add, ArrowBack, ArrowForward, UnfoldMore } from "@mui/icons-material";
 import { DatePicker } from "@mui/x-date-pickers";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { DateTime } from "luxon";
 import { useApi } from "hooks/use-api";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import LoaderWrapper from "components/generic/loader-wrapper";
-import { GridColDef, GridPaginationModel, GridRow } from "@mui/x-data-grid";
+import { GridColDef, GridPaginationModel, GridRenderCellParams } from "@mui/x-data-grid";
 import GenericDataGrid from "components/generic/generic-data-grid";
-import { GridStateColDef } from "@mui/x-data-grid/internals";
+import DataValidation from "utils/data-validation-utils";
+import { Driver, Route as TRoute, Truck } from "generated/client";
+import { useSingleClickRowEditMode } from "hooks/use-single-click-row-edit-mode";
 
 export const Route = createFileRoute("/drive-planning/routes")({
   component: DrivePlanningRoutes,
   beforeLoad: (): RouterContext => ({
     breadcrumb: "drivePlanning.routes.title",
   }),
+  validateSearch: (params: Record<string, unknown>): { date?: string | null } => ({
+    date: params.date as string,
+  }),
 });
 
 function DrivePlanningRoutes() {
-  const { routesApi } = useApi();
+  const { routesApi, trucksApi, driversApi, tasksApi } = useApi();
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const initialDate = Route.useSearch({
+    select: (params) => (params.date ? params.date : undefined),
+  });
 
-  const [date, setDate] = useState<DateTime>(DateTime.now());
+  const [selectedDate, setSelectedDate] = useState<DateTime>(DateTime.now());
+
+  useEffect(() => {
+    if (!initialDate) return;
+    setSelectedDate(DateTime.fromISO(initialDate));
+  }, [initialDate]);
 
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({ page: 0, pageSize: 25 });
   const [totalResults, setTotalResults] = useState(0);
 
+  const { rowModesModel, handleCellClick, handleRowModelsChange } = useSingleClickRowEditMode();
+
+  const processRowUpdate = async (newRow: TRoute) => {
+    return await updateRoute.mutateAsync(newRow);
+  };
+
+  const updateRoute = useMutation({
+    mutationFn: (route: TRoute) => {
+      if (!route.id) return Promise.reject();
+      return routesApi.updateRoute({ routeId: route.id, route });
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["routes", selectedDate] }),
+  });
+
   const routesQuery = useQuery({
-    queryKey: ["routes", date],
+    queryKey: ["routes", selectedDate],
     queryFn: async () => {
       const [routes, headers] = await routesApi.listRoutesWithHeaders({
-        departureAfter: date.startOf("day").toJSDate(),
-        departureBefore: date.endOf("day").toJSDate(),
+        departureAfter: selectedDate.startOf("day").toJSDate(),
+        departureBefore: selectedDate.endOf("day").toJSDate(),
       });
       const count = parseInt(headers.get("x-total-count") ?? "0");
       setTotalResults(count);
-      return [
-        {
-          id: "1",
-          name: "Test",
-          truckId: "Test",
-          driverId: "Test",
-          departureTime: new Date(),
-        },
-      ];
+      return routes.sort((a, b) => b.name.localeCompare(a.name));
     },
+  });
+
+  const tasksQuery = useQueries({
+    queries: (routesQuery.data ?? []).map((route) => ({
+      queryKey: ["tasks", route.id],
+      queryFn: () => tasksApi.listTasks({ routeId: route.id }),
+    })),
+    combine: (results) => ({
+      data: results.flatMap((result) => result.data).filter(DataValidation.validateValueIsNotUndefinedNorNull),
+    }),
+  });
+
+  const trucksQuery = useQuery({
+    queryKey: ["trucks"],
+    queryFn: () => trucksApi.listTrucks(),
+  });
+
+  const driversQuery = useQuery({
+    queryKey: ["drivers"],
+    queryFn: () => driversApi.listDrivers(),
   });
 
   const minusOneDay = (currentDate: DateTime | null) => {
@@ -74,147 +103,124 @@ function DrivePlanningRoutes() {
   };
 
   const onChangeDate = (newDate: DateTime | null) => {
-    setDate(newDate ?? DateTime.now());
+    setSelectedDate(newDate ?? DateTime.now());
   };
 
   const columns: GridColDef[] = useMemo(
     () => [
       {
         field: "name",
-        headerName: "Reitti",
+        headerName: t("drivePlanning.routes.name"),
         sortable: false,
-        flex: 0.25,
+        flex: 1,
       },
       {
         field: "tasks",
-        headerName: "Tehtävät",
+        headerName: t("drivePlanning.routes.tasks"),
         sortable: false,
-        flex: 0.5,
-        renderCell: () => 5,
+        flex: 1,
+        renderCell: ({ id }) => {
+          const tasks = tasksQuery.data.filter((task) => task.routeId === id);
+
+          return tasks.length;
+        },
       },
       {
         field: "truckId",
-        headerName: "Auto",
+        headerName: t("drivePlanning.routes.truck"),
         sortable: false,
-        flex: 0.5,
+        flex: 1,
+        editable: true,
+        type: "singleSelect",
+        valueOptions: trucksQuery.data ?? [],
+        getOptionLabel: ({ name, plateNumber }: Truck) => `${name} (${plateNumber})`,
+        getOptionValue: ({ id }: Truck) => id,
+        renderCell: ({ row: { truckId } }: GridRenderCellParams<TRoute>) => (truckId ? undefined : <Add />),
       },
       {
         field: "driverId",
-        headerName: "Kuljettaja",
+        headerName: t("drivePlanning.routes.driver"),
         sortable: false,
-        flex: 5,
+        flex: 10,
+        editable: true,
+        type: "singleSelect",
+        valueOptions: driversQuery.data ?? [],
+        getOptionLabel: ({ displayName }: Driver) => displayName,
+        getOptionValue: ({ id }: Driver) => id,
+        renderCell: ({ row: { driverId } }: GridRenderCellParams<TRoute>) => (driverId ? undefined : <Add />),
       },
       {
         field: "actions",
         type: "actions",
+        align: "right",
         flex: 1,
         renderHeader: () => null,
-        renderCell: ({ id }) => (
-          <Stack direction="row" spacing={1}>
-            <Button variant="text" color="primary" size="small">
-              {t("open")}
-            </Button>
-          </Stack>
+        renderCell: () => (
+          <IconButton>
+            <UnfoldMore />
+          </IconButton>
         ),
       },
     ],
-    [t],
+    [t, tasksQuery.data, trucksQuery.data, driversQuery.data],
   );
 
   return (
-    <Paper sx={{ height: "100%" }}>
-      <ToolbarRow
-        leftToolbar={
-          <Stack direction="row">
-            <Typography variant="h6" sx={{ opacity: 0.6 }} alignSelf="center">
-              Päivämäärä
-            </Typography>
-            <IconButton onClick={() => setDate(minusOneDay)}>
-              <ArrowBack />
-            </IconButton>
-            <DatePicker value={date} onChange={onChangeDate} format="d.M.y" />
-            <IconButton onClick={() => setDate(plusOneDay)}>
-              <ArrowForward />
-            </IconButton>
-          </Stack>
-        }
-        toolbarButtons={
-          <Button size="small" variant="text" startIcon={<Add />}>
-            Uusi reitti
-          </Button>
-        }
-      />
-      <LoaderWrapper loading={routesQuery.isLoading}>
-        <GenericDataGrid
-          rows={routesQuery?.data ?? []}
-          columns={columns}
-          rowCount={totalResults}
-          disableRowSelectionOnClick
-          autoHeight={false}
-          paginationMode="server"
-          slots={{
-            row: (test) => {
-              const nameColumn = test.renderedColumns.find((col: any) => col.field === "name");
-              const tasksColumn = test.renderedColumns.find((col: any) => col.field === "tasks");
-              const truckColumn = test.renderedColumns.find((col: any) => col.field === "truckId");
-              const driverColumn = test.renderedColumns.find((col: any) => col.field === "driverId");
-              const actionsColumn = test.renderedColumns.find((col: any) => col.field === "actions");
-              const [expanded, setExpanded] = useState(false);
-              const columnsLength = test.renderedColumns.length;
-              const actionsCell = test.renderedColumns[columnsLength - 1];
-              if (actionsCell) {
-                actionsCell.renderCell = () => (
-                  <Stack direction="row" spacing={1}>
-                    <Button
-                      variant="text"
-                      color="primary"
-                      size="small"
-                      onClick={() => {
-                        setExpanded(!expanded);
-                      }}
-                    >
-                      {t("open")}
-                    </Button>
-                  </Stack>
-                );
+    <>
+      <Outlet />
+      <Paper sx={{ height: "100%" }}>
+        <ToolbarRow
+          leftToolbar={
+            <Stack direction="row">
+              <Typography variant="h6" sx={{ opacity: 0.6 }} alignSelf="center">
+                {t("drivePlanning.routes.date")}
+              </Typography>
+              <IconButton onClick={() => setSelectedDate(minusOneDay)}>
+                <ArrowBack />
+              </IconButton>
+              <DatePicker
+                value={selectedDate}
+                onChange={onChangeDate}
+                sx={{ alignSelf: "center", padding: "4px 8px", width: "132px" }}
+              />
+              <IconButton onClick={() => setSelectedDate(plusOneDay)}>
+                <ArrowForward />
+              </IconButton>
+            </Stack>
+          }
+          toolbarButtons={
+            <Button
+              size="small"
+              variant="text"
+              startIcon={<Add />}
+              onClick={() =>
+                navigate({
+                  to: "/drive-planning/routes/add-route",
+                  search: { date: selectedDate.toISODate() },
+                })
               }
-              (test.renderedColumns as GridStateColDef[]).splice(columnsLength - 1, 1, actionsCell);
-              return (
-                <Box>
-                  <GridRow {...test} />
-                  <Collapse
-                    in={expanded}
-                    sx={{ "& .MuiCollapse-wrapper": { marginLeft: `${nameColumn.computedWidth}px` } }}
-                  >
-                    <Table sx={{ border: "1px solid #4E8A9C" }}>
-                      <TableHead
-                        sx={{
-                          "& .MuiTableCell-root": {
-                            padding: "4px 8px",
-                            backgroundColor: "rgb(237, 243, 245)",
-                            borderRight: "1px solid #E0E0E0",
-                          },
-                        }}
-                      >
-                        <TableCell width={tasksColumn.computedWidth}>Tehtävä</TableCell>
-                        <TableCell width={truckColumn.computedWidth}>Tunnus</TableCell>
-                        <TableCell width={driverColumn.computedWidth / 2}>Asiakaspaikka</TableCell>
-                        <TableCell width={driverColumn.computedWidth / 2}>Osoite</TableCell>
-                        <TableCell>Tehtävien lkm</TableCell>
-                        <TableCell width={tasksColumn.computedWidth / 5}>
-                          <span />
-                        </TableCell>
-                      </TableHead>
-                    </Table>
-                  </Collapse>
-                </Box>
-              );
-            },
-          }}
-          paginationModel={paginationModel}
-          onPaginationModelChange={setPaginationModel}
+            >
+              {t("drivePlanning.routes.newRoute")}
+            </Button>
+          }
         />
-      </LoaderWrapper>
-    </Paper>
+        <LoaderWrapper loading={routesQuery.isLoading}>
+          <GenericDataGrid
+            editMode="row"
+            rows={routesQuery?.data ?? []}
+            columns={columns}
+            rowCount={totalResults}
+            rowModesModel={rowModesModel}
+            disableRowSelectionOnClick
+            paginationMode="server"
+            paginationModel={paginationModel}
+            processRowUpdate={processRowUpdate}
+            onRowModesModelChange={handleRowModelsChange}
+            onPaginationModelChange={setPaginationModel}
+            onCellClick={handleCellClick}
+          />
+        </LoaderWrapper>
+      </Paper>
+    </>
   );
 }
