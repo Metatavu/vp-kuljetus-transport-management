@@ -6,11 +6,11 @@ import { useApi } from "hooks/use-api";
 import { UseMutationResult, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Freight, FreightUnit, Task } from "generated/client";
 import FreightCustomerSitesForm from "./freight-customer-sites-form";
-import { useForm } from "react-hook-form";
 import FreightUnits from "./freight-units";
 import FreightTasks from "./freight-tasks";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import LoaderWrapper from "components/generic/loader-wrapper";
+import { FormProvider, useForm } from "react-hook-form";
 
 type Props = {
   freightId?: string;
@@ -28,10 +28,8 @@ const FreightDialog = ({ freightId, onSave }: Props) => {
 
   const freightQuery = useQuery({
     queryKey: ["freights", freightId],
-    queryFn: async () => {
-      if (!freightId) return;
-      return await freightsApi.findFreight({ freightId: freightId });
-    },
+    // biome-ignore lint/style/noNonNullAssertion: <This query isn't enabled unless freightId is defined>
+    queryFn: () => freightsApi.findFreight({ freightId: freightId! }),
     enabled: !!freightId,
   });
 
@@ -79,25 +77,6 @@ const FreightDialog = ({ freightId, onSave }: Props) => {
     },
   });
 
-  const {
-    handleSubmit,
-    reset,
-    control,
-    formState: { errors },
-  } = useForm<Freight>({
-    mode: "onChange",
-    defaultValues: {
-      destinationSiteId: freightQuery?.data?.destinationSiteId ?? "EMPTY",
-      pointOfDepartureSiteId: freightQuery?.data?.pointOfDepartureSiteId ?? "EMPTY",
-      senderSiteId: freightQuery?.data?.senderSiteId ?? "EMPTY",
-      recipientSiteId: freightQuery?.data?.recipientSiteId ?? "EMPTY",
-    },
-  });
-
-  useEffect(() => {
-    reset(freightQuery?.data);
-  }, [freightQuery?.data, reset]);
-
   const onEditFreightUnit = (updatedFreightUnit: FreightUnit) => {
     const filteredTempFreightUnits = pendingFreightUnits.filter(
       (freightUnit) => freightUnit.id !== updatedFreightUnit.id,
@@ -137,7 +116,8 @@ const FreightDialog = ({ freightId, onSave }: Props) => {
       );
     }, [freightId, freightUnitsQuery.data, tasksQuery.data, customerSitesQuery.data]);
 
-  const isSaveEnabled = !Object.keys(errors).length;
+  const form = useForm<Freight>({ mode: "onChange", defaultValues: freightQuery.data });
+  const isSaveEnabled = !Object.keys(form.formState.errors).length;
 
   return (
     <Dialog open={true} onClose={handleClose} PaperProps={{ sx: { minWidth: "50%", borderRadius: 0 } }}>
@@ -162,20 +142,30 @@ const FreightDialog = ({ freightId, onSave }: Props) => {
             <Close htmlColor="#ffffff" />
           </IconButton>
         </Stack>
-        <DialogContent sx={{ padding: 0 }}>
-          <Stack spacing={2}>
-            <FreightCustomerSitesForm customerSites={customerSitesQuery.data ?? []} control={control} />
-            {renderFreightContent()}
-          </Stack>
-        </DialogContent>
-        <DialogActions>
-          <Button variant="text" onClick={handleClose}>
-            {t("cancel")}
-          </Button>
-          <Button variant="contained" disabled={!isSaveEnabled} onClick={handleSubmit(onSaveClick)}>
-            {t("drivePlanning.freights.dialog.save")}
-          </Button>
-        </DialogActions>
+        <FormProvider {...form}>
+          <form onSubmit={form.handleSubmit(onSaveClick)}>
+            <DialogContent sx={{ padding: 0 }}>
+              <Stack spacing={2}>
+                {!!freightQuery.data && (
+                  <FreightCustomerSitesForm
+                    freight={freightQuery.data}
+                    customerSites={customerSitesQuery.data ?? []}
+                    onSave={onSaveClick}
+                  />
+                )}
+                {renderFreightContent()}
+              </Stack>
+            </DialogContent>
+            <DialogActions>
+              <Button variant="text" onClick={handleClose}>
+                {t("cancel")}
+              </Button>
+              <Button variant="contained" disabled={!isSaveEnabled} type="submit">
+                {t("drivePlanning.freights.dialog.save")}
+              </Button>
+            </DialogActions>
+          </form>
+        </FormProvider>
       </LoaderWrapper>
     </Dialog>
   );
