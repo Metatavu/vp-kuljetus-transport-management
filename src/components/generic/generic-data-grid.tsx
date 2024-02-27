@@ -16,9 +16,6 @@ const StyledDataGrid = styled(DataGrid, {
   "& .MuiDataGrid-footerContainer": {
     border: "none",
   },
-  "& .MuiDataGrid-virtualScroller": {
-    overflow: "hidden",
-  },
 }));
 
 const GenericDataGrid = ({
@@ -34,6 +31,8 @@ const GenericDataGrid = ({
   cellModesModel,
   rowModesModel,
   editMode,
+  apiRef,
+  sx,
   onPaginationModelChange,
   getRowId,
   processRowUpdate,
@@ -44,6 +43,8 @@ const GenericDataGrid = ({
 }: DataGridProps) => {
   return (
     <StyledDataGrid
+      sx={sx}
+      apiRef={apiRef}
       columns={columns}
       rows={rows}
       columnHeaderHeight={30}

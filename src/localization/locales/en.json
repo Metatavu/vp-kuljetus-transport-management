@@ -76,6 +76,13 @@
         "title": "Edit route",
         "saveNewRoute": "Add route",
         "saveExistingRoute": "Save route"
+      },
+      "tasksTable": {
+        "task": "Task",
+        "groupNumber": "Identifier",
+        "customerSite": "Customer site",
+        "address": "Address",
+        "tasksAmount": "Amount of tasks"
       }
     },
     "freights": {

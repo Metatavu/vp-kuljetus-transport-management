@@ -76,6 +76,13 @@
         "title": "Muokkaa reittiä",
         "saveNewRoute": "Lisää reitti",
         "saveExistingRoute": "Tallenna reitti"
+      },
+      "tasksTable": {
+        "task": "Tehtävä",
+        "groupNumber": "Tunnus",
+        "customerSite": "Asiakaspaikka",
+        "address": "Osoite",
+        "tasksAmount": "Tehtävien lkm"
       }
     },
     "freights": {

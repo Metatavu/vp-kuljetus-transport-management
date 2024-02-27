@@ -1,8 +1,21 @@
-import { Button, IconButton, Paper, Stack, Typography } from "@mui/material";
+import {
+  Button,
+  Collapse,
+  IconButton,
+  Paper,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
 import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router";
 import ToolbarRow from "components/generic/toolbar-row";
 import { RouterContext } from "./__root";
-import { Add, ArrowBack, ArrowForward, UnfoldMore } from "@mui/icons-material";
+import { Add, ArrowBack, ArrowForward, UnfoldLess, UnfoldMore } from "@mui/icons-material";
 import { DatePicker } from "@mui/x-date-pickers";
 import { useEffect, useMemo, useState } from "react";
 import { DateTime } from "luxon";
@@ -10,11 +23,19 @@ import { useApi } from "hooks/use-api";
 import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import LoaderWrapper from "components/generic/loader-wrapper";
-import { GridColDef, GridPaginationModel, GridRenderCellParams } from "@mui/x-data-grid";
+import {
+  GridColDef,
+  GridPaginationModel,
+  GridRenderCellParams,
+  GridRow,
+  GridRowProps,
+  useGridApiRef,
+} from "@mui/x-data-grid";
 import GenericDataGrid from "components/generic/generic-data-grid";
 import DataValidation from "utils/data-validation-utils";
 import { Driver, Route as TRoute, Truck } from "generated/client";
 import { useSingleClickRowEditMode } from "hooks/use-single-click-row-edit-mode";
+import LocalizationUtils from "utils/localization-utils";
 
 export const Route = createFileRoute("/drive-planning/routes")({
   component: DrivePlanningRoutes,
@@ -27,10 +48,11 @@ export const Route = createFileRoute("/drive-planning/routes")({
 });
 
 function DrivePlanningRoutes() {
-  const { routesApi, trucksApi, driversApi, tasksApi } = useApi();
+  const { routesApi, trucksApi, driversApi, tasksApi, sitesApi } = useApi();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const dataGridRef = useGridApiRef();
   const initialDate = Route.useSearch({
     select: (params) => (params.date ? params.date : undefined),
   });
@@ -82,6 +104,11 @@ function DrivePlanningRoutes() {
     }),
   });
 
+  const sitesQuery = useQuery({
+    queryKey: ["sites"],
+    queryFn: () => sitesApi.listSites(),
+  });
+
   const trucksQuery = useQuery({
     queryKey: ["trucks"],
     queryFn: () => trucksApi.listTrucks(),
@@ -105,6 +132,8 @@ function DrivePlanningRoutes() {
   const onChangeDate = (newDate: DateTime | null) => {
     setSelectedDate(newDate ?? DateTime.now());
   };
+
+  const [expandedRows, setExpandedRows] = useState<string[]>([]);
 
   const columns: GridColDef[] = useMemo(
     () => [
@@ -155,14 +184,19 @@ function DrivePlanningRoutes() {
         align: "right",
         flex: 1,
         renderHeader: () => null,
-        renderCell: () => (
-          <IconButton>
-            <UnfoldMore />
+        renderCell: ({ row: { id } }) => (
+          <IconButton
+            onClick={() => {
+              if (expandedRows.includes(id)) setExpandedRows(expandedRows.filter((rowId) => rowId !== id));
+              else setExpandedRows([...expandedRows, id]);
+            }}
+          >
+            {expandedRows.includes(id) ? <UnfoldLess /> : <UnfoldMore />}
           </IconButton>
         ),
       },
     ],
-    [t, tasksQuery.data, trucksQuery.data, driversQuery.data],
+    [t, tasksQuery.data, trucksQuery.data, driversQuery.data, expandedRows, setExpandedRows],
   );
 
   return (
@@ -207,13 +241,72 @@ function DrivePlanningRoutes() {
         <LoaderWrapper loading={routesQuery.isLoading}>
           <GenericDataGrid
             editMode="row"
+            paginationMode="server"
+            disableRowSelectionOnClick
+            sx={{
+              "& .MuiDataGrid-virtualScroller": {
+                overflow: "visible !important",
+              },
+            }}
+            apiRef={dataGridRef}
             rows={routesQuery?.data ?? []}
             columns={columns}
             rowCount={totalResults}
             rowModesModel={rowModesModel}
-            disableRowSelectionOnClick
-            paginationMode="server"
             paginationModel={paginationModel}
+            slots={{
+              row: (row: GridRowProps) => {
+                const firstColumn = row.renderedColumns[0];
+                const sortedRows = dataGridRef.current.getSortedRowIds() as string[];
+                const nextSiblingIndex = sortedRows.indexOf(row.id as string) + 1;
+                const isNextExpanded = expandedRows.includes(sortedRows[nextSiblingIndex]);
+                const borders = isNextExpanded
+                  ? {
+                      borderRight: "1px solid rgba(0, 0, 0, 0.12)",
+                      borderTop: "1px solid rgba(0, 0, 0, 0.12)",
+                    }
+                  : undefined;
+
+                return (
+                  <>
+                    <GridRow {...row} style={{ ...borders }} />
+                    <Collapse in={expandedRows.includes(row.rowId as string)}>
+                      <TableContainer sx={{ marginLeft: `${firstColumn.computedWidth - 1}px` }}>
+                        <Table>
+                          <TableHead>
+                            <TableRow>
+                              <TableCell>{t("drivePlanning.routes.tasksTable.task")}</TableCell>
+                              <TableCell>{t("drivePlanning.routes.tasksTable.groupNumber")}</TableCell>
+                              <TableCell>{t("drivePlanning.routes.tasksTable.customerSite")}</TableCell>
+                              <TableCell>{t("drivePlanning.routes.tasksTable.address")}</TableCell>
+                              <TableCell>{t("drivePlanning.routes.tasksTable.tasksAmount")}</TableCell>
+                            </TableRow>
+                          </TableHead>
+                          <TableBody>
+                            {tasksQuery.data
+                              .filter((task) => task.routeId === row.rowId)
+                              .map((task) => {
+                                const foundSite = sitesQuery.data?.find((site) => site.id === task.customerSiteId);
+                                return (
+                                  <TableRow key={task.id}>
+                                    <TableCell>{LocalizationUtils.getLocalizedTaskType(task.type, t)}</TableCell>
+                                    <TableCell>{task.groupNumber}</TableCell>
+                                    <TableCell>{foundSite?.name}</TableCell>
+                                    <TableCell>
+                                      {foundSite?.address}, {foundSite?.postalCode} {foundSite?.locality}
+                                    </TableCell>
+                                    <TableCell>0</TableCell>
+                                  </TableRow>
+                                );
+                              })}
+                          </TableBody>
+                        </Table>
+                      </TableContainer>
+                    </Collapse>
+                  </>
+                );
+              },
+            }}
             processRowUpdate={processRowUpdate}
             onRowModesModelChange={handleRowModelsChange}
             onPaginationModelChange={setPaginationModel}
