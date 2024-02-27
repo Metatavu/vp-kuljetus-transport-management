@@ -4,14 +4,13 @@ import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
 type Props = {
-  freight: Freight;
+  freight?: Freight;
   customerSites: Site[];
-  onSave: (data: Freight) => Promise<void>;
 };
 
-const FreightCustomerSitesForm = ({ freight, customerSites, onSave }: Props) => {
+const FreightCustomerSitesForm = ({ freight, customerSites }: Props) => {
   const { t } = useTranslation();
-  const { register, handleSubmit } = useFormContext<Freight>();
+  const { register } = useFormContext<Freight>();
 
   const renderCustomerSite = (site: Site) => (
     <MenuItem key={site.id} value={site.id}>
@@ -23,7 +22,8 @@ const FreightCustomerSitesForm = ({ freight, customerSites, onSave }: Props) => 
 
   const validateSiteId = (value: unknown) => value !== "EMPTY";
 
-  const { senderSiteId, recipientSiteId, destinationSiteId, pointOfDepartureSiteId } = freight;
+  const { senderSiteId, recipientSiteId, destinationSiteId, pointOfDepartureSiteId } = freight ?? {};
+
   return (
     <Stack spacing={2} paddingX={2} paddingTop={3}>
       <Stack direction="row" spacing={2}>

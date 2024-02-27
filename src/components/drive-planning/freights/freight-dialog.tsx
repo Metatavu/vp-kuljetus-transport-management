@@ -146,13 +146,7 @@ const FreightDialog = ({ freightId, onSave }: Props) => {
           <form onSubmit={form.handleSubmit(onSaveClick)}>
             <DialogContent sx={{ padding: 0 }}>
               <Stack spacing={2}>
-                {!!freightQuery.data && (
-                  <FreightCustomerSitesForm
-                    freight={freightQuery.data}
-                    customerSites={customerSitesQuery.data ?? []}
-                    onSave={onSaveClick}
-                  />
-                )}
+                <FreightCustomerSitesForm freight={freightQuery.data} customerSites={customerSitesQuery.data ?? []} />
                 {renderFreightContent()}
               </Stack>
             </DialogContent>
