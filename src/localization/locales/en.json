@@ -64,10 +64,19 @@
   "drivePlanning": {
     "title": "Drive planning",
     "routes": {
-      "title": "Routes"
-    },
-    "routes": {
-      "title": "Routes"
+      "title": "Routes",
+      "date": "Date",
+      "newRoute": "New route",
+      "name": "Name",
+      "truck": "Truck",
+      "driver": "Driver",
+      "tasks": "Tasks",
+      "helperText": "You can choose this later",
+      "dialog": {
+        "title": "Edit route",
+        "saveNewRoute": "Add route",
+        "saveExistingRoute": "Save route"
+      }
     },
     "freights": {
       "title": "Freights list",
