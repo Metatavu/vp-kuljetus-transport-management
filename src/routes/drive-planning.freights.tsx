@@ -151,7 +151,12 @@ function DrivePlanningFreights() {
       <Paper sx={{ height: "100%" }}>
         <ToolbarRow
           toolbarButtons={
-            <Button size="small" variant="text" startIcon={<Add />}>
+            <Button
+              size="small"
+              variant="text"
+              startIcon={<Add />}
+              onClick={() => navigate({ to: "/drive-planning/freights/add-freight" })}
+            >
               {t("drivePlanning.freights.new")}
             </Button>
           }

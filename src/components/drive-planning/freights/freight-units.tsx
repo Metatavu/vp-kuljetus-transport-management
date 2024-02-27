@@ -24,8 +24,8 @@ const FreightUnits = ({ freightUnits, freightId, onEditFreightUnit }: Props) => 
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
 
   const createFreightUnit = useMutation({
-    mutationFn: async () =>
-      await freightUnitsApi.createFreightUnit({
+    mutationFn: () =>
+      freightUnitsApi.createFreightUnit({
         freightUnit: {
           freightId: freightId,
           type: "EUR",
@@ -35,7 +35,7 @@ const FreightUnits = ({ freightUnits, freightId, onEditFreightUnit }: Props) => 
   });
 
   const deleteFreightUnit = useMutation({
-    mutationFn: async (id: string) => await freightUnitsApi.deleteFreightUnit({ freightUnitId: id }),
+    mutationFn: (id: string) => freightUnitsApi.deleteFreightUnit({ freightUnitId: id }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["freightUnits", freightId] });
       queryClient.fetchQuery({ queryKey: ["freightUnits", freightId] });

@@ -1,11 +1,11 @@
 import { TaskType } from "generated/client";
-import { LocalizedLabelKey } from "src/types";
+import { TFunction } from "i18next";
 
 namespace LocalizationUtils {
-  export const getLocalizedTaskType = (type: TaskType): LocalizedLabelKey => ({
-    LOAD: "drivePlanning.tasks.loadTaskType",
-    UNLOAD: "drivePlanning.tasks.unloadTaskType",
-  } as Record<TaskType, LocalizedLabelKey>)[type];
+  export const getLocalizedTaskType = (type: TaskType, t: TFunction) => ({
+    LOAD: t("drivePlanning.tasks.loadTaskType"),
+    UNLOAD: t("drivePlanning.tasks.unloadTaskType"),
+  })[type];
 }
 
 export default LocalizationUtils;

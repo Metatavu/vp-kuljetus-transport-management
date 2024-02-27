@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { RouterContext } from "./__root";
 import FreightDialog from "components/drive-planning/freights/freight-dialog";
 import { useApi } from "hooks/use-api";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Freight } from "generated/client";
 
 export const Route = createFileRoute("/drive-planning/freights/$freightId/modify")({
@@ -18,11 +18,6 @@ function ModifyFreight() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  const freight = useQuery({
-    queryKey: ["freights", freightId],
-    queryFn: async () => await freightsApi.findFreight({ freightId }),
-  });
-
   const updateFreight = useMutation({
     mutationFn: async (freight: Freight) => {
       await freightsApi.updateFreight({ freightId, freight });
@@ -34,5 +29,5 @@ function ModifyFreight() {
     },
   });
 
-  return <FreightDialog type="MODIFY" initialDataQuery={freight} onSave={updateFreight} />;
+  return <FreightDialog freightId={freightId} onSave={updateFreight} />;
 }
