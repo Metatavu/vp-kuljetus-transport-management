@@ -1,17 +1,4 @@
-import {
-  Button,
-  Collapse,
-  IconButton,
-  Paper,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Typography,
-} from "@mui/material";
+import { Button, Collapse, IconButton, Paper, Stack, Typography } from "@mui/material";
 import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router";
 import ToolbarRow from "components/generic/toolbar-row";
 import { RouterContext } from "./__root";
@@ -35,7 +22,7 @@ import GenericDataGrid from "components/generic/generic-data-grid";
 import DataValidation from "utils/data-validation-utils";
 import { Driver, Route as TRoute, Truck } from "generated/client";
 import { useSingleClickRowEditMode } from "hooks/use-single-click-row-edit-mode";
-import LocalizationUtils from "utils/localization-utils";
+import RoutesTasksTable from "components/drive-planning/routes/routes-tasks-table";
 
 export const Route = createFileRoute("/drive-planning/routes")({
   component: DrivePlanningRoutes,
@@ -196,7 +183,7 @@ function DrivePlanningRoutes() {
         ),
       },
     ],
-    [t, tasksQuery.data, trucksQuery.data, driversQuery.data, expandedRows, setExpandedRows],
+    [t, tasksQuery.data, trucksQuery.data, driversQuery.data, expandedRows],
   );
 
   return (
@@ -270,38 +257,14 @@ function DrivePlanningRoutes() {
                 return (
                   <>
                     <GridRow {...row} style={{ ...borders }} />
-                    <Collapse in={expandedRows.includes(row.rowId as string)}>
-                      <TableContainer sx={{ marginLeft: `${firstColumn.computedWidth - 1}px` }}>
-                        <Table>
-                          <TableHead>
-                            <TableRow>
-                              <TableCell>{t("drivePlanning.routes.tasksTable.task")}</TableCell>
-                              <TableCell>{t("drivePlanning.routes.tasksTable.groupNumber")}</TableCell>
-                              <TableCell>{t("drivePlanning.routes.tasksTable.customerSite")}</TableCell>
-                              <TableCell>{t("drivePlanning.routes.tasksTable.address")}</TableCell>
-                              <TableCell>{t("drivePlanning.routes.tasksTable.tasksAmount")}</TableCell>
-                            </TableRow>
-                          </TableHead>
-                          <TableBody>
-                            {tasksQuery.data
-                              .filter((task) => task.routeId === row.rowId)
-                              .map((task) => {
-                                const foundSite = sitesQuery.data?.find((site) => site.id === task.customerSiteId);
-                                return (
-                                  <TableRow key={task.id}>
-                                    <TableCell>{LocalizationUtils.getLocalizedTaskType(task.type, t)}</TableCell>
-                                    <TableCell>{task.groupNumber}</TableCell>
-                                    <TableCell>{foundSite?.name}</TableCell>
-                                    <TableCell>
-                                      {foundSite?.address}, {foundSite?.postalCode} {foundSite?.locality}
-                                    </TableCell>
-                                    <TableCell>0</TableCell>
-                                  </TableRow>
-                                );
-                              })}
-                          </TableBody>
-                        </Table>
-                      </TableContainer>
+                    <Collapse
+                      in={expandedRows.includes(row.rowId as string)}
+                      sx={{ marginLeft: `${firstColumn.computedWidth - 1}px` }}
+                    >
+                      <RoutesTasksTable
+                        tasks={tasksQuery.data?.filter((task) => task.routeId === row.rowId) ?? []}
+                        sites={sitesQuery.data ?? []}
+                      />
                     </Collapse>
                   </>
                 );
