@@ -1,33 +1,29 @@
 import { Collapse } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
-import { useQueries, useQuery } from "@tanstack/react-query";
+import { useQueries } from "@tanstack/react-query";
 import GenericDataGrid from "components/generic/generic-data-grid";
-import DialogHeader from "components/styled/dialog-header";
-import { ForwardedRef, forwardRef } from "react";
+import DialogHeader from "components/generic/dialog-header";
 import { useTranslation } from "react-i18next";
 import { useApi } from "hooks/use-api";
 import DataValidation from "utils/data-validation-utils";
 import LocalizationUtils from "utils/localization-utils";
-import { ExpandLess, ExpandMore } from "@mui/icons-material";
+import { AssignmentSharp, ExpandLess, ExpandMore } from "@mui/icons-material";
+import { Site, Task } from "generated/client";
 
 type Props = {
   open: boolean;
+  tasks: Task[];
+  sites: Site[];
   onClose: () => void;
 };
 
-const UnallocatedTasksDrawer = forwardRef(({ open, onClose }: Props, ref: ForwardedRef<HTMLDivElement>) => {
-  const { tasksApi, freightsApi, freightUnitsApi, sitesApi } = useApi();
+const UnallocatedTasksDrawer = ({ open, tasks, sites, onClose }: Props) => {
+  const { freightsApi, freightUnitsApi } = useApi();
   const { t } = useTranslation();
-
-  const tasksQuery = useQuery({
-    queryKey: ["tasks"],
-    queryFn: () => tasksApi.listTasks(),
-    select: (data) => data.filter((task) => !task.routeId),
-  });
 
   const freightsQueries = useQueries({
     queries:
-      tasksQuery.data?.map((task) => ({
+      tasks.map((task) => ({
         queryKey: ["freights", task.freightId],
         queryFn: () => freightsApi.findFreight({ freightId: task.freightId }),
       })) ?? [],
@@ -47,16 +43,7 @@ const UnallocatedTasksDrawer = forwardRef(({ open, onClose }: Props, ref: Forwar
     }),
   });
 
-  const sitesQuery = useQueries({
-    queries:
-      tasksQuery.data?.map((task) => ({
-        queryKey: ["sites", task.customerSiteId],
-        queryFn: () => sitesApi.findSite({ siteId: task.customerSiteId }),
-      })) ?? [],
-    combine: (results) => ({
-      data: results.flatMap((result) => result.data).filter(DataValidation.validateValueIsNotUndefinedNorNull),
-    }),
-  });
+  const getFilteredTasks = () => tasks.filter((task) => !task.routeId) ?? [];
 
   const columns: GridColDef[] = [
     {
@@ -74,7 +61,7 @@ const UnallocatedTasksDrawer = forwardRef(({ open, onClose }: Props, ref: Forwar
     },
     {
       field: "freightNumber",
-      headerName: "Rahtikirja",
+      headerName: t("drivePlanning.routes.unallocatedTasksTable.freightNumber"),
       sortable: false,
       flex: 3,
       renderCell: ({ row: { freightId } }) =>
@@ -85,18 +72,18 @@ const UnallocatedTasksDrawer = forwardRef(({ open, onClose }: Props, ref: Forwar
       headerName: t("drivePlanning.routes.tasksTable.customerSite"),
       sortable: false,
       flex: 3,
-      renderCell: ({ row: { customerSiteId } }) => sitesQuery.data?.find((site) => site.id === customerSiteId)?.name,
+      renderCell: ({ row: { customerSiteId } }) => sites.find((site) => site.id === customerSiteId)?.name,
     },
     {
       field: "address",
       headerName: t("drivePlanning.routes.tasksTable.address"),
       sortable: false,
       flex: 3,
-      renderCell: ({ row: { customerSiteId } }) => sitesQuery.data?.find((site) => site.id === customerSiteId)?.address,
+      renderCell: ({ row: { customerSiteId } }) => sites.find((site) => site.id === customerSiteId)?.address,
     },
     {
       field: "contents",
-      headerName: "Rahti",
+      headerName: t("drivePlanning.routes.unallocatedTasksTable.contents"),
       sortable: false,
       flex: 2,
       renderCell: ({ row: { freightId } }) => {
@@ -113,13 +100,17 @@ const UnallocatedTasksDrawer = forwardRef(({ open, onClose }: Props, ref: Forwar
     <Collapse
       in={open}
       collapsedSize={42}
-      ref={ref}
       sx={{ maxHeight: "30%", overflowY: "scroll", scrollbarWidth: 0, "::-webkit-scrollbar": { display: "none" } }}
     >
-      <DialogHeader title="Järjestelemättömät tehtävät" onClose={onClose} CloseIcon={open ? ExpandMore : ExpandLess} />
-      <GenericDataGrid columns={columns} rows={tasksQuery.data ?? []} />
+      <DialogHeader
+        title={t("drivePlanning.routes.unallocatedTasksTable.title")}
+        StartIcon={AssignmentSharp}
+        CloseIcon={open ? ExpandMore : ExpandLess}
+        onClose={onClose}
+      />
+      <GenericDataGrid columns={columns} rows={getFilteredTasks()} />
     </Collapse>
   );
-});
+};
 
 export default UnallocatedTasksDrawer;

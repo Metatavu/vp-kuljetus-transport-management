@@ -83,6 +83,11 @@
         "customerSite": "Customer site",
         "address": "Address",
         "tasksAmount": "Amount of tasks"
+      },
+      "unallocatedTasksTable": {
+        "title": "Unallocated tasks",
+        "freightNumber": "Waybill",
+        "contents": "Freight"
       }
     },
     "freights": {

@@ -83,6 +83,11 @@
         "customerSite": "Asiakaspaikka",
         "address": "Osoite",
         "tasksAmount": "Tehtävien lkm"
+      },
+      "unallocatedTasksTable": {
+        "title": "Järjestelemättömät tehtävät",
+        "freightNumber": "Rahtikirja",
+        "contents": "Sisältö"
       }
     },
     "freights": {
