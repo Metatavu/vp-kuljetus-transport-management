@@ -23,6 +23,7 @@ import DataValidation from "utils/data-validation-utils";
 import { Driver, Route as TRoute, Truck } from "generated/client";
 import { useSingleClickRowEditMode } from "hooks/use-single-click-row-edit-mode";
 import RoutesTasksTable from "components/drive-planning/routes/routes-tasks-table";
+import { DndContext, closestCenter } from "@dnd-kit/core";
 
 export const Route = createFileRoute("/drive-planning/routes")({
   component: DrivePlanningRoutes,
@@ -45,6 +46,7 @@ function DrivePlanningRoutes() {
   });
 
   const [selectedDate, setSelectedDate] = useState<DateTime>(DateTime.now());
+  const [expandedRows, setExpandedRows] = useState<string[]>([]);
 
   useEffect(() => {
     if (!initialDate) return;
@@ -119,8 +121,6 @@ function DrivePlanningRoutes() {
   const onChangeDate = (newDate: DateTime | null) => {
     setSelectedDate(newDate ?? DateTime.now());
   };
-
-  const [expandedRows, setExpandedRows] = useState<string[]>([]);
 
   const columns: GridColDef[] = useMemo(
     () => [
@@ -226,55 +226,57 @@ function DrivePlanningRoutes() {
           }
         />
         <LoaderWrapper loading={routesQuery.isLoading}>
-          <GenericDataGrid
-            editMode="row"
-            paginationMode="server"
-            disableRowSelectionOnClick
-            sx={{
-              "& .MuiDataGrid-virtualScroller": {
-                overflow: "visible !important",
-              },
-            }}
-            apiRef={dataGridRef}
-            rows={routesQuery?.data ?? []}
-            columns={columns}
-            rowCount={totalResults}
-            rowModesModel={rowModesModel}
-            paginationModel={paginationModel}
-            slots={{
-              row: (row: GridRowProps) => {
-                const firstColumn = row.renderedColumns[0];
-                const sortedRows = dataGridRef.current.getSortedRowIds() as string[];
-                const nextSiblingIndex = sortedRows.indexOf(row.id as string) + 1;
-                const isNextExpanded = expandedRows.includes(sortedRows[nextSiblingIndex]);
-                const borders = isNextExpanded
-                  ? {
-                      borderRight: "1px solid rgba(0, 0, 0, 0.12)",
-                      borderTop: "1px solid rgba(0, 0, 0, 0.12)",
-                    }
-                  : undefined;
+          <DndContext collisionDetection={closestCenter}>
+            <GenericDataGrid
+              editMode="row"
+              paginationMode="server"
+              disableRowSelectionOnClick
+              sx={{
+                "& .MuiDataGrid-virtualScroller": {
+                  overflow: "visible !important",
+                },
+              }}
+              apiRef={dataGridRef}
+              rows={routesQuery?.data ?? []}
+              columns={columns}
+              rowCount={totalResults}
+              rowModesModel={rowModesModel}
+              paginationModel={paginationModel}
+              slots={{
+                row: (row: GridRowProps) => {
+                  const firstColumn = row.renderedColumns[0];
+                  const sortedRows = dataGridRef.current.getSortedRowIds() as string[];
+                  const nextSiblingIndex = sortedRows.indexOf(row.id as string) + 1;
+                  const isNextExpanded = expandedRows.includes(sortedRows[nextSiblingIndex]);
+                  const borders = isNextExpanded
+                    ? {
+                        borderRight: "1px solid rgba(0, 0, 0, 0.12)",
+                        borderTop: "1px solid rgba(0, 0, 0, 0.12)",
+                      }
+                    : undefined;
 
-                return (
-                  <>
-                    <GridRow {...row} style={{ ...borders }} />
-                    <Collapse
-                      in={expandedRows.includes(row.rowId as string)}
-                      sx={{ marginLeft: `${firstColumn.computedWidth - 1}px` }}
-                    >
-                      <RoutesTasksTable
-                        tasks={tasksQuery.data?.filter((task) => task.routeId === row.rowId) ?? []}
-                        sites={sitesQuery.data ?? []}
-                      />
-                    </Collapse>
-                  </>
-                );
-              },
-            }}
-            processRowUpdate={processRowUpdate}
-            onRowModesModelChange={handleRowModelsChange}
-            onPaginationModelChange={setPaginationModel}
-            onCellClick={handleCellClick}
-          />
+                  return (
+                    <>
+                      <GridRow {...row} style={{ ...borders }} />
+                      <Collapse
+                        in={expandedRows.includes(row.rowId as string)}
+                        sx={{ marginLeft: `${firstColumn.computedWidth - 1}px` }}
+                      >
+                        <RoutesTasksTable
+                          tasks={tasksQuery.data?.filter((task) => task.routeId === row.rowId) ?? []}
+                          sites={sitesQuery.data ?? []}
+                        />
+                      </Collapse>
+                    </>
+                  );
+                },
+              }}
+              processRowUpdate={processRowUpdate}
+              onRowModesModelChange={handleRowModelsChange}
+              onPaginationModelChange={setPaginationModel}
+              onCellClick={handleCellClick}
+            />
+          </DndContext>
         </LoaderWrapper>
       </Paper>
     </>
