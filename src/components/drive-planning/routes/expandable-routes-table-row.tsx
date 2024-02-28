@@ -13,20 +13,13 @@ const ExpandableRoutesTableRow = ({ expanded, tasks, sites, ...props }: Props) =
   const { row } = props;
   if (!row) return null;
 
-  const [firstColumn, _, __, fourthColumn] = props.renderedColumns;
-
   const getFilteredTasks = () => tasks.filter((task) => task.routeId === row.id);
 
   return (
     <>
       <GridRow {...props} />
-      <Collapse in={expanded} sx={{ marginLeft: `${firstColumn.computedWidth}px` }}>
-        <RoutesTasksTable
-          tasks={getFilteredTasks()}
-          sites={sites}
-          smallColumnWidth={firstColumn.computedWidth}
-          columnWidth={fourthColumn.computedWidth / 2}
-        />
+      <Collapse in={expanded}>
+        <RoutesTasksTable tasks={getFilteredTasks()} sites={sites} />
       </Collapse>
     </>
   );

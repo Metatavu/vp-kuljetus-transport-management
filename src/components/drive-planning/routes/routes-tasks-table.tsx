@@ -3,15 +3,16 @@ import { Site, Task } from "generated/client";
 import { t } from "i18next";
 import { useEffect, useState } from "react";
 import TaskTableRow, { TDraggableTaskTableRow } from "./task-table-row";
+import { useGridApiContext } from "@mui/x-data-grid";
 
 type Props = {
   tasks: Task[];
   sites: Site[];
-  smallColumnWidth: number;
-  columnWidth: number;
 };
 
-const RoutesTasksTable = ({ tasks, sites, smallColumnWidth, columnWidth }: Props) => {
+const RoutesTasksTable = ({ tasks, sites }: Props) => {
+  const dataGridApiRef = useGridApiContext();
+
   const [groupedTasks, setGroupedTasks] = useState<Record<string, Task[]>>({});
 
   useEffect(() => {
@@ -31,15 +32,17 @@ const RoutesTasksTable = ({ tasks, sites, smallColumnWidth, columnWidth }: Props
     );
   }, [tasks]);
 
+  const cellWidth = dataGridApiRef.current.getColumnPosition("tasks");
+
   return (
-    <TableContainer>
+    <TableContainer sx={{ marginLeft: `${cellWidth}px` }}>
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell width={smallColumnWidth}>{t("drivePlanning.routes.tasksTable.task")}</TableCell>
-            <TableCell width={smallColumnWidth}>{t("drivePlanning.routes.tasksTable.groupNumber")}</TableCell>
-            <TableCell width={columnWidth}>{t("drivePlanning.routes.tasksTable.customerSite")}</TableCell>
-            <TableCell width={columnWidth}>{t("drivePlanning.routes.tasksTable.address")}</TableCell>
+            <TableCell width={cellWidth}>{t("drivePlanning.routes.tasksTable.task")}</TableCell>
+            <TableCell width={cellWidth}>{t("drivePlanning.routes.tasksTable.groupNumber")}</TableCell>
+            <TableCell width={cellWidth * 5}>{t("drivePlanning.routes.tasksTable.customerSite")}</TableCell>
+            <TableCell width={cellWidth * 5}>{t("drivePlanning.routes.tasksTable.address")}</TableCell>
             <TableCell>{t("drivePlanning.routes.tasksTable.tasksAmount")}</TableCell>
             <TableCell />
           </TableRow>
