@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 import { useApi } from "hooks/use-api";
 import { DatePicker } from "@mui/x-date-pickers";
 import { DateTime } from "luxon";
-import DialogHeader from "components/styled/dialog-header";
+import DialogHeader from "components/generic/dialog-header";
 
 type Props = {
   initialDate: Date;

@@ -1,30 +1,21 @@
-import { Button, Collapse, IconButton, Paper, Stack, Typography } from "@mui/material";
+import { Button, IconButton, Paper, Stack, Typography } from "@mui/material";
 import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router";
 import ToolbarRow from "components/generic/toolbar-row";
 import { RouterContext } from "./__root";
-import { Add, ArrowBack, ArrowForward, UnfoldLess, UnfoldMore } from "@mui/icons-material";
+import { Add, ArrowBack, ArrowForward } from "@mui/icons-material";
 import { DatePicker } from "@mui/x-date-pickers";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { DateTime } from "luxon";
 import { useApi } from "hooks/use-api";
 import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import LoaderWrapper from "components/generic/loader-wrapper";
-import {
-  GridColDef,
-  GridPaginationModel,
-  GridRenderCellParams,
-  GridRow,
-  GridRowProps,
-  useGridApiRef,
-} from "@mui/x-data-grid";
-import GenericDataGrid from "components/generic/generic-data-grid";
+import { GridPaginationModel } from "@mui/x-data-grid";
 import DataValidation from "utils/data-validation-utils";
-import { Driver, Route as TRoute, Truck } from "generated/client";
-import { useSingleClickRowEditMode } from "hooks/use-single-click-row-edit-mode";
-import RoutesTasksTable from "components/drive-planning/routes/routes-tasks-table";
-import { DndContext, closestCenter } from "@dnd-kit/core";
+import { Route as TRoute, Task } from "generated/client";
+import { Active, DndContext, DragEndEvent, closestCenter } from "@dnd-kit/core";
 import UnallocatedTasksDrawer from "components/drive-planning/routes/unallotaced-tasks-drawer";
+import RoutesTable from "components/drive-planning/routes/routes-table";
 
 export const Route = createFileRoute("/drive-planning/routes")({
   component: DrivePlanningRoutes,
@@ -41,13 +32,11 @@ function DrivePlanningRoutes() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const dataGridRef = useGridApiRef();
   const initialDate = Route.useSearch({
     select: (params) => (params.date ? params.date : undefined),
   });
 
   const [selectedDate, setSelectedDate] = useState<DateTime>(DateTime.now());
-  const [expandedRows, setExpandedRows] = useState<string[]>([]);
 
   useEffect(() => {
     if (!initialDate) return;
@@ -56,15 +45,8 @@ function DrivePlanningRoutes() {
 
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({ page: 0, pageSize: 25 });
   const [totalResults, setTotalResults] = useState(0);
-  const [unallocatedDrawerOpen, setUnallocatedDrawerOpen] = useState(false);
-
-  const unAllocatedDrawerRef = useRef<HTMLDivElement>(null);
-
-  const { rowModesModel, handleCellClick, handleRowModelsChange } = useSingleClickRowEditMode();
-
-  const processRowUpdate = async (newRow: TRoute) => {
-    return await updateRoute.mutateAsync(newRow);
-  };
+  const [unallocatedDrawerOpen, setUnallocatedDrawerOpen] = useState(true);
+  const [activeDraggable, setActiveDraggable] = useState<Active>();
 
   const updateRoute = useMutation({
     mutationFn: (route: TRoute) => {
@@ -97,6 +79,14 @@ function DrivePlanningRoutes() {
     }),
   });
 
+  const saveTask = useMutation({
+    mutationFn: (task: Task) => {
+      if (!task.id) return Promise.reject();
+      return tasksApi.updateTask({ taskId: task.id, task: task });
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["tasks"] }),
+  });
+
   const sitesQuery = useQuery({
     queryKey: ["sites"],
     queryFn: () => sitesApi.listSites(),
@@ -126,70 +116,6 @@ function DrivePlanningRoutes() {
     setSelectedDate(newDate ?? DateTime.now());
   };
 
-  const columns: GridColDef[] = useMemo(
-    () => [
-      {
-        field: "name",
-        headerName: t("drivePlanning.routes.name"),
-        sortable: false,
-        flex: 1,
-      },
-      {
-        field: "tasks",
-        headerName: t("drivePlanning.routes.tasks"),
-        sortable: false,
-        flex: 1,
-        renderCell: ({ id }) => {
-          const tasks = tasksQuery.data.filter((task) => task.routeId === id);
-
-          return tasks.length;
-        },
-      },
-      {
-        field: "truckId",
-        headerName: t("drivePlanning.routes.truck"),
-        sortable: false,
-        flex: 1,
-        editable: true,
-        type: "singleSelect",
-        valueOptions: trucksQuery.data ?? [],
-        getOptionLabel: ({ name, plateNumber }: Truck) => `${name} (${plateNumber})`,
-        getOptionValue: ({ id }: Truck) => id,
-        renderCell: ({ row: { truckId } }: GridRenderCellParams<TRoute>) => (truckId ? undefined : <Add />),
-      },
-      {
-        field: "driverId",
-        headerName: t("drivePlanning.routes.driver"),
-        sortable: false,
-        flex: 10,
-        editable: true,
-        type: "singleSelect",
-        valueOptions: driversQuery.data ?? [],
-        getOptionLabel: ({ displayName }: Driver) => displayName,
-        getOptionValue: ({ id }: Driver) => id,
-        renderCell: ({ row: { driverId } }: GridRenderCellParams<TRoute>) => (driverId ? undefined : <Add />),
-      },
-      {
-        field: "actions",
-        type: "actions",
-        align: "right",
-        flex: 1,
-        renderHeader: () => null,
-        renderCell: ({ row: { id } }) => (
-          <IconButton
-            onClick={() => {
-              if (expandedRows.includes(id)) setExpandedRows(expandedRows.filter((rowId) => rowId !== id));
-              else setExpandedRows([...expandedRows, id]);
-            }}
-          >
-            {expandedRows.includes(id) ? <UnfoldLess /> : <UnfoldMore />}
-          </IconButton>
-        ),
-      },
-    ],
-    [t, tasksQuery.data, trucksQuery.data, driversQuery.data, expandedRows],
-  );
-
   const renderLeftToolbar = () => (
     <Stack direction="row">
       <Typography variant="h6" sx={{ opacity: 0.6 }} alignSelf="center">
@@ -208,6 +134,13 @@ function DrivePlanningRoutes() {
       </IconButton>
     </Stack>
   );
+
+  const onDragEnd = ({ over, active }: DragEndEvent) => {
+    const overRouteId = over?.data.current?.routeId;
+    const draggedTask = active?.data.current?.task;
+    if (!overRouteId || !draggedTask) return;
+    saveTask.mutate({ ...draggedTask, routeId: overRouteId });
+  };
 
   return (
     <>
@@ -232,62 +165,27 @@ function DrivePlanningRoutes() {
           }
         />
         <LoaderWrapper loading={routesQuery.isLoading}>
-          <DndContext collisionDetection={closestCenter}>
-            <GenericDataGrid
-              editMode="row"
-              paginationMode="server"
-              disableRowSelectionOnClick
-              sx={{
-                minHeight: `calc(100%-${unAllocatedDrawerRef.current?.clientHeight}px !important`,
-                "& .MuiDataGrid-virtualScroller": {
-                  overflow: "visible !important",
-                },
-              }}
-              apiRef={dataGridRef}
-              rows={routesQuery?.data ?? []}
-              columns={columns}
-              rowCount={totalResults}
-              rowModesModel={rowModesModel}
+          <DndContext
+            collisionDetection={closestCenter}
+            modifiers={activeDraggable?.data.current ? activeDraggable.data.current.modifiers : []}
+            onDragStart={({ active }) => setActiveDraggable(active)}
+            onDragEnd={onDragEnd}
+          >
+            <RoutesTable
+              drivers={driversQuery.data ?? []}
+              trucks={trucksQuery.data ?? []}
+              tasks={tasksQuery.data ?? []}
+              routes={routesQuery.data ?? []}
+              sites={sitesQuery.data ?? []}
               paginationModel={paginationModel}
-              slots={{
-                row: (row: GridRowProps) => {
-                  const [firstColumn, _, __, fourthColumn] = row.renderedColumns;
-                  const rowIds = dataGridRef.current.getSortedRowIds() as string[];
-                  const nextSiblingIndex = rowIds.indexOf(row.id as string) + 1;
-                  const isNextExpanded = expandedRows.includes(rowIds[nextSiblingIndex]);
-                  const borders = isNextExpanded
-                    ? {
-                        borderRight: "1px solid rgba(0, 0, 0, 0.12)",
-                        borderTop: "1px solid rgba(0, 0, 0, 0.12)",
-                      }
-                    : undefined;
-
-                  return (
-                    <>
-                      <GridRow {...row} style={{ ...borders }} />
-                      <Collapse
-                        in={expandedRows.includes(row.rowId as string)}
-                        sx={{ marginLeft: `${firstColumn.computedWidth - 1}px` }}
-                      >
-                        <RoutesTasksTable
-                          tasks={tasksQuery.data?.filter((task) => task.routeId === row.rowId) ?? []}
-                          sites={sitesQuery.data ?? []}
-                          width={firstColumn.computedWidth}
-                          secondWidth={fourthColumn.computedWidth}
-                        />
-                      </Collapse>
-                    </>
-                  );
-                },
-              }}
-              processRowUpdate={processRowUpdate}
-              onRowModesModelChange={handleRowModelsChange}
+              totalResults={totalResults}
               onPaginationModelChange={setPaginationModel}
-              onCellClick={handleCellClick}
+              onUpdateRoute={updateRoute.mutateAsync}
             />
             <UnallocatedTasksDrawer
-              ref={unAllocatedDrawerRef}
               open={unallocatedDrawerOpen}
+              tasks={tasksQuery.data ?? []}
+              sites={sitesQuery.data ?? []}
               onClose={() => setUnallocatedDrawerOpen(!unallocatedDrawerOpen)}
             />
           </DndContext>

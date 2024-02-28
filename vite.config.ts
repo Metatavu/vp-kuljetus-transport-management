@@ -23,6 +23,6 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    exclude: ["@mapbox/search-js-core", "@dnd-kit/sortable"]
+    exclude: ["@mapbox/search-js-core", "@dnd-kit/sortable", "react-toastify"]
   }
 });

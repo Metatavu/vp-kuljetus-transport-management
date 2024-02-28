@@ -139,5 +139,17 @@
         "driver": "Kuljettaja"
       }
     }
+  },
+  "snakbars": {
+    "success": {
+      "customerSiteSaved": "Asiakaspaikka tallennettu",
+      "customerSiteArchived": "Asiakaspaikka arkistoitu",
+      "freightSaved": "Rahtikirja tallennettu",
+      "freightArchived": "Rahtikirja arkistoitu",
+      "routeSaved": "Reitti tallennettu",
+      "routeArchived": "Reitti arkistoitu",
+      "taskAddedToRoute": "Tehtävä lisätty reitille",
+      "taskRemovedFromRoute": "Tehtävä poistettu reitiltä"
+    }
   }
 }

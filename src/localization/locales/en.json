@@ -139,5 +139,17 @@
         "driver": "Driver"
       }
     }
+  },
+  "snakbars": {
+    "success": {
+      "customerSiteSaved": "Customer site saved",
+      "customerSiteArchived": "Customer site archived",
+      "freightSaved": "Freight saved",
+      "freightArchived": "Freight archived",
+      "routeSaved": "Route saved",
+      "routeArchived": "Route archived",
+      "taskAddedToRoute": "Task added to route",
+      "taskRemovedFromRoute": "Task removed from route"
+    }
   }
 }

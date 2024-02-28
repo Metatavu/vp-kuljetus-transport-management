@@ -10,7 +10,7 @@ import FreightTasks from "./freight-tasks";
 import { useCallback, useState } from "react";
 import LoaderWrapper from "components/generic/loader-wrapper";
 import { FormProvider, useForm } from "react-hook-form";
-import DialogHeader from "components/styled/dialog-header";
+import DialogHeader from "components/generic/dialog-header";
 
 type Props = {
   freightId?: string;
