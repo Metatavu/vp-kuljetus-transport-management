@@ -186,29 +186,31 @@ function DrivePlanningRoutes() {
     [t, tasksQuery.data, trucksQuery.data, driversQuery.data, expandedRows],
   );
 
+  const renderLeftToolbar = () => (
+    <Stack direction="row">
+      <Typography variant="h6" sx={{ opacity: 0.6 }} alignSelf="center">
+        {t("drivePlanning.routes.date")}
+      </Typography>
+      <IconButton onClick={() => setSelectedDate(minusOneDay)}>
+        <ArrowBack />
+      </IconButton>
+      <DatePicker
+        value={selectedDate}
+        onChange={onChangeDate}
+        sx={{ alignSelf: "center", padding: "4px 8px", width: "132px" }}
+      />
+      <IconButton onClick={() => setSelectedDate(plusOneDay)}>
+        <ArrowForward />
+      </IconButton>
+    </Stack>
+  );
+
   return (
     <>
       <Outlet />
       <Paper sx={{ height: "100%" }}>
         <ToolbarRow
-          leftToolbar={
-            <Stack direction="row">
-              <Typography variant="h6" sx={{ opacity: 0.6 }} alignSelf="center">
-                {t("drivePlanning.routes.date")}
-              </Typography>
-              <IconButton onClick={() => setSelectedDate(minusOneDay)}>
-                <ArrowBack />
-              </IconButton>
-              <DatePicker
-                value={selectedDate}
-                onChange={onChangeDate}
-                sx={{ alignSelf: "center", padding: "4px 8px", width: "132px" }}
-              />
-              <IconButton onClick={() => setSelectedDate(plusOneDay)}>
-                <ArrowForward />
-              </IconButton>
-            </Stack>
-          }
+          leftToolbar={renderLeftToolbar()}
           toolbarButtons={
             <Button
               size="small"
