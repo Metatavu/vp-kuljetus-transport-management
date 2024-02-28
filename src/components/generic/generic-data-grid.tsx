@@ -4,7 +4,6 @@ import { DataGrid, DataGridProps, fiFI } from "@mui/x-data-grid";
 const StyledDataGrid = styled(DataGrid, {
   label: "styled-data-grid",
 })(() => ({
-  minHeight: "calc(100% - 48px)",
   "& .MuiDataGrid-cell, .MuiDataGrid-row": {
     borderRight: "1px solid rgba(0, 0, 0, 0.12)",
     borderBottom: "1px solid rgba(0, 0, 0, 0.12)",
@@ -15,6 +14,9 @@ const StyledDataGrid = styled(DataGrid, {
   },
   "& .MuiDataGrid-footerContainer": {
     border: "none",
+  },
+  "& .MuiDataGrid-virtualScroller": {
+    overflow: "hidden",
   },
 }));
 

@@ -1,4 +1,4 @@
-import { useDraggable, useDroppable } from "@dnd-kit/core";
+import { useDroppable } from "@dnd-kit/core";
 import { Remove } from "@mui/icons-material";
 import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, IconButton } from "@mui/material";
 import { Site, Task } from "generated/client";
@@ -12,6 +12,8 @@ import { CSS } from "@dnd-kit/utilities";
 type Props = {
   tasks: Task[];
   sites: Site[];
+  width: number;
+  secondWidth: number;
 };
 
 const DraggableTaskTableRow = ({ task, taskCount, site }: { task: Task; taskCount: number; site: Site }) => {
@@ -43,7 +45,7 @@ const DraggableTaskTableRow = ({ task, taskCount, site }: { task: Task; taskCoun
   );
 };
 
-const RoutesTasksTable = ({ tasks, sites }: Props) => {
+const RoutesTasksTable = ({ secondWidth, width, tasks, sites }: Props) => {
   const { isOver, setNodeRef } = useDroppable({ id: "routes-tasks-table" });
 
   const style = {
@@ -74,10 +76,10 @@ const RoutesTasksTable = ({ tasks, sites }: Props) => {
       <Table ref={setNodeRef} sx={{ ...style }}>
         <TableHead>
           <TableRow>
-            <TableCell>{t("drivePlanning.routes.tasksTable.task")}</TableCell>
-            <TableCell>{t("drivePlanning.routes.tasksTable.groupNumber")}</TableCell>
-            <TableCell>{t("drivePlanning.routes.tasksTable.customerSite")}</TableCell>
-            <TableCell>{t("drivePlanning.routes.tasksTable.address")}</TableCell>
+            <TableCell width={width}>{t("drivePlanning.routes.tasksTable.task")}</TableCell>
+            <TableCell width={width}>{t("drivePlanning.routes.tasksTable.groupNumber")}</TableCell>
+            <TableCell width={secondWidth / 2}>{t("drivePlanning.routes.tasksTable.customerSite")}</TableCell>
+            <TableCell width={secondWidth / 2}>{t("drivePlanning.routes.tasksTable.address")}</TableCell>
             <TableCell>{t("drivePlanning.routes.tasksTable.tasksAmount")}</TableCell>
             <TableCell />
           </TableRow>

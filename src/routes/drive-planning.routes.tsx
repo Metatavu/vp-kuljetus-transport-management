@@ -4,7 +4,7 @@ import ToolbarRow from "components/generic/toolbar-row";
 import { RouterContext } from "./__root";
 import { Add, ArrowBack, ArrowForward, UnfoldLess, UnfoldMore } from "@mui/icons-material";
 import { DatePicker } from "@mui/x-date-pickers";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { DateTime } from "luxon";
 import { useApi } from "hooks/use-api";
 import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -24,6 +24,7 @@ import { Driver, Route as TRoute, Truck } from "generated/client";
 import { useSingleClickRowEditMode } from "hooks/use-single-click-row-edit-mode";
 import RoutesTasksTable from "components/drive-planning/routes/routes-tasks-table";
 import { DndContext, closestCenter } from "@dnd-kit/core";
+import UnallocatedTasksDrawer from "components/drive-planning/routes/unallotaced-tasks-drawer";
 
 export const Route = createFileRoute("/drive-planning/routes")({
   component: DrivePlanningRoutes,
@@ -55,6 +56,9 @@ function DrivePlanningRoutes() {
 
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({ page: 0, pageSize: 25 });
   const [totalResults, setTotalResults] = useState(0);
+  const [unallocatedDrawerOpen, setUnallocatedDrawerOpen] = useState(false);
+
+  const unAllocatedDrawerRef = useRef<HTMLDivElement>(null);
 
   const { rowModesModel, handleCellClick, handleRowModelsChange } = useSingleClickRowEditMode();
 
@@ -208,7 +212,7 @@ function DrivePlanningRoutes() {
   return (
     <>
       <Outlet />
-      <Paper sx={{ height: "100%" }}>
+      <Paper sx={{ minHeight: "100%", maxHeight: "100%", display: "flex", flexDirection: "column" }}>
         <ToolbarRow
           leftToolbar={renderLeftToolbar()}
           toolbarButtons={
@@ -234,6 +238,7 @@ function DrivePlanningRoutes() {
               paginationMode="server"
               disableRowSelectionOnClick
               sx={{
+                minHeight: `calc(100%-${unAllocatedDrawerRef.current?.clientHeight}px !important`,
                 "& .MuiDataGrid-virtualScroller": {
                   overflow: "visible !important",
                 },
@@ -246,10 +251,10 @@ function DrivePlanningRoutes() {
               paginationModel={paginationModel}
               slots={{
                 row: (row: GridRowProps) => {
-                  const firstColumn = row.renderedColumns[0];
-                  const sortedRows = dataGridRef.current.getSortedRowIds() as string[];
-                  const nextSiblingIndex = sortedRows.indexOf(row.id as string) + 1;
-                  const isNextExpanded = expandedRows.includes(sortedRows[nextSiblingIndex]);
+                  const [firstColumn, _, __, fourthColumn] = row.renderedColumns;
+                  const rowIds = dataGridRef.current.getSortedRowIds() as string[];
+                  const nextSiblingIndex = rowIds.indexOf(row.id as string) + 1;
+                  const isNextExpanded = expandedRows.includes(rowIds[nextSiblingIndex]);
                   const borders = isNextExpanded
                     ? {
                         borderRight: "1px solid rgba(0, 0, 0, 0.12)",
@@ -267,6 +272,8 @@ function DrivePlanningRoutes() {
                         <RoutesTasksTable
                           tasks={tasksQuery.data?.filter((task) => task.routeId === row.rowId) ?? []}
                           sites={sitesQuery.data ?? []}
+                          width={firstColumn.computedWidth}
+                          secondWidth={fourthColumn.computedWidth}
                         />
                       </Collapse>
                     </>
@@ -277,6 +284,11 @@ function DrivePlanningRoutes() {
               onRowModesModelChange={handleRowModelsChange}
               onPaginationModelChange={setPaginationModel}
               onCellClick={handleCellClick}
+            />
+            <UnallocatedTasksDrawer
+              ref={unAllocatedDrawerRef}
+              open={unallocatedDrawerOpen}
+              onClose={() => setUnallocatedDrawerOpen(!unallocatedDrawerOpen)}
             />
           </DndContext>
         </LoaderWrapper>
