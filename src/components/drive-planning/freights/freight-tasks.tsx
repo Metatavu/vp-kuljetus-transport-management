@@ -74,8 +74,8 @@ const FreightTasks = ({ tasks, customerSites, onEditTask }: Props) => {
         sortable: false,
         editable: true,
         type: "singleSelect",
-        valueOptions: routesQuery.data ?? [],
-        getOptionLabel: ({ name }: Route) => name,
+        valueOptions: ["EMPTY", ...(routesQuery.data ?? [])],
+        getOptionLabel: ({ name }: Route) => name ?? t("noSelection"),
         getOptionValue: ({ id }: Route) => id,
       },
       {
