@@ -4,7 +4,7 @@ import ToolbarRow from "components/generic/toolbar-row";
 import { RouterContext } from "./__root";
 import { Add, ArrowBack, ArrowForward } from "@mui/icons-material";
 import { DatePicker } from "@mui/x-date-pickers";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { DateTime } from "luxon";
 import { useApi } from "hooks/use-api";
 import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
