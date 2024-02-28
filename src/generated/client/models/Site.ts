@@ -39,6 +39,31 @@ export interface Site {
      */
     location: string;
     /**
+     * Address of the site
+     * @type {string}
+     * @memberof Site
+     */
+    address: string;
+    /**
+     * Postal code of the site
+     * @type {string}
+     * @memberof Site
+     */
+    postalCode: string;
+    /**
+     * Locality of the site
+     * @type {string}
+     * @memberof Site
+     */
+    locality: string;
+    /**
+     * additional information about the site, e.g. delivery instructions. This is shown in the task for the driver.
+     * 
+     * @type {string}
+     * @memberof Site
+     */
+    additionalInfo?: string;
+    /**
      * 
      * @type {string}
      * @memberof Site
@@ -78,6 +103,9 @@ export function instanceOfSite(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "name" in value;
     isInstance = isInstance && "location" in value;
+    isInstance = isInstance && "address" in value;
+    isInstance = isInstance && "postalCode" in value;
+    isInstance = isInstance && "locality" in value;
 
     return isInstance;
 }
@@ -95,6 +123,10 @@ export function SiteFromJSONTyped(json: any, ignoreDiscriminator: boolean): Site
         'id': !exists(json, 'id') ? undefined : json['id'],
         'name': json['name'],
         'location': json['location'],
+        'address': json['address'],
+        'postalCode': json['postalCode'],
+        'locality': json['locality'],
+        'additionalInfo': !exists(json, 'additionalInfo') ? undefined : json['additionalInfo'],
         'creatorId': !exists(json, 'creatorId') ? undefined : json['creatorId'],
         'createdAt': !exists(json, 'createdAt') ? undefined : (new Date(json['createdAt'])),
         'lastModifierId': !exists(json, 'lastModifierId') ? undefined : json['lastModifierId'],
@@ -114,6 +146,10 @@ export function SiteToJSON(value?: Site | null): any {
         
         'name': value.name,
         'location': value.location,
+        'address': value.address,
+        'postalCode': value.postalCode,
+        'locality': value.locality,
+        'additionalInfo': value.additionalInfo,
         'archivedAt': value.archivedAt === undefined ? undefined : (value.archivedAt.toISOString()),
     };
 }

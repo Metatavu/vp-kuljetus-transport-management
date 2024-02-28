@@ -31,10 +31,13 @@
   "equipment": {
     "title": "Equipment",
     "new": "New equipment",
+    "open": "Open",
     "modify": "Modify equipment",
     "type": "Type",
     "name": "Name",
     "licensePlate": "License plate",
+    "number": "Plate number",
+    "vin": "VIN number",
     "errorMessages": {
       "nameMissing": "Name is required",
       "licensePlateMissing": "License plate is required"

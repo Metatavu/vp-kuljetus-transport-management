@@ -32,10 +32,13 @@
     "equipment": {
       "title": "Kalusto",
       "new": "Uusi kalusto",
+      "open": "Avaa",
       "modify": "Muokkaa kalustoa",
       "type": "Tyyppi",
       "name": "Nimi",
       "licensePlate": "Rekisterinumero",
+      "number": "Tunnus",
+      "vin": "Runkonumero",
       "errorMessages": {
         "licensePlateMissing": "Rekisterinumero on pakollinen"
       }
