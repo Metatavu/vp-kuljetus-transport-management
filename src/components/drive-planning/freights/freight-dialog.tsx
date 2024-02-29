@@ -2,7 +2,7 @@ import { Button, Dialog, DialogActions, DialogContent, Stack } from "@mui/materi
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "@tanstack/react-router";
 import { useApi } from "hooks/use-api";
-import { UseMutationResult, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { UseMutationResult, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Freight, FreightUnit, Task } from "generated/client";
 import FreightCustomerSitesForm from "./freight-customer-sites-form";
 import FreightUnits from "./freight-units";
@@ -11,6 +11,7 @@ import { useCallback, useState } from "react";
 import LoaderWrapper from "components/generic/loader-wrapper";
 import { FormProvider, useForm } from "react-hook-form";
 import DialogHeader from "components/generic/dialog-header";
+import { useFreight, useFreightUnits, useSites, useTasks } from "hooks/use-queries";
 
 type Props = {
   freightId?: string;
@@ -21,36 +22,17 @@ const FreightDialog = ({ freightId, onSave }: Props) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { freightsApi, sitesApi, freightUnitsApi, tasksApi } = useApi();
+  const { freightUnitsApi, tasksApi } = useApi();
+
+  const freightQuery = useFreight(freightId, !!freightId);
+  const customerSitesQuery = useSites(undefined, !freightQuery.isLoading);
+  const tasksQuery = useTasks({ freightId: freightId }, !!freightId);
+  const freightUnitsQuery = useFreightUnits({ freightId: freightId }, !!freightId);
 
   const [pendingFreightUnits, setPendingFreightUnits] = useState<FreightUnit[]>([]);
   const [pendingTasks, setPendingTasks] = useState<Task[]>([]);
 
-  const freightQuery = useQuery({
-    queryKey: ["freights", freightId],
-    queryFn: () => (freightId ? freightsApi.findFreight({ freightId: freightId }) : undefined),
-    enabled: !!freightId,
-  });
-
   const form = useForm<Freight>({ mode: "onChange", defaultValues: freightQuery.data });
-
-  const customerSitesQuery = useQuery({
-    queryKey: ["customerSites"],
-    queryFn: () => sitesApi.listSites(),
-    enabled: !freightQuery?.isLoading,
-  });
-
-  const tasksQuery = useQuery({
-    queryKey: ["tasks, freightId"],
-    queryFn: () => tasksApi.listTasks({ freightId: freightId }),
-    enabled: !!freightId,
-  });
-
-  const freightUnitsQuery = useQuery({
-    queryKey: ["freightUnits", freightId],
-    queryFn: () => freightUnitsApi.listFreightUnits({ freightId }),
-    enabled: !!freightId,
-  });
 
   const saveFreightUnits = useMutation({
     mutationFn: () =>
@@ -110,11 +92,15 @@ const FreightDialog = ({ freightId, onSave }: Props) => {
     return (
       <>
         <FreightUnits
-          freightUnits={freightUnitsQuery.data}
+          freightUnits={freightUnitsQuery.data.freightUnits}
           freightId={freightId}
           onEditFreightUnit={onEditFreightUnit}
         />
-        <FreightTasks customerSites={customerSitesQuery.data} tasks={tasksQuery.data} onEditTask={onEditTask} />
+        <FreightTasks
+          customerSites={customerSitesQuery.data.sites}
+          tasks={tasksQuery.data.tasks}
+          onEditTask={onEditTask}
+        />
       </>
     );
   }, [freightId, freightUnitsQuery.data, tasksQuery.data, customerSitesQuery.data, onEditFreightUnit, onEditTask]);
@@ -138,7 +124,10 @@ const FreightDialog = ({ freightId, onSave }: Props) => {
           <form onSubmit={form.handleSubmit(onSaveClick)}>
             <DialogContent sx={{ padding: 0 }}>
               <Stack spacing={2}>
-                <FreightCustomerSitesForm freight={freightQuery.data} customerSites={customerSitesQuery.data ?? []} />
+                <FreightCustomerSitesForm
+                  freight={freightQuery.data}
+                  customerSites={customerSitesQuery.data?.sites ?? []}
+                />
                 {renderFreightContent()}
               </Stack>
             </DialogContent>

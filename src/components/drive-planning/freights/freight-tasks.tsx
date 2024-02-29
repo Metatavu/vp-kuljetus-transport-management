@@ -1,6 +1,4 @@
 import GenericDataGrid from "components/generic/generic-data-grid";
-import { useApi } from "hooks/use-api";
-import { useQuery } from "@tanstack/react-query";
 import { GridColDef } from "@mui/x-data-grid";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
@@ -8,6 +6,7 @@ import LocalizationUtils from "utils/localization-utils";
 import { Route, Site, Task } from "generated/client";
 import { DateTime } from "luxon";
 import { useSingleClickRowEditMode } from "hooks/use-single-click-row-edit-mode";
+import { useRoutes } from "hooks/use-queries";
 
 type Props = {
   customerSites: Site[];
@@ -17,17 +16,10 @@ type Props = {
 
 const FreightTasks = ({ tasks, customerSites, onEditTask }: Props) => {
   const { t } = useTranslation();
-  const { routesApi } = useApi();
+
+  const routesQuery = useRoutes({ departureAfter: DateTime.now().minus({ days: 1 }).toJSDate() });
 
   const { rowModesModel, handleCellClick, handleRowModelsChange } = useSingleClickRowEditMode();
-
-  const routesQuery = useQuery({
-    queryKey: ["routes"],
-    queryFn: () => {
-      const yesterday = DateTime.now().minus({ days: 1 }).toJSDate();
-      return routesApi.listRoutes({ departureAfter: yesterday });
-    },
-  });
 
   const processRowUpdate = (newRow: Task) => {
     onEditTask(newRow);
@@ -74,7 +66,7 @@ const FreightTasks = ({ tasks, customerSites, onEditTask }: Props) => {
         sortable: false,
         editable: true,
         type: "singleSelect",
-        valueOptions: ["EMPTY", ...(routesQuery.data ?? [])],
+        valueOptions: ["EMPTY", ...(routesQuery.data?.routes ?? [])],
         getOptionLabel: ({ name }: Route) => name ?? t("noSelection"),
         getOptionValue: ({ id }: Route) => id,
       },
@@ -85,7 +77,7 @@ const FreightTasks = ({ tasks, customerSites, onEditTask }: Props) => {
         flex: 1,
         sortable: false,
         valueGetter: ({ row: { routeId } }) => {
-          const departureTime = routesQuery.data?.find((route) => route.id === routeId)?.departureTime;
+          const departureTime = routesQuery.data?.routes.find((route) => route.id === routeId)?.departureTime;
           if (!departureTime) return "";
 
           return DateTime.fromJSDate(departureTime).toFormat("dd-MM-yyyy");

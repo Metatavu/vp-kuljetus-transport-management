@@ -7,13 +7,13 @@ import { DatePicker } from "@mui/x-date-pickers";
 import { useEffect, useState } from "react";
 import { DateTime } from "luxon";
 import { useApi } from "hooks/use-api";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import LoaderWrapper from "components/generic/loader-wrapper";
-import { GridPaginationModel } from "@mui/x-data-grid";
 import { Route as TRoute } from "generated/client";
 import UnallocatedTasksDrawer from "components/drive-planning/routes/unallotaced-tasks-drawer";
 import RoutesTable from "components/drive-planning/routes/routes-table";
+import { useSites, useTasks } from "hooks/use-queries";
 
 export const Route = createFileRoute("/drive-planning/routes")({
   component: DrivePlanningRoutes,
@@ -26,13 +26,15 @@ export const Route = createFileRoute("/drive-planning/routes")({
 });
 
 function DrivePlanningRoutes() {
-  const { routesApi, tasksApi, sitesApi } = useApi();
+  const { routesApi } = useApi();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
+  const tasksQuery = useTasks();
+  const sitesQuery = useSites();
+
   const [selectedDate, setSelectedDate] = useState<DateTime>(DateTime.now());
-  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({ page: 0, pageSize: 25 });
   const [unallocatedDrawerOpen, setUnallocatedDrawerOpen] = useState(true);
 
   const initialDate = Route.useSearch({
@@ -50,16 +52,6 @@ function DrivePlanningRoutes() {
       return routesApi.updateRoute({ routeId: route.id, route });
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["routes", selectedDate] }),
-  });
-
-  const tasksQuery = useQuery({
-    queryKey: ["tasks"],
-    queryFn: () => tasksApi.listTasks(),
-  });
-
-  const sitesQuery = useQuery({
-    queryKey: ["sites"],
-    queryFn: () => sitesApi.listSites(),
   });
 
   const minusOneDay = (currentDate: DateTime | null) => {
@@ -119,16 +111,14 @@ function DrivePlanningRoutes() {
         <LoaderWrapper loading={tasksQuery.isLoading || sitesQuery.isLoading}>
           <RoutesTable
             selectedDate={selectedDate}
-            tasks={tasksQuery.data ?? []}
-            sites={sitesQuery.data ?? []}
-            paginationModel={paginationModel}
-            onPaginationModelChange={setPaginationModel}
+            tasks={tasksQuery.data?.tasks ?? []}
+            sites={sitesQuery.data?.sites ?? []}
             onUpdateRoute={updateRoute.mutateAsync}
           />
           <UnallocatedTasksDrawer
             open={unallocatedDrawerOpen}
-            tasks={tasksQuery.data ?? []}
-            sites={sitesQuery.data ?? []}
+            tasks={tasksQuery.data?.tasks ?? []}
+            sites={sitesQuery.data?.sites ?? []}
             onClose={() => setUnallocatedDrawerOpen(!unallocatedDrawerOpen)}
           />
         </LoaderWrapper>
