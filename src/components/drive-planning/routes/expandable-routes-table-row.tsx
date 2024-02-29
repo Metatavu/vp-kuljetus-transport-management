@@ -19,7 +19,7 @@ const ExpandableRoutesTableRow = ({ expanded, tasks, sites, ...props }: Props) =
     <>
       <GridRow {...props} />
       <Collapse in={expanded}>
-        <RoutesTasksTable tasks={getFilteredTasks()} sites={sites} />
+        <RoutesTasksTable tasks={getFilteredTasks()} sites={sites} routeId={row.id} />
       </Collapse>
     </>
   );

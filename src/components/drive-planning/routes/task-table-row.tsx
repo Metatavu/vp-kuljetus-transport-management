@@ -42,7 +42,7 @@ const TaskTableRow = ({ taskRow, taskCount }: Props) => {
   });
 
   return (
-    <TableRow key={taskGroupKey}>
+    <TableRow sx={{ height: "38px" }} key={taskGroupKey}>
       <TableCell>{LocalizationUtils.getLocalizedTaskType(type, t)}</TableCell>
       <TableCell>{groupNumber}</TableCell>
       <TableCell>{name}</TableCell>

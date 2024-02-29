@@ -89,7 +89,10 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           backgroundColor: "#EDF3F5",
-          padding: "0px 10px"
+          padding: "0px 10px",
+          "& .MuiTableCell-head": {
+            height: "30px",
+          }
         },
       },
     } ,
@@ -97,13 +100,12 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           padding: "0px 10px",
-          height: "30px",
           borderRight: "1px solid rgba(0, 0, 0, 0.12)",
           borderBottom: "1px solid rgba(0, 0, 0, 0.12)",
           borderLeft: "1px solid rgba(0, 0, 0, 0.12)"
         },
       },
-    } 
+    }
   },
 });
 

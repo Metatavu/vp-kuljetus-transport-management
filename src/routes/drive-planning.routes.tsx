@@ -10,11 +10,11 @@ import { useApi } from "hooks/use-api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import LoaderWrapper from "components/generic/loader-wrapper";
-import { Route as TRoute } from "generated/client";
+import { Route as TRoute, Task } from "generated/client";
 import UnallocatedTasksDrawer from "components/drive-planning/routes/unallotaced-tasks-drawer";
 import RoutesTable from "components/drive-planning/routes/routes-table";
 import { QUERY_KEYS, useSites, useTasks } from "hooks/use-queries";
-import { Active, DndContext, DragOverlay, DragStartEvent } from "@dnd-kit/core";
+import { Active, DndContext, DragEndEvent, DragOverlay, DragStartEvent } from "@dnd-kit/core";
 import { snapCenterToCursor } from "@dnd-kit/modifiers";
 
 export const Route = createFileRoute("/drive-planning/routes")({
@@ -28,7 +28,7 @@ export const Route = createFileRoute("/drive-planning/routes")({
 });
 
 function DrivePlanningRoutes() {
-  const { routesApi } = useApi();
+  const { routesApi, tasksApi } = useApi();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -55,6 +55,17 @@ function DrivePlanningRoutes() {
       return routesApi.updateRoute({ routeId: route.id, route });
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ROUTES, selectedDate] }),
+  });
+
+  const updateTask = useMutation({
+    mutationFn: (task: Task) => {
+      if (!task.id) return Promise.reject();
+      return tasksApi.updateTask({ taskId: task.id, task });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.TASKS] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ROUTES, selectedDate] });
+    },
   });
 
   const minusOneDay = (currentDate: DateTime | null) => {
@@ -106,14 +117,27 @@ function DrivePlanningRoutes() {
     </Button>
   );
 
+  const handleDropTaskToRoute = async (task: Task, routeId: string) =>
+    await updateTask.mutateAsync({ ...task, routeId: routeId });
+
+  const handleDragStart = ({ active }: DragStartEvent) => {
+    setActiveDraggable(active);
+  };
+
+  const handleDragEnd = async ({ active, over }: DragEndEvent) => {
+    const { routeId } = over?.data.current ?? {};
+    const { task, draggableType } = active?.data.current ?? {};
+    if (draggableType === "unallocatedTask" && routeId) {
+      handleDropTaskToRoute(task, routeId);
+    }
+    setActiveDraggable(null);
+  };
+
   return (
     <>
       <Outlet />
       <Paper sx={{ minHeight: "100%", maxHeight: "100%", display: "flex", flexDirection: "column" }}>
-        <DndContext
-          onDragStart={({ active }: DragStartEvent) => setActiveDraggable(active)}
-          onDragEnd={() => setActiveDraggable(null)}
-        >
+        <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
           <ToolbarRow leftToolbar={renderLeftToolbar()} toolbarButtons={renderRightToolbar()} />
           <LoaderWrapper loading={tasksQuery.isLoading || sitesQuery.isLoading}>
             <RoutesTable

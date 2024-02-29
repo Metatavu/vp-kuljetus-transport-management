@@ -99,11 +99,20 @@ const UnallocatedTasksDrawer = ({ open, tasks, sites, onClose }: Props) => {
     },
   ];
 
-  const renderDraggableDataGridRow = useCallback((params: GridRowProps) => {
-    const { attributes, listeners, setNodeRef } = useDraggable({ id: params.rowId });
+  const renderDraggableDataGridRow = useCallback(
+    (params: GridRowProps) => {
+      const { attributes, listeners, setNodeRef } = useDraggable({
+        id: params.rowId,
+        data: {
+          draggableType: "unallocatedTask",
+          task: tasks.find((task) => task.id === params.rowId),
+        },
+      });
 
-    return <GridRow {...params} {...attributes} {...listeners} ref={setNodeRef} style={{ cursor: "grab" }} />;
-  }, []);
+      return <GridRow {...params} {...attributes} {...listeners} ref={setNodeRef} style={{ cursor: "grab" }} />;
+    },
+    [tasks],
+  );
 
   return (
     <Collapse
