@@ -14,7 +14,16 @@ import { Route as TRoute, Task } from "generated/client";
 import UnallocatedTasksDrawer from "components/drive-planning/routes/unallotaced-tasks-drawer";
 import RoutesTable from "components/drive-planning/routes/routes-table";
 import { QUERY_KEYS, useSites, useTasks } from "hooks/use-queries";
-import { Active, DndContext, DragEndEvent, DragOverlay, DragStartEvent } from "@dnd-kit/core";
+import {
+  Active,
+  DndContext,
+  DragEndEvent,
+  DragOverlay,
+  DragStartEvent,
+  useSensor,
+  useSensors,
+  PointerSensor,
+} from "@dnd-kit/core";
 import { snapCenterToCursor } from "@dnd-kit/modifiers";
 
 export const Route = createFileRoute("/drive-planning/routes")({
@@ -133,7 +142,7 @@ function DrivePlanningRoutes() {
     if (draggableType === "unallocatedTask" && routeId) {
       handleAllocateTask(task, routeId);
     }
-    if (draggableType === "groupedTask") {
+    if (draggableType === "groupedTask" && over?.id === "unallocated-tasks-droppable") {
       handleUnallocateGroupedTasks(tasks);
     }
     setActiveDraggable(null);
@@ -143,7 +152,21 @@ function DrivePlanningRoutes() {
     <>
       <Outlet />
       <Paper sx={{ minHeight: "100%", maxHeight: "100%", display: "flex", flexDirection: "column" }}>
-        <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+        <DndContext
+          sensors={useSensors(
+            useSensor(PointerSensor, {
+              activationConstraint: {
+                delay: 250,
+                tolerance: 5,
+                distance: 15,
+              },
+              bypassActivationConstraint: ({ activeNode }) =>
+                activeNode?.data?.current?.draggableType === "unallocatedTask",
+            }),
+          )}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+        >
           <ToolbarRow leftToolbar={renderLeftToolbar()} toolbarButtons={renderRightToolbar()} />
           <LoaderWrapper loading={tasksQuery.isLoading || sitesQuery.isLoading}>
             <RoutesTable
