@@ -32,17 +32,17 @@ const RoutesTasksTable = ({ tasks, sites }: Props) => {
     );
   }, [tasks]);
 
-  const cellWidth = dataGridApiRef.current.getColumnPosition("tasks");
+  const baseCellWidth = dataGridApiRef.current.getColumnPosition("tasks");
 
   return (
-    <TableContainer sx={{ marginLeft: `${cellWidth}px` }}>
+    <TableContainer sx={{ marginLeft: `${baseCellWidth}px` }}>
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell width={cellWidth}>{t("drivePlanning.routes.tasksTable.task")}</TableCell>
-            <TableCell width={cellWidth}>{t("drivePlanning.routes.tasksTable.groupNumber")}</TableCell>
-            <TableCell width={cellWidth * 5}>{t("drivePlanning.routes.tasksTable.customerSite")}</TableCell>
-            <TableCell width={cellWidth * 5}>{t("drivePlanning.routes.tasksTable.address")}</TableCell>
+            <TableCell width={baseCellWidth}>{t("drivePlanning.routes.tasksTable.task")}</TableCell>
+            <TableCell width={baseCellWidth}>{t("drivePlanning.routes.tasksTable.groupNumber")}</TableCell>
+            <TableCell width={baseCellWidth * 5}>{t("drivePlanning.routes.tasksTable.customerSite")}</TableCell>
+            <TableCell width={baseCellWidth * 5}>{t("drivePlanning.routes.tasksTable.address")}</TableCell>
             <TableCell>{t("drivePlanning.routes.tasksTable.tasksAmount")}</TableCell>
             <TableCell />
           </TableRow>
