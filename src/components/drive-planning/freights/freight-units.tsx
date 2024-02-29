@@ -33,13 +33,13 @@ const FreightUnits = ({ freightUnits, freightId, onEditFreightUnit }: Props) => 
           type: "EUR",
         },
       }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.FREIGHT_UNITS, freightId] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.FREIGHT_UNITS] }),
   });
 
   const deleteFreightUnit = useMutation({
     mutationFn: (id: string) => freightUnitsApi.deleteFreightUnit({ freightUnitId: id }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.FREIGHT_UNITS, freightId] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.FREIGHT_UNITS] });
     },
   });
 

@@ -57,6 +57,7 @@ const FreightTasks = ({ tasks, customerSites, onEditTask }: Props) => {
         valueOptions: customerSites,
         getOptionLabel: ({ name }: Site) => name,
         getOptionValue: ({ id }: Site) => id,
+        valueFormatter: ({ value }) => customerSites.find((site) => site.id === value)?.name ?? t("noSelection"),
       },
       {
         field: "routeId",
@@ -69,6 +70,8 @@ const FreightTasks = ({ tasks, customerSites, onEditTask }: Props) => {
         valueOptions: ["EMPTY", ...(routesQuery.data?.routes ?? [])],
         getOptionLabel: ({ name }: Route) => name ?? t("noSelection"),
         getOptionValue: ({ id }: Route) => id,
+        valueFormatter: ({ value }) =>
+          routesQuery.data?.routes.find((route) => route.id === value)?.name ?? t("noSelection"),
       },
       {
         field: "date",

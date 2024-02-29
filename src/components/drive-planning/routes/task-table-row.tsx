@@ -6,6 +6,7 @@ import { Site, Task, TaskType } from "generated/client";
 import LocalizationUtils from "utils/localization-utils";
 import { useTranslation } from "react-i18next";
 import { QUERY_KEYS } from "hooks/use-queries";
+import { useNavigate } from "@tanstack/react-router";
 
 export type TDraggableTaskTableRow = {
   type: TaskType;
@@ -24,6 +25,7 @@ const TaskTableRow = ({ taskRow, taskCount }: Props) => {
   const { tasksApi } = useApi();
   const { t } = useTranslation();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const { type, taskGroupKey, customerSite, groupNumber, tasks } = taskRow;
   const { name, address, postalCode, locality } = customerSite;
 
@@ -41,8 +43,15 @@ const TaskTableRow = ({ taskRow, taskCount }: Props) => {
     },
   });
 
+  const handleTableRowClick = () => {
+    if (taskCount === 1) {
+      const { freightId } = tasks[0];
+      navigate({ to: "/drive-planning/freights/$freightId/modify", params: { freightId: freightId } });
+    }
+  };
+
   return (
-    <TableRow key={taskGroupKey}>
+    <TableRow key={taskGroupKey} onClick={handleTableRowClick}>
       <TableCell>{LocalizationUtils.getLocalizedTaskType(type, t)}</TableCell>
       <TableCell>{groupNumber}</TableCell>
       <TableCell>{name}</TableCell>
