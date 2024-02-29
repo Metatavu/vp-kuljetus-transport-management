@@ -135,7 +135,7 @@ const FreightDialog = ({ freightId, onSave }: Props) => {
               <Button variant="text" onClick={handleClose}>
                 {t("cancel")}
               </Button>
-              <Button variant="contained" disabled={!!Object.keys(form.formState.errors).length} type="submit">
+              <Button variant="contained" disabled={!form.formState.isValid} type="submit">
                 {t("drivePlanning.freights.dialog.save")}
               </Button>
             </DialogActions>
