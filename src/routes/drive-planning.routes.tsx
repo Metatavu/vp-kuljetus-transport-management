@@ -13,7 +13,7 @@ import LoaderWrapper from "components/generic/loader-wrapper";
 import { Route as TRoute } from "generated/client";
 import UnallocatedTasksDrawer from "components/drive-planning/routes/unallotaced-tasks-drawer";
 import RoutesTable from "components/drive-planning/routes/routes-table";
-import { useSites, useTasks } from "hooks/use-queries";
+import { QUERY_KEYS, useSites, useTasks } from "hooks/use-queries";
 
 export const Route = createFileRoute("/drive-planning/routes")({
   component: DrivePlanningRoutes,
@@ -51,7 +51,7 @@ function DrivePlanningRoutes() {
       if (!route.id) return Promise.reject();
       return routesApi.updateRoute({ routeId: route.id, route });
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["routes", selectedDate] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ROUTES, selectedDate] }),
   });
 
   const minusOneDay = (currentDate: DateTime | null) => {

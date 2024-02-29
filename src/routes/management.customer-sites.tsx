@@ -11,7 +11,7 @@ import { useApi } from "hooks/use-api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import LoaderWrapper from "components/generic/loader-wrapper";
 import { Site } from "generated/client";
-import { useSites } from "hooks/use-queries";
+import { QUERY_KEYS, useSites } from "hooks/use-queries";
 
 export const Route = createFileRoute("/management/customer-sites")({
   component: ManagementCustomerSites,
@@ -38,7 +38,7 @@ function ManagementCustomerSites() {
       if (!site.id) return Promise.reject();
       return sitesApi.updateSite({ siteId: site.id, site: { ...site, archivedAt: new Date() } });
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["sites"] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.SITES] }),
   });
 
   const columns: GridColDef[] = useMemo(

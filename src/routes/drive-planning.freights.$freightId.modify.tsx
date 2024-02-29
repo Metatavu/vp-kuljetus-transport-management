@@ -4,6 +4,7 @@ import FreightDialog from "components/drive-planning/freights/freight-dialog";
 import { useApi } from "hooks/use-api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Freight } from "generated/client";
+import { QUERY_KEYS } from "hooks/use-queries";
 
 export const Route = createFileRoute("/drive-planning/freights/$freightId/modify")({
   component: ModifyFreight,
@@ -24,8 +25,8 @@ function ModifyFreight() {
       navigate({ to: "/drive-planning/freights" });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["freights", freightId] });
-      queryClient.invalidateQueries({ queryKey: ["freights"] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.FREIGHTS, freightId] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.FREIGHTS] });
     },
   });
 

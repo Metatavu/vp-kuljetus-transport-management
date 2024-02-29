@@ -5,7 +5,7 @@ import { useApi } from "hooks/use-api";
 import { RouterContext } from "src/routes/__root";
 import LoaderWrapper from "components/generic/loader-wrapper";
 import { Site } from "generated/client";
-import { useSite } from "hooks/use-queries";
+import { QUERY_KEYS, useSite } from "hooks/use-queries";
 
 export const Route = createFileRoute("/management/customer-sites/$customerSiteId/modify")({
   component: () => <CustomerSiteModify />,
@@ -24,8 +24,7 @@ const CustomerSiteModify = () => {
   const updateSite = useMutation({
     mutationFn: (site: Site) => sitesApi.updateSite({ siteId: customerSiteId, site }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["sites"] });
-      queryClient.invalidateQueries({ queryKey: ["site", customerSiteId] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.SITES] });
     },
   });
 

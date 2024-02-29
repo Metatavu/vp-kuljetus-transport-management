@@ -5,6 +5,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Site, Task, TaskType } from "generated/client";
 import LocalizationUtils from "utils/localization-utils";
 import { useTranslation } from "react-i18next";
+import { QUERY_KEYS } from "hooks/use-queries";
 
 export type TDraggableTaskTableRow = {
   type: TaskType;
@@ -35,8 +36,8 @@ const TaskTableRow = ({ taskRow, taskCount }: Props) => {
         }),
       ),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tasks"] });
-      queryClient.invalidateQueries({ queryKey: ["routes"] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.TASKS] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ROUTES] });
     },
   });
 

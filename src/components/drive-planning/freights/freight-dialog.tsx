@@ -11,7 +11,7 @@ import { useCallback, useState } from "react";
 import LoaderWrapper from "components/generic/loader-wrapper";
 import { FormProvider, useForm } from "react-hook-form";
 import DialogHeader from "components/generic/dialog-header";
-import { useFreight, useFreightUnits, useSites, useTasks } from "hooks/use-queries";
+import { QUERY_KEYS, useFreight, useFreightUnits, useSites, useTasks } from "hooks/use-queries";
 
 type Props = {
   freightId?: string;
@@ -46,7 +46,7 @@ const FreightDialog = ({ freightId, onSave }: Props) => {
         }),
       ),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["freightUnits", freightId] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.FREIGHT_UNITS, freightId] });
     },
   });
 
@@ -59,7 +59,7 @@ const FreightDialog = ({ freightId, onSave }: Props) => {
         }),
       ),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tasks", freightId] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.TASKS, freightId] });
     },
   });
 
