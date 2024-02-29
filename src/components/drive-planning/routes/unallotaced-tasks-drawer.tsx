@@ -1,5 +1,5 @@
 import { Collapse } from "@mui/material";
-import { GridColDef } from "@mui/x-data-grid";
+import { GridColDef, GridRow, GridRowProps } from "@mui/x-data-grid";
 import { useQueries } from "@tanstack/react-query";
 import GenericDataGrid from "components/generic/generic-data-grid";
 import DialogHeader from "components/generic/dialog-header";
@@ -9,6 +9,8 @@ import DataValidation from "utils/data-validation-utils";
 import LocalizationUtils from "utils/localization-utils";
 import { AssignmentSharp, ExpandLess, ExpandMore } from "@mui/icons-material";
 import { Site, Task } from "generated/client";
+import { useDraggable } from "@dnd-kit/core";
+import { useCallback } from "react";
 
 type Props = {
   open: boolean;
@@ -96,6 +98,13 @@ const UnallocatedTasksDrawer = ({ open, tasks, sites, onClose }: Props) => {
       },
     },
   ];
+
+  const renderDraggableDataGridRow = useCallback((params: GridRowProps) => {
+    const { attributes, listeners, setNodeRef } = useDraggable({ id: params.rowId });
+
+    return <GridRow {...params} {...attributes} {...listeners} ref={setNodeRef} style={{ cursor: "grab" }} />;
+  }, []);
+
   return (
     <Collapse
       in={open}
@@ -108,7 +117,14 @@ const UnallocatedTasksDrawer = ({ open, tasks, sites, onClose }: Props) => {
         CloseIcon={open ? ExpandMore : ExpandLess}
         onClose={onClose}
       />
-      <GenericDataGrid columns={columns} rows={getFilteredTasks()} />
+      <GenericDataGrid
+        columns={columns}
+        rows={getFilteredTasks()}
+        disableRowSelectionOnClick
+        slots={{
+          row: renderDraggableDataGridRow,
+        }}
+      />
     </Collapse>
   );
 };

@@ -2,7 +2,7 @@ import { Button, IconButton, Paper, Stack, Typography } from "@mui/material";
 import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router";
 import ToolbarRow from "components/generic/toolbar-row";
 import { RouterContext } from "./__root";
-import { Add, ArrowBack, ArrowForward } from "@mui/icons-material";
+import { Add, ArrowBack, ArrowForward, LocalShipping } from "@mui/icons-material";
 import { DatePicker } from "@mui/x-date-pickers";
 import { useEffect, useState } from "react";
 import { DateTime } from "luxon";
@@ -14,6 +14,8 @@ import { Route as TRoute } from "generated/client";
 import UnallocatedTasksDrawer from "components/drive-planning/routes/unallotaced-tasks-drawer";
 import RoutesTable from "components/drive-planning/routes/routes-table";
 import { QUERY_KEYS, useSites, useTasks } from "hooks/use-queries";
+import { Active, DndContext, DragOverlay, DragStartEvent } from "@dnd-kit/core";
+import { snapCenterToCursor } from "@dnd-kit/modifiers";
 
 export const Route = createFileRoute("/drive-planning/routes")({
   component: DrivePlanningRoutes,
@@ -36,6 +38,7 @@ function DrivePlanningRoutes() {
 
   const [selectedDate, setSelectedDate] = useState<DateTime>(DateTime.now());
   const [unallocatedDrawerOpen, setUnallocatedDrawerOpen] = useState(true);
+  const [activeDraggable, setActiveDraggable] = useState<Active | null>(null);
 
   const initialDate = Route.useSearch({
     select: (params) => (params.date ? params.date : undefined),
@@ -107,21 +110,42 @@ function DrivePlanningRoutes() {
     <>
       <Outlet />
       <Paper sx={{ minHeight: "100%", maxHeight: "100%", display: "flex", flexDirection: "column" }}>
-        <ToolbarRow leftToolbar={renderLeftToolbar()} toolbarButtons={renderRightToolbar()} />
-        <LoaderWrapper loading={tasksQuery.isLoading || sitesQuery.isLoading}>
-          <RoutesTable
-            selectedDate={selectedDate}
-            tasks={tasksQuery.data?.tasks ?? []}
-            sites={sitesQuery.data?.sites ?? []}
-            onUpdateRoute={updateRoute.mutateAsync}
-          />
-          <UnallocatedTasksDrawer
-            open={unallocatedDrawerOpen}
-            tasks={tasksQuery.data?.tasks ?? []}
-            sites={sitesQuery.data?.sites ?? []}
-            onClose={() => setUnallocatedDrawerOpen(!unallocatedDrawerOpen)}
-          />
-        </LoaderWrapper>
+        <DndContext
+          onDragStart={({ active }: DragStartEvent) => setActiveDraggable(active)}
+          onDragEnd={() => setActiveDraggable(null)}
+        >
+          <ToolbarRow leftToolbar={renderLeftToolbar()} toolbarButtons={renderRightToolbar()} />
+          <LoaderWrapper loading={tasksQuery.isLoading || sitesQuery.isLoading}>
+            <RoutesTable
+              selectedDate={selectedDate}
+              tasks={tasksQuery.data?.tasks ?? []}
+              sites={sitesQuery.data?.sites ?? []}
+              onUpdateRoute={updateRoute.mutateAsync}
+            />
+            <UnallocatedTasksDrawer
+              open={unallocatedDrawerOpen}
+              tasks={tasksQuery.data?.tasks ?? []}
+              sites={sitesQuery.data?.sites ?? []}
+              onClose={() => setUnallocatedDrawerOpen(!unallocatedDrawerOpen)}
+            />
+          </LoaderWrapper>
+          <DragOverlay modifiers={[snapCenterToCursor]}>
+            {activeDraggable ? (
+              <div
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  userSelect: "none",
+                }}
+              >
+                <LocalShipping fontSize="large" />
+              </div>
+            ) : null}
+          </DragOverlay>
+        </DndContext>
       </Paper>
     </>
   );
