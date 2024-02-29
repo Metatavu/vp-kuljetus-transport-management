@@ -1,5 +1,5 @@
 import { Collapse } from "@mui/material";
-import { GridColDef, GridRow, GridRowProps } from "@mui/x-data-grid";
+import { GridColDef, GridRow, GridRowProps, useGridApiRef } from "@mui/x-data-grid";
 import { useQueries } from "@tanstack/react-query";
 import GenericDataGrid from "components/generic/generic-data-grid";
 import DialogHeader from "components/generic/dialog-header";
@@ -9,7 +9,7 @@ import DataValidation from "utils/data-validation-utils";
 import LocalizationUtils from "utils/localization-utils";
 import { AssignmentSharp, ExpandLess, ExpandMore } from "@mui/icons-material";
 import { Site, Task } from "generated/client";
-import { useDraggable } from "@dnd-kit/core";
+import { useDraggable, useDroppable } from "@dnd-kit/core";
 import { useCallback } from "react";
 
 type Props = {
@@ -22,6 +22,13 @@ type Props = {
 const UnallocatedTasksDrawer = ({ open, tasks, sites, onClose }: Props) => {
   const { freightsApi, freightUnitsApi } = useApi();
   const { t } = useTranslation();
+  const dataGridRef = useGridApiRef();
+
+  const { isOver, setNodeRef, active } = useDroppable({
+    id: "unallocated-tasks-droppable",
+  });
+
+  const { draggableType } = active?.data.current ?? {};
 
   const freightsQueries = useQueries({
     queries:
@@ -126,14 +133,31 @@ const UnallocatedTasksDrawer = ({ open, tasks, sites, onClose }: Props) => {
         CloseIcon={open ? ExpandMore : ExpandLess}
         onClose={onClose}
       />
-      <GenericDataGrid
-        columns={columns}
-        rows={getFilteredTasks()}
-        disableRowSelectionOnClick
-        slots={{
-          row: renderDraggableDataGridRow,
-        }}
-      />
+      <div ref={setNodeRef}>
+        {isOver && draggableType === "groupedTask" && (
+          <div
+            style={{
+              backgroundColor: "rgb(78, 138, 156, 0.6)",
+              position: "absolute",
+              width: "100%",
+              height: dataGridRef.current.rootElementRef?.current?.clientHeight,
+              overflow: "hidden",
+              textAlign: "center",
+              justifyContent: "center",
+              zIndex: 1,
+            }}
+          />
+        )}
+        <GenericDataGrid
+          apiRef={dataGridRef}
+          columns={columns}
+          rows={getFilteredTasks()}
+          disableRowSelectionOnClick
+          slots={{
+            row: renderDraggableDataGridRow,
+          }}
+        />
+      </div>
     </Collapse>
   );
 };

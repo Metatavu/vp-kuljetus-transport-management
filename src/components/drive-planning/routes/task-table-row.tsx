@@ -6,6 +6,8 @@ import { Site, Task, TaskType } from "generated/client";
 import LocalizationUtils from "utils/localization-utils";
 import { useTranslation } from "react-i18next";
 import { QUERY_KEYS } from "hooks/use-queries";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 export type TDraggableTaskTableRow = {
   type: TaskType;
@@ -27,6 +29,16 @@ const TaskTableRow = ({ taskRow, taskCount }: Props) => {
   const { type, taskGroupKey, customerSite, groupNumber, tasks } = taskRow;
   const { name, address, postalCode, locality } = customerSite;
 
+  const { listeners, transform, transition, setNodeRef } = useSortable({
+    id: taskGroupKey,
+    data: { draggableType: "groupedTask", tasks: tasks },
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
   const saveTask = useMutation({
     mutationFn: () =>
       Promise.all(
@@ -42,7 +54,7 @@ const TaskTableRow = ({ taskRow, taskCount }: Props) => {
   });
 
   return (
-    <TableRow sx={{ height: "38px" }} key={taskGroupKey}>
+    <TableRow ref={setNodeRef} sx={{ height: "38px", ...style }} key={taskGroupKey} {...listeners}>
       <TableCell>{LocalizationUtils.getLocalizedTaskType(type, t)}</TableCell>
       <TableCell>{groupNumber}</TableCell>
       <TableCell>{name}</TableCell>

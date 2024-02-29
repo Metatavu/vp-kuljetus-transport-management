@@ -117,8 +117,11 @@ function DrivePlanningRoutes() {
     </Button>
   );
 
-  const handleDropTaskToRoute = async (task: Task, routeId: string) =>
+  const handleAllocateTask = async (task: Task, routeId: string) =>
     await updateTask.mutateAsync({ ...task, routeId: routeId });
+
+  const handleUnallocateGroupedTasks = async (tasks: Task[]) =>
+    await Promise.all(tasks.map((task) => updateTask.mutateAsync({ ...task, routeId: undefined })));
 
   const handleDragStart = ({ active }: DragStartEvent) => {
     setActiveDraggable(active);
@@ -126,9 +129,12 @@ function DrivePlanningRoutes() {
 
   const handleDragEnd = async ({ active, over }: DragEndEvent) => {
     const { routeId } = over?.data.current ?? {};
-    const { task, draggableType } = active?.data.current ?? {};
+    const { task, draggableType, tasks } = active?.data.current ?? {};
     if (draggableType === "unallocatedTask" && routeId) {
-      handleDropTaskToRoute(task, routeId);
+      handleAllocateTask(task, routeId);
+    }
+    if (draggableType === "groupedTask") {
+      handleUnallocateGroupedTasks(tasks);
     }
     setActiveDraggable(null);
   };
