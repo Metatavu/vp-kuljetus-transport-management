@@ -41,7 +41,7 @@ export const useRoutes = (requestParams: ListRoutesRequest = {}, enabled = true)
   const { routesApi } = useApi();
 
   return useQuery({
-    queryKey: [QUERY_KEYS.ROUTES, requestParams],
+    queryKey: [QUERY_KEYS.ROUTES],
     enabled: enabled,
     queryFn: async () => {
       const [routes, headers] = await routesApi.listRoutesWithHeaders(requestParams);
@@ -86,7 +86,7 @@ export const useTasks = (requestParams: ListTasksRequest = {}, enabled = true) =
   const { tasksApi } = useApi();
 
   return useQuery({
-    queryKey: [QUERY_KEYS.TASKS, requestParams],
+    queryKey: [QUERY_KEYS.TASKS],
     enabled: enabled,
     queryFn: async () => {
       const [tasks, headers] = await tasksApi.listTasksWithHeaders(requestParams);
@@ -101,7 +101,7 @@ export const useFreightUnits = (requestParams: ListFreightUnitsRequest = {}, ena
   const { freightUnitsApi } = useApi();
 
   return useQuery({
-    queryKey: [QUERY_KEYS.FREIGHT_UNITS, requestParams],
+    queryKey: [QUERY_KEYS.FREIGHT_UNITS],
     enabled: enabled,
     queryFn: async () => {
       const [freightUnits, headers] = await freightUnitsApi.listFreightUnitsWithHeaders(requestParams);
