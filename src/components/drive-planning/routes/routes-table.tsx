@@ -121,6 +121,7 @@ const RoutesTable = ({ selectedDate, tasks, sites, onUpdateRoute }: Props) => {
       editMode="row"
       paginationMode="server"
       disableRowSelectionOnClick
+      fullScreen={false}
       columns={columns}
       rows={routesQuery.data?.routes ?? []}
       rowCount={routesQuery.data?.totalResults}
