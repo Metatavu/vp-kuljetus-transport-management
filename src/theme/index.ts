@@ -71,20 +71,21 @@ const theme = createTheme({
           textField: {
             variant: "standard",
             size: "small",
+            sx: {
+              "& .MuiInputBase-root": {
+                backgroundColor: "rgba(0, 0, 0, 0.06)",
+                borderRadius: "4px",
+                padding: "4px 8px",
+                margin: 0,
+              },
+            },
             InputProps: { disableUnderline: true },
             InputLabelProps: { shrink: true },
           },
           inputAdornment: { sx: { padding: 0, margin: 0 } },
         },
-        sx: {
-          "& .MuiInputBase-root": {
-            backgroundColor: "rgba(0, 0, 0, 0.06)",
-            borderRadius: "4px",
-            padding: "4px 8px",
-          },
-        }
-      }
-    },
+        },
+      },
     MuiTableHead: {
       styleOverrides: {
         root: {

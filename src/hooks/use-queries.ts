@@ -41,7 +41,7 @@ export const useRoutes = (requestParams: ListRoutesRequest = {}, enabled = true)
   const { routesApi } = useApi();
 
   return useQuery({
-    queryKey: [QUERY_KEYS.ROUTES],
+    queryKey: [QUERY_KEYS.ROUTES, requestParams],
     enabled: enabled,
     queryFn: async () => {
       const [routes, headers] = await routesApi.listRoutesWithHeaders(requestParams);
@@ -50,7 +50,7 @@ export const useRoutes = (requestParams: ListRoutesRequest = {}, enabled = true)
       return { routes, totalResults };
     },
   });
-}
+};
 
 export const useTrucks = (requestParams: ListTrucksRequest = {}, enabled = true) => {
   const { trucksApi } = useApi();
