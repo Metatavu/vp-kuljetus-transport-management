@@ -5,10 +5,11 @@ import { ReactNode } from "react";
 type Props = {
   title?: string;
   toolbarButtons?: ReactNode;
+  leftToolbar?: ReactNode;
   navigateBack?: () => void;
 };
 
-const ToolbarRow = ({ title, toolbarButtons, navigateBack }: Props) => {
+const ToolbarRow = ({ title, toolbarButtons, leftToolbar, navigateBack }: Props) => {
   const renderBackButton = () => {
     if (!navigateBack) return null;
 
@@ -26,12 +27,20 @@ const ToolbarRow = ({ title, toolbarButtons, navigateBack }: Props) => {
       <Typography variant="h6" sx={{ opacity: 0.87 }} alignSelf="center">
         {title}
       </Typography>
-      );
+    );
   };
+
+  const renderLeftToolbar = () => {
+    if (!leftToolbar) return null;
+
+    return leftToolbar;
+  };
+
   return (
-    <Stack direction="row" justifyContent="space-between" padding="8px 16px">
+    <Stack direction="row" justifyContent="space-between" padding="8px 16px" height="42px">
       <Stack direction="row" spacing={1}>
         {renderBackButton()}
+        {renderLeftToolbar()}
         {renderTitle()}
       </Stack>
       <Stack direction="row" spacing={1}>

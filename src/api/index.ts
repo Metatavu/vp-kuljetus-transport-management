@@ -9,7 +9,8 @@ import {
   FreightsApi,
   FreightUnitsApi,
   TasksApi,
-  RoutesApi
+  RoutesApi,
+  DriversApi
 } from "../generated/client";
 
 type ConfigConstructor<T> = new (_params: ConfigurationParameters) => T;
@@ -34,6 +35,7 @@ export const getApiClient = (accessToken?: string) => {
     freightsApi: new FreightsApi(getConfiguration()),
     freightUnitsApi: new FreightUnitsApi(getConfiguration()),
     tasksApi: new TasksApi(getConfiguration()),
-    routesApi: new RoutesApi(getConfiguration())
+    routesApi: new RoutesApi(getConfiguration()),
+    driversApi: new DriversApi(getConfiguration())
   };
 };

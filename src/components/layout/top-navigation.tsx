@@ -40,7 +40,7 @@ const TopNavigation = () => {
                 key={route}
                 label={t(label)}
                 value={routeIndex}
-                onClick={() => navigate({ to: route, params: {} })}
+                onClick={() => navigate({ to: route, params: {}, search: {} })}
               />
             ))}
           </Tabs>

@@ -31,7 +31,7 @@ const SideNavigation = ({ navigationItems }: Props) => {
             icon={Icon && <Icon />}
             label={t(title)}
             value={index}
-            onClick={() => navigate({ to: path, params: {} })}
+            onClick={() => navigate({ to: path, params: {}, search: {} })}
             iconPosition="start"
             sx={{
               justifyContent: "flex-start",
