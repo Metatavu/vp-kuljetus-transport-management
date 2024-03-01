@@ -7,9 +7,9 @@ import LocalizationUtils from "utils/localization-utils";
 import { useTranslation } from "react-i18next";
 import { QUERY_KEYS, useFreights } from "hooks/use-queries";
 import { useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
-export type TDraggableTaskTableRow = {
+export type TaskRow = {
   type: TaskType;
   tasks: Task[];
   taskGroupKey: string;
@@ -18,7 +18,7 @@ export type TDraggableTaskTableRow = {
 };
 
 type Props = {
-  taskRow: TDraggableTaskTableRow;
+  taskRow: TaskRow;
   taskCount: number;
 };
 
@@ -47,7 +47,7 @@ const TaskTableRow = ({ taskRow, taskCount }: Props) => {
     },
   });
 
-  const renderPopoverContent = () => {
+  const renderPopoverContent = useCallback(() => {
     return tasks.map((task) => {
       if (!task.freightId) return null;
       const foundFreight = freightsQuery.data?.freights.find((freight) => freight.id === task.freightId);
@@ -61,21 +61,21 @@ const TaskTableRow = ({ taskRow, taskCount }: Props) => {
           endIcon={<ArrowForward />}
           fullWidth
           onClick={() =>
-            navigate({ to: "/drive-planning/freights/$freightId/modify", params: { freightId: task.freightId } })
+            navigate({ to: "/drive-planning/routes/freights/$freightId", params: { freightId: task.freightId } })
           }
         >
           {t("drivePlanning.freights.dialog.title", { freightNumber: foundFreight.freightNumber })}
         </Button>
       );
     });
-  };
+  }, [freightsQuery.data, navigate, t, tasks]);
 
   const handleTableRowClick = ({ clientX, clientY }: React.MouseEvent<HTMLTableRowElement>) => {
     if (taskCount === 1) {
       const { freightId } = tasks[0];
       const foundFreight = freightsQuery.data?.freights.find((freight) => freight.id === freightId);
       if (!foundFreight?.id) return;
-      return navigate({ to: "/drive-planning/freights/$freightId/modify", params: { freightId: freightId } });
+      return navigate({ to: "/drive-planning/routes/freights/$freightId", params: { freightId: freightId } });
     }
 
     if (taskCount > 1) {

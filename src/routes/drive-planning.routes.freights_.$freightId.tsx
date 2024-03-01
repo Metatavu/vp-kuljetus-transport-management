@@ -6,7 +6,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Freight } from "generated/client";
 import { QUERY_KEYS } from "hooks/use-queries";
 
-export const Route = createFileRoute("/drive-planning/freights/$freightId/modify")({
+export const Route = createFileRoute("/drive-planning/routes/freights/$freightId")({
   component: ModifyFreight,
   beforeLoad: (): RouterContext => ({
     breadcrumb: "edit",
@@ -22,7 +22,7 @@ function ModifyFreight() {
   const updateFreight = useMutation({
     mutationFn: async (freight: Freight) => {
       await freightsApi.updateFreight({ freightId, freight });
-      navigate({ to: "/drive-planning/freights" });
+      navigate({ to: "/drive-planning/routes" });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.FREIGHTS, freightId] });
@@ -34,7 +34,7 @@ function ModifyFreight() {
     <FreightDialog
       freightId={freightId}
       onSave={updateFreight}
-      onClose={() => navigate({ to: "/drive-planning/freights" })}
+      onClose={() => navigate({ to: "/drive-planning/routes" })}
     />
   );
 }
