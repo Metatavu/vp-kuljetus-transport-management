@@ -20,8 +20,8 @@ export const Route = createFileRoute("/drive-planning/routes")({
   beforeLoad: (): RouterContext => ({
     breadcrumb: "drivePlanning.routes.title",
   }),
-  validateSearch: (params: Record<string, unknown>): { date?: string | null } => ({
-    date: params.date as string,
+  validateSearch: ({ date }: Record<string, unknown>) => ({
+    date: date ? DateTime.fromISO(date as string) : undefined,
   }),
 });
 
@@ -38,12 +38,11 @@ function DrivePlanningRoutes() {
   const [unallocatedDrawerOpen, setUnallocatedDrawerOpen] = useState(true);
 
   const initialDate = Route.useSearch({
-    select: (params) => (params.date ? params.date : undefined),
+    select: ({ date }) => date,
   });
 
   useEffect(() => {
-    if (!initialDate) return;
-    setSelectedDate(DateTime.fromISO(initialDate));
+    if (initialDate) setSelectedDate(initialDate);
   }, [initialDate]);
 
   const updateRoute = useMutation({
@@ -71,7 +70,7 @@ function DrivePlanningRoutes() {
       onClick={() =>
         navigate({
           to: "/drive-planning/routes/add-route",
-          search: { date: (selectedDate ?? DateTime.now()).toISODate() },
+          search: { date: selectedDate ?? DateTime.now() },
         })
       }
     >

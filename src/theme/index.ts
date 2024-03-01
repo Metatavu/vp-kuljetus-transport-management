@@ -1,5 +1,6 @@
 import { createTheme } from "@mui/material";
 import type {} from "@mui/x-date-pickers/themeAugmentation";
+import { fiFI } from "@mui/x-date-pickers";
 
 /**
  * Extend theme with custom variables in here
@@ -106,6 +107,6 @@ const theme = createTheme({
       },
     } 
   },
-});
+}, fiFI);
 
 export { theme };

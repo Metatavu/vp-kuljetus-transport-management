@@ -41,7 +41,7 @@ const FreightDialog = ({ freightId, onSave }: Props) => {
           if (!freightUnit.id) return Promise.reject();
           freightUnitsApi.updateFreightUnit({
             freightUnitId: freightUnit.id,
-            freightUnit: { ...freightUnit, quantity: freightUnit.quantity || undefined },
+            freightUnit: freightUnit,
           });
         }),
       ),
