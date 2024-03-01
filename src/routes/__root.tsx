@@ -14,7 +14,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 });
 
 function RootLayout() {
-  luxon.Settings.defaultLocale = "FI";
+  luxon.Settings.defaultLocale = "fi";
 
   return (
     <Box sx={{ width: "100vw", height: "100vh", overflow: "hidden", display: "flex", flexDirection: "column" }}>
