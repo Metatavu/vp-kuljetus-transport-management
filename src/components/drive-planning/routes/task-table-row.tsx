@@ -6,7 +6,7 @@ import { Site, Task, TaskType } from "generated/client";
 import LocalizationUtils from "utils/localization-utils";
 import { useTranslation } from "react-i18next";
 import { QUERY_KEYS, useFreights } from "hooks/use-queries";
-import { useSortable } from "@dnd-kit/sortable";
+import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
@@ -35,14 +35,13 @@ const TaskTableRow = ({ taskRow, taskCount }: Props) => {
   const { type, taskGroupKey, customerSite, groupNumber, tasks } = taskRow;
   const { name, address, postalCode, locality } = customerSite;
 
-  const { listeners, transform, transition, setNodeRef } = useSortable({
+  const { listeners, transform, setNodeRef } = useDraggable({
     id: taskGroupKey,
     data: { draggableType: "groupedTask", tasks: tasks },
   });
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition,
   };
 
   const saveTask = useMutation({

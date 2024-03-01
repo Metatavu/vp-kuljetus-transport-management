@@ -1,6 +1,6 @@
 import GenericDataGrid from "components/generic/generic-data-grid";
 import { GridColDef } from "@mui/x-data-grid";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import LocalizationUtils from "utils/localization-utils";
 import { Route, Site, Task } from "generated/client";
@@ -17,7 +17,9 @@ type Props = {
 const FreightTasks = ({ tasks, customerSites, onEditTask }: Props) => {
   const { t } = useTranslation();
 
-  const routesQuery = useRoutes({ departureAfter: DateTime.now().minus({ days: 1 }).toJSDate() });
+  const [departureAfter, setDepartureAfter] = useState(DateTime.now().minus({ days: 1 }).startOf("day").toJSDate());
+
+  const routesQuery = useRoutes({ departureAfter: departureAfter });
 
   const { rowModesModel, handleCellClick, handleRowModelsChange } = useSingleClickRowEditMode();
 
