@@ -3,7 +3,7 @@ import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router";
 import ToolbarRow from "components/generic/toolbar-row";
 import { RouterContext } from "./__root";
 import { Add } from "@mui/icons-material";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { DateTime } from "luxon";
 import { useApi } from "hooks/use-api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -53,29 +53,35 @@ function DrivePlanningRoutes() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ROUTES, selectedDate] }),
   });
 
-  const renderLeftToolbar = () => (
-    <Stack direction="row">
-      <Typography variant="h6" sx={{ opacity: 0.6 }} alignSelf="center">
-        {t("drivePlanning.routes.date")}
-      </Typography>
-      <DatePickerWithArrows labelVisible={false} date={selectedDate} setDate={setSelectedDate} />
-    </Stack>
+  const renderLeftToolbar = useCallback(
+    () => (
+      <Stack direction="row">
+        <Typography variant="h6" sx={{ opacity: 0.6 }} alignSelf="center">
+          {t("drivePlanning.routes.date")}
+        </Typography>
+        <DatePickerWithArrows labelVisible={false} date={selectedDate} setDate={setSelectedDate} />
+      </Stack>
+    ),
+    [selectedDate, t],
   );
 
-  const renderRightToolbar = () => (
-    <Button
-      size="small"
-      variant="text"
-      startIcon={<Add />}
-      onClick={() =>
-        navigate({
-          to: "/drive-planning/routes/add-route",
-          search: { date: selectedDate ?? DateTime.now() },
-        })
-      }
-    >
-      {t("drivePlanning.routes.newRoute")}
-    </Button>
+  const renderRightToolbar = useCallback(
+    () => (
+      <Button
+        size="small"
+        variant="text"
+        startIcon={<Add />}
+        onClick={() =>
+          navigate({
+            to: "/drive-planning/routes/add-route",
+            search: { date: selectedDate ?? DateTime.now() },
+          })
+        }
+      >
+        {t("drivePlanning.routes.newRoute")}
+      </Button>
+    ),
+    [navigate, selectedDate, t],
   );
 
   return (
