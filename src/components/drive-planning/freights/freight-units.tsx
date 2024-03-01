@@ -48,6 +48,12 @@ const FreightUnits = ({ freightUnits, freightId, onEditFreightUnit }: Props) => 
     return newRow;
   };
 
+  const parseEditCellNumberValue = (value: unknown) => {
+    if (value === null || value === undefined || value === "") return undefined;
+
+    return parseFloat(value as string);
+  };
+
   const columns: GridColDef[] = useMemo(
     () => [
       {
@@ -69,6 +75,7 @@ const FreightUnits = ({ freightUnits, freightId, onEditFreightUnit }: Props) => 
         type: "number",
         align: "left",
         flex: 1,
+        valueParser: parseEditCellNumberValue,
       },
       {
         field: "contents",
@@ -92,7 +99,7 @@ const FreightUnits = ({ freightUnits, freightId, onEditFreightUnit }: Props) => 
         ),
       },
     ],
-    [t, deleteFreightUnit],
+    [t, deleteFreightUnit, parseEditCellNumberValue],
   );
 
   return (

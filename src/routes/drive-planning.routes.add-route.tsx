@@ -11,8 +11,8 @@ export const Route = createFileRoute("/drive-planning/routes/add-route")({
   beforeLoad: (): RouterContext => ({
     breadcrumb: "drivePlanning.routes.newRoute",
   }),
-  validateSearch: (params: { date: string | null }) => ({
-    date: params.date,
+  validateSearch: ({ date }: Record<string, unknown>) => ({
+    date: date ? DateTime.fromISO(date as string) : DateTime.now(),
   }),
 });
 
@@ -21,17 +21,17 @@ function AddRoute() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const initialDate = Route.useSearch({
-    select: ({ date }) => (date ? DateTime.fromISO(date) : DateTime.now()),
+    select: ({ date }) => date,
   });
 
   const createRoute = useMutation({
     mutationFn: async (route: TRoute) => {
       const { departureTime } = route;
       await routesApi.createRoute({ route: route });
-      navigate({ to: "/drive-planning/routes", search: { date: departureTime.toISOString() } });
+      navigate({ to: "/drive-planning/routes", search: { date: DateTime.fromJSDate(departureTime) } });
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["routes"] }),
   });
 
-  return <RouteDialog onSave={createRoute} initialDate={initialDate?.toJSDate()} />;
+  return <RouteDialog onSave={createRoute} initialDate={initialDate} />;
 }
