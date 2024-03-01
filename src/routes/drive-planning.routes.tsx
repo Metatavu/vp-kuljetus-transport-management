@@ -4,7 +4,7 @@ import ToolbarRow from "components/generic/toolbar-row";
 import { RouterContext } from "./__root";
 import { Add, ArrowBack, ArrowForward, UnfoldMore } from "@mui/icons-material";
 import { DatePicker } from "@mui/x-date-pickers";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { DateTime } from "luxon";
 import { useApi } from "hooks/use-api";
 import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -21,8 +21,8 @@ export const Route = createFileRoute("/drive-planning/routes")({
   beforeLoad: (): RouterContext => ({
     breadcrumb: "drivePlanning.routes.title",
   }),
-  validateSearch: (params: Record<string, unknown>): { date?: string | null } => ({
-    date: params.date as string,
+  validateSearch: ({ date }: Record<string, unknown>) => ({
+    date: date ? DateTime.fromISO(date as string) : undefined,
   }),
 });
 
@@ -32,14 +32,13 @@ function DrivePlanningRoutes() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const initialDate = Route.useSearch({
-    select: (params) => (params.date ? params.date : undefined),
+    select: ({ date }) => date,
   });
 
   const [selectedDate, setSelectedDate] = useState<DateTime>(DateTime.now());
 
   useEffect(() => {
-    if (!initialDate) return;
-    setSelectedDate(DateTime.fromISO(initialDate));
+    if (initialDate) setSelectedDate(initialDate);
   }, [initialDate]);
 
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({ page: 0, pageSize: 25 });
@@ -165,23 +164,26 @@ function DrivePlanningRoutes() {
     [t, tasksQuery.data, trucksQuery.data, driversQuery.data],
   );
 
-  const renderLeftToolbar = () => (
-    <Stack direction="row">
-      <Typography variant="h6" sx={{ opacity: 0.6 }} alignSelf="center">
-        {t("drivePlanning.routes.date")}
-      </Typography>
-      <IconButton onClick={() => setSelectedDate(minusOneDay)}>
-        <ArrowBack />
-      </IconButton>
-      <DatePicker
-        value={selectedDate}
-        onChange={onChangeDate}
-        sx={{ alignSelf: "center", padding: "4px 8px", width: "132px" }}
-      />
-      <IconButton onClick={() => setSelectedDate(plusOneDay)}>
-        <ArrowForward />
-      </IconButton>
-    </Stack>
+  const renderLeftToolbar = useCallback(
+    () => (
+      <Stack direction="row">
+        <Typography variant="h6" sx={{ opacity: 0.6 }} alignSelf="center">
+          {t("drivePlanning.routes.date")}
+        </Typography>
+        <IconButton onClick={() => setSelectedDate(minusOneDay)}>
+          <ArrowBack />
+        </IconButton>
+        <DatePicker
+          value={selectedDate}
+          onChange={onChangeDate}
+          sx={{ alignSelf: "center", padding: "4px 8px", width: "132px" }}
+        />
+        <IconButton onClick={() => setSelectedDate(plusOneDay)}>
+          <ArrowForward />
+        </IconButton>
+      </Stack>
+    ),
+    [selectedDate, t, onChangeDate, minusOneDay, plusOneDay],
   );
 
   return (
@@ -198,7 +200,7 @@ function DrivePlanningRoutes() {
               onClick={() =>
                 navigate({
                   to: "/drive-planning/routes/add-route",
-                  search: { date: selectedDate.toISODate() },
+                  search: { date: selectedDate },
                 })
               }
             >
