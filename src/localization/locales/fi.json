@@ -13,6 +13,10 @@
   "vehicleInfo": "Ajoneuvon tiedot",
   "workingTime": "Työaika",
   "addNew": "Lisää uusi",
+  "truckType": {
+    "truck": "Kuorma-auto",
+    "semiTruck": "Vetoauto"
+  },
   "management": {
     "title": "Hallinta",
     "customerSites": {
@@ -49,7 +53,10 @@
       "number": "Tunnus",
       "vin": "Runkonumero",
       "errorMessages": {
-        "licensePlateMissing": "Rekisterinumero on pakollinen"
+        "licensePlateMissing": "Rekisterinumero on pakollinen",
+        "typeMissing": "Tyyppi on pakollinen",
+        "vinNumberMissing": "Runkonumero on pakollinen",
+        "numberMissing": "Tunnus on pakollinen"
       }
     },
     "vehicles": {
@@ -66,9 +73,6 @@
   },
   "drivePlanning": {
     "title": "Ajojärjestely",
-    "routes": {
-      "title": "Reitit"
-    },
     "routes": {
       "title": "Reitit"
     },

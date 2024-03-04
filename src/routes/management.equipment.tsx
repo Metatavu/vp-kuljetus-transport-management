@@ -4,12 +4,11 @@ import ToolbarRow from "components/generic/toolbar-row";
 import { RouterContext } from "./__root";
 import { useTranslation } from "react-i18next";
 import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import GenericDataGrid from "components/generic/generic-data-grid";
 import { Add } from "@mui/icons-material";
 import { useApi } from "../../src/hooks/use-api";
-import { Towable, Truck } from "generated/client";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/management/equipment")({
   component: ManagementEquipment,
@@ -20,71 +19,24 @@ export const Route = createFileRoute("/management/equipment")({
 
 function ManagementEquipment() {
   const { t } = useTranslation();
-  const { trucksApi, towablesApi } = useApi();
+  const { trucksApi } = useApi();
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
 
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  const [rows, setRows] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
-  const resultsPerPage = 25;
-  const [page, setPage] = useState(0);
   const [totalResults, setTotalResults] = useState(0);
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({ page: 0, pageSize: 25 });
 
   const trucks = useQuery({
-    queryKey: ["sites", paginationModel],
+    queryKey: ["trucks", paginationModel],
     queryFn: async () => {
-      const [sites, headers] = await trucksApi.listTrucksWithHeaders({
+      const [trucks, headers] = await trucksApi.listTrucksWithHeaders({
         first: paginationModel.pageSize * paginationModel.page,
         max: paginationModel.pageSize * paginationModel.page + paginationModel.pageSize,
       });
       const count = parseInt(headers.get("x-total-count") ?? "0");
       setTotalResults(count);
-      return sites;
+      return trucks;
     },
   });
-
-  /**
-   * Builds vehicle row for the table
-   *
-   * @param vehicles - vehicles
-   */
-  const buildRow = (equipment: Truck | Towable) => {
-    return {
-      id: equipment.id,
-      number: equipment.id,
-      plateNumber: equipment.plateNumber,
-      type: equipment.type,
-      vin: equipment.vin
-    } as const;
-  };
-
-  /**
-   * Load data for the table
-   */
-  const loadData = async () => {
-    setLoading(true);
-
-    try {
-      const towables = await towablesApi.listTowables({});
-      const trucks = await trucksApi.listTrucks({});
-
-      const vehicleRows = [...trucks ?? [], ...towables ?? []].map(buildRow);
-
-      setTotalResults(24);
-      setRows(vehicleRows);
-    } catch (e) {
-      console.error(t("errorHandling.vehicleListing"));
-    }
-
-    setLoading(false);
-  };
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-  useEffect(() => {
-    loadData();
-  }, [page]);
 
   const columns: GridColDef[] = useMemo(
     () => [
@@ -137,7 +89,7 @@ function ManagementEquipment() {
     <Stack direction="row" spacing={1}>
       <Button onClick={() =>
         navigate({
-          to: "/management/equipment",
+          to: "/management/equipment/add-equipment",
         })
       } variant="contained" startIcon={<Add />}>
         {t("addNew")}
@@ -155,7 +107,7 @@ function ManagementEquipment() {
         showCellVerticalBorder
         showColumnVerticalBorder
         disableColumnSelector
-        loading={loading}
+        loading={false}
         getRowId={row => row.id}
         paginationMode="server"
         pageSizeOptions={[25, 50, 100]}

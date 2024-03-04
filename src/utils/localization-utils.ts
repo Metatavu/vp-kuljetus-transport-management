@@ -6,6 +6,11 @@ namespace LocalizationUtils {
     LOAD: t("drivePlanning.tasks.loadTaskType"),
     UNLOAD: t("drivePlanning.tasks.unloadTaskType"),
   })[type];
+
+  export const getLocalizedTruckType = (type: string, t: TFunction) => ({
+    Truck: t("truckType.truck"),
+    SemiTruck: t("truckType.semiTruck"),
+  })[type];
 }
 
 export default LocalizationUtils;

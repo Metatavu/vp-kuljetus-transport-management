@@ -12,44 +12,52 @@
   "vehicleList": "Vehicle list",
   "vehicleInfo": "Vehicle information",
   "workingTime": "Working time",
-  "management": "Management",
   "addNew": "Add new",
-  "customerSites": {
-    "title": "Customer sites",
-    "new": "New customer site",
-    "modify": "Modify customer site",
-    "type": "Type",
-    "name": "Name",
-    "address": "Address",
-    "postalCode": "Postal code",
-    "municipality": "Municipality",
-    "additionalInfo": "Additional info",
-    "errorMessages": {
-      "nameMissing": "Name is required",
-      "addressMissing": "Address is required",
-      "postalCodeMissing": "Postal code is required",
-      "postalCodeTooShort": "Postal code needs to be atleast 5 characters long",
-      "postalCodeInvalidFormat": "Postal code can only contain numers",
-      "municipalityMissing": "Municipality is required"
-    },
-    "archiveDialog": {
-      "title": "Archive customer site",
-      "description": "Are you sure you want to archive customer site {{name}}?"
-    }
+  "truckType": {
+    "truck": "Truck",
+    "semiTruck": "Semi truck"
   },
-  "equipment": {
-    "title": "Equipment list",
-    "new": "New equipment",
-    "open": "Open",
-    "modify": "Modify equipment",
-    "type": "Type",
-    "name": "Name",
-    "licensePlate": "License plate",
-    "number": "Plate number",
-    "vin": "VIN number",
-    "errorMessages": {
-      "nameMissing": "Name is required",
-      "licensePlateMissing": "License plate is required"
+  "management": {
+    "title": "Management",
+    "customerSites": {
+      "title": "Customer sites",
+      "new": "New customer site",
+      "modify": "Modify customer site",
+      "type": "Type",
+      "name": "Name",
+      "address": "Address",
+      "postalCode": "Postal code",
+      "municipality": "Municipality",
+      "additionalInfo": "Additional info",
+      "errorMessages": {
+        "nameMissing": "Name is required",
+        "addressMissing": "Address is required",
+        "postalCodeMissing": "Postal code is required",
+        "postalCodeTooShort": "Postal code needs to be atleast 5 characters long",
+        "postalCodeInvalidFormat": "Postal code can only contain numers",
+        "municipalityMissing": "Municipality is required"
+      },
+      "archiveDialog": {
+        "title": "Archive customer site",
+        "description": "Are you sure you want to archive customer site {{name}}?"
+      }
+    },
+    "equipment": {
+      "title": "Equipment list",
+      "new": "New equipment",
+      "open": "Open",
+      "modify": "Modify equipment",
+      "type": "Type",
+      "name": "Name",
+      "licensePlate": "License plate",
+      "number": "Number",
+      "vin": "VIN number",
+      "errorMessages": {
+        "typeMissing": "Type is required",
+        "licensePlateMissing": "License plate is required",
+        "vinNumberMissing": "Vin number is required",
+        "numberMissing": "Number is required"
+      }
     }
   },
   "vehicles": {
@@ -66,9 +74,6 @@
   },
   "drivePlanning": {
     "title": "Drive planning",
-    "routes": {
-      "title": "Routes"
-    },
     "routes": {
       "title": "Routes"
     },
