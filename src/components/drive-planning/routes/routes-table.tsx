@@ -9,6 +9,7 @@ import { useSingleClickRowEditMode } from "hooks/use-single-click-row-edit-mode"
 import ExpandableRoutesTableRow from "./expandable-routes-table-row";
 import { DateTime } from "luxon";
 import { useDrivers, useRoutes, useTrucks } from "hooks/use-queries";
+import { deepEqual } from "@tanstack/react-router";
 
 type Props = {
   selectedDate: DateTime;
@@ -33,7 +34,11 @@ const RoutesTable = ({ selectedDate, tasks, sites, onUpdateRoute }: Props) => {
     max: paginationModel.pageSize * paginationModel.page + paginationModel.pageSize,
   });
 
-  const processRowUpdate = async (newRow: Route) => await onUpdateRoute(newRow);
+  const processRowUpdate = async (newRow: Route, oldRow: Route) => {
+    if (deepEqual(oldRow, newRow)) return oldRow;
+
+    return await onUpdateRoute(newRow);
+  };
 
   const columns: GridColDef[] = useMemo(
     () => [

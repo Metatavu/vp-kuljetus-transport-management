@@ -7,7 +7,8 @@ import { Route, Site, Task } from "generated/client";
 import { DateTime } from "luxon";
 import { useSingleClickRowEditMode } from "hooks/use-single-click-row-edit-mode";
 import { useRoutes } from "hooks/use-queries";
-import RoutesList from "./routes-list";
+import RoutesDropdown from "./routes-dropdown";
+import { deepEqual } from "@tanstack/react-router";
 
 type Props = {
   customerSites: Site[];
@@ -26,7 +27,8 @@ const FreightTasks = ({ tasks, customerSites, onEditTask }: Props) => {
 
   const { rowModesModel, handleCellClick, handleRowModelsChange } = useSingleClickRowEditMode();
 
-  const processRowUpdate = (newRow: Task) => {
+  const processRowUpdate = (newRow: Task, oldRow: Task) => {
+    if (deepEqual(oldRow, newRow)) return oldRow;
     onEditTask(newRow);
     return newRow;
   };
@@ -77,7 +79,7 @@ const FreightTasks = ({ tasks, customerSites, onEditTask }: Props) => {
         valueFormatter: ({ value }) =>
           routesQuery.data?.routes.find((route) => route.id === value)?.name ?? t("noSelection"),
         renderEditCell: (params) => (
-          <RoutesList
+          <RoutesDropdown
             {...params}
             routes={routesQuery.data?.routes ?? []}
             selectedDepartureDate={selectedDepartureDate}
