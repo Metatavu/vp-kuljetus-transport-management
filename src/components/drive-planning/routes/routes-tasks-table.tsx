@@ -1,11 +1,10 @@
 import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody } from "@mui/material";
 import { Site, Task } from "generated/client";
 import { t } from "i18next";
-import { useEffect, useState } from "react";
-import TaskTableRow, { TDraggableTaskTableRow } from "./task-table-row";
+import { useCallback, useEffect, useState } from "react";
+import TaskTableRow, { TaskRow } from "./task-table-row";
 import { useGridApiContext } from "@mui/x-data-grid";
 import { SortableContext } from "@dnd-kit/sortable";
-import DataValidation from "utils/data-validation-utils";
 import { useDroppable } from "@dnd-kit/core";
 
 type Props = {
@@ -23,25 +22,44 @@ const RoutesTasksTable = ({ routeId, tasks, sites }: Props) => {
   const [groupedTasks, setGroupedTasks] = useState<Record<string, Task[]>>({});
 
   const tableContainerStyle = {
-    outline: isOver ? "2px dashed #4E8A9C" : "none",
+    outline: isOver ? "2px solid #4E8A9C" : "none",
+    outlineOffset: "-3px",
   };
 
   useEffect(() => {
     if (!tasks.length) return;
-    setGroupedTasks(
-      tasks.reduce(
-        (acc, task) => {
-          const key = `${task.groupNumber}-${task.customerSiteId}-${task.type}`;
-          if (!acc[key]) {
-            acc[key] = [];
-          }
-          acc[key].push(task);
-          return acc;
-        },
-        {} as Record<string, Task[]>,
-      ),
+    const groupedTasks = tasks.reduce(
+      (groupedTasks, task) => {
+        const key = `${task.groupNumber}-${task.customerSiteId}-${task.type}`;
+        if (!groupedTasks[key]) {
+          groupedTasks[key] = [];
+        }
+        groupedTasks[key].push(task);
+        return groupedTasks;
+      },
+      {} as Record<string, Task[]>,
     );
+    setGroupedTasks(groupedTasks);
   }, [tasks]);
+
+  const renderTaskRow = useCallback(
+    (groupedTasksKey: string) => {
+      const tasks = groupedTasks[groupedTasksKey];
+      const { customerSiteId, type, groupNumber } = tasks[0];
+      const foundSite = sites.find((site) => site.id === customerSiteId);
+      if (!foundSite) return null;
+      const taskRow: TaskRow = {
+        taskGroupKey: groupedTasksKey,
+        customerSite: foundSite,
+        groupNumber: groupNumber,
+        tasks: tasks,
+        type: type,
+      };
+
+      return <TaskTableRow key={groupedTasksKey} taskRow={taskRow} taskCount={tasks.length} />;
+    },
+    [groupedTasks, sites],
+  );
 
   const baseCellWidth = dataGridApiRef.current.getColumnPosition("tasks");
 
@@ -50,12 +68,7 @@ const RoutesTasksTable = ({ routeId, tasks, sites }: Props) => {
       ref={setNodeRef}
       sx={{ marginLeft: `${baseCellWidth}px`, ...tableContainerStyle, maxWidth: `calc(100% - ${baseCellWidth}px)` }}
     >
-      <SortableContext
-        items={Object.keys(groupedTasks)
-          .flatMap((key) => groupedTasks[key])
-          .map((task) => task.id)
-          .filter(DataValidation.validateValueIsNotUndefinedNorNull)}
-      >
+      <SortableContext items={Object.keys(groupedTasks)}>
         <Table>
           <TableHead>
             <TableRow>
@@ -67,23 +80,7 @@ const RoutesTasksTable = ({ routeId, tasks, sites }: Props) => {
               <TableCell />
             </TableRow>
           </TableHead>
-          <TableBody>
-            {Object.keys(groupedTasks).map((key) => {
-              const tasks = groupedTasks[key];
-              const { customerSiteId, type, groupNumber } = tasks[0];
-              const foundSite = sites.find((site) => site.id === customerSiteId);
-              if (!foundSite) return null;
-              const taskRow: TDraggableTaskTableRow = {
-                taskGroupKey: key,
-                customerSite: foundSite,
-                groupNumber: groupNumber,
-                tasks: tasks,
-                type: type,
-              };
-
-              return <TaskTableRow key={customerSiteId} taskRow={taskRow} taskCount={tasks.length} />;
-            })}
-          </TableBody>
+          <TableBody>{Object.keys(groupedTasks).map(renderTaskRow)}</TableBody>
         </Table>
       </SortableContext>
     </TableContainer>

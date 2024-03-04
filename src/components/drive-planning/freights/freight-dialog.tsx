@@ -1,6 +1,5 @@
 import { Button, Dialog, DialogActions, DialogContent, Stack } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "@tanstack/react-router";
 import { useApi } from "hooks/use-api";
 import { UseMutationResult, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Freight, FreightUnit, Task } from "generated/client";
@@ -16,11 +15,11 @@ import { QUERY_KEYS, useFreight, useFreightUnits, useSites, useTasks } from "hoo
 type Props = {
   freightId?: string;
   onSave?: UseMutationResult<void, Error, Freight, unknown>;
+  onClose: () => void;
 };
 
-const FreightDialog = ({ freightId, onSave }: Props) => {
+const FreightDialog = ({ freightId, onSave, onClose }: Props) => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { freightUnitsApi, tasksApi } = useApi();
 
@@ -41,7 +40,7 @@ const FreightDialog = ({ freightId, onSave }: Props) => {
           if (!freightUnit.id) return Promise.reject();
           freightUnitsApi.updateFreightUnit({
             freightUnitId: freightUnit.id,
-            freightUnit: { ...freightUnit, quantity: freightUnit.quantity || undefined },
+            freightUnit: freightUnit,
           });
         }),
       ),
@@ -84,8 +83,6 @@ const FreightDialog = ({ freightId, onSave }: Props) => {
     await onSave.mutateAsync(freight);
   };
 
-  const handleClose = () => navigate({ to: "/drive-planning/freights" });
-
   const renderFreightContent = useCallback(() => {
     if (!freightId || !freightUnitsQuery.data || !tasksQuery.data || !customerSitesQuery.data) return null;
 
@@ -106,7 +103,7 @@ const FreightDialog = ({ freightId, onSave }: Props) => {
   }, [freightId, freightUnitsQuery.data, tasksQuery.data, customerSitesQuery.data, onEditFreightUnit, onEditTask]);
 
   return (
-    <Dialog open={true} onClose={handleClose} PaperProps={{ sx: { minWidth: "50%", borderRadius: 0 } }}>
+    <Dialog open={true} onClose={onClose} PaperProps={{ sx: { minWidth: "50%", borderRadius: 0 } }}>
       <LoaderWrapper
         loading={
           freightQuery?.isLoading || customerSitesQuery.isLoading || tasksQuery.isLoading || freightUnitsQuery.isLoading
@@ -118,7 +115,7 @@ const FreightDialog = ({ freightId, onSave }: Props) => {
               ? t("drivePlanning.freights.dialog.title", { freightNumber: freightQuery?.data?.freightNumber })
               : t("drivePlanning.freights.new")
           }
-          onClose={handleClose}
+          onClose={onClose}
         />
         <FormProvider {...form}>
           <form onSubmit={form.handleSubmit(onSaveClick)}>
@@ -132,7 +129,7 @@ const FreightDialog = ({ freightId, onSave }: Props) => {
               </Stack>
             </DialogContent>
             <DialogActions>
-              <Button variant="text" onClick={handleClose}>
+              <Button variant="text" onClick={onClose}>
                 {t("cancel")}
               </Button>
               <Button variant="contained" disabled={!form.formState.isValid} type="submit">

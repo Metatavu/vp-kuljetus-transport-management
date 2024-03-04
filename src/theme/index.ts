@@ -1,5 +1,6 @@
 import { createTheme } from "@mui/material";
 import type {} from "@mui/x-date-pickers/themeAugmentation";
+import { fiFI } from "@mui/x-date-pickers";
 
 /**
  * Extend theme with custom variables in here
@@ -71,20 +72,21 @@ const theme = createTheme({
           textField: {
             variant: "standard",
             size: "small",
+            sx: {
+              "& .MuiInputBase-root": {
+                backgroundColor: "rgba(0, 0, 0, 0.06)",
+                borderRadius: "4px",
+                padding: "4px 8px",
+                margin: 0,
+              },
+            },
             InputProps: { disableUnderline: true },
             InputLabelProps: { shrink: true },
           },
           inputAdornment: { sx: { padding: 0, margin: 0 } },
         },
-        sx: {
-          "& .MuiInputBase-root": {
-            backgroundColor: "rgba(0, 0, 0, 0.06)",
-            borderRadius: "4px",
-            padding: "4px 8px",
-          },
-        }
-      }
-    },
+        },
+      },
     MuiTableHead: {
       styleOverrides: {
         root: {
@@ -107,6 +109,6 @@ const theme = createTheme({
       },
     }
   },
-});
+}, fiFI);
 
 export { theme };

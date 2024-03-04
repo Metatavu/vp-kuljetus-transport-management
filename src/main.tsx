@@ -34,7 +34,7 @@ if (!rootElement.innerHTML) {
   ReactDOM.createRoot(rootElement).render(
     <StrictMode>
       <ThemeProvider theme={theme}>
-        <LocalizationProvider dateAdapter={AdapterLuxon} adapterLocale="FI">
+        <LocalizationProvider dateAdapter={AdapterLuxon} adapterLocale="fi">
           <CssBaseline />
           <AuthenticationProvider>
             <QueryClientProvider client={queryClient}>

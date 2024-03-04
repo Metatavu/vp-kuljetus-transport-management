@@ -50,7 +50,7 @@ export const useRoutes = (requestParams: ListRoutesRequest = {}, enabled = true)
       return { routes, totalResults };
     },
   });
-}
+};
 
 export const useTrucks = (requestParams: ListTrucksRequest = {}, enabled = true) => {
   const { trucksApi } = useApi();
@@ -86,7 +86,7 @@ export const useTasks = (requestParams: ListTasksRequest = {}, enabled = true) =
   const { tasksApi } = useApi();
 
   return useQuery({
-    queryKey: [QUERY_KEYS.TASKS],
+    queryKey: [QUERY_KEYS.TASKS, requestParams],
     enabled: enabled,
     queryFn: async () => {
       const [tasks, headers] = await tasksApi.listTasksWithHeaders(requestParams);
@@ -101,7 +101,7 @@ export const useFreightUnits = (requestParams: ListFreightUnitsRequest = {}, ena
   const { freightUnitsApi } = useApi();
 
   return useQuery({
-    queryKey: [QUERY_KEYS.FREIGHT_UNITS],
+    queryKey: [QUERY_KEYS.FREIGHT_UNITS, requestParams],
     enabled: enabled,
     queryFn: async () => {
       const [freightUnits, headers] = await freightUnitsApi.listFreightUnitsWithHeaders(requestParams);

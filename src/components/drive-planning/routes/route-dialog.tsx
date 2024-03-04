@@ -11,7 +11,7 @@ import { DateTime } from "luxon";
 import DialogHeader from "components/generic/dialog-header";
 
 type Props = {
-  initialDate: Date;
+  initialDate: DateTime;
   routeId?: string;
   onSave?: UseMutationResult<void, Error, Route, unknown>;
 };
@@ -39,7 +39,7 @@ const RouteDialog = ({ initialDate, routeId, onSave }: Props) => {
     mode: "onChange",
     defaultValues: {
       ...routeQuery.data,
-      departureTime: departureTime ? departureTime : initialDate,
+      departureTime: departureTime ?? initialDate.toJSDate(),
     },
   });
 
@@ -53,9 +53,9 @@ const RouteDialog = ({ initialDate, routeId, onSave }: Props) => {
     queryFn: () => driversApi.listDrivers(),
   });
 
-  const onSaveClick = async (route: Route) => await onSave?.mutateAsync(route);
+  const onSaveClick = (route: Route) => onSave?.mutateAsync(route);
 
-  const handleClose = () => navigate({ to: "/drive-planning/routes" });
+  const handleClose = () => navigate({ to: "/drive-planning/routes", search: { date: initialDate } });
 
   const setSingleSelectValue = (value: string) => (value === "EMPTY" ? undefined : value);
 
@@ -87,7 +87,7 @@ const RouteDialog = ({ initialDate, routeId, onSave }: Props) => {
 
   return (
     <Dialog
-      open={true}
+      open
       onClose={handleClose}
       PaperProps={{ sx: { minWidth: "326px", minHeight: "348px", margin: 0, borderRadius: 0 } }}
     >
@@ -101,7 +101,7 @@ const RouteDialog = ({ initialDate, routeId, onSave }: Props) => {
             <Stack spacing={2}>
               <DatePicker
                 label={t("drivePlanning.routes.date")}
-                value={DateTime.fromJSDate(initialDate)}
+                value={initialDate}
                 onChange={(value: DateTime | null) =>
                   value ? setValue("departureTime", value.toJSDate()) : resetField("departureTime")
                 }

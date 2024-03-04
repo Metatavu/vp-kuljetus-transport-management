@@ -6,12 +6,12 @@ import { Site, Task, TaskType } from "generated/client";
 import LocalizationUtils from "utils/localization-utils";
 import { useTranslation } from "react-i18next";
 import { QUERY_KEYS, useFreights } from "hooks/use-queries";
-import { useDraggable } from "@dnd-kit/core";
+import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
-export type TDraggableTaskTableRow = {
+export type TaskRow = {
   type: TaskType;
   tasks: Task[];
   taskGroupKey: string;
@@ -20,7 +20,7 @@ export type TDraggableTaskTableRow = {
 };
 
 type Props = {
-  taskRow: TDraggableTaskTableRow;
+  taskRow: TaskRow;
   taskCount: number;
 };
 
@@ -35,12 +35,18 @@ const TaskTableRow = ({ taskRow, taskCount }: Props) => {
   const { type, taskGroupKey, customerSite, groupNumber, tasks } = taskRow;
   const { name, address, postalCode, locality } = customerSite;
 
-  const { listeners, transform, setNodeRef } = useDraggable({
+  const { listeners, setNodeRef, isOver, over, active, transition, transform } = useSortable({
     id: taskGroupKey,
     data: { draggableType: "groupedTask", tasks: tasks },
   });
 
-  const style = {
+  console.log("active", active);
+  console.log("over", over);
+
+  const rowStyle = {
+    outline: over?.id !== active?.id && isOver ? "2px solid #4E8A9C" : "none",
+    outlineOffset: "-2px",
+    transition: transition,
     transform: CSS.Transform.toString(transform),
   };
 
@@ -58,7 +64,7 @@ const TaskTableRow = ({ taskRow, taskCount }: Props) => {
     },
   });
 
-  const renderPopoverContent = () => {
+  const renderPopoverContent = useCallback(() => {
     return tasks.map((task) => {
       if (!task.freightId) return null;
       const foundFreight = freightsQuery.data?.freights.find((freight) => freight.id === task.freightId);
@@ -72,21 +78,21 @@ const TaskTableRow = ({ taskRow, taskCount }: Props) => {
           endIcon={<ArrowForward />}
           fullWidth
           onClick={() =>
-            navigate({ to: "/drive-planning/freights/$freightId/modify", params: { freightId: task.freightId } })
+            navigate({ to: "/drive-planning/routes/freights/$freightId", params: { freightId: task.freightId } })
           }
         >
           {t("drivePlanning.freights.dialog.title", { freightNumber: foundFreight.freightNumber })}
         </Button>
       );
     });
-  };
+  }, [freightsQuery.data, navigate, t, tasks]);
 
   const handleTableRowClick = ({ clientX, clientY }: React.MouseEvent<HTMLTableRowElement>) => {
     if (taskCount === 1) {
       const { freightId } = tasks[0];
       const foundFreight = freightsQuery.data?.freights.find((freight) => freight.id === freightId);
       if (!foundFreight?.id) return;
-      return navigate({ to: "/drive-planning/freights/$freightId/modify", params: { freightId: freightId } });
+      return navigate({ to: "/drive-planning/routes/freights/$freightId", params: { freightId: freightId } });
     }
 
     if (taskCount > 1) {
@@ -95,7 +101,7 @@ const TaskTableRow = ({ taskRow, taskCount }: Props) => {
   };
   return (
     <>
-      <TableRow ref={setNodeRef} sx={{ height: "38px", ...style }} onClick={handleTableRowClick} {...listeners}>
+      <TableRow ref={setNodeRef} sx={{ height: "38px", ...rowStyle }} onClick={handleTableRowClick} {...listeners}>
         <TableCell>{LocalizationUtils.getLocalizedTaskType(type, t)}</TableCell>
         <TableCell>{groupNumber}</TableCell>
         <TableCell>{name}</TableCell>

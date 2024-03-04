@@ -3,7 +3,6 @@ import { Outlet, createRootRouteWithContext } from "@tanstack/react-router";
 import BreadcrumbsBar from "components/layout/breadcrumbs-bar";
 import TopNavigation from "components/layout/top-navigation";
 import * as luxon from "luxon";
-import { useEffect } from "react";
 import { LocalizedLabelKey } from "src/types";
 
 export type RouterContext = {
@@ -15,9 +14,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 });
 
 function RootLayout() {
-  useEffect(() => {
-    luxon.Settings.defaultLocale = "FI";
-  }, []);
+  luxon.Settings.defaultLocale = "fi";
 
   return (
     <Box sx={{ width: "100vw", height: "100vh", overflow: "hidden", display: "flex", flexDirection: "column" }}>
