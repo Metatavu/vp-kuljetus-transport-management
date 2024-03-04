@@ -4,6 +4,11 @@
   "logout": "Logout",
   "edit": "Edit",
   "delete": "Delete",
+  "archive": "Archive",
+  "open": "Open",
+  "noSelection": "No selection",
+  "noResults": "No results",
+  "actions": "Actions",
   "vehicleList": "Vehicle list",
   "vehicleInfo": "Vehicle information",
   "workingTime": "Working time",
@@ -26,10 +31,14 @@
       "postalCodeTooShort": "Postal code needs to be atleast 5 characters long",
       "postalCodeInvalidFormat": "Postal code can only contain numers",
       "municipalityMissing": "Municipality is required"
+    },
+    "archiveDialog": {
+      "title": "Archive customer site",
+      "description": "Are you sure you want to archive customer site {{name}}?"
     }
   },
   "equipment": {
-    "title": "Equipment",
+    "title": "Equipment list",
     "new": "New equipment",
     "open": "Open",
     "modify": "Modify equipment",
@@ -57,8 +66,46 @@
   },
   "drivePlanning": {
     "title": "Drive planning",
+    "routes": {
+      "title": "Routes"
+    },
+    "routes": {
+      "title": "Routes"
+    },
     "freights": {
-      "title": "Freight"
+      "title": "Freights list",
+      "new": "New freight",
+      "freightNumber": "Freight number",
+      "sender": "Sender",
+      "recipient": "Recipient",
+      "pointOfDeparture": "Point of departure",
+      "destination": "Destination",
+      "freightUnits": "Contents",
+      "dialog": {
+        "title": "Freight {{freightNumber}}",
+        "save": "Save freight"
+      },
+      "errorMessages": {
+        "senderSiteMissing": "Sender is required",
+        "recipientSiteMissing": "Recipient is required",
+        "pointOfDepartureMissing": "Point of departure is required",
+        "destinationSiteMissing": "Destination is required"
+      }
+    },
+    "freightUnits": {
+      "type": "Type",
+      "quantity": "Quantity",
+      "content": "Content",
+      "addRow": "Add row"
+    },
+    "tasks": {
+      "tasks": "TAasks",
+      "groupNumber": "Group number",
+      "customerSite": "Customer site",
+      "route": "Route",
+      "date": "Date",
+      "loadTaskType": "Load",
+      "unloadTaskType": "Unload"
     }
   },
   "errorHandling": {

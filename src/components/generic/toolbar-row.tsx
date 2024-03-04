@@ -3,28 +3,36 @@ import { IconButton, Stack, Typography } from "@mui/material";
 import { ReactNode } from "react";
 
 type Props = {
-  title: string;
+  title?: string;
   toolbarButtons?: ReactNode;
-  backButtonVisible?: boolean;
+  navigateBack?: () => void;
 };
 
-const ToolbarRow = ({ title, toolbarButtons, backButtonVisible }: Props) => {
+const ToolbarRow = ({ title, toolbarButtons, navigateBack }: Props) => {
   const renderBackButton = () => {
-    if (!backButtonVisible) return null;
+    if (!navigateBack) return null;
 
     return (
-      <IconButton sx={{ padding: "5px" }} onClick={() => history.back()}>
+      <IconButton sx={{ padding: "5px" }} onClick={navigateBack}>
         <ArrowBackIcon />
       </IconButton>
     );
+  };
+
+  const renderTitle = () => {
+    if (!title) return null;
+
+    return (
+      <Typography variant="h6" sx={{ opacity: 0.87 }} alignSelf="center">
+        {title}
+      </Typography>
+      );
   };
   return (
     <Stack direction="row" justifyContent="space-between" padding="8px 16px">
       <Stack direction="row" spacing={1}>
         {renderBackButton()}
-        <Typography variant="h6" sx={{ opacity: 0.87 }} alignSelf="center">
-          {title}
-        </Typography>
+        {renderTitle()}
       </Stack>
       <Stack direction="row" spacing={1}>
         {toolbarButtons}

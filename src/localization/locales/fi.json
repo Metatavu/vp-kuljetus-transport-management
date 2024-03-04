@@ -4,6 +4,11 @@
   "logout": "Kirjaudu ulos",
   "edit": "Muokkaa",
   "delete": "Poista",
+  "archive": "Arkistoi",
+  "open": "Avaa",
+  "noSelection": "Ei valintaa",
+  "noResults": "Ei tuloksia",
+  "actions": "Toiminnot",
   "vehicleList": "Ajoneuvolista",
   "vehicleInfo": "Ajoneuvon tiedot",
   "workingTime": "Työaika",
@@ -27,10 +32,14 @@
         "postalCodeTooShort": "Postinumeron tulee olla 5-merkkiä pitkä",
         "postalCodeInvalidFormat": "Postinumero saa sisältää vain numeroita",
         "municipalityMissing": "Paikkakunta on pakollinen"
+      },
+      "archiveDialog": {
+        "title": "Arkistoi asiakaspaikka",
+        "description": "Haluatko varmasti arkistoida asiakaspaikan {{name}}?"
       }
     },
     "equipment": {
-      "title": "Kalusto",
+      "title": "Kalustoluettelo",
       "new": "Uusi kalusto",
       "open": "Avaa",
       "modify": "Muokkaa kalustoa",
@@ -57,8 +66,46 @@
   },
   "drivePlanning": {
     "title": "Ajojärjestely",
+    "routes": {
+      "title": "Reitit"
+    },
+    "routes": {
+      "title": "Reitit"
+    },
     "freights": {
-      "title": "Kuormat"
+      "title": "Rahtikirjalistaus",
+      "new": "Uusi rahtikirja",
+      "freightNumber": "Rahtikirjan numero",
+      "sender": "Lähettäjä",
+      "recipient": "Vastaanottaja",
+      "pointOfDeparture": "Lähtöpaikka",
+      "destination": "Määräpaikka",
+      "freightUnits": "Sisältö",
+      "dialog": {
+        "title": "Rahtikirja {{freightNumber}}",
+        "save": "Tallenna rahtikirja"
+      },
+      "errorMessages": {
+        "senderSiteMissing": "Lähettäjä on pakollinen",
+        "recipientSiteMissing": "Vastaanottaja on pakollinen",
+        "pointOfDepartureMissing": "Lähtöpaikka on pakollinen",
+        "destinationSiteMissing": "Määräpaikka on pakollinen"
+      }
+    },
+    "freightUnits": {
+      "type": "Tyyppi",
+      "quantity": "Määrä",
+      "content": "Sisältö",
+      "addRow": "Lisää rivi"
+    },
+    "tasks": {
+      "tasks": "Tehtävät",
+      "groupNumber": "Tunnus",
+      "customerSite": "Asiakaspaikka",
+      "route": "Reitti",
+      "date": "Päivä",
+      "loadTaskType": "Lastaus",
+      "unloadTaskType": "Purku"
     }
   },
   "errorHandling": {
