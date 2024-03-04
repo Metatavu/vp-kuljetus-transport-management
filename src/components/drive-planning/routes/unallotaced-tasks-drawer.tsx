@@ -1,5 +1,5 @@
 import { Collapse } from "@mui/material";
-import { GridColDef } from "@mui/x-data-grid";
+import { GridColDef, GridCellParams } from "@mui/x-data-grid";
 import { useQueries } from "@tanstack/react-query";
 import GenericDataGrid from "components/generic/generic-data-grid";
 import DialogHeader from "components/generic/dialog-header";
@@ -9,6 +9,8 @@ import DataValidation from "utils/data-validation-utils";
 import LocalizationUtils from "utils/localization-utils";
 import { AssignmentSharp, ExpandLess, ExpandMore } from "@mui/icons-material";
 import { Site, Task } from "generated/client";
+import { useNavigate } from "@tanstack/react-router";
+import { QUERY_KEYS } from "hooks/use-queries";
 
 type Props = {
   open: boolean;
@@ -20,12 +22,15 @@ type Props = {
 const UnallocatedTasksDrawer = ({ open, tasks, sites, onClose }: Props) => {
   const { freightsApi, freightUnitsApi } = useApi();
   const { t } = useTranslation();
+  const navigate = useNavigate({ from: "/drive-planning/routes" });
+
+  const getDistinctFreights = () => [...new Set(tasks.map((task) => task.freightId))];
 
   const freightsQueries = useQueries({
     queries:
-      tasks.map((task) => ({
-        queryKey: ["freights", task.freightId],
-        queryFn: () => freightsApi.findFreight({ freightId: task.freightId }),
+      getDistinctFreights().map((freightId) => ({
+        queryKey: [QUERY_KEYS.FREIGHTS, freightId],
+        queryFn: () => freightsApi.findFreight({ freightId: freightId }),
       })) ?? [],
     combine: (results) => ({
       data: results.flatMap((result) => result.data).filter(DataValidation.validateValueIsNotUndefinedNorNull),
@@ -35,7 +40,7 @@ const UnallocatedTasksDrawer = ({ open, tasks, sites, onClose }: Props) => {
   const freightUnitsQueries = useQueries({
     queries:
       freightsQueries.data?.map((freight) => ({
-        queryKey: ["freightUnits", freight.id],
+        queryKey: [QUERY_KEYS.FREIGHT_UNITS_BY_FREIGHT, freight.id],
         queryFn: () => freightUnitsApi.listFreightUnits({ freightId: freight.id }),
       })) ?? [],
     combine: (results) => ({
@@ -108,7 +113,13 @@ const UnallocatedTasksDrawer = ({ open, tasks, sites, onClose }: Props) => {
         CloseIcon={open ? ExpandMore : ExpandLess}
         onClose={onClose}
       />
-      <GenericDataGrid columns={columns} rows={getFilteredTasks()} />
+      <GenericDataGrid
+        columns={columns}
+        rows={getFilteredTasks()}
+        onCellClick={({ row: { freightId } }: GridCellParams<Task>) =>
+          navigate({ search: { freightId: freightId, date: undefined } })
+        }
+      />
     </Collapse>
   );
 };

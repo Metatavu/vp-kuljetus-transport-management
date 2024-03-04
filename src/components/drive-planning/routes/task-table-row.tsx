@@ -26,7 +26,7 @@ const TaskTableRow = ({ taskRow, taskCount }: Props) => {
   const { tasksApi } = useApi();
   const { t } = useTranslation();
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
+  const navigate = useNavigate({ from: "/drive-planning/routes" });
   const freightsQuery = useFreights();
   const [menuCoordinates, setMenuCoordinates] = useState<{ clientX: number; clientY: number } | undefined>();
 
@@ -60,9 +60,7 @@ const TaskTableRow = ({ taskRow, taskCount }: Props) => {
           sx={{ justifyContent: "space-between", padding: "8px 16px" }}
           endIcon={<ArrowForward />}
           fullWidth
-          onClick={() =>
-            navigate({ to: "/drive-planning/routes/freights/$freightId", params: { freightId: task.freightId } })
-          }
+          onClick={() => navigate({ search: { freightId: foundFreight.id, date: undefined } })}
         >
           {t("drivePlanning.freights.dialog.title", { freightNumber: foundFreight.freightNumber })}
         </Button>
@@ -75,7 +73,7 @@ const TaskTableRow = ({ taskRow, taskCount }: Props) => {
       const { freightId } = tasks[0];
       const foundFreight = freightsQuery.data?.freights.find((freight) => freight.id === freightId);
       if (!foundFreight?.id) return;
-      return navigate({ to: "/drive-planning/routes/freights/$freightId", params: { freightId: freightId } });
+      return navigate({ search: { freightId: freightId, date: undefined } });
     }
 
     if (taskCount > 1) {

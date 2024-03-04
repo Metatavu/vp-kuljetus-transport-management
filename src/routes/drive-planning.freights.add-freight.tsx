@@ -42,7 +42,7 @@ function AddFreight() {
           status: "TODO",
         },
       });
-      navigate({ to: "/drive-planning/freights/$freightId/modify", params: { freightId: createdFreight.id } });
+      navigate({ to: "/drive-planning/freights", search: { freightId: createdFreight.id } });
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.FREIGHTS] }),
   });
