@@ -26,4 +26,5 @@ export type GroupedTask = {
   type: TaskType;
   site: Site;
   taskCount: number;
+  groupedTasksKey: string;
 };

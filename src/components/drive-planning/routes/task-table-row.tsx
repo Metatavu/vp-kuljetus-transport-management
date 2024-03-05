@@ -17,9 +17,10 @@ type Props = {
   type: TaskType;
   site: Site;
   taskCount: number;
+  groupedTasksKey: string;
 };
 
-const TaskTableRow = ({ tasks, type, site, groupNumber, taskCount }: Props) => {
+const TaskTableRow = ({ tasks, type, site, groupNumber, taskCount, groupedTasksKey }: Props) => {
   const { tasksApi } = useApi();
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -29,7 +30,7 @@ const TaskTableRow = ({ tasks, type, site, groupNumber, taskCount }: Props) => {
 
   const { name, address, postalCode, locality } = site;
   const { listeners, setNodeRef, isOver, over, active, transition, transform } = useSortable({
-    id: taskGroupKey,
+    id: groupedTasksKey,
     data: { draggableType: "groupedTask", tasks: tasks },
   });
 

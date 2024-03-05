@@ -18,28 +18,11 @@ const RoutesTasksTable = ({ routeId, groupedTasks }: Props) => {
     id: `routes-tasks-table-droppable-${routeId}`,
     data: { routeId: routeId },
   });
-  const [groupedTasks, setGroupedTasks] = useState<Record<string, Task[]>>({});
 
   const tableContainerStyle = {
     outline: isOver ? "2px solid #4E8A9C" : "none",
     outlineOffset: "-3px",
   };
-
-  useEffect(() => {
-    if (!tasks.length) return;
-    const groupedTasks = tasks.reduce(
-      (groupedTasks, task) => {
-        const key = `${task.groupNumber}-${task.customerSiteId}-${task.type}`;
-        if (!groupedTasks[key]) {
-          groupedTasks[key] = [];
-        }
-        groupedTasks[key].push(task);
-        return groupedTasks;
-      },
-      {} as Record<string, Task[]>,
-    );
-    setGroupedTasks(groupedTasks);
-  }, [tasks]);
 
   const renderTaskRow = useCallback(
     (groupedTasksKey: string) => <TaskTableRow key={groupedTasksKey} {...groupedTasks[groupedTasksKey]} />,

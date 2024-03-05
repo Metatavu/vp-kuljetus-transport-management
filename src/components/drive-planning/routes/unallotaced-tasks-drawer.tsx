@@ -154,13 +154,16 @@ const UnallocatedTasksDrawer = ({ open, tasks, sites, onClose }: Props) => {
           />
         )}
         <GenericDataGrid
+          disableRowSelectionOnClick
           apiRef={dataGridRef}
           columns={columns}
-          rows={getFilteredTasks()}
-          disableRowSelectionOnClick
           slots={{
             row: renderDraggableDataGridRow,
           }}
+          onCellClick={({ row: { freightId } }: GridCellParams<Task>) =>
+            navigate({ search: { freightId: freightId, date: undefined } })
+          }
+          rows={getFilteredTasks()}
         />
       </div>
     </Collapse>
