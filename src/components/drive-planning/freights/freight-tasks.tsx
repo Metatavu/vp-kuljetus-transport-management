@@ -6,9 +6,12 @@ import LocalizationUtils from "utils/localization-utils";
 import { Route, Site, Task } from "generated/client";
 import { DateTime } from "luxon";
 import { useSingleClickRowEditMode } from "hooks/use-single-click-row-edit-mode";
-import { useRoutes } from "hooks/use-queries";
+import { QUERY_KEYS, useRoutes } from "hooks/use-queries";
 import RoutesDropdown from "./routes-dropdown";
 import { deepEqual } from "@tanstack/react-router";
+import AsyncDataGridCell from "./async-data-grid-cell";
+import { useQueryClient } from "@tanstack/react-query";
+import { useApi } from "hooks/use-api";
 
 type Props = {
   customerSites: Site[];
@@ -17,7 +20,9 @@ type Props = {
 };
 
 const FreightTasks = ({ tasks, customerSites, onEditTask }: Props) => {
+  const { routesApi } = useApi();
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
   const [selectedDepartureDate, setSelectedDepartureDate] = useState<DateTime | null>(DateTime.now());
 
   const routesQuery = useRoutes({
@@ -76,8 +81,15 @@ const FreightTasks = ({ tasks, customerSites, onEditTask }: Props) => {
         type: "singleSelect",
         getOptionLabel: ({ name }: Route) => name ?? t("noSelection"),
         getOptionValue: ({ id }: Route) => id,
-        valueFormatter: ({ value }) =>
-          routesQuery.data?.routes.find((route) => route.id === value)?.name ?? t("noSelection"),
+        renderCell: ({ row: { routeId } }) => (
+          <AsyncDataGridCell
+            promise={queryClient.fetchQuery({
+              queryKey: [QUERY_KEYS.ROUTES, routeId],
+              queryFn: () => (routeId ? routesApi.findRoute({ routeId: routeId }) : undefined),
+            })}
+            valueGetter={(route) => route?.name ?? t("noSelection")}
+          />
+        ),
         renderEditCell: (params) => (
           <RoutesDropdown
             {...params}
@@ -88,11 +100,22 @@ const FreightTasks = ({ tasks, customerSites, onEditTask }: Props) => {
         ),
       },
       {
-        field: "date",
+        field: "departureTime",
         headerAlign: "center",
         headerName: t("drivePlanning.tasks.date"),
         flex: 1,
         sortable: false,
+        renderCell: ({ row: { routeId } }) => (
+          <AsyncDataGridCell
+            promise={queryClient.fetchQuery({
+              queryKey: [QUERY_KEYS.ROUTES, routeId],
+              queryFn: () => (routeId ? routesApi.findRoute({ routeId: routeId }) : undefined),
+            })}
+            valueGetter={(route) =>
+              route?.departureTime ? DateTime.fromJSDate(route?.departureTime).toFormat("dd-MM-yyyy") : ""
+            }
+          />
+        ),
         valueGetter: ({ api, row: { routeId } }) => {
           const { getAllRowIds, getRowMode } = api;
           const rowIds = getAllRowIds();
@@ -100,11 +123,11 @@ const FreightTasks = ({ tasks, customerSites, onEditTask }: Props) => {
           const departureTime = routesQuery.data?.routes.find((route) => route.id === routeId)?.departureTime;
           if (!departureTime || isEditing) return "";
 
-          return DateTime.fromJSDate(departureTime).toFormat("dd-MM-yyyy");
+          return departureTime;
         },
       },
     ],
-    [t, customerSites, routesQuery, selectedDepartureDate],
+    [t, customerSites, routesQuery, selectedDepartureDate, queryClient, routesApi],
   );
 
   return (
