@@ -1,5 +1,5 @@
 import { Collapse } from "@mui/material";
-import { GridColDef, GridRow, GridRowProps, useGridApiRef } from "@mui/x-data-grid";
+import { GridColDef, GridRow, GridRowProps, useGridApiRef, GridCellParams } from "@mui/x-data-grid";
 import { useQueries } from "@tanstack/react-query";
 import GenericDataGrid from "components/generic/generic-data-grid";
 import DialogHeader from "components/generic/dialog-header";
@@ -11,6 +11,8 @@ import { AssignmentSharp, ExpandLess, ExpandMore } from "@mui/icons-material";
 import { Site, Task } from "generated/client";
 import { useDraggable, useDroppable } from "@dnd-kit/core";
 import { useCallback } from "react";
+import { useNavigate } from "@tanstack/react-router";
+import { QUERY_KEYS } from "hooks/use-queries";
 
 type Props = {
   open: boolean;
@@ -29,12 +31,15 @@ const UnallocatedTasksDrawer = ({ open, tasks, sites, onClose }: Props) => {
   });
 
   const { draggableType } = active?.data.current ?? {};
+  const navigate = useNavigate({ from: "/drive-planning/routes" });
+
+  const getDistinctFreights = () => [...new Set(tasks.map((task) => task.freightId))];
 
   const freightsQueries = useQueries({
     queries:
-      tasks.map((task) => ({
-        queryKey: ["freights", task.freightId],
-        queryFn: () => freightsApi.findFreight({ freightId: task.freightId }),
+      getDistinctFreights().map((freightId) => ({
+        queryKey: [QUERY_KEYS.FREIGHTS, freightId],
+        queryFn: () => freightsApi.findFreight({ freightId: freightId }),
       })) ?? [],
     combine: (results) => ({
       data: results.flatMap((result) => result.data).filter(DataValidation.validateValueIsNotUndefinedNorNull),
@@ -44,7 +49,7 @@ const UnallocatedTasksDrawer = ({ open, tasks, sites, onClose }: Props) => {
   const freightUnitsQueries = useQueries({
     queries:
       freightsQueries.data?.map((freight) => ({
-        queryKey: ["freightUnits", freight.id],
+        queryKey: [QUERY_KEYS.FREIGHT_UNITS_BY_FREIGHT, freight.id],
         queryFn: () => freightUnitsApi.listFreightUnits({ freightId: freight.id }),
       })) ?? [],
     combine: (results) => ({

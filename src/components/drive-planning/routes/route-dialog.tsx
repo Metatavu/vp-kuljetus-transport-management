@@ -9,6 +9,7 @@ import { useApi } from "hooks/use-api";
 import { DatePicker } from "@mui/x-date-pickers";
 import { DateTime } from "luxon";
 import DialogHeader from "components/generic/dialog-header";
+import { QUERY_KEYS } from "hooks/use-queries";
 
 type Props = {
   initialDate: DateTime;
@@ -22,7 +23,7 @@ const RouteDialog = ({ initialDate, routeId, onSave }: Props) => {
   const { routesApi, trucksApi, driversApi } = useApi();
 
   const routeQuery = useQuery({
-    queryKey: ["routes", routeId],
+    queryKey: [QUERY_KEYS.ROUTES, routeId],
     queryFn: () => (routeId ? routesApi.findRoute({ routeId: routeId }) : undefined),
     enabled: !!routeId,
   });
@@ -44,12 +45,12 @@ const RouteDialog = ({ initialDate, routeId, onSave }: Props) => {
   });
 
   const trucksQuery = useQuery({
-    queryKey: ["trucks"],
+    queryKey: [QUERY_KEYS.TRUCKS],
     queryFn: () => trucksApi.listTrucks(),
   });
 
   const driversQuery = useQuery({
-    queryKey: ["drivers"],
+    queryKey: [QUERY_KEYS.DRIVERS],
     queryFn: () => driversApi.listDrivers(),
   });
 

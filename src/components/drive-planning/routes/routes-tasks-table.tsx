@@ -1,19 +1,18 @@
 import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody } from "@mui/material";
-import { Site, Task } from "generated/client";
 import { t } from "i18next";
-import { useCallback, useEffect, useState } from "react";
-import TaskTableRow, { TaskRow } from "./task-table-row";
+import { useCallback } from "react";
+import TaskTableRow from "./task-table-row";
 import { useGridApiContext } from "@mui/x-data-grid";
 import { SortableContext } from "@dnd-kit/sortable";
 import { useDroppable } from "@dnd-kit/core";
+import { GroupedTask } from "src/types";
 
 type Props = {
   routeId: string;
-  tasks: Task[];
-  sites: Site[];
+  groupedTasks: Record<string, GroupedTask>;
 };
 
-const RoutesTasksTable = ({ routeId, tasks, sites }: Props) => {
+const RoutesTasksTable = ({ routeId, groupedTasks }: Props) => {
   const dataGridApiRef = useGridApiContext();
   const { isOver, setNodeRef } = useDroppable({
     id: `routes-tasks-table-droppable-${routeId}`,
@@ -43,22 +42,8 @@ const RoutesTasksTable = ({ routeId, tasks, sites }: Props) => {
   }, [tasks]);
 
   const renderTaskRow = useCallback(
-    (groupedTasksKey: string) => {
-      const tasks = groupedTasks[groupedTasksKey];
-      const { customerSiteId, type, groupNumber } = tasks[0];
-      const foundSite = sites.find((site) => site.id === customerSiteId);
-      if (!foundSite) return null;
-      const taskRow: TaskRow = {
-        taskGroupKey: groupedTasksKey,
-        customerSite: foundSite,
-        groupNumber: groupNumber,
-        tasks: tasks,
-        type: type,
-      };
-
-      return <TaskTableRow key={groupedTasksKey} taskRow={taskRow} taskCount={tasks.length} />;
-    },
-    [groupedTasks, sites],
+    (groupedTasksKey: string) => <TaskTableRow key={groupedTasksKey} {...groupedTasks[groupedTasksKey]} />,
+    [groupedTasks],
   );
 
   const baseCellWidth = dataGridApiRef.current.getColumnPosition("tasks");

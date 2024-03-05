@@ -8,8 +8,10 @@ export const QUERY_KEYS = {
   TRUCKS: "trucks",
   DRIVERS: "drivers",
   TASKS: "tasks",
+  TASKS_BY_ROUTE: "tasks-by-route",
   FREIGHT_UNITS: "freightUnits",
   FREIGHTS: "freights",
+  FREIGHT_UNITS_BY_FREIGHT: "freight-units-by-freight",
 } as const;
 
 export const useSites = (requestParams: ListSitesRequest = {}, enabled = true) => {
@@ -133,7 +135,10 @@ export const useFreight = (freightId?: string, enabled = true) => {
   return useQuery({
     queryKey: [QUERY_KEYS.FREIGHTS, freightId],
     enabled: enabled,
-    queryFn: async () => (freightId ? freightsApi.findFreight({ freightId: freightId }) : undefined),
+    queryFn: () => {
+      if (!freightId) return Promise.reject();
+      return freightsApi.findFreight({ freightId: freightId });
+    },
   });
 };
 

@@ -119,9 +119,7 @@ function DrivePlanningFreights() {
               variant="text"
               color="primary"
               size="small"
-              onClick={() =>
-                navigate({ to: "/drive-planning/freights/$freightId/modify", params: { freightId: id as string } })
-              }
+              onClick={() => navigate({ params: {}, search: { freightId: id as string } })}
             >
               {t("open")}
             </Button>

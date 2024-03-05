@@ -13,7 +13,7 @@ type Props = GridRenderEditCellParams<Task> & {
   setSelectedDepartureDate: Dispatch<SetStateAction<DateTime | null>>;
 };
 
-const RoutesList = (props: Props) => {
+const RoutesDropdown = (props: Props) => {
   const { t } = useTranslation();
 
   const { api, colDef, id, field, routes, cellMode, selectedDepartureDate, setSelectedDepartureDate } = props;
@@ -70,4 +70,4 @@ const RoutesList = (props: Props) => {
   );
 };
 
-export default RoutesList;
+export default RoutesDropdown;
