@@ -12,7 +12,7 @@ import LoaderWrapper from "components/generic/loader-wrapper";
 import { Route as TRoute, Task } from "generated/client";
 import UnallocatedTasksDrawer from "components/drive-planning/routes/unallotaced-tasks-drawer";
 import RoutesTable from "components/drive-planning/routes/routes-table";
-import { QUERY_KEYS, useSites, useTasks } from "hooks/use-queries";
+import { QUERY_KEYS, useSites } from "hooks/use-queries";
 import {
   Active,
   DndContext,
@@ -42,7 +42,6 @@ function DrivePlanningRoutes() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  const tasksQuery = useTasks();
   const sitesQuery = useSites();
 
   const [selectedDate, setSelectedDate] = useState<DateTime | null>(DateTime.now());
@@ -149,7 +148,7 @@ function DrivePlanningRoutes() {
           onDragEnd={handleDragEnd}
         >
           <ToolbarRow leftToolbar={renderLeftToolbar()} toolbarButtons={renderRightToolbar()} />
-          <LoaderWrapper loading={tasksQuery.isLoading || sitesQuery.isLoading}>
+          <LoaderWrapper loading={sitesQuery.isLoading}>
             <RoutesTable
               selectedDate={selectedDate ?? DateTime.now()}
               sites={sitesQuery.data?.sites ?? []}
@@ -157,7 +156,6 @@ function DrivePlanningRoutes() {
             />
             <UnallocatedTasksDrawer
               open={unallocatedDrawerOpen}
-              tasks={tasksQuery.data?.tasks ?? []}
               sites={sitesQuery.data?.sites ?? []}
               onClose={() => setUnallocatedDrawerOpen(!unallocatedDrawerOpen)}
             />
