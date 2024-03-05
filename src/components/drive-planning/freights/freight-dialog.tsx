@@ -102,7 +102,7 @@ const FreightDialog = ({ freight, onSave, onClose }: Props) => {
   }, [freight?.id, freightUnitsQuery.data, tasksQuery.data, customerSitesQuery.data, onEditFreightUnit, onEditTask]);
 
   return (
-    <Dialog open={true} onClose={onClose} PaperProps={{ sx: { minWidth: "50%", borderRadius: 0 } }}>
+    <Dialog open onClose={onClose} PaperProps={{ sx: { minWidth: "50%", borderRadius: 0 } }}>
       <LoaderWrapper loading={customerSitesQuery.isLoading || tasksQuery.isLoading || freightUnitsQuery.isLoading}>
         <DialogHeader
           title={
