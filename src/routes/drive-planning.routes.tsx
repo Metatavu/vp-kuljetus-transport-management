@@ -92,7 +92,6 @@ function DrivePlanningRoutes() {
         <LoaderWrapper loading={tasksQuery.isLoading || sitesQuery.isLoading}>
           <RoutesTable
             selectedDate={selectedDate ?? DateTime.now()}
-            tasks={tasksQuery.data?.tasks ?? []}
             sites={sitesQuery.data?.sites ?? []}
             onUpdateRoute={updateRoute.mutateAsync}
           />
