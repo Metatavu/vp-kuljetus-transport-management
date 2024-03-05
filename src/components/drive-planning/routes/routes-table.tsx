@@ -129,7 +129,7 @@ const RoutesTable = ({ selectedDate, tasks, sites, onUpdateRoute }: Props) => {
       fullScreen={false}
       columns={columns}
       rows={routesQuery.data?.routes ?? []}
-      rowCount={routesQuery.data?.totalResults}
+      rowCount={routesQuery.data?.totalResults ?? 0}
       rowModesModel={rowModesModel}
       paginationModel={paginationModel}
       slots={{ row: renderExpandableRoutesTableRow }}
