@@ -8,8 +8,11 @@ namespace LocalizationUtils {
   })[type];
 
   export const getLocalizedTruckType = (type: string, t: TFunction) => ({
-    Truck: t("truckType.truck"),
-    SemiTruck: t("truckType.semiTruck"),
+    TRUCK: t("equipmentType.truck"),
+    SEMI_TRUCK: t("equipmentType.semiTruck"),
+    TRAILER: t("equipmentType.trailer"),
+    SEMI_TRAILER: t("equipmentType.semiTrailer"),
+    DOLLY: t("equipmentType.dolly")
   })[type];
 }
 

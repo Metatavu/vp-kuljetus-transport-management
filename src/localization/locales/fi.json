@@ -13,9 +13,12 @@
   "vehicleInfo": "Ajoneuvon tiedot",
   "workingTime": "Työaika",
   "addNew": "Lisää uusi",
-  "truckType": {
+  "equipmentType": {
     "truck": "Kuorma-auto",
-    "semiTruck": "Vetoauto"
+    "semiTruck": "Vetoauto",
+    "trailer": "Täysperävaunu",
+    "semiTrailer": "Puoliperävaunu",
+    "dolly": "Dolly"
   },
   "management": {
     "title": "Hallinta",

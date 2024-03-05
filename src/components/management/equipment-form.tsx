@@ -1,24 +1,24 @@
 import { MenuItem, Stack, TextField } from "@mui/material";
 import { FieldErrors, UseFormRegister } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { Truck, TruckTypeEnum } from "generated/client";
+import { Towable, TowableTypeEnum, Truck, TruckTypeEnum } from "generated/client";
 import LocalizationUtils from "../../../src/utils/localization-utils";
 
 type Props = {
-  errors: FieldErrors<Truck>;
-  register: UseFormRegister<Truck>;
+  errors: FieldErrors<Truck | Towable>;
+  register: UseFormRegister<Truck | Towable>;
 };
 
 const EquipmentForm = ({ errors, register }: Props) => {
   const { t } = useTranslation("translation");
 
-  const renderTruckType = (type: string) => (
+  const renderEquipmentType = (type: string) => (
     <MenuItem key={type} value={type}>
       {LocalizationUtils.getLocalizedTruckType(type, t)}
     </MenuItem>
   );
 
-  const renderMenuItems = () => Object.keys(TruckTypeEnum).map(renderTruckType);
+  const renderMenuItems = () => Object.values(TruckTypeEnum).map(renderEquipmentType).concat(Object.values(TowableTypeEnum).map(renderEquipmentType));
 
   return (
     <Stack width={356} padding="16px" gap="16px">
@@ -26,6 +26,7 @@ const EquipmentForm = ({ errors, register }: Props) => {
         select
         label={t("management.equipment.type")}
         InputProps={{ disableUnderline: false }}
+        defaultValue={""}
         {...register("type")}
       >
         {renderMenuItems()}

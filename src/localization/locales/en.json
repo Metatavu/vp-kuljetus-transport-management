@@ -13,9 +13,12 @@
   "vehicleInfo": "Vehicle information",
   "workingTime": "Working time",
   "addNew": "Add new",
-  "truckType": {
+  "equipmentType": {
     "truck": "Truck",
-    "semiTruck": "Semi truck"
+    "semiTruck": "Semi truck",
+    "trailer": "Trailer",
+    "semiTrailer": "Semi trailer",
+    "dolly": "Dolly"
   },
   "management": {
     "title": "Management",

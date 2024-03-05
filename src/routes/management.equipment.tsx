@@ -41,7 +41,7 @@ function ManagementEquipment() {
   const columns: GridColDef[] = useMemo(
     () => [
       {
-        field: "number",
+        field: "name",
         headerAlign: "center",
         headerName: t("management.equipment.number"),
         sortable: false,
@@ -71,11 +71,21 @@ function ManagementEquipment() {
       {
         field: "actions",
         type: "actions",
-        flex: 0.7,
+        width: 66,
         renderHeader: () => null,
-        renderCell: () => (
+        renderCell: ({ id }) => (
           <Stack direction="row" spacing={1}>
-            <Button variant="text" color="primary" size="small">
+            <Button
+              variant="text"
+              color="primary"
+              size="small"
+              onClick={() =>
+                navigate({
+                  to: "/management/equipment/$equipmentId/modify",
+                  params: { equipmentId: id as string },
+                })
+              }
+            >
               {t("management.equipment.open")}
             </Button>
           </Stack>
@@ -108,7 +118,7 @@ function ManagementEquipment() {
         showColumnVerticalBorder
         disableColumnSelector
         loading={false}
-        getRowId={row => row.id}
+        getRowId={row => `${row.id}-${row.type}`}
         paginationMode="server"
         pageSizeOptions={[25, 50, 100]}
         rowCount={totalResults}
