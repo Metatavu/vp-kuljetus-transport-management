@@ -1,5 +1,5 @@
 import GenericDataGrid from "components/generic/generic-data-grid";
-import { GridColDef, GridRowModes } from "@mui/x-data-grid";
+import { GridColDef } from "@mui/x-data-grid";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import LocalizationUtils from "utils/localization-utils";
@@ -116,15 +116,6 @@ const FreightTasks = ({ tasks, customerSites, onEditTask }: Props) => {
             }
           />
         ),
-        valueGetter: ({ api, row: { routeId } }) => {
-          const { getAllRowIds, getRowMode } = api;
-          const rowIds = getAllRowIds();
-          const isEditing = rowIds.some((id) => getRowMode(id) === GridRowModes.Edit);
-          const departureTime = routesQuery.data?.routes.find((route) => route.id === routeId)?.departureTime;
-          if (!departureTime || isEditing) return "";
-
-          return departureTime;
-        },
       },
     ],
     [t, customerSites, routesQuery, selectedDepartureDate, queryClient, routesApi],
