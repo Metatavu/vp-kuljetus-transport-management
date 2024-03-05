@@ -33,7 +33,7 @@ const SideNavigation = ({ navigationItems }: Props) => {
         <Tab
           iconPosition={collapsed ? "start" : "end"}
           icon={<Menu />}
-          label={"Valikko"}
+          label={t("menu")}
           onClick={() => setCollapsed(!collapsed)}
           sx={{
             fontSize: collapsed ? 0 : "inherit",
