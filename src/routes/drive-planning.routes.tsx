@@ -12,7 +12,7 @@ import LoaderWrapper from "components/generic/loader-wrapper";
 import { Route as TRoute } from "generated/client";
 import UnallocatedTasksDrawer from "components/drive-planning/routes/unallotaced-tasks-drawer";
 import RoutesTable from "components/drive-planning/routes/routes-table";
-import { QUERY_KEYS, useSites, useTasks } from "hooks/use-queries";
+import { QUERY_KEYS, useSites } from "hooks/use-queries";
 import DatePickerWithArrows from "components/generic/date-picker-with-arrows";
 
 export const Route = createFileRoute("/drive-planning/routes")({
@@ -31,7 +31,6 @@ function DrivePlanningRoutes() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  const tasksQuery = useTasks();
   const sitesQuery = useSites();
 
   const [selectedDate, setSelectedDate] = useState<DateTime | null>(DateTime.now());
@@ -89,7 +88,7 @@ function DrivePlanningRoutes() {
       <Outlet />
       <Paper sx={{ minHeight: "100%", maxHeight: "100%", display: "flex", flexDirection: "column" }}>
         <ToolbarRow leftToolbar={renderLeftToolbar()} toolbarButtons={renderRightToolbar()} />
-        <LoaderWrapper loading={tasksQuery.isLoading || sitesQuery.isLoading}>
+        <LoaderWrapper loading={sitesQuery.isLoading}>
           <RoutesTable
             selectedDate={selectedDate ?? DateTime.now()}
             sites={sitesQuery.data?.sites ?? []}
@@ -97,7 +96,6 @@ function DrivePlanningRoutes() {
           />
           <UnallocatedTasksDrawer
             open={unallocatedDrawerOpen}
-            tasks={tasksQuery.data?.tasks ?? []}
             sites={sitesQuery.data?.sites ?? []}
             onClose={() => setUnallocatedDrawerOpen(!unallocatedDrawerOpen)}
           />

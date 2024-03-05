@@ -10,21 +10,23 @@ import LocalizationUtils from "utils/localization-utils";
 import { AssignmentSharp, ExpandLess, ExpandMore } from "@mui/icons-material";
 import { Site, Task } from "generated/client";
 import { useNavigate } from "@tanstack/react-router";
-import { QUERY_KEYS } from "hooks/use-queries";
+import { QUERY_KEYS, useTasks } from "hooks/use-queries";
+import { useMemo } from "react";
 
 type Props = {
   open: boolean;
-  tasks: Task[];
   sites: Site[];
   onClose: () => void;
 };
 
-const UnallocatedTasksDrawer = ({ open, tasks, sites, onClose }: Props) => {
+const UnallocatedTasksDrawer = ({ open, sites, onClose }: Props) => {
   const { freightsApi, freightUnitsApi } = useApi();
   const { t } = useTranslation();
   const navigate = useNavigate({ from: "/drive-planning/routes" });
 
-  const getDistinctFreights = () => [...new Set(tasks.map((task) => task.freightId))];
+  const tasksQuery = useTasks({ assignedToRoute: false });
+
+  const getDistinctFreights = () => [...new Set((tasksQuery.data?.tasks ?? []).map((task) => task.freightId))];
 
   const freightsQueries = useQueries({
     queries:
@@ -48,59 +50,60 @@ const UnallocatedTasksDrawer = ({ open, tasks, sites, onClose }: Props) => {
     }),
   });
 
-  const getFilteredTasks = () => tasks.filter((task) => !task.routeId) ?? [];
-
-  const columns: GridColDef[] = [
-    {
-      field: "taskType",
-      headerName: t("drivePlanning.routes.tasksTable.task"),
-      sortable: false,
-      flex: 1,
-      renderCell: ({ row: { type } }) => LocalizationUtils.getLocalizedTaskType(type, t),
-    },
-    {
-      field: "groupNumber",
-      headerName: t("drivePlanning.routes.tasksTable.groupNumber"),
-      sortable: false,
-      flex: 1,
-    },
-    {
-      field: "freightNumber",
-      headerName: t("drivePlanning.routes.unallocatedTasksTable.freightNumber"),
-      sortable: false,
-      flex: 3,
-      renderCell: ({ row: { freightId } }) =>
-        freightsQueries.data?.find((freight) => freight.id === freightId)?.freightNumber,
-    },
-    {
-      field: "customerSiteId",
-      headerName: t("drivePlanning.routes.tasksTable.customerSite"),
-      sortable: false,
-      flex: 3,
-      renderCell: ({ row: { customerSiteId } }) => sites.find((site) => site.id === customerSiteId)?.name,
-    },
-    {
-      field: "address",
-      headerName: t("drivePlanning.routes.tasksTable.address"),
-      sortable: false,
-      flex: 3,
-      renderCell: ({ row: { customerSiteId } }) => sites.find((site) => site.id === customerSiteId)?.address,
-    },
-    {
-      field: "contents",
-      headerName: t("drivePlanning.routes.unallocatedTasksTable.contents"),
-      sortable: false,
-      flex: 2,
-      renderCell: ({ row: { freightId } }) => {
-        const freightUnits = freightUnitsQueries.data?.filter((freightUnit) => freightUnit.freightId === freightId);
-
-        return freightUnits
-          ?.map((freightUnit) => freightUnit.contents)
-          .filter((content) => content)
-          .join(", ");
+  const columns: GridColDef[] = useMemo(
+    () => [
+      {
+        field: "taskType",
+        headerName: t("drivePlanning.routes.tasksTable.task"),
+        sortable: false,
+        flex: 1,
+        renderCell: ({ row: { type } }) => LocalizationUtils.getLocalizedTaskType(type, t),
       },
-    },
-  ];
+      {
+        field: "groupNumber",
+        headerName: t("drivePlanning.routes.tasksTable.groupNumber"),
+        sortable: false,
+        flex: 1,
+      },
+      {
+        field: "freightNumber",
+        headerName: t("drivePlanning.routes.unallocatedTasksTable.freightNumber"),
+        sortable: false,
+        flex: 3,
+        renderCell: ({ row: { freightId } }) =>
+          freightsQueries.data?.find((freight) => freight.id === freightId)?.freightNumber,
+      },
+      {
+        field: "customerSiteId",
+        headerName: t("drivePlanning.routes.tasksTable.customerSite"),
+        sortable: false,
+        flex: 3,
+        renderCell: ({ row: { customerSiteId } }) => sites.find((site) => site.id === customerSiteId)?.name,
+      },
+      {
+        field: "address",
+        headerName: t("drivePlanning.routes.tasksTable.address"),
+        sortable: false,
+        flex: 3,
+        renderCell: ({ row: { customerSiteId } }) => sites.find((site) => site.id === customerSiteId)?.address,
+      },
+      {
+        field: "contents",
+        headerName: t("drivePlanning.routes.unallocatedTasksTable.contents"),
+        sortable: false,
+        flex: 2,
+        renderCell: ({ row: { freightId } }) => {
+          const freightUnits = freightUnitsQueries.data?.filter((freightUnit) => freightUnit.freightId === freightId);
+
+          return freightUnits
+            ?.map((freightUnit) => freightUnit.contents)
+            .filter((content) => content)
+            .join(", ");
+        },
+      },
+    ],
+    [sites, t, freightsQueries.data, freightUnitsQueries.data],
+  );
   return (
     <Collapse
       in={open}
@@ -115,7 +118,8 @@ const UnallocatedTasksDrawer = ({ open, tasks, sites, onClose }: Props) => {
       />
       <GenericDataGrid
         columns={columns}
-        rows={getFilteredTasks()}
+        rows={tasksQuery.data?.tasks ?? []}
+        rowCount={tasksQuery.data?.totalResults ?? 0}
         onCellClick={({ row: { freightId } }: GridCellParams<Task>) =>
           navigate({ search: { freightId: freightId, date: undefined } })
         }
