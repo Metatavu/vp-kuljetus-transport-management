@@ -8,6 +8,7 @@ export const QUERY_KEYS = {
   TRUCKS: "trucks",
   DRIVERS: "drivers",
   TASKS: "tasks",
+  TASKS_BY_ROUTE: "tasks-by-route",
   FREIGHT_UNITS: "freightUnits",
   FREIGHTS: "freights",
   FREIGHT_UNITS_BY_FREIGHT: "freight-units-by-freight",

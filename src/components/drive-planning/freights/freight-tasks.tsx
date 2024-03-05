@@ -9,7 +9,7 @@ import { useSingleClickRowEditMode } from "hooks/use-single-click-row-edit-mode"
 import { QUERY_KEYS, useRoutes } from "hooks/use-queries";
 import RoutesDropdown from "./routes-dropdown";
 import { deepEqual } from "@tanstack/react-router";
-import AsyncDataGridCell from "./async-data-grid-cell";
+import AsyncDataGridCell from "../../generic/async-data-grid-cell";
 import { useQueryClient } from "@tanstack/react-query";
 import { useApi } from "hooks/use-api";
 

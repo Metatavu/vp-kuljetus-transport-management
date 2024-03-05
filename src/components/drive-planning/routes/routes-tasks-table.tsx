@@ -1,53 +1,20 @@
 import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody } from "@mui/material";
-import { Site, Task } from "generated/client";
 import { t } from "i18next";
-import { useCallback, useEffect, useState } from "react";
-import TaskTableRow, { TaskRow } from "./task-table-row";
+import { useCallback } from "react";
+import TaskTableRow from "./task-table-row";
 import { useGridApiContext } from "@mui/x-data-grid";
+import { GroupedTask } from "src/types";
 
 type Props = {
-  tasks: Task[];
-  sites: Site[];
+  groupedTasks: Record<string, GroupedTask>;
 };
 
-const RoutesTasksTable = ({ tasks, sites }: Props) => {
+const RoutesTasksTable = ({ groupedTasks }: Props) => {
   const dataGridApiRef = useGridApiContext();
 
-  const [groupedTasks, setGroupedTasks] = useState<Record<string, Task[]>>({});
-
-  useEffect(() => {
-    if (!tasks.length) return;
-    const groupedTasks = tasks.reduce(
-      (groupedTasks, task) => {
-        const key = `${task.groupNumber}-${task.customerSiteId}-${task.type}`;
-        if (!groupedTasks[key]) {
-          groupedTasks[key] = [];
-        }
-        groupedTasks[key].push(task);
-        return groupedTasks;
-      },
-      {} as Record<string, Task[]>,
-    );
-    setGroupedTasks(groupedTasks);
-  }, [tasks]);
-
   const renderTaskRow = useCallback(
-    (groupedTasksKey: string) => {
-      const tasks = groupedTasks[groupedTasksKey];
-      const { customerSiteId, type, groupNumber } = tasks[0];
-      const foundSite = sites.find((site) => site.id === customerSiteId);
-      if (!foundSite) return null;
-      const taskRow: TaskRow = {
-        taskGroupKey: groupedTasksKey,
-        customerSite: foundSite,
-        groupNumber: groupNumber,
-        tasks: tasks,
-        type: type,
-      };
-
-      return <TaskTableRow key={customerSiteId} taskRow={taskRow} taskCount={tasks.length} />;
-    },
-    [groupedTasks, sites],
+    (groupedTasksKey: string) => <TaskTableRow key={groupedTasksKey} {...groupedTasks[groupedTasksKey]} />,
+    [groupedTasks],
   );
 
   const baseCellWidth = dataGridApiRef.current.getColumnPosition("tasks");

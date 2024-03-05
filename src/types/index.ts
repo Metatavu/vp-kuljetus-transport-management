@@ -1,5 +1,6 @@
 import { SvgIcon } from "@mui/material";
 import { RegisteredRouter, RoutePaths } from "@tanstack/react-router";
+import { Site, Task, TaskType } from "generated/client";
 import { DefaultNamespace, ParseKeys } from "i18next";
 
 export type LocalizedLabelKey = ParseKeys<DefaultNamespace> | TemplateStringsArray;
@@ -18,3 +19,11 @@ export enum VehicleListColumns {
   Trailer = "trailer",
   Driver = "driver"
 }
+
+export type GroupedTask = {
+  tasks: Task[];
+  groupNumber: number;
+  type: TaskType;
+  site: Site;
+  taskCount: number;
+};

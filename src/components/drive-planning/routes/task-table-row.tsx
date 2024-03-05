@@ -9,20 +9,15 @@ import { QUERY_KEYS, useFreights } from "hooks/use-queries";
 import { useNavigate } from "@tanstack/react-router";
 import { useCallback, useState } from "react";
 
-export type TaskRow = {
-  type: TaskType;
-  tasks: Task[];
-  taskGroupKey: string;
-  customerSite: Site;
-  groupNumber: number;
-};
-
 type Props = {
-  taskRow: TaskRow;
+  tasks: Task[];
+  groupNumber: number;
+  type: TaskType;
+  site: Site;
   taskCount: number;
 };
 
-const TaskTableRow = ({ taskRow, taskCount }: Props) => {
+const TaskTableRow = ({ tasks, type, site, groupNumber, taskCount }: Props) => {
   const { tasksApi } = useApi();
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -30,8 +25,7 @@ const TaskTableRow = ({ taskRow, taskCount }: Props) => {
   const freightsQuery = useFreights();
   const [menuCoordinates, setMenuCoordinates] = useState<{ clientX: number; clientY: number } | undefined>();
 
-  const { type, customerSite, groupNumber, tasks } = taskRow;
-  const { name, address, postalCode, locality } = customerSite;
+  const { name, address, postalCode, locality } = site;
 
   const saveTask = useMutation({
     mutationFn: () =>
