@@ -39,5 +39,6 @@ This project uses [Infisical](https://infisical.com) for managing environment va
    1. Infisical organization
    2. VP-Kuljetus project
 3. Run `infisical login` and authenticate with your Infisical account
+   1.  Select `Infisical Cloud` when asked
 4. Run `npm run start`
 5. You will see in the terminal that Infisical has successfully injected the environment variables and the project has started
