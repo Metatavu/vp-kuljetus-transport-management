@@ -3,8 +3,12 @@
 ### Running the project
 
 - Change to correct node version (found in `.nvmrc`)
+  - NOTE: If you're using [nvm](https://github.com/nvm-sh/nvm) for managing node versions
+  - `nvm use`
+  - For instructions on setting up automatic node version switching see [this](https://github.com/nvm-sh/nvm#deeper-shell-integration)
 - `npm i`
-- `npm run dev`
+- See [Environment variables](#environment-variables) for setting up Infisical for managing environment variables
+- After setting up Infisical you can always run the project with `npm run start`
 
 ### Linting / formatting
 
@@ -35,5 +39,6 @@ This project uses [Infisical](https://infisical.com) for managing environment va
    1. Infisical organization
    2. VP-Kuljetus project
 3. Run `infisical login` and authenticate with your Infisical account
+   1.  Select `Infisical Cloud` when asked
 4. Run `npm run start`
 5. You will see in the terminal that Infisical has successfully injected the environment variables and the project has started
