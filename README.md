@@ -3,6 +3,9 @@
 ### Running the project
 
 - Change to correct node version (found in `.nvmrc`)
+  - NOTE: If you're using [nvm](https://github.com/nvm-sh/nvm) for managing node versions
+  - `nvm use`
+  - For instructions on setting up automatic node version switching see [this](https://github.com/nvm-sh/nvm#deeper-shell-integration)
 - `npm i`
 - `npm run dev`
 
