@@ -8,7 +8,7 @@
   - For instructions on setting up automatic node version switching see [this](https://github.com/nvm-sh/nvm#deeper-shell-integration)
 - `npm i`
 - See [Environment variables](#environment-variables) for setting up Infisical for managing environment variables
-- After setting up Infisical you can always run the project with `npm run start`
+- After setting up Infisical you can run the project with `npm run start`
 
 ### Linting / formatting
 
