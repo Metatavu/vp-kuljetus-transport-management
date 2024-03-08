@@ -74,64 +74,6 @@ const FreightCustomerSitesForm = ({ freight, customerSites }: Props) => {
           {renderMenuItems()}
         </TextField>
       </Stack>
-      {/* <GenericFormTextfield
-          control={control}
-          rules={{
-            required: t("drivePlanning.freights.errorMessages.senderSiteMissing"),
-            validate: validateSiteId,
-          }}
-          name="senderSiteId"
-          textFieldProps={{
-            select: true,
-            label: t("drivePlanning.freights.sender"),
-          }}
-        >
-          {renderMenuItems()}
-        </GenericFormTextfield>
-        <GenericFormTextfield
-          control={control}
-          rules={{
-            required: t("drivePlanning.freights.errorMessages.recipientSiteMissing"),
-            validate: validateSiteId,
-          }}
-          name="recipientSiteId"
-          textFieldProps={{
-            select: true,
-            label: t("drivePlanning.freights.recipient"),
-          }}
-        >
-          {renderMenuItems()}
-        </GenericFormTextfield>
-      </Stack>
-      <Stack direction="row" spacing={2}>
-        <GenericFormTextfield
-          control={control}
-          rules={{
-            required: t("drivePlanning.freights.errorMessages.pointOfDepartureMissing"),
-            validate: validateSiteId,
-          }}
-          name="pointOfDepartureSiteId"
-          textFieldProps={{
-            select: true,
-            label: t("drivePlanning.freights.pointOfDeparture"),
-          }}
-        >
-          {renderMenuItems()}
-        </GenericFormTextfield>
-        <GenericFormTextfield
-          control={control}
-          rules={{
-            required: t("drivePlanning.freights.errorMessages.destinationSiteMissing"),
-            validate: validateSiteId,
-          }}
-          name="destinationSiteId"
-          textFieldProps={{
-            select: true,
-            label: t("drivePlanning.freights.pointOfDeparture"),
-          }}
-        >
-          {renderMenuItems()}
-        </GenericFormTextfield> */}
     </Stack>
   );
 };

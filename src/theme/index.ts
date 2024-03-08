@@ -72,20 +72,40 @@ const theme = createTheme({
           textField: {
             variant: "standard",
             size: "small",
+            sx: {
+              "& .MuiInputBase-root": {
+                backgroundColor: "rgba(0, 0, 0, 0.06)",
+                borderRadius: "4px",
+                padding: "4px 8px",
+                margin: 0,
+              },
+            },
             InputProps: { disableUnderline: true },
             InputLabelProps: { shrink: true },
           },
           inputAdornment: { sx: { padding: 0, margin: 0 } },
         },
-        sx: {
-          "& .MuiInputBase-root": {
-            backgroundColor: "rgba(0, 0, 0, 0.06)",
-            borderRadius: "4px",
-            padding: "4px 8px",
-          },
-        }
-      }
-    }
+        },
+      },
+    MuiTableHead: {
+      styleOverrides: {
+        root: {
+          backgroundColor: "#EDF3F5",
+          padding: "0px 10px"
+        },
+      },
+    } ,
+    MuiTableCell: {
+      styleOverrides: {
+        root: {
+          padding: "0px 10px",
+          height: "30px",
+          borderRight: "1px solid rgba(0, 0, 0, 0.12)",
+          borderBottom: "1px solid rgba(0, 0, 0, 0.12)",
+          borderLeft: "1px solid rgba(0, 0, 0, 0.12)"
+        },
+      },
+    } 
   },
 }, fiFI);
 

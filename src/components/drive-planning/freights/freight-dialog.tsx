@@ -1,8 +1,7 @@
 import { Button, Dialog, DialogActions, DialogContent, Stack } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "@tanstack/react-router";
 import { useApi } from "hooks/use-api";
-import { UseMutationResult, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { UseMutationResult, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Freight, FreightUnit, Task } from "generated/client";
 import FreightCustomerSitesForm from "./freight-customer-sites-form";
 import FreightUnits from "./freight-units";
@@ -10,47 +9,28 @@ import FreightTasks from "./freight-tasks";
 import { useCallback, useState } from "react";
 import LoaderWrapper from "components/generic/loader-wrapper";
 import { FormProvider, useForm } from "react-hook-form";
-import DialogHeader from "components/styled/dialog-header";
+import DialogHeader from "components/generic/dialog-header";
+import { QUERY_KEYS, useFreightUnits, useSites, useTasks } from "hooks/use-queries";
 
 type Props = {
-  freightId?: string;
+  freight?: Freight;
   onSave?: UseMutationResult<void, Error, Freight, unknown>;
+  onClose: () => void;
 };
 
-const FreightDialog = ({ freightId, onSave }: Props) => {
+const FreightDialog = ({ freight, onSave, onClose }: Props) => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { freightsApi, sitesApi, freightUnitsApi, tasksApi } = useApi();
+  const { freightUnitsApi, tasksApi } = useApi();
+
+  const customerSitesQuery = useSites();
+  const tasksQuery = useTasks({ freightId: freight?.id }, !!freight);
+  const freightUnitsQuery = useFreightUnits({ freightId: freight?.id }, !!freight);
 
   const [pendingFreightUnits, setPendingFreightUnits] = useState<FreightUnit[]>([]);
   const [pendingTasks, setPendingTasks] = useState<Task[]>([]);
 
-  const freightQuery = useQuery({
-    queryKey: ["freights", freightId],
-    queryFn: () => (freightId ? freightsApi.findFreight({ freightId: freightId }) : undefined),
-    enabled: !!freightId,
-  });
-
-  const form = useForm<Freight>({ mode: "onChange", defaultValues: freightQuery.data });
-
-  const customerSitesQuery = useQuery({
-    queryKey: ["customerSites"],
-    queryFn: () => sitesApi.listSites(),
-    enabled: !freightQuery?.isLoading,
-  });
-
-  const tasksQuery = useQuery({
-    queryKey: ["tasks, freightId"],
-    queryFn: () => tasksApi.listTasks({ freightId: freightId }),
-    enabled: !!freightId,
-  });
-
-  const freightUnitsQuery = useQuery({
-    queryKey: ["freightUnits", freightId],
-    queryFn: () => freightUnitsApi.listFreightUnits({ freightId }),
-    enabled: !!freightId,
-  });
+  const form = useForm<Freight>({ mode: "onChange", defaultValues: freight });
 
   const saveFreightUnits = useMutation({
     mutationFn: () =>
@@ -64,7 +44,7 @@ const FreightDialog = ({ freightId, onSave }: Props) => {
         }),
       ),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["freightUnits", freightId] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.FREIGHT_UNITS, freight?.id] });
     },
   });
 
@@ -77,7 +57,7 @@ const FreightDialog = ({ freightId, onSave }: Props) => {
         }),
       ),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tasks", freightId] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.TASKS, freight?.id] });
     },
   });
 
@@ -95,58 +75,56 @@ const FreightDialog = ({ freightId, onSave }: Props) => {
 
   const onSaveClick = async (freight: Freight) => {
     if (!onSave) return;
-    if (freightId) {
+    if (freight.id) {
       await saveFreightUnits.mutateAsync();
       await saveTasks.mutateAsync();
     }
     await onSave.mutateAsync(freight);
   };
 
-  const handleClose = () => navigate({ to: "/drive-planning/freights" });
-
   const renderFreightContent = useCallback(() => {
-    if (!freightId || !freightUnitsQuery.data || !tasksQuery.data || !customerSitesQuery.data) return null;
+    if (!freight?.id || !freightUnitsQuery.data || !tasksQuery.data || !customerSitesQuery.data) return null;
 
     return (
       <>
         <FreightUnits
-          freightUnits={freightUnitsQuery.data}
-          freightId={freightId}
+          freightUnits={freightUnitsQuery.data.freightUnits}
+          freightId={freight.id}
           onEditFreightUnit={onEditFreightUnit}
         />
-        <FreightTasks customerSites={customerSitesQuery.data} tasks={tasksQuery.data} onEditTask={onEditTask} />
+        <FreightTasks
+          customerSites={customerSitesQuery.data.sites}
+          tasks={tasksQuery.data.tasks}
+          onEditTask={onEditTask}
+        />
       </>
     );
-  }, [freightId, freightUnitsQuery.data, tasksQuery.data, customerSitesQuery.data, onEditFreightUnit, onEditTask]);
+  }, [freight?.id, freightUnitsQuery.data, tasksQuery.data, customerSitesQuery.data, onEditFreightUnit, onEditTask]);
 
   return (
-    <Dialog open={true} onClose={handleClose} PaperProps={{ sx: { minWidth: "50%", borderRadius: 0 } }}>
-      <LoaderWrapper
-        loading={
-          freightQuery?.isLoading || customerSitesQuery.isLoading || tasksQuery.isLoading || freightUnitsQuery.isLoading
-        }
-      >
+    <Dialog open onClose={onClose} PaperProps={{ sx: { minWidth: "50%", borderRadius: 0 } }}>
+      <LoaderWrapper loading={customerSitesQuery.isLoading || tasksQuery.isLoading || freightUnitsQuery.isLoading}>
         <DialogHeader
           title={
-            freightId
-              ? t("drivePlanning.freights.dialog.title", { freightNumber: freightQuery?.data?.freightNumber })
+            freight?.id
+              ? t("drivePlanning.freights.dialog.title", { freightNumber: freight.freightNumber })
               : t("drivePlanning.freights.new")
           }
-          onClose={handleClose}
+          onClose={onClose}
         />
         <FormProvider {...form}>
           <form onSubmit={form.handleSubmit(onSaveClick)}>
             <DialogContent sx={{ padding: 0 }}>
               <Stack spacing={2}>
-                <FreightCustomerSitesForm freight={freightQuery.data} customerSites={customerSitesQuery.data ?? []} />
+                <FreightCustomerSitesForm freight={freight} customerSites={customerSitesQuery.data?.sites ?? []} />
                 {renderFreightContent()}
               </Stack>
             </DialogContent>
             <DialogActions>
-              <Button variant="text" onClick={handleClose}>
+              <Button variant="text" onClick={onClose}>
                 {t("cancel")}
               </Button>
-              <Button variant="contained" disabled={!!Object.keys(form.formState.errors).length} type="submit">
+              <Button variant="contained" disabled={!form.formState.isValid} type="submit">
                 {t("drivePlanning.freights.dialog.save")}
               </Button>
             </DialogActions>

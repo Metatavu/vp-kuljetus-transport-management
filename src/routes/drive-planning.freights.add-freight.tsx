@@ -4,6 +4,7 @@ import FreightDialog from "components/drive-planning/freights/freight-dialog";
 import { useApi } from "hooks/use-api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Freight } from "generated/client";
+import { QUERY_KEYS } from "hooks/use-queries";
 
 export const Route = createFileRoute("/drive-planning/freights/add-freight")({
   component: AddFreight,
@@ -41,10 +42,10 @@ function AddFreight() {
           status: "TODO",
         },
       });
-      navigate({ to: "/drive-planning/freights/$freightId/modify", params: { freightId: createdFreight.id } });
+      navigate({ to: "/drive-planning/freights", search: { freightId: createdFreight.id } });
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["freights"] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.FREIGHTS] }),
   });
 
-  return <FreightDialog onSave={createFreight} />;
+  return <FreightDialog onSave={createFreight} onClose={() => navigate({ to: "/drive-planning/freights" })} />;
 }

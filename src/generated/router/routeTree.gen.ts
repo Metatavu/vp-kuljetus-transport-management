@@ -14,7 +14,6 @@ import { Route as ManagementCustomerSitesAddCustomerSiteImport } from "./../../r
 import { Route as DrivePlanningRoutesAddRouteImport } from "./../../routes/drive-planning.routes.add-route"
 import { Route as DrivePlanningFreightsAddFreightImport } from "./../../routes/drive-planning.freights.add-freight"
 import { Route as ManagementCustomerSitesCustomerSiteIdModifyImport } from "./../../routes/management.customer-sites_.$customerSiteId.modify"
-import { Route as DrivePlanningFreightsFreightIdModifyImport } from "./../../routes/drive-planning.freights.$freightId.modify"
 
 const ManagementRoute = ManagementImport.update({
   path: "/management",
@@ -94,12 +93,6 @@ const ManagementCustomerSitesCustomerSiteIdModifyRoute =
     path: "/customer-sites/$customerSiteId/modify",
     getParentRoute: () => ManagementRoute,
   } as any)
-
-const DrivePlanningFreightsFreightIdModifyRoute =
-  DrivePlanningFreightsFreightIdModifyImport.update({
-    path: "/$freightId/modify",
-    getParentRoute: () => DrivePlanningFreightsRoute,
-  } as any)
 declare module "@tanstack/react-router" {
   interface FileRoutesByPath {
     "/": {
@@ -158,10 +151,6 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof ManagementCustomerSitesAddCustomerSiteImport
       parentRoute: typeof ManagementImport
     }
-    "/drive-planning/freights/$freightId/modify": {
-      preLoaderRoute: typeof DrivePlanningFreightsFreightIdModifyImport
-      parentRoute: typeof DrivePlanningFreightsImport
-    }
     "/management/customer-sites/$customerSiteId/modify": {
       preLoaderRoute: typeof ManagementCustomerSitesCustomerSiteIdModifyImport
       parentRoute: typeof ManagementImport
@@ -173,7 +162,6 @@ export const routeTree = rootRoute.addChildren([
   DrivePlanningRoute.addChildren([
     DrivePlanningFreightsRoute.addChildren([
       DrivePlanningFreightsAddFreightRoute,
-      DrivePlanningFreightsFreightIdModifyRoute,
     ]),
     DrivePlanningRoutesRoute.addChildren([DrivePlanningRoutesAddRouteRoute]),
   ]),

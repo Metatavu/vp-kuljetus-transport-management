@@ -10,6 +10,7 @@
   "noResults": "Ei tuloksia",
   "actions": "Toiminnot",
   "vehicleList": "Ajoneuvolista",
+  "menu": "Valikko",
   "vehicleInfo": "Ajoneuvon tiedot",
   "workingTime": "Työaika",
   "addNew": "Lisää uusi",
@@ -76,6 +77,18 @@
         "title": "Muokkaa reittiä",
         "saveNewRoute": "Lisää reitti",
         "saveExistingRoute": "Tallenna reitti"
+      },
+      "tasksTable": {
+        "task": "Tehtävä",
+        "groupNumber": "Tunnus",
+        "customerSite": "Asiakaspaikka",
+        "address": "Osoite",
+        "tasksAmount": "Tehtävien lkm"
+      },
+      "unallocatedTasksTable": {
+        "title": "Järjestelemättömät tehtävät",
+        "freightNumber": "Rahtikirja",
+        "contents": "Sisältö"
       }
     },
     "freights": {

@@ -10,6 +10,7 @@
   "noResults": "No results",
   "actions": "Actions",
   "vehicleList": "Vehicle list",
+  "menu": "Menu",
   "vehicleInfo": "Vehicle information",
   "workingTime": "Working time",
   "management": "Management",
@@ -76,6 +77,18 @@
         "title": "Edit route",
         "saveNewRoute": "Add route",
         "saveExistingRoute": "Save route"
+      },
+      "tasksTable": {
+        "task": "Task",
+        "groupNumber": "Identifier",
+        "customerSite": "Customer site",
+        "address": "Address",
+        "tasksAmount": "Amount of tasks"
+      },
+      "unallocatedTasksTable": {
+        "title": "Unallocated tasks",
+        "freightNumber": "Waybill",
+        "contents": "Freight"
       }
     },
     "freights": {

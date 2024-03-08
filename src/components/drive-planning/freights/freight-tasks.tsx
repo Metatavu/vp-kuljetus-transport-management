@@ -1,13 +1,17 @@
 import GenericDataGrid from "components/generic/generic-data-grid";
-import { useApi } from "hooks/use-api";
-import { useQuery } from "@tanstack/react-query";
 import { GridColDef } from "@mui/x-data-grid";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import LocalizationUtils from "utils/localization-utils";
 import { Route, Site, Task } from "generated/client";
 import { DateTime } from "luxon";
 import { useSingleClickRowEditMode } from "hooks/use-single-click-row-edit-mode";
+import { QUERY_KEYS, useRoutes } from "hooks/use-queries";
+import RoutesDropdown from "./routes-dropdown";
+import { deepEqual } from "@tanstack/react-router";
+import AsyncDataGridCell from "../../generic/async-data-grid-cell";
+import { useQueryClient } from "@tanstack/react-query";
+import { useApi } from "hooks/use-api";
 
 type Props = {
   customerSites: Site[];
@@ -16,20 +20,20 @@ type Props = {
 };
 
 const FreightTasks = ({ tasks, customerSites, onEditTask }: Props) => {
-  const { t } = useTranslation();
   const { routesApi } = useApi();
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  const [selectedDepartureDate, setSelectedDepartureDate] = useState<DateTime | null>(DateTime.now());
+
+  const routesQuery = useRoutes({
+    departureAfter: selectedDepartureDate?.startOf("day").toJSDate(),
+    departureBefore: selectedDepartureDate?.startOf("day").toJSDate(),
+  });
 
   const { rowModesModel, handleCellClick, handleRowModelsChange } = useSingleClickRowEditMode();
 
-  const routesQuery = useQuery({
-    queryKey: ["routes"],
-    queryFn: () => {
-      const yesterday = DateTime.now().minus({ days: 1 }).toJSDate();
-      return routesApi.listRoutes({ departureAfter: yesterday });
-    },
-  });
-
-  const processRowUpdate = (newRow: Task) => {
+  const processRowUpdate = (newRow: Task, oldRow: Task) => {
+    if (deepEqual(oldRow, newRow)) return oldRow;
     onEditTask(newRow);
     return newRow;
   };
@@ -65,6 +69,7 @@ const FreightTasks = ({ tasks, customerSites, onEditTask }: Props) => {
         valueOptions: customerSites,
         getOptionLabel: ({ name }: Site) => name,
         getOptionValue: ({ id }: Site) => id,
+        valueFormatter: ({ value }) => customerSites.find((site) => site.id === value)?.name ?? t("noSelection"),
       },
       {
         field: "routeId",
@@ -74,25 +79,46 @@ const FreightTasks = ({ tasks, customerSites, onEditTask }: Props) => {
         sortable: false,
         editable: true,
         type: "singleSelect",
-        valueOptions: routesQuery.data ?? [],
-        getOptionLabel: ({ name }: Route) => name,
+        getOptionLabel: ({ name }: Route) => name ?? t("noSelection"),
         getOptionValue: ({ id }: Route) => id,
+        renderCell: ({ row: { routeId } }) => (
+          <AsyncDataGridCell
+            promise={queryClient.fetchQuery({
+              queryKey: [QUERY_KEYS.ROUTES, routeId],
+              queryFn: () => (routeId ? routesApi.findRoute({ routeId: routeId }) : undefined),
+            })}
+            valueGetter={(route) => route?.name ?? t("noSelection")}
+          />
+        ),
+        renderEditCell: (params) => (
+          <RoutesDropdown
+            {...params}
+            routes={routesQuery.data?.routes ?? []}
+            selectedDepartureDate={selectedDepartureDate}
+            setSelectedDepartureDate={setSelectedDepartureDate}
+          />
+        ),
       },
       {
-        field: "date",
+        field: "departureTime",
         headerAlign: "center",
         headerName: t("drivePlanning.tasks.date"),
         flex: 1,
         sortable: false,
-        valueGetter: ({ row: { routeId } }) => {
-          const departureTime = routesQuery.data?.find((route) => route.id === routeId)?.departureTime;
-          if (!departureTime) return "";
-
-          return DateTime.fromJSDate(departureTime).toFormat("dd-MM-yyyy");
-        },
+        renderCell: ({ row: { routeId } }) => (
+          <AsyncDataGridCell
+            promise={queryClient.fetchQuery({
+              queryKey: [QUERY_KEYS.ROUTES, routeId],
+              queryFn: () => (routeId ? routesApi.findRoute({ routeId: routeId }) : undefined),
+            })}
+            valueGetter={(route) =>
+              route?.departureTime ? DateTime.fromJSDate(route?.departureTime).toFormat("dd-MM-yyyy") : ""
+            }
+          />
+        ),
       },
     ],
-    [t, customerSites, routesQuery],
+    [t, customerSites, routesQuery, selectedDepartureDate, queryClient, routesApi],
   );
 
   return (

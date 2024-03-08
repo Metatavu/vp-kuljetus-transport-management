@@ -8,6 +8,8 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useApi } from "hooks/use-api";
 import { useSingleClickRowEditMode } from "hooks/use-single-click-row-edit-mode";
+import { QUERY_KEYS } from "hooks/use-queries";
+import { deepEqual } from "@tanstack/react-router";
 
 const FREIGHT_UNIT_TYPES = ["EUR", "FIN", "RLK"] as const;
 
@@ -32,18 +34,18 @@ const FreightUnits = ({ freightUnits, freightId, onEditFreightUnit }: Props) => 
           type: "EUR",
         },
       }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["freightUnits", freightId] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.FREIGHT_UNITS] }),
   });
 
   const deleteFreightUnit = useMutation({
     mutationFn: (id: string) => freightUnitsApi.deleteFreightUnit({ freightUnitId: id }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["freightUnits", freightId] });
-      queryClient.fetchQuery({ queryKey: ["freightUnits", freightId] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.FREIGHT_UNITS] });
     },
   });
 
-  const processRowUpdate = (newRow: FreightUnit) => {
+  const processRowUpdate = (newRow: FreightUnit, oldRow: FreightUnit) => {
+    if (deepEqual(oldRow, newRow)) return oldRow;
     onEditFreightUnit(newRow);
     return newRow;
   };
