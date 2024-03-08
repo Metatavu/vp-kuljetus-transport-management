@@ -27,4 +27,34 @@ export type GroupedTask = {
   site: Site;
   taskCount: number;
   groupedTasksKey: string;
+  routeId: string;
+};
+
+export const DraggableType =  {
+  GROUPED_TASK: "grouped-task",
+  UNALLOCATED_TASK: "unallocated-task",
+} as const;
+export type DraggableType = typeof DraggableType[keyof typeof DraggableType];
+
+export const DroppableType =  {
+  ROUTES_TASKS_DROPPABLE: "routes-tasks-droppable",
+  UNALLOCATED_TASKS_DROPPABLE: "unallocated-tasks-droppable",
+ } as const;
+export type DroppableType = typeof DroppableType[keyof typeof DroppableType];
+
+export type GroupedTaskSortableData = {
+  draggableType: "grouped-task";
+  draggedTasks: Task[];
+  allTasks: Task[];
+  routeId: string;
+};
+
+export type DroppableData = {
+  routeId: string;
+  allTasks: Task[];
+};
+
+export type UnallocatedTaskDraggableData = {
+  draggableType: "unallocated-task";
+  task: Task;
 };

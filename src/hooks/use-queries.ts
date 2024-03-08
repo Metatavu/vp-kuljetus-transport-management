@@ -15,7 +15,7 @@ export const QUERY_KEYS = {
 } as const;
 
 export const useSites = (requestParams: ListSitesRequest = {}, enabled = true) => {
-  const { sitesApi } = useApi();;
+  const { sitesApi } = useApi();
 
   return useQuery({
     queryKey: [QUERY_KEYS.SITES, requestParams],

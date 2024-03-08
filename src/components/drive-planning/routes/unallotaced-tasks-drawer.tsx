@@ -13,6 +13,7 @@ import { useDraggable, useDroppable } from "@dnd-kit/core";
 import { useNavigate } from "@tanstack/react-router";
 import { QUERY_KEYS, useTasks } from "hooks/use-queries";
 import { useMemo, useCallback } from "react";
+import { DraggableType, DroppableType } from "../../../types";
 
 type Props = {
   open: boolean;
@@ -26,7 +27,7 @@ const UnallocatedTasksDrawer = ({ open, sites, onClose }: Props) => {
   const dataGridRef = useGridApiRef();
 
   const { isOver, setNodeRef, active } = useDroppable({
-    id: "unallocated-tasks-droppable",
+    id: DroppableType.UNALLOCATED_TASKS_DROPPABLE,
   });
 
   const { draggableType } = active?.data.current ?? {};
@@ -118,7 +119,7 @@ const UnallocatedTasksDrawer = ({ open, sites, onClose }: Props) => {
       const { attributes, listeners, setNodeRef } = useDraggable({
         id: params.rowId,
         data: {
-          draggableType: "unallocatedTask",
+          draggableType: DraggableType.UNALLOCATED_TASK,
           task: (tasksQuery.data?.tasks ?? []).find((task) => task.id === params.rowId),
         },
       });

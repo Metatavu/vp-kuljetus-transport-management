@@ -25,6 +25,13 @@ import {
 } from "@dnd-kit/core";
 import { snapCenterToCursor } from "@dnd-kit/modifiers";
 import DatePickerWithArrows from "components/generic/date-picker-with-arrows";
+import {
+  DraggableType,
+  DroppableData,
+  DroppableType,
+  GroupedTaskSortableData,
+  UnallocatedTaskDraggableData,
+} from "../types";
 
 export const Route = createFileRoute("/drive-planning/routes")({
   component: DrivePlanningRoutes,
@@ -106,24 +113,53 @@ function DrivePlanningRoutes() {
     [navigate, selectedDate, t],
   );
 
-  const handleAllocateTask = async (task: Task, routeId: string) =>
-    await updateTask.mutateAsync({ ...task, routeId: routeId });
+  const handleAllocateTask = async (task: Task) => await updateTask.mutateAsync({ ...task });
 
   const handleUnallocateGroupedTasks = async (tasks: Task[]) =>
-    await Promise.all(tasks.map((task) => updateTask.mutateAsync({ ...task, routeId: undefined })));
+    await Promise.all(
+      tasks.map((task) => updateTask.mutateAsync({ ...task, routeId: undefined, orderNumber: undefined })),
+    );
 
   const handleDragStart = ({ active }: DragStartEvent) => {
     setActiveDraggable(active);
   };
 
+  const isDraggingGroupedTasks = (id: string) =>
+    /^\d+\-[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\-(?:LOAD|UNLOAD)/.test(id);
+
   const handleDragEnd = async ({ active, over }: DragEndEvent) => {
-    const { routeId } = over?.data.current ?? {};
-    const { task, draggableType, tasks } = active?.data.current ?? {};
-    if (draggableType === "unallocatedTask" && routeId) {
-      handleAllocateTask(task, routeId);
+    const { current: currentOver } = over?.data ?? {};
+    const { current: currentActive } = active?.data ?? {};
+    if (currentActive?.draggableType === DraggableType.UNALLOCATED_TASK && currentOver?.routeId) {
+      const { task } = currentActive as UnallocatedTaskDraggableData;
+      const { routeId, allTasks } = currentOver as DroppableData;
+
+      handleAllocateTask({ ...task, orderNumber: allTasks.length, routeId: routeId });
     }
-    if (draggableType === "groupedTask" && over?.id === "unallocated-tasks-droppable") {
-      handleUnallocateGroupedTasks(tasks);
+
+    if (
+      currentActive?.draggableType === DraggableType.GROUPED_TASK &&
+      over?.id === DroppableType.UNALLOCATED_TASKS_DROPPABLE
+    ) {
+      const { draggedTasks } = currentActive as GroupedTaskSortableData;
+
+      handleUnallocateGroupedTasks(draggedTasks);
+    }
+
+    if (currentActive?.draggableType === DraggableType.GROUPED_TASK) {
+      if (over?.id.toString().startsWith(DroppableType.ROUTES_TASKS_DROPPABLE)) {
+      }
+    }
+
+    if (currentActive?.draggableType === DraggableType.GROUPED_TASK && currentOver?.routeId) {
+      const { draggedTasks: overDraggedTasks, allTasks } = currentOver as GroupedTaskSortableData;
+      const { draggedTasks: activeDraggedTasks } = currentActive as GroupedTaskSortableData;
+      const lastDraggedTask = overDraggedTasks[overDraggedTasks.length - 1];
+      const overIndex = allTasks.indexOf(lastDraggedTask);
+
+      for (const [index, task] of activeDraggedTasks.entries()) {
+        await handleAllocateTask({ ...task, orderNumber: overIndex + index });
+      }
     }
     setActiveDraggable(null);
   };
@@ -144,6 +180,49 @@ function DrivePlanningRoutes() {
                 activeNode?.data?.current?.draggableType === "unallocatedTask",
             }),
           )}
+          // Example of collision detection
+          // collisionDetection={(args) => {
+          //   const {
+          //     active: {
+          //       data: { current },
+          //     },
+          //   } = args;
+          //   const task = current?.task as Task;
+          //   const groupedKey = `${task.groupNumber}-${task.customerSiteId}-${task.type}`;
+          //   const { droppableContainers } = args;
+          //   const { droppableRects, pointerCoordinates } = args;
+          //   if (!pointerCoordinates) return [];
+          //   let closestDistance = Number.MAX_SAFE_INTEGER;
+          //   let closestSide: "top" | "bottom" = "top";
+          //   let closestRectangle: { id: UniqueIdentifier; rect: ClientRect } | null = null;
+          //   let foundGroup: any = {};
+          //   droppableContainers.forEach((container) => {
+          //     const key = container.data.current?.key;
+          //     if (key === groupedKey) {
+          //       foundGroup = container;
+          //     }
+          //   });
+          //   for (const [id, rect] of droppableRects.entries()) {
+          //     const { top, bottom } = rect;
+          //     const distanceToTop = Math.abs(top - pointerCoordinates.y);
+          //     const distanceToBottom = Math.abs(bottom - pointerCoordinates.y);
+          //     if (distanceToTop < closestDistance) {
+          //       closestDistance = distanceToTop;
+          //       closestSide = "top";
+          //       closestRectangle = { id, rect };
+          //     }
+          //     if (distanceToBottom < closestDistance) {
+          //       closestDistance = distanceToBottom;
+          //       closestSide = "bottom";
+          //       closestRectangle = { id, rect };
+          //     }
+          //   }
+          //   console.log("closest", closestSide, closestRectangle?.rect);
+          //   if (closestRectangle) {
+          //     return [foundGroup];
+          //   }
+          //   return [];
+          // }}
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
         >

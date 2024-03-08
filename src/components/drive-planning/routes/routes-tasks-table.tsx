@@ -1,11 +1,12 @@
 import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody } from "@mui/material";
 import { t } from "i18next";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import TaskTableRow from "./task-table-row";
 import { useGridApiContext } from "@mui/x-data-grid";
 import { SortableContext } from "@dnd-kit/sortable";
 import { useDroppable } from "@dnd-kit/core";
-import { GroupedTask } from "src/types";
+import { DroppableData, DroppableType, GroupedTask } from "../../../types";
+import { Task } from "generated/client";
 
 type Props = {
   routeId: string;
@@ -14,9 +15,26 @@ type Props = {
 
 const RoutesTasksTable = ({ routeId, groupedTasks }: Props) => {
   const dataGridApiRef = useGridApiContext();
+
+  const getAllTasks = () => {
+    const tasks: Task[] = [];
+    for (const key of Object.keys(groupedTasks)) {
+      tasks.push(...groupedTasks[key].tasks);
+    }
+    return tasks;
+  };
+
+  const droppableData: DroppableData = useMemo(
+    () => ({
+      routeId: routeId,
+      allTasks: getAllTasks(),
+    }),
+    [routeId, getAllTasks],
+  );
+
   const { isOver, setNodeRef } = useDroppable({
-    id: `routes-tasks-table-droppable-${routeId}`,
-    data: { routeId: routeId },
+    id: `${DroppableType.ROUTES_TASKS_DROPPABLE}-${routeId}`,
+    data: droppableData,
   });
 
   const tableContainerStyle = {
@@ -25,8 +43,10 @@ const RoutesTasksTable = ({ routeId, groupedTasks }: Props) => {
   };
 
   const renderTaskRow = useCallback(
-    (groupedTasksKey: string) => <TaskTableRow key={groupedTasksKey} {...groupedTasks[groupedTasksKey]} />,
-    [groupedTasks],
+    (groupedTasksKey: string) => (
+      <TaskTableRow key={groupedTasksKey} {...groupedTasks[groupedTasksKey]} allTasks={getAllTasks()} />
+    ),
+    [groupedTasks, getAllTasks],
   );
 
   const baseCellWidth = dataGridApiRef.current.getColumnPosition("tasks");

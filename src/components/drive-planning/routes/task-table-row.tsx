@@ -7,9 +7,9 @@ import LocalizationUtils from "utils/localization-utils";
 import { useTranslation } from "react-i18next";
 import { QUERY_KEYS, useFreights } from "hooks/use-queries";
 import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
 import { useNavigate } from "@tanstack/react-router";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
+import { GroupedTaskSortableData, DraggableType } from "../../../types";
 
 type Props = {
   tasks: Task[];
@@ -18,9 +18,11 @@ type Props = {
   site: Site;
   taskCount: number;
   groupedTasksKey: string;
+  routeId: string;
+  allTasks: Task[];
 };
 
-const TaskTableRow = ({ tasks, type, site, groupNumber, taskCount, groupedTasksKey }: Props) => {
+const TaskTableRow = ({ tasks, type, site, groupNumber, taskCount, groupedTasksKey, routeId, allTasks }: Props) => {
   const { tasksApi } = useApi();
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -29,27 +31,50 @@ const TaskTableRow = ({ tasks, type, site, groupNumber, taskCount, groupedTasksK
   const [menuCoordinates, setMenuCoordinates] = useState<{ clientX: number; clientY: number } | undefined>();
 
   const { name, address, postalCode, locality } = site;
-  const { listeners, setNodeRef, isOver, over, active, transition, transform } = useSortable({
+
+  const draggableData: GroupedTaskSortableData = useMemo(
+    () => ({
+      draggableType: DraggableType.GROUPED_TASK,
+      draggedTasks: tasks,
+      routeId: routeId,
+      allTasks: allTasks,
+      key: groupedTasksKey,
+    }),
+    [tasks, routeId, allTasks, groupedTasksKey],
+  );
+
+  const { listeners, setNodeRef, isOver, over, active } = useSortable({
     id: groupedTasksKey,
-    data: { draggableType: "groupedTask", tasks: tasks },
+    data: draggableData,
   });
 
-  console.log("active", active);
-  console.log("over", over);
+  const isOverGrouppableTask = () => {
+    const { draggableType } = active?.data.current ?? {};
+    if (draggableType === "groupedTask") return false;
+    const { groupNumber, customerSiteId, type } = active?.data.current?.task ?? {};
+    const activeGroupedTaskKey = `${groupNumber}-${customerSiteId}-${type}`;
 
-  const rowStyle = {
-    outline: over?.id !== active?.id && isOver ? "2px solid #4E8A9C" : "none",
-    outlineOffset: "-2px",
-    transition: transition,
-    transform: CSS.Transform.toString(transform),
+    return isOver && activeGroupedTaskKey === groupedTasksKey;
   };
+
+  const rowStyle = useMemo(
+    () => ({
+      outline: over?.id !== active?.id && isOverGrouppableTask() ? "2px solid #4E8A9C" : "none",
+      outlineOffset: "-2px",
+      borderBottom: over?.id !== active?.id && isOver && !isOverGrouppableTask() ? "2px solid #4E8A9C" : "none",
+    }),
+    [over, active, isOver, isOverGrouppableTask],
+  );
 
   const saveTask = useMutation({
     mutationFn: () =>
       Promise.all(
         tasks.map((task) => {
           if (!task.id) return Promise.reject();
-          return tasksApi.updateTask({ taskId: task.id, task: { ...task, routeId: undefined } });
+          return tasksApi.updateTask({
+            taskId: task.id,
+            task: { ...task, routeId: undefined, orderNumber: undefined },
+          });
         }),
       ),
     onSuccess: () => {
@@ -79,18 +104,24 @@ const TaskTableRow = ({ tasks, type, site, groupNumber, taskCount, groupedTasksK
     });
   }, [freightsQuery.data, navigate, t, tasks]);
 
-  const handleTableRowClick = ({ clientX, clientY }: React.MouseEvent<HTMLTableRowElement>) => {
-    if (taskCount === 1) {
-      const { freightId } = tasks[0];
-      const foundFreight = freightsQuery.data?.freights.find((freight) => freight.id === freightId);
-      if (!foundFreight?.id) return;
-      return navigate({ search: { freightId: freightId, date: undefined } });
-    }
+  const handleTableRowClick = useCallback(
+    ({ clientX, clientY, target }: React.MouseEvent<HTMLTableRowElement>) => {
+      tasks.map((task) => console.log("orderNumber", task.orderNumber));
+      if ((target as HTMLElement).closest("button")) return;
+      if (taskCount === 1) {
+        const { freightId } = tasks[0];
+        const foundFreight = freightsQuery.data?.freights.find((freight) => freight.id === freightId);
+        if (!foundFreight?.id) return;
+        return navigate({ search: { freightId: freightId, date: undefined } });
+      }
 
-    if (taskCount > 1) {
-      setMenuCoordinates({ clientX: clientX, clientY: clientY });
-    }
-  };
+      if (taskCount > 1) {
+        setMenuCoordinates({ clientX: clientX, clientY: clientY });
+      }
+    },
+    [freightsQuery.data, navigate, taskCount, tasks],
+  );
+
   return (
     <>
       <TableRow ref={setNodeRef} sx={{ height: "38px", ...rowStyle }} onClick={handleTableRowClick} {...listeners}>
@@ -102,7 +133,7 @@ const TaskTableRow = ({ tasks, type, site, groupNumber, taskCount, groupedTasksK
         </TableCell>
         <TableCell>{taskCount}</TableCell>
         <TableCell align="right">
-          <IconButton sx={{ padding: 0 }} onClick={() => saveTask.mutate()}>
+          <IconButton sx={{ padding: 0 }} onClick={async () => await saveTask.mutateAsync()}>
             <Remove />
           </IconButton>
         </TableCell>
