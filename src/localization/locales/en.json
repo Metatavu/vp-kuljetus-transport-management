@@ -60,6 +60,10 @@
         "licensePlateMissing": "License plate is required",
         "vinNumberMissing": "Vin number is required",
         "numberMissing": "Number is required"
+      },
+      "archiveDialog": {
+        "title": "Archive equipment",
+        "description": "Are you sure you want to archive equipment {{name}}?"
       }
     }
   },

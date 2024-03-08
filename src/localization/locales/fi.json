@@ -60,6 +60,10 @@
         "typeMissing": "Tyyppi on pakollinen",
         "vinNumberMissing": "Runkonumero on pakollinen",
         "numberMissing": "Tunnus on pakollinen"
+      },
+      "archiveDialog": {
+        "title": "Arkistoi ajoneuvo",
+        "description": "Haluatko varmasti arkistoida ajoneuvon {{name}}?"
       }
     },
     "vehicles": {

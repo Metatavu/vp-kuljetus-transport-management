@@ -9,6 +9,7 @@ import GenericDataGrid from "components/generic/generic-data-grid";
 import { Add } from "@mui/icons-material";
 import { useApi } from "../../src/hooks/use-api";
 import { useQuery } from "@tanstack/react-query";
+import LocalizationUtils from "../../src/utils/localization-utils";
 
 export const Route = createFileRoute("/management/equipment")({
   component: ManagementEquipment,
@@ -19,12 +20,16 @@ export const Route = createFileRoute("/management/equipment")({
 
 function ManagementEquipment() {
   const { t } = useTranslation();
-  const { trucksApi } = useApi();
+  const { trucksApi, towablesApi } = useApi();
   const navigate = useNavigate();
 
-  const [totalResults, setTotalResults] = useState(0);
+  const [totalTruckResults, setTotalTruckResults] = useState(0);
+  const [totalTowableResults, setTotalTowableResults] = useState(0);
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({ page: 0, pageSize: 25 });
 
+  /**
+   * NOTE: We need to figure out how to fetch both trucks and towables in a meaningful way
+   */
   const trucks = useQuery({
     queryKey: ["trucks", paginationModel],
     queryFn: async () => {
@@ -33,9 +38,37 @@ function ManagementEquipment() {
         max: paginationModel.pageSize * paginationModel.page + paginationModel.pageSize,
       });
       const count = parseInt(headers.get("x-total-count") ?? "0");
-      setTotalResults(count);
+
+      setTotalTruckResults(count);
       return trucks;
     },
+  });
+
+  const towables = useQuery({
+    queryKey: ["towables", paginationModel],
+    queryFn: async () => {
+      const [towables, headers] = await towablesApi.listTowablesWithHeaders({
+        first: paginationModel.pageSize * paginationModel.page,
+        max: paginationModel.pageSize * paginationModel.page + paginationModel.pageSize,
+      });
+      const count = parseInt(headers.get("x-total-count") ?? "0");
+
+      setTotalTowableResults(count);
+      return towables;
+    },
+  });
+
+  const trucksData = trucks.data ?? [];
+  const towablesData = towables.data ?? [];
+
+  // Combine trucks and towables
+  const equipment = [...trucksData, ...towablesData];
+
+  const localizedEquipment = equipment?.map((equipment) => {
+    return {
+      ...equipment,
+      type: LocalizationUtils.getLocalizedEquipmentType(equipment.type, t),
+    };
   });
 
   const columns: GridColDef[] = useMemo(
@@ -45,33 +78,35 @@ function ManagementEquipment() {
         headerAlign: "center",
         headerName: t("management.equipment.number"),
         sortable: false,
-        flex: 1,
+        width: 150,
+        align: "center"
       },
       {
         field: "plateNumber",
         headerAlign: "center",
         headerName: t("management.equipment.licensePlate"),
         sortable: false,
-        flex: 1,
+        width: 200,
+        align: "center"
       },
       {
         field: "type",
         headerAlign: "center",
         headerName: t("management.equipment.type"),
         sortable: false,
-        flex: 1,
+        width: 400,
       },
       {
         field: "vin",
         headerAlign: "center",
         headerName: t("management.equipment.vin"),
         sortable: false,
-        flex: 1,
+        flex: 1
       },
       {
         field: "actions",
         type: "actions",
-        width: 66,
+        width: 150,
         renderHeader: () => null,
         renderCell: ({ id }) => (
           <Stack direction="row" spacing={1}>
@@ -92,7 +127,7 @@ function ManagementEquipment() {
         ),
       },
     ],
-    [t],
+    [t, navigate],
   );
 
   const renderToolbarButtons = () => (
@@ -111,17 +146,17 @@ function ManagementEquipment() {
     <Paper sx={{ height: "100%" }}>
       <ToolbarRow title={t("management.equipment.title")} toolbarButtons={renderToolbarButtons()} />
       <GenericDataGrid
-        rows={trucks.data ?? []}
+        rows={localizedEquipment ?? []}
         columns={columns}
         pagination
         showCellVerticalBorder
         showColumnVerticalBorder
         disableColumnSelector
         loading={false}
-        getRowId={row => `${row.id}-${row.type}`}
+        getRowId={row => `${row.id}-${equipment.find(e => e.id === row.id)?.type}`}
         paginationMode="server"
         pageSizeOptions={[25, 50, 100]}
-        rowCount={totalResults}
+        rowCount={totalTruckResults + totalTowableResults}
         paginationModel={paginationModel}
         onPaginationModelChange={setPaginationModel}
       />
