@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Paper, Tabs, Tab } from "@mui/material";
+import { Paper, Tabs, Tab, styled } from "@mui/material";
 import { useMatches, useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { NavigationItem } from "src/types";
@@ -8,6 +8,14 @@ import { Menu } from "@mui/icons-material";
 type Props = {
   navigationItems: readonly NavigationItem[];
 };
+
+const SideDrawer = styled(Paper, {
+  label: "styled-breeadcrumb-bar",
+})(() => ({
+  position: "sticky",
+  borderRadius: 0,
+  transition: "width 0.3s ease-out"
+}));
 
 const SideNavigation = ({ navigationItems }: Props) => {
   const { t } = useTranslation();
@@ -19,7 +27,7 @@ const SideNavigation = ({ navigationItems }: Props) => {
   const selectedRouteIndex = navigationItems.findIndex(([route]) => location.pathname.startsWith(route));
 
   return (
-    <Paper sx={{ width: collapsed ? "52px" : "248px", position: "sticky", borderRadius: 0, transition: "width 0.3s" }}>
+    <SideDrawer sx={{ width: collapsed ? "46px" : "248px" }}>
       <Tabs
         TabScrollButtonProps={{ sx: { display: "none" } }}
         orientation="vertical"
@@ -33,10 +41,9 @@ const SideNavigation = ({ navigationItems }: Props) => {
         <Tab
           iconPosition={collapsed ? "start" : "end"}
           icon={<Menu />}
-          label={t("menu")}
+          label={collapsed ? "" : t("menu")}
           onClick={() => setCollapsed(!collapsed)}
           sx={{
-            fontSize: collapsed ? 0 : "inherit",
             justifyContent: "space-between",
             minHeight: "42px",
           }}
@@ -45,12 +52,11 @@ const SideNavigation = ({ navigationItems }: Props) => {
           <Tab
             key={path}
             icon={Icon && <Icon />}
-            label={t(title)}
+            label={collapsed ? "" : t(title)}
             value={index}
             onClick={() => navigate({ to: path, params: {}, search: {} })}
             iconPosition="start"
             sx={{
-              fontSize: collapsed ? 0 : "inherit",
               justifyContent: "flex-start",
               minHeight: "42px",
               backgroundColor: selectedRouteIndex === index ? "rgba(0, 65, 79, 0.1)" : "transparent",
@@ -58,7 +64,7 @@ const SideNavigation = ({ navigationItems }: Props) => {
           />
         ))}
       </Tabs>
-    </Paper>
+    </SideDrawer>
   );
 };
 

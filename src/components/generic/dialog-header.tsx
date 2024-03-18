@@ -1,15 +1,25 @@
 import { Close } from "@mui/icons-material";
 import { IconButton, Stack, Typography, styled } from "@mui/material";
 import { ElementType } from "react";
+import { theme } from "../../theme"
 
 const StyledDialogHeader = styled(Stack, {
   label: "styled-dialog-header",
-})(() => ({
+})(({ theme }) => ({
+  position: "sticky",
+  top: 0,
+  zIndex: 1,
   flexDirection: "row",
-  padding: "0px 8px 0px 16px",
-  height: "42px",
-  backgroundColor: "#4E8A9C",
+  backgroundColor: theme.palette.primary.light,
   justifyContent: "space-between",
+}));
+
+const StyledDialogHeaderContent = styled(Stack, {
+  label: "styled-dialog-header-content",
+})(({ theme }) => ({
+  flexDirection: "row",
+  alignItems: "center",
+  padding: theme.spacing(1, 2),
 }));
 
 type Props = {
@@ -25,18 +35,18 @@ const DialogHeader = ({ title, StartIcon, CloseIcon, onClose }: Props) => {
 
     return (
       <IconButton onClick={onClose}>
-        {CloseIcon ? <CloseIcon htmlColor="#ffffff" /> : <Close htmlColor="#ffffff" />}
+        {CloseIcon ? <CloseIcon htmlColor={theme.palette.primary.contrastText} /> : <Close htmlColor={theme.palette.primary.contrastText} />}
       </IconButton>
     );
   };
   return (
-    <StyledDialogHeader sx={{ position: "sticky", top: 0, zIndex: 1 }}>
-      <Stack spacing={2} direction="row" alignItems="center">
-        {StartIcon && <StartIcon htmlColor="#ffffff" />}
-        <Typography alignSelf="center" variant="h6" color="#ffffff">
+    <StyledDialogHeader>
+      <StyledDialogHeaderContent spacing={2}>
+        {StartIcon && <StartIcon htmlColor={theme.palette.primary.contrastText} />}
+        <Typography alignSelf="center" variant="h6" color={theme.palette.primary.contrastText}>
           {title}
         </Typography>
-      </Stack>
+      </StyledDialogHeaderContent>
       {renderCloseIcon()}
     </StyledDialogHeader>
   );
