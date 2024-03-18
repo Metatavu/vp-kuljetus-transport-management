@@ -57,7 +57,7 @@ export interface Truck {
      * @type {string}
      * @memberof Truck
      */
-    readonly activeVehicleId: string;
+    readonly activeVehicleId?: string;
     /**
      * 
      * @type {string}
@@ -110,7 +110,6 @@ export function instanceOfTruck(value: object): boolean {
     isInstance = isInstance && "plateNumber" in value;
     isInstance = isInstance && "type" in value;
     isInstance = isInstance && "vin" in value;
-    isInstance = isInstance && "activeVehicleId" in value;
 
     return isInstance;
 }
@@ -130,7 +129,7 @@ export function TruckFromJSONTyped(json: any, ignoreDiscriminator: boolean): Tru
         'plateNumber': json['plateNumber'],
         'type': json['type'],
         'vin': json['vin'],
-        'activeVehicleId': json['activeVehicleId'],
+        'activeVehicleId': !exists(json, 'activeVehicleId') ? undefined : json['activeVehicleId'],
         'creatorId': !exists(json, 'creatorId') ? undefined : json['creatorId'],
         'createdAt': !exists(json, 'createdAt') ? undefined : (new Date(json['createdAt'])),
         'lastModifierId': !exists(json, 'lastModifierId') ? undefined : json['lastModifierId'],
