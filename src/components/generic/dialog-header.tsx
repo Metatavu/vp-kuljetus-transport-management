@@ -9,7 +9,6 @@ const StyledDialogHeader = styled(Stack, {
   position: "sticky",
   top: 0,
   zIndex: 1,
-  flexDirection: "row",
   backgroundColor: theme.palette.primary.light,
   justifyContent: "space-between",
 }));
@@ -17,7 +16,6 @@ const StyledDialogHeader = styled(Stack, {
 const StyledDialogHeaderContent = styled(Stack, {
   label: "styled-dialog-header-content",
 })(({ theme }) => ({
-  flexDirection: "row",
   alignItems: "center",
   padding: theme.spacing(1, 2),
 }));
@@ -40,8 +38,8 @@ const DialogHeader = ({ title, StartIcon, CloseIcon, onClose }: Props) => {
     );
   };
   return (
-    <StyledDialogHeader>
-      <StyledDialogHeaderContent spacing={2}>
+    <StyledDialogHeader direction="row">
+      <StyledDialogHeaderContent direction="row" spacing={1}>
         {StartIcon && <StartIcon htmlColor={theme.palette.primary.contrastText} />}
         <Typography alignSelf="center" variant="h6" color={theme.palette.primary.contrastText}>
           {title}

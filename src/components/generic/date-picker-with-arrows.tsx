@@ -29,18 +29,17 @@ const DatePickerWithArrows = ({ date, labelVisible, setDate }: Props) => {
   };
 
   return (
-    <Stack direction="row" justifyContent="center" justifyItems="center">
-      <IconButton onClick={() => setDate(minusOneDay)}>
+    <Stack direction="row" justifyContent="center" alignItems="center">
+      <IconButton size="small" onClick={() => setDate(minusOneDay)}>
         <ArrowBack />
       </IconButton>
       <DatePicker
         label={labelVisible && t("drivePlanning.routes.date")}
         value={date}
-        slotProps={{ textField: { fullWidth: true } }}
+        slotProps={{ openPickerButton: { size: "small" }, textField: { fullWidth: true, size: "small" } }}
         onChange={onChangeDate}
-        sx={{ padding: "4px 8px" }}
       />
-      <IconButton onClick={() => setDate(plusOneDay)}>
+      <IconButton size="small" onClick={() => setDate(plusOneDay)}>
         <ArrowForward />
       </IconButton>
     </Stack>

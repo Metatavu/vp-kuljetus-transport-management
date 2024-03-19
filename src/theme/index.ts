@@ -22,7 +22,7 @@ declare module "@mui/material/styles" {
 const theme = createTheme(
   {
     typography: {
-      fontFamily: ["Proxima-nova", "sans-serif"].join(","),
+      fontFamily: ["Lato", "sans-serif"].join(","),
       h1: {
         fontSize: "2.5rem",
         fontWeight: 700,
@@ -57,11 +57,11 @@ const theme = createTheme(
       },
       subtitle1: {
         fontSize: "1rem",
-        fontWeight: 500,
+        fontWeight: 700,
       },
       subtitle2: {
         fontSize: "0.875rem",
-        fontWeight: 500,
+        fontWeight: 700,
       },
       button: {
         fontSize: 14,
@@ -88,14 +88,6 @@ const theme = createTheme(
       },
     },
     components: {
-      MuiBackdrop: {
-        styleOverrides: {
-          root: {
-            backgroundColor: "rgba(0, 65, 79, 0.5)",
-            backdropFilter: "blur(2px)",
-          },
-        },
-      },
       MuiAppBar: {
         styleOverrides: {
           root: {
@@ -151,56 +143,101 @@ const theme = createTheme(
           color: "primary",
         },
       },
+      // Autocomplete overrides
       MuiAutocomplete: {
         defaultProps: {
           size: "small",
         },
-      },
-      MuiTextField: {
-        variants: [
-          {
-            props: { select: true },
-            style: {
-              "& .MuiSelect-select": {
-                backgroundColor: "rgba(0, 0, 0, 0.06)",
-                borderRadius: "4px",
-                padding: "4px 8px",
+        styleOverrides: {
+          root: {
+            padding: "0px",
+            width: "100%",
+            "& .MuiFilledInput-root": {
+              paddingTop: 0,
+              backgroundColor: "rgba(0, 0, 0, 0.06)",
+              borderRadius: "4px",
+              "&.MuiInputBase-sizeSmall .MuiFilledInput-input": {
+                padding: "4px 0",
+                margin: 0,
+                boxSizing: "border-box",
+                height: "auto",
+                width: "100%",
+              },
+              "&::before": {
+                display: "none",
               },
             },
+            "& .MuiFilledInput-input": {
+              backgroundColor: "transparent",
+            },
           },
-        ],
+        },
+      },
+      MuiInputLabel: {
+        styleOverrides: {
+          root: {
+            fontSize: 14,
+            position: "relative",
+            transform: "none",
+          },
+        },
+      },
+      MuiInput: {
+        styleOverrides: {
+          input: {
+            padding: "8px",
+            margin: 0,
+            boxSizing: "border-box",
+            height: "auto",
+            backgroundColor: "rgba(0, 0, 0, 0.06)",
+          },
+        },
+      },
+      MuiFilledInput: {
+        styleOverrides: {
+          root: {
+            height: "auto",
+            margin: 0,
+            display: "inline-flex",
+            minWidth: 0,
+            width: "100%",
+            padding: 0,
+            backgroundColor: "rgba(0, 0, 0, 0.06)",
+            borderRadius: "4px",
+          },
+          input: {
+            backgroundColor: "transparent",
+            padding: "4px 8px",
+            margin: 0,
+            boxSizing: "border-box",
+            height: "auto",
+          },
+        },
+      },
+      MuiTextField: {
         defaultProps: {
-          variant: "standard",
+          variant: "filled",
           fullWidth: true,
           InputProps: { disableUnderline: true },
           InputLabelProps: { shrink: true },
-          inputProps: {
-            style: {
-              backgroundColor: "rgba(0, 0, 0, 0.06)",
-              padding: "4px 8px",
-              borderRadius: "4px",
-            },
-          },
         },
       },
       MuiDatePicker: {
         defaultProps: {
           slotProps: {
             textField: {
-              variant: "standard",
+              variant: "filled",
               size: "small",
-              sx: {
-                "& .MuiInputBase-root": {
-                  backgroundColor: "rgba(0, 0, 0, 0.06)",
-                  borderRadius: "4px",
-                  padding: "4px 8px",
-                  margin: 0,
-                },
-              },
               InputProps: { disableUnderline: true },
               InputLabelProps: { shrink: true },
             },
-            inputAdornment: { sx: { padding: 0, margin: 0 } },
+          },
+        },
+      },
+      MuiPickersPopper: {
+        styleOverrides: {
+          root: {
+            zIndex: 1302,
           },
         },
       },
