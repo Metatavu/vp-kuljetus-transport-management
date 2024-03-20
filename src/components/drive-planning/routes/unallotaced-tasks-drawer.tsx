@@ -142,7 +142,7 @@ const UnallocatedTasksDrawer = ({ open, sites, onClose }: Props) => {
         onClose={onClose}
       />
       <div ref={setNodeRef}>
-        {isOver && draggableType === "groupedTask" && (
+        {isOver && draggableType === DraggableType.GROUPED_TASK && (
           <div
             style={{
               backgroundColor: "rgb(78, 138, 156, 0.6)",

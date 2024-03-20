@@ -10,6 +10,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { useNavigate } from "@tanstack/react-router";
 import { useCallback, useMemo, useState } from "react";
 import { GroupedTaskSortableData, DraggableType } from "../../../types";
+import { CSS } from "@dnd-kit/utilities";
 
 type Props = {
   tasks: Task[];
@@ -43,7 +44,7 @@ const TaskTableRow = ({ tasks, type, site, groupNumber, taskCount, groupedTasksK
     [tasks, routeId, allTasks, groupedTasksKey],
   );
 
-  const { listeners, setNodeRef, isOver, over, active } = useSortable({
+  const { listeners, setNodeRef, isOver, over, active, transition, transform } = useSortable({
     id: groupedTasksKey,
     data: draggableData,
   });
@@ -62,8 +63,10 @@ const TaskTableRow = ({ tasks, type, site, groupNumber, taskCount, groupedTasksK
       outline: over?.id !== active?.id && isOverGrouppableTask() ? "2px solid #4E8A9C" : "none",
       outlineOffset: "-2px",
       borderBottom: over?.id !== active?.id && isOver && !isOverGrouppableTask() ? "2px solid #4E8A9C" : "none",
+      transition: transition,
+      transform: CSS.Transform.toString(transform),
     }),
-    [over, active, isOver, isOverGrouppableTask],
+    [over, active, isOver, isOverGrouppableTask, transition, transform],
   );
 
   const saveTask = useMutation({

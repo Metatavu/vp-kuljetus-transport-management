@@ -58,3 +58,10 @@ export type UnallocatedTaskDraggableData = {
   draggableType: "unallocated-task";
   task: Task;
 };
+
+// TODO: Use this type for both grouped and unallocated tasks
+export type DraggedTaskData = {
+  draggableType : DraggableType;
+  draggedTasks: Task[];
+  routesTasks: Task[];
+}

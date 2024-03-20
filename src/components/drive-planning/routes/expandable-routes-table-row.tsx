@@ -80,8 +80,8 @@ const ExpandableRoutesTableRow = ({ expanded, routeId, sites, ...props }: Props)
   if (!row) return null;
 
   return (
-    <div ref={setNodeRef}>
-      <GridRow {...props} style={{ ...droppableStyle }} />
+    <div ref={setNodeRef} style={{ ...droppableStyle }}>
+      <GridRow {...props} />
       <Collapse in={expanded}>
         <RoutesTasksTable groupedTasks={tasksQuery.data ?? {}} routeId={row.id} />
       </Collapse>

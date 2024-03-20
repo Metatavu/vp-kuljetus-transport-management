@@ -4,9 +4,9 @@ import { useCallback, useMemo } from "react";
 import TaskTableRow from "./task-table-row";
 import { useGridApiContext } from "@mui/x-data-grid";
 import { SortableContext } from "@dnd-kit/sortable";
-import { useDroppable } from "@dnd-kit/core";
-import { DroppableData, DroppableType, GroupedTask } from "../../../types";
+import { DroppableData, GroupedTask } from "../../../types";
 import { Task } from "generated/client";
+import { useDroppable } from "@dnd-kit/core";
 
 type Props = {
   routeId: string;
@@ -16,13 +16,13 @@ type Props = {
 const RoutesTasksTable = ({ routeId, groupedTasks }: Props) => {
   const dataGridApiRef = useGridApiContext();
 
-  const getAllTasks = () => {
+  const getAllTasks = useCallback(() => {
     const tasks: Task[] = [];
     for (const key of Object.keys(groupedTasks)) {
       tasks.push(...groupedTasks[key].tasks);
     }
     return tasks;
-  };
+  }, [groupedTasks]);
 
   const droppableData: DroppableData = useMemo(
     () => ({
@@ -32,15 +32,17 @@ const RoutesTasksTable = ({ routeId, groupedTasks }: Props) => {
     [routeId, getAllTasks],
   );
 
-  const { isOver, setNodeRef } = useDroppable({
-    id: `${DroppableType.ROUTES_TASKS_DROPPABLE}-${routeId}`,
+  const { setNodeRef, isOver } = useDroppable({
+    id: "route-header",
     data: droppableData,
   });
 
-  const tableContainerStyle = {
-    outline: isOver ? "2px solid #4E8A9C" : "none",
-    outlineOffset: "-3px",
-  };
+  const tableStyle = useMemo(
+    () => ({
+      borderBottom: isOver ? "2px solid #4E8A9C" : "none",
+    }),
+    [isOver],
+  );
 
   const renderTaskRow = useCallback(
     (groupedTasksKey: string) => (
@@ -54,11 +56,11 @@ const RoutesTasksTable = ({ routeId, groupedTasks }: Props) => {
   return (
     <TableContainer
       ref={setNodeRef}
-      sx={{ marginLeft: `${baseCellWidth}px`, ...tableContainerStyle, maxWidth: `calc(100% - ${baseCellWidth}px)` }}
+      sx={{ marginLeft: `${baseCellWidth}px`, maxWidth: `calc(100% - ${baseCellWidth}px)` }}
     >
       <SortableContext items={Object.keys(groupedTasks)}>
         <Table>
-          <TableHead>
+          <TableHead sx={{ ...tableStyle }}>
             <TableRow>
               <TableCell width={baseCellWidth}>{t("drivePlanning.routes.tasksTable.task")}</TableCell>
               <TableCell width={baseCellWidth}>{t("drivePlanning.routes.tasksTable.groupNumber")}</TableCell>

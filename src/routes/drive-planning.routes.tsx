@@ -120,49 +120,52 @@ function DrivePlanningRoutes() {
       tasks.map((task) => updateTask.mutateAsync({ ...task, routeId: undefined, orderNumber: undefined })),
     );
 
-  const handleDragStart = ({ active }: DragStartEvent) => {
+  const handleDragStart = useCallback(({ active }: DragStartEvent) => {
     setActiveDraggable(active);
-  };
+  }, []);
 
-  const isDraggingGroupedTasks = (id: string) =>
-    /^\d+\-[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\-(?:LOAD|UNLOAD)/.test(id);
+  // const isDraggingGroupedTasks = (id: string) =>
+  //   /^\d+\-[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\-(?:LOAD|UNLOAD)/.test(id);
 
-  const handleDragEnd = async ({ active, over }: DragEndEvent) => {
-    const { current: currentOver } = over?.data ?? {};
-    const { current: currentActive } = active?.data ?? {};
-    if (currentActive?.draggableType === DraggableType.UNALLOCATED_TASK && currentOver?.routeId) {
-      const { task } = currentActive as UnallocatedTaskDraggableData;
-      const { routeId, allTasks } = currentOver as DroppableData;
+  const handleDragEnd = useCallback(
+    async ({ active, over }: DragEndEvent) => {
+      const { current: currentOver } = over?.data ?? {};
+      const { current: currentActive } = active?.data ?? {};
+      if (currentActive?.draggableType === DraggableType.UNALLOCATED_TASK && currentOver?.routeId) {
+        const { task } = currentActive as UnallocatedTaskDraggableData;
+        const { routeId, allTasks } = currentOver as DroppableData;
 
-      handleAllocateTask({ ...task, orderNumber: allTasks.length, routeId: routeId });
-    }
-
-    if (
-      currentActive?.draggableType === DraggableType.GROUPED_TASK &&
-      over?.id === DroppableType.UNALLOCATED_TASKS_DROPPABLE
-    ) {
-      const { draggedTasks } = currentActive as GroupedTaskSortableData;
-
-      handleUnallocateGroupedTasks(draggedTasks);
-    }
-
-    if (currentActive?.draggableType === DraggableType.GROUPED_TASK) {
-      if (over?.id.toString().startsWith(DroppableType.ROUTES_TASKS_DROPPABLE)) {
+        handleAllocateTask({ ...task, orderNumber: allTasks.length, routeId: routeId });
       }
-    }
 
-    if (currentActive?.draggableType === DraggableType.GROUPED_TASK && currentOver?.routeId) {
-      const { draggedTasks: overDraggedTasks, allTasks } = currentOver as GroupedTaskSortableData;
-      const { draggedTasks: activeDraggedTasks } = currentActive as GroupedTaskSortableData;
-      const lastDraggedTask = overDraggedTasks[overDraggedTasks.length - 1];
-      const overIndex = allTasks.indexOf(lastDraggedTask);
+      if (
+        currentActive?.draggableType === DraggableType.GROUPED_TASK &&
+        over?.id === DroppableType.UNALLOCATED_TASKS_DROPPABLE
+      ) {
+        const { draggedTasks } = currentActive as GroupedTaskSortableData;
 
-      for (const [index, task] of activeDraggedTasks.entries()) {
-        await handleAllocateTask({ ...task, orderNumber: overIndex + index });
+        handleUnallocateGroupedTasks(draggedTasks);
       }
-    }
-    setActiveDraggable(null);
-  };
+
+      if (currentActive?.draggableType === DraggableType.GROUPED_TASK) {
+        if (over?.id.toString().startsWith(DroppableType.ROUTES_TASKS_DROPPABLE)) {
+        }
+      }
+
+      if (currentActive?.draggableType === DraggableType.GROUPED_TASK && currentOver?.routeId) {
+        const { draggedTasks: overDraggedTasks, allTasks } = currentOver as GroupedTaskSortableData;
+        const { draggedTasks: activeDraggedTasks } = currentActive as GroupedTaskSortableData;
+        const lastDraggedTask = overDraggedTasks[overDraggedTasks.length - 1];
+        const overIndex = allTasks.indexOf(lastDraggedTask);
+
+        for (const [index, task] of activeDraggedTasks.entries()) {
+          await handleAllocateTask({ ...task, orderNumber: overIndex + index });
+        }
+      }
+      setActiveDraggable(null);
+    },
+    [handleAllocateTask, handleUnallocateGroupedTasks],
+  );
 
   return (
     <>
@@ -240,7 +243,7 @@ function DrivePlanningRoutes() {
             />
           </LoaderWrapper>
           <DragOverlay modifiers={[snapCenterToCursor]}>
-            {activeDraggable ? (
+            {/* {activeDraggable?.data.current?.draggableType === DraggableType.UNALLOCATED_TASK ? (
               <div
                 style={{
                   width: "100%",
@@ -253,7 +256,7 @@ function DrivePlanningRoutes() {
               >
                 <LocalShipping fontSize="large" />
               </div>
-            ) : null}
+            ) : null} */}
           </DragOverlay>
         </DndContext>
       </Paper>
