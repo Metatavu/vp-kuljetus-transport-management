@@ -10,7 +10,7 @@ type Props = {
 };
 
 const SideDrawer = styled(Paper, {
-  label: "styled-breeadcrumb-bar",
+  label: "styled-side-drawer",
 })(() => ({
   position: "sticky",
   borderRadius: 0,
