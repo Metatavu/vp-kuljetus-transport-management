@@ -1,5 +1,5 @@
 import { ArrowForward, Remove } from "@mui/icons-material";
-import { Button, IconButton, Popover, TableCell, TableRow } from "@mui/material";
+import { IconButton, List, ListItemButton, ListItemText, ListSubheader, Popover, TableCell, TableRow } from "@mui/material";
 import { useApi } from "hooks/use-api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Site, Task, TaskType } from "generated/client";
@@ -94,15 +94,15 @@ const TaskTableRow = ({ tasks, type, site, groupNumber, taskCount, groupedTasksK
       if (!foundFreight?.id) return null;
 
       return (
-        <Button
+        <ListItemButton
           key={task.id}
-          sx={{ justifyContent: "space-between", padding: "8px 16px" }}
-          endIcon={<ArrowForward />}
-          fullWidth
           onClick={() => navigate({ search: { freightId: foundFreight.id, date: undefined } })}
+          title="Freight"
+          divider
         >
-          {t("drivePlanning.freights.dialog.title", { freightNumber: foundFreight.freightNumber })}
-        </Button>
+          <ListItemText primary={t("drivePlanning.freights.dialog.title", { freightNumber: foundFreight.freightNumber })} />
+          <ArrowForward fontSize="small" />
+        </ListItemButton>
       );
     });
   }, [freightsQuery.data, navigate, t, tasks]);
@@ -147,7 +147,16 @@ const TaskTableRow = ({ tasks, type, site, groupNumber, taskCount, groupedTasksK
         anchorReference="anchorPosition"
         anchorPosition={{ top: menuCoordinates?.clientY ?? 0, left: menuCoordinates?.clientX ?? 0 }}
       >
-        {renderPopoverContent()}
+        <List
+          dense
+          subheader={
+            <ListSubheader component="div" id="nested-list-subheader">
+              {t("drivePlanning.routes.tasksTable.selectWaybill")}
+            </ListSubheader>
+          }
+        >
+          {renderPopoverContent()}
+        </List>
       </Popover>
     </>
   );

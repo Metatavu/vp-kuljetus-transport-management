@@ -101,7 +101,8 @@
         "groupNumber": "Identifier",
         "customerSite": "Customer site",
         "address": "Address",
-        "tasksAmount": "Amount of tasks"
+        "tasksAmount": "Amount of tasks",
+        "selectWaybill": "Select waybill"
       },
       "unallocatedTasksTable": {
         "title": "Unallocated tasks",
