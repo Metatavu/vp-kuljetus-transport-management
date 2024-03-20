@@ -100,7 +100,8 @@
         "groupNumber": "Tunnus",
         "customerSite": "Asiakaspaikka",
         "address": "Osoite",
-        "tasksAmount": "Tehtävien lkm"
+        "tasksAmount": "Tehtävien lkm",
+        "selectWaybill": "Valitse rahtikirja"
       },
       "unallocatedTasksTable": {
         "title": "Järjestelemättömät tehtävät",

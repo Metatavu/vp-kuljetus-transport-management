@@ -6,7 +6,7 @@ import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
-import { CssBaseline, ThemeProvider } from "@mui/material";
+import { CssBaseline, ThemeProvider, responsiveFontSizes } from "@mui/material";
 import { theme } from "./theme";
 import "localization/i18n";
 import AuthenticationProvider from "components/auth/auth-provider";
@@ -33,7 +33,7 @@ if (!rootElement) throw new Error("No root element in index.html");
 if (!rootElement.innerHTML) {
   ReactDOM.createRoot(rootElement).render(
     <StrictMode>
-      <ThemeProvider theme={theme}>
+      <ThemeProvider theme={responsiveFontSizes(theme)}>
         <LocalizationProvider dateAdapter={AdapterLuxon} adapterLocale="fi">
           <CssBaseline />
           <AuthenticationProvider>

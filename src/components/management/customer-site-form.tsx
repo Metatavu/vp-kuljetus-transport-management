@@ -1,4 +1,4 @@
-import { Autocomplete, Button, ListItem, ListItemText, Stack, TextField } from "@mui/material";
+import { Autocomplete, Button, ListItem, ListItemText, Stack, TextField, styled } from "@mui/material";
 import { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Site } from "generated/client";
@@ -11,6 +11,15 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useConfirmDialog } from "components/providers/confirm-dialog-provider";
 import { useApi } from "hooks/use-api";
 import { useNavigate } from "@tanstack/react-router";
+
+const FlexTextarea = styled(TextField, {
+  label: "flex-textarea",
+})(() => ({
+  flex: 1,
+  "& .MuiFilledInput-root": {
+    flex: 1
+  }
+}));
 
 type Props = {
   errors: FieldErrors<Site>;
@@ -87,8 +96,8 @@ const CustomerSiteForm = ({ errors, customerSite, register, setFormValue, watch 
   };
 
   return (
-    <Stack justifyContent="space-between" width={356} padding="16px">
-      <Stack gap="16px">
+    <Stack justifyContent="space-between" width={356} p={2}>
+      <Stack spacing={2} flex={1}>
         <TextField
           label={t("management.customerSites.name")}
           error={!!errors.name}
@@ -134,29 +143,29 @@ const CustomerSiteForm = ({ errors, customerSite, register, setFormValue, watch 
           helperText={errors.locality?.message}
           {...register("locality", { required: t("management.customerSites.errorMessages.municipalityMissing") })}
         />
-        <TextField
+        <FlexTextarea
           fullWidth
           multiline
-          minRows={9}
           label={t("management.customerSites.additionalInfo")}
-          variant="standard"
+          minRows={1}
           {...register("additionalInfo")}
+          inputProps={{ style: { flex: 1, height: "100%" } }}
         />
+        {customerSite && (
+          <Button
+            variant="outlined"
+            onClick={() =>
+              showConfirmDialog({
+                title: t("management.customerSites.archiveDialog.title"),
+                description: t("management.customerSites.archiveDialog.description", { name: watch("name") }),
+                onPositiveClick: () => archiveCustomerSite.mutate(customerSite),
+              })
+            }
+          >
+            {t("archive")}
+          </Button>
+        )}
       </Stack>
-      {customerSite && (
-        <Button
-          variant="outlined"
-          onClick={() =>
-            showConfirmDialog({
-              title: t("management.customerSites.archiveDialog.title"),
-              description: t("management.customerSites.archiveDialog.description", { name: watch("name") }),
-              onPositiveClick: () => archiveCustomerSite.mutate(customerSite),
-            })
-          }
-        >
-          {t("archive")}
-        </Button>
-      )}
     </Stack>
   );
 };
