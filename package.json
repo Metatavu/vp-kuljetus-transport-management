@@ -39,6 +39,7 @@
     "react-hook-form": "7.50.0",
     "react-i18next": "14.0.0",
     "react-leaflet": "4.2.1",
+    "react-toastify": "10.0.5",
     "wellknown": "0.5.0"
   },
   "devDependencies": {

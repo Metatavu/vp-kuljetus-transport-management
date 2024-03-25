@@ -5,6 +5,8 @@ import { useApi } from "hooks/use-api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Freight } from "generated/client";
 import { QUERY_KEYS } from "hooks/use-queries";
+import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/drive-planning/freights/add-freight")({
   component: AddFreight,
@@ -17,6 +19,7 @@ function AddFreight() {
   const { freightsApi, tasksApi } = useApi();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
 
   const createFreight = useMutation({
     mutationFn: async (freight: Freight) => {
@@ -44,7 +47,11 @@ function AddFreight() {
       });
       navigate({ to: "/drive-planning/freights", search: { freightId: createdFreight.id } });
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.FREIGHTS] }),
+    onSuccess: () => {
+      toast.success(t("drivePlanning.freights.successToast"));
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.FREIGHTS] });
+    },
+    onError: () => toast.error(t("drivePlanning.freights.errorToast")),
   });
 
   return <FreightDialog onSave={createFreight} onClose={() => navigate({ to: "/drive-planning/freights" })} />;

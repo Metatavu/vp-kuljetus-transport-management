@@ -1,11 +1,16 @@
 import { Add, UnfoldLess, UnfoldMore } from "@mui/icons-material";
-import { IconButton } from "@mui/material";
-import { GridColDef, GridPaginationModel, GridRenderCellParams, GridRowProps } from "@mui/x-data-grid";
+import { IconButton, MenuItem, TextField } from "@mui/material";
+import {
+  GridColDef,
+  GridPaginationModel,
+  GridRenderCellParams,
+  GridRenderEditCellParams,
+  GridRowProps,
+} from "@mui/x-data-grid";
 import GenericDataGrid from "components/generic/generic-data-grid";
 import { Driver, Route, Site, Truck } from "generated/client";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useSingleClickRowEditMode } from "hooks/use-single-click-row-edit-mode";
 import ExpandableRoutesTableRow from "./expandable-routes-table-row";
 import { DateTime } from "luxon";
 import { QUERY_KEYS, useDrivers, useRoutes, useTrucks } from "hooks/use-queries";
@@ -13,6 +18,7 @@ import { deepEqual } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import AsyncDataGridCell from "components/generic/async-data-grid-cell";
 import { useApi } from "hooks/use-api";
+import { useSingleClickCellEditMode } from "hooks/use-single-click-cell-edit-mode";
 
 type Props = {
   selectedDate: DateTime;
@@ -24,7 +30,7 @@ const RoutesTable = ({ selectedDate, sites, onUpdateRoute }: Props) => {
   const { t } = useTranslation();
   const { tasksApi } = useApi();
   const queryClient = useQueryClient();
-  const { rowModesModel, handleCellClick, handleRowModelsChange } = useSingleClickRowEditMode();
+  const { cellModesModel, handleCellClick, handleCellModelsChange } = useSingleClickCellEditMode();
 
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({ page: 0, pageSize: 25 });
   const [expandedRows, setExpandedRows] = useState<string[]>([]);
@@ -43,6 +49,48 @@ const RoutesTable = ({ selectedDate, sites, onUpdateRoute }: Props) => {
 
     return await onUpdateRoute(newRow);
   };
+
+  const renderTruckSingleSelectCell = useCallback(
+    ({ api, id, field, value }: GridRenderEditCellParams) => {
+      const { setEditCellValue } = api;
+      return (
+        <TextField
+          select
+          SelectProps={{ defaultOpen: true }}
+          defaultValue={value}
+          onChange={({ target: { value } }) => setEditCellValue({ id: id, field: field, value: value })}
+        >
+          {trucksQuery.data?.trucks.map((truck) => (
+            <MenuItem key={truck.id} value={truck.id}>
+              {truck.name} ({truck.plateNumber})
+            </MenuItem>
+          ))}
+        </TextField>
+      );
+    },
+    [trucksQuery],
+  );
+
+  const renderDriverSingleSelectCell = useCallback(
+    ({ api, id, field, value }: GridRenderEditCellParams) => {
+      const { setEditCellValue } = api;
+      return (
+        <TextField
+          select
+          SelectProps={{ defaultOpen: true }}
+          defaultValue={value}
+          onChange={({ target: { value } }) => setEditCellValue({ id: id, field: field, value: value })}
+        >
+          {driversQuery.data?.drivers.map((driver) => (
+            <MenuItem key={driver.id} value={driver.id}>
+              {driver.displayName}
+            </MenuItem>
+          ))}
+        </TextField>
+      );
+    },
+    [driversQuery],
+  );
 
   const columns: GridColDef[] = useMemo(
     () => [
@@ -80,6 +128,7 @@ const RoutesTable = ({ selectedDate, sites, onUpdateRoute }: Props) => {
         getOptionLabel: ({ name, plateNumber }: Truck) => `${name} (${plateNumber})`,
         getOptionValue: ({ id }: Truck) => id,
         renderCell: ({ row: { truckId } }: GridRenderCellParams<Route>) => (truckId ? undefined : <Add />),
+        renderEditCell: renderTruckSingleSelectCell,
       },
       {
         field: "driverId",
@@ -92,6 +141,7 @@ const RoutesTable = ({ selectedDate, sites, onUpdateRoute }: Props) => {
         getOptionLabel: ({ displayName }: Driver) => displayName,
         getOptionValue: ({ id }: Driver) => id,
         renderCell: ({ row: { driverId } }: GridRenderCellParams<Route>) => (driverId ? undefined : <Add />),
+        renderEditCell: renderDriverSingleSelectCell,
       },
       {
         field: "actions",
@@ -111,7 +161,16 @@ const RoutesTable = ({ selectedDate, sites, onUpdateRoute }: Props) => {
         ),
       },
     ],
-    [t, trucksQuery, driversQuery, expandedRows, tasksApi, queryClient],
+    [
+      t,
+      trucksQuery,
+      driversQuery,
+      expandedRows,
+      tasksApi,
+      queryClient,
+      renderTruckSingleSelectCell,
+      renderDriverSingleSelectCell,
+    ],
   );
 
   const renderExpandableRoutesTableRow = useCallback(
@@ -131,18 +190,18 @@ const RoutesTable = ({ selectedDate, sites, onUpdateRoute }: Props) => {
 
   return (
     <GenericDataGrid
-      editMode="row"
+      editMode="cell"
       paginationMode="server"
       disableRowSelectionOnClick
       fullScreen={false}
       columns={columns}
       rows={routesQuery.data?.routes ?? []}
       rowCount={routesQuery.data?.totalResults ?? 0}
-      rowModesModel={rowModesModel}
+      cellModesModel={cellModesModel}
       paginationModel={paginationModel}
       slots={{ row: renderExpandableRoutesTableRow }}
-      onRowModesModelChange={handleRowModelsChange}
       onPaginationModelChange={setPaginationModel}
+      onCellModesModelChange={handleCellModelsChange}
       onCellClick={handleCellClick}
       processRowUpdate={processRowUpdate}
     />

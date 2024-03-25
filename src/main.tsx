@@ -14,6 +14,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ConfirmDialogProvider from "components/providers/confirm-dialog-provider";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterLuxon } from "@mui/x-date-pickers/AdapterLuxon";
+import { Flip, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const router = createRouter({ routeTree });
 
@@ -34,6 +36,7 @@ if (!rootElement.innerHTML) {
   ReactDOM.createRoot(rootElement).render(
     <StrictMode>
       <ThemeProvider theme={responsiveFontSizes(theme)}>
+        <ToastContainer autoClose={3000} hideProgressBar transition={Flip} />
         <LocalizationProvider dateAdapter={AdapterLuxon} adapterLocale="fi">
           <CssBaseline />
           <AuthenticationProvider>
