@@ -112,6 +112,7 @@ const UnallocatedTasksDrawer = ({ open, sites, onClose }: Props) => {
     >
       <DialogHeader
         title={t("drivePlanning.routes.unallocatedTasksTable.title")}
+        closeTooltip={open ? t("drivePlanning.routes.unallocatedTasksTable.minifyTasksDrawer") : t("drivePlanning.routes.unallocatedTasksTable.expandTasksDrawer")}
         StartIcon={AssignmentSharp}
         CloseIcon={open ? ExpandMore : ExpandLess}
         onClose={onClose}

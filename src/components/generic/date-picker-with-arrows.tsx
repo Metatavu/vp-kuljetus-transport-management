@@ -1,5 +1,5 @@
 import { ArrowBack, ArrowForward } from "@mui/icons-material";
-import { IconButton, Stack } from "@mui/material";
+import { Button, Stack } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import { DateTime } from "luxon";
 import { Dispatch, SetStateAction } from "react";
@@ -29,19 +29,19 @@ const DatePickerWithArrows = ({ date, labelVisible, setDate }: Props) => {
   };
 
   return (
-    <Stack direction="row" justifyContent="center" alignItems="center">
-      <IconButton size="small" onClick={() => setDate(minusOneDay)}>
-        <ArrowBack />
-      </IconButton>
+    <Stack direction="row" justifyContent="center" alignItems="center" gap={1}>
+      <Button variant="text" startIcon={<ArrowBack />} size="small" onClick={() => setDate(minusOneDay)}>
+        {t("previousDay")}
+      </Button>
       <DatePicker
         label={labelVisible && t("drivePlanning.routes.date")}
         value={date}
-        slotProps={{ openPickerButton: { size: "small" }, textField: { fullWidth: true, size: "small" } }}
+        slotProps={{ openPickerButton: { size: "small", title: t("openCalendar") }, textField: { size: "small" } }}
         onChange={onChangeDate}
       />
-      <IconButton size="small" onClick={() => setDate(plusOneDay)}>
-        <ArrowForward />
-      </IconButton>
+      <Button variant="text" endIcon={<ArrowForward />} size="small" onClick={() => setDate(plusOneDay)}>
+        {t("nextDay")}
+      </Button>
     </Stack>
   );
 };

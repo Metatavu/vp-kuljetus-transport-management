@@ -45,21 +45,21 @@ function ManagementCustomerSites() {
     () => [
       {
         field: "name",
-        headerAlign: "center",
+        headerAlign: "left",
         headerName: t("management.customerSites.name"),
         sortable: false,
         flex: 1,
       },
       {
         field: "postalCode",
-        headerAlign: "center",
+        headerAlign: "left",
         headerName: t("management.customerSites.postalCode"),
         sortable: false,
         width: 180,
       },
       {
         field: "locality",
-        headerAlign: "center",
+        headerAlign: "left",
         headerName: t("management.customerSites.municipality"),
         sortable: false,
         width: 180,

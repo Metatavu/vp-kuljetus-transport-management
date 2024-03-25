@@ -95,6 +95,13 @@ const theme = createTheme(
           },
         },
       },
+      MuiLink: {
+        styleOverrides: {
+          root: {
+            cursor: "pointer",
+          },
+        },
+      },
       MuiTabs: {
         variants: [
           {
@@ -136,6 +143,15 @@ const theme = createTheme(
           size: "small",
           variant: "contained",
           color: "primary",
+          disableElevation: true,
+        },
+        styleOverrides: {
+          root: {
+            minWidth: "inherit",
+            width: "fit-content",
+            whiteSpace: "nowrap",
+            borderRadius: "3px",
+          },
         },
       },
       MuiIconButton: {
