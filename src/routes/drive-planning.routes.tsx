@@ -25,6 +25,7 @@ import {
 } from "@dnd-kit/core";
 import { snapCenterToCursor } from "@dnd-kit/modifiers";
 import DatePickerWithArrows from "components/generic/date-picker-with-arrows";
+import { toast } from "react-toastify";
 import {
   DraggableType,
   DroppableData,
@@ -68,7 +69,11 @@ function DrivePlanningRoutes() {
       if (!route.id) return Promise.reject();
       return routesApi.updateRoute({ routeId: route.id, route });
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ROUTES, selectedDate] }),
+    onSuccess: () => {
+      toast.success(t("drivePlanning.routes.successToast"));
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ROUTES, selectedDate] });
+    },
+    onError: () => toast.error(t("drivePlanning.routes.errorToast")),
   });
 
   const updateTask = useMutation({

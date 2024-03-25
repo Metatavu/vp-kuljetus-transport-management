@@ -5,6 +5,7 @@ import { RouterContext } from "src/routes/__root";
 import LoaderWrapper from "components/generic/loader-wrapper";
 import EquipmentComponent from "components/management/equipment";
 import { Towable, TowableTypeEnum, Truck } from "generated/client";
+import { toast } from "react-toastify";
 
 export const Route = createFileRoute("/management/equipment/$equipmentId/modify")({
   component: () => <EquipmentModify />,
@@ -34,39 +35,45 @@ const EquipmentModify = () => {
     }
   };
 
-  const truckQuery =
-    useQuery({
-      enabled: !isTowable,
-      queryKey: ["trucks", id],
-      queryFn: async () => await trucksApi.findTruck({ truckId: id }),
-    });
+  const truckQuery = useQuery({
+    enabled: !isTowable,
+    queryKey: ["trucks", id],
+    queryFn: async () => await trucksApi.findTruck({ truckId: id }),
+  });
 
   const updateTruck = useMutation({
     mutationFn: (truck: Truck) => trucksApi.updateTruck({ truckId: id, truck }),
     onSuccess: () => {
+      toast.success("management.equipment.successToast");
       queryClient.invalidateQueries({ queryKey: ["trucks"] });
       queryClient.invalidateQueries({ queryKey: ["trucks", id] });
     },
+    onError: () => toast.error("management.equipment.errorToast"),
   });
 
-  const towableQuery =
-    useQuery({
-      enabled: isTowable,
-      queryKey: ["towables", id],
-      queryFn: async () => await towablesApi.findTowable({ towableId: id }),
-    });
+  const towableQuery = useQuery({
+    enabled: isTowable,
+    queryKey: ["towables", id],
+    queryFn: async () => await towablesApi.findTowable({ towableId: id }),
+  });
 
   const updateTowable = useMutation({
     mutationFn: (towable: Towable) => towablesApi.updateTowable({ towableId: id, towable }),
     onSuccess: () => {
+      toast.success("management.equipment.successToast");
       queryClient.invalidateQueries({ queryKey: ["towables"] });
       queryClient.invalidateQueries({ queryKey: ["towables", id] });
     },
+    onError: () => toast.error("management.equipment.errorToast"),
   });
 
   return (
     <LoaderWrapper loading={isTowable ? towableQuery.isFetching : truckQuery.isFetching}>
-      <EquipmentComponent formType="MODIFY" initialData={isTowable ? towableQuery.data : truckQuery.data} onSave={onEquipmentModify} />
+      <EquipmentComponent
+        formType="MODIFY"
+        initialData={isTowable ? towableQuery.data : truckQuery.data}
+        onSave={onEquipmentModify}
+      />
     </LoaderWrapper>
   );
 };

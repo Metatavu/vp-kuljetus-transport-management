@@ -44,7 +44,9 @@
       "archiveDialog": {
         "title": "Archive customer site",
         "description": "Are you sure you want to archive customer site {{name}}?"
-      }
+      },
+      "successToast": "Customer site saved!",
+      "errorToast": "Failed to save customer site!"
     },
     "equipment": {
       "title": "Equipment list",
@@ -65,7 +67,9 @@
       "archiveDialog": {
         "title": "Archive equipment",
         "description": "Are you sure you want to archive equipment {{name}}?"
-      }
+      },
+      "successToast": "Equipment saved!",
+      "errorToast": "Failed to save equipment!"
     }
   },
   "vehicles": {
@@ -108,7 +112,9 @@
         "title": "Unallocated tasks",
         "freightNumber": "Waybill",
         "contents": "Freight"
-      }
+      },
+      "successToast": "Route saved!",
+      "errorToast": "Failed to save route!"
     },
     "freights": {
       "title": "Freights list",
@@ -128,7 +134,9 @@
         "recipientSiteMissing": "Recipient is required",
         "pointOfDepartureMissing": "Point of departure is required",
         "destinationSiteMissing": "Destination is required"
-      }
+      },
+      "successToast": "Freight saved!",
+      "errorToast": "Failed to save freight!"
     },
     "freightUnits": {
       "type": "Type",
