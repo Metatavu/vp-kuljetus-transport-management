@@ -44,7 +44,9 @@
       "archiveDialog": {
         "title": "Arkistoi asiakaspaikka",
         "description": "Haluatko varmasti arkistoida asiakaspaikan {{name}}?"
-      }
+      },
+      "successToast": "Asiakaspaikka tallennettu!",
+      "errorToast": "Asiakaspaikan tallennus epäonnistui!"
     },
     "equipment": {
       "title": "Kalustoluettelo",
@@ -65,7 +67,9 @@
       "archiveDialog": {
         "title": "Arkistoi ajoneuvo",
         "description": "Haluatko varmasti arkistoida ajoneuvon {{name}}?"
-      }
+      },
+      "successToast": "Kalusto tallennettu!",
+      "errorToast": "Kaluston tallennus epäonnistui!"
     },
     "vehicles": {
       "title": "Ajoneuvot",
@@ -107,7 +111,9 @@
         "title": "Järjestelemättömät tehtävät",
         "freightNumber": "Rahtikirja",
         "contents": "Sisältö"
-      }
+      },
+      "successToast": "Reitti tallennettu!",
+      "errorToast": "Reitin tallennus epäonnistui!"
     },
     "freights": {
       "title": "Rahtikirjalistaus",
@@ -127,7 +133,9 @@
         "recipientSiteMissing": "Vastaanottaja on pakollinen",
         "pointOfDepartureMissing": "Lähtöpaikka on pakollinen",
         "destinationSiteMissing": "Määräpaikka on pakollinen"
-      }
+      },
+      "successToast": "Rahti tallennettu!",
+      "errorToast": "Rahdin tallennus epäonnistui!"
     },
     "freightUnits": {
       "type": "Tyyppi",

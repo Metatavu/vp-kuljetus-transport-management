@@ -14,6 +14,7 @@ import UnallocatedTasksDrawer from "components/drive-planning/routes/unallotaced
 import RoutesTable from "components/drive-planning/routes/routes-table";
 import { QUERY_KEYS, useSites } from "hooks/use-queries";
 import DatePickerWithArrows from "components/generic/date-picker-with-arrows";
+import { toast } from "react-toastify";
 
 export const Route = createFileRoute("/drive-planning/routes")({
   component: DrivePlanningRoutes,
@@ -49,7 +50,11 @@ function DrivePlanningRoutes() {
       if (!route.id) return Promise.reject();
       return routesApi.updateRoute({ routeId: route.id, route });
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ROUTES, selectedDate] }),
+    onSuccess: () => {
+      toast.success(t("drivePlanning.routes.successToast"));
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ROUTES, selectedDate] });
+    },
+    onError: () => toast.error(t("drivePlanning.routes.errorToast")),
   });
 
   const renderLeftToolbar = useCallback(
