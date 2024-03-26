@@ -1,4 +1,4 @@
-import { Button, Paper, Stack, Typography } from "@mui/material";
+import { Button, Paper, styled } from "@mui/material";
 import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router";
 import ToolbarRow from "components/generic/toolbar-row";
 import { RouterContext } from "./__root";
@@ -15,6 +15,16 @@ import RoutesTable from "components/drive-planning/routes/routes-table";
 import { QUERY_KEYS, useSites } from "hooks/use-queries";
 import DatePickerWithArrows from "components/generic/date-picker-with-arrows";
 import { toast } from "react-toastify";
+
+// Styled components
+const Root = styled(Paper, {
+  label: "drive-planning-routes--root",
+})(() => ({
+  minHeight: "100%",
+  maxHeight: "100%",
+  display: "flex",
+  flexDirection: "column"
+}));
 
 export const Route = createFileRoute("/drive-planning/routes")({
   component: DrivePlanningRoutes,
@@ -59,12 +69,7 @@ function DrivePlanningRoutes() {
 
   const renderLeftToolbar = useCallback(
     () => (
-      <Stack direction="row">
-        <Typography variant="h6" sx={{ opacity: 0.6 }} alignSelf="center">
-          {t("drivePlanning.routes.date")}
-        </Typography>
-        <DatePickerWithArrows labelVisible={false} date={selectedDate} setDate={setSelectedDate} />
-      </Stack>
+      <DatePickerWithArrows buttonsWithText labelVisible={false} date={selectedDate} setDate={setSelectedDate} />
     ),
     [selectedDate, t],
   );
@@ -91,7 +96,7 @@ function DrivePlanningRoutes() {
   return (
     <>
       <Outlet />
-      <Paper sx={{ minHeight: "100%", maxHeight: "100%", display: "flex", flexDirection: "column" }}>
+      <Root>
         <ToolbarRow leftToolbar={renderLeftToolbar()} toolbarButtons={renderRightToolbar()} />
         <LoaderWrapper loading={sitesQuery.isLoading}>
           <RoutesTable
@@ -105,7 +110,7 @@ function DrivePlanningRoutes() {
             onClose={() => setUnallocatedDrawerOpen(!unallocatedDrawerOpen)}
           />
         </LoaderWrapper>
-      </Paper>
+      </Root>
     </>
   );
 }

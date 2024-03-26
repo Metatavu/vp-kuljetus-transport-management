@@ -91,14 +91,14 @@ function ManagementEquipment() {
       },
       {
         field: "type",
-        headerAlign: "center",
+        headerAlign: "left",
         headerName: t("management.equipment.type"),
         sortable: false,
         width: 400,
       },
       {
         field: "vin",
-        headerAlign: "center",
+        headerAlign: "left",
         headerName: t("management.equipment.vin"),
         sortable: false,
         flex: 1

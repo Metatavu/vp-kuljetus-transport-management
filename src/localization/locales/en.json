@@ -14,12 +14,22 @@
   "vehicleInfo": "Vehicle information",
   "workingTime": "Working time",
   "addNew": "Add new",
+  "previousDay": "Next day",
+  "nextDay": "Previous day",
+  "selectDate": "Select date",
+  "showMenu": "Show menu",
+  "hideMenu": "Hide menu",
   "equipmentType": {
     "truck": "Truck",
     "semiTruck": "Semi truck",
     "trailer": "Trailer",
     "semiTrailer": "Semi trailer",
     "dolly": "Dolly"
+  },
+  "tooltips": {
+    "showDetails": "Show details",
+    "openCalendar": "Open calendar",
+    "closeDialog": "Close dialog"
   },
   "management": {
     "title": "Management",
@@ -110,6 +120,8 @@
       },
       "unallocatedTasksTable": {
         "title": "Unallocated tasks",
+        "minifyTasksDrawer": "Minify tasks drawer",
+        "expandTasksDrawer": "Expand tasks drawer",
         "freightNumber": "Waybill",
         "contents": "Freight"
       },

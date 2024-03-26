@@ -105,6 +105,7 @@ const FreightDialog = ({ freight, onSave, onClose }: Props) => {
     <Dialog open onClose={onClose} PaperProps={{ sx: { minWidth: "50%", borderRadius: 0 } }}>
       <LoaderWrapper loading={customerSitesQuery.isLoading || tasksQuery.isLoading || freightUnitsQuery.isLoading}>
         <DialogHeader
+          closeTooltip={t("tooltips.closeDialog")}
           title={
             freight?.id
               ? t("drivePlanning.freights.dialog.title", { freightNumber: freight.freightNumber })

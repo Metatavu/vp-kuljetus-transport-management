@@ -42,6 +42,7 @@ const SideNavigation = ({ navigationItems }: Props) => {
           iconPosition={collapsed ? "start" : "end"}
           icon={<Menu />}
           label={collapsed ? "" : t("menu")}
+          title={collapsed ? t("showMenu") : t("hideMenu")}
           onClick={() => setCollapsed(!collapsed)}
           sx={{
             justifyContent: "space-between",

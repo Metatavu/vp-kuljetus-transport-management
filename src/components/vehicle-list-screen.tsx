@@ -43,7 +43,7 @@ const VehicleListScreen: FC = () => {
         type: "string",
         renderHeader: params => (
           <Stack direction="row">
-            <Typography fontWeight={"bold"} fontSize={14}>{params.colDef.headerName}</Typography>
+            <Typography variant="subtitle2">{params.colDef.headerName}</Typography>
           </Stack>
         ),
         renderCell: params => {
@@ -51,7 +51,7 @@ const VehicleListScreen: FC = () => {
             case VehicleListColumns.Name:
               return (
                 <Stack>
-                  <Link onClick={() => navigate({ to: `/vehicle-info`, params: { id: params.row.id } })}>{params.row["name"]}</Link>
+                  <Link title={t("tooltips.showDetails")} onClick={() => navigate({ to: `/vehicle-info`, params: { id: params.row.id } })}>{params.row["name"]}</Link>
                 </Stack>
               );
             default:

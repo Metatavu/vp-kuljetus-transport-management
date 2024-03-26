@@ -94,6 +94,7 @@ const RouteDialog = ({ initialDate, routeId, onSave }: Props) => {
     >
       <LoaderWrapper loading={routeQuery.isLoading || trucksQuery.isLoading || driversQuery.isLoading}>
         <DialogHeader
+          closeTooltip={t("tooltips.closeDialog")}
           title={routeId ? t("drivePlanning.routes.dialog.title") : t("drivePlanning.routes.newRoute")}
           onClose={handleClose}
         />
