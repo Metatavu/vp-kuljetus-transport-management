@@ -22,7 +22,7 @@ const StyledDialogHeaderContent = styled(Stack, {
 
 type Props = {
   title: string;
-  closeTooltip: string;
+  closeTooltip?: string;
   StartIcon?: ElementType;
   CloseIcon?: ElementType;
   onClose?: () => void;

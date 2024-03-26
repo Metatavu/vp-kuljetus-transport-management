@@ -28,7 +28,8 @@
   },
   "tooltips": {
     "showDetails": "Näytä tiedot",
-    "openCalendar": "Avaa kalenteri"
+    "openCalendar": "Avaa kalenteri",
+    "closeDialog": "Sulje ikkuna"
   },
   "management": {
     "title": "Hallinta",
