@@ -27,7 +27,7 @@ const FreightTasks = ({ tasks, customerSites, onEditTask }: Props) => {
 
   const routesQuery = useRoutes({
     departureAfter: selectedDepartureDate?.startOf("day").toJSDate(),
-    departureBefore: selectedDepartureDate?.startOf("day").toJSDate(),
+    departureBefore: selectedDepartureDate?.endOf("day").toJSDate(),
   });
 
   const { rowModesModel, handleCellClick, handleRowModelsChange } = useSingleClickRowEditMode();

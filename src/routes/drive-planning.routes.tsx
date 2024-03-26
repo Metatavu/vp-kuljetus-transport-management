@@ -69,7 +69,7 @@ function DrivePlanningRoutes() {
 
   const renderLeftToolbar = useCallback(
     () => (
-      <DatePickerWithArrows labelVisible={false} date={selectedDate} setDate={setSelectedDate} />
+      <DatePickerWithArrows buttonsWithText labelVisible={false} date={selectedDate} setDate={setSelectedDate} />
     ),
     [selectedDate, t],
   );
