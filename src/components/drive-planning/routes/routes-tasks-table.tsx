@@ -4,7 +4,6 @@ import { useCallback } from "react";
 import { useGridApiContext } from "@mui/x-data-grid";
 import { SortableContext } from "@dnd-kit/sortable";
 import { GroupedTask } from "../../../types";
-import { Task } from "generated/client";
 import DraggableTasksTableRow from "./draggable-tasks-table-row";
 
 type Props = {
@@ -15,19 +14,9 @@ type Props = {
 const RoutesTasksTable = ({ groupedTasks }: Props) => {
   const dataGridApiRef = useGridApiContext();
 
-  const getAllTasks = useCallback(() => {
-    const tasks: Task[] = [];
-    for (const key of Object.keys(groupedTasks)) {
-      tasks.push(...groupedTasks[key].tasks);
-    }
-    return tasks;
-  }, [groupedTasks]);
-
   const renderTaskRow = useCallback(
-    (groupedTasksKey: string) => (
-      <DraggableTasksTableRow key={groupedTasksKey} {...groupedTasks[groupedTasksKey]} allTasks={getAllTasks()} />
-    ),
-    [groupedTasks, getAllTasks],
+    (groupedTasksKey: string) => <DraggableTasksTableRow key={groupedTasksKey} {...groupedTasks[groupedTasksKey]} />,
+    [groupedTasks],
   );
 
   const baseCellWidth = dataGridApiRef.current.getColumnPosition("tasks");

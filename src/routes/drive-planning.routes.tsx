@@ -27,7 +27,7 @@ import {
 import { snapCenterToCursor } from "@dnd-kit/modifiers";
 import DatePickerWithArrows from "components/generic/date-picker-with-arrows";
 import { toast } from "react-toastify";
-import { DraggableType, DroppableType, GroupedTaskSortableData } from "../types";
+import { DraggableType, DroppableType, DraggedTaskData } from "../types";
 import TasksTableRow from "components/drive-planning/routes/tasks-table-row";
 import { GridPaginationModel } from "@mui/x-data-grid";
 import DataValidation from "utils/data-validation-utils";
@@ -173,6 +173,7 @@ function DrivePlanningRoutes() {
 
   const handleDragEnd = useCallback(
     async ({ active, over }: DragEndEvent) => {
+      console.log(over);
       const { id: activeId } = active;
       const { id: overId } = over ?? {};
       if (activeId === overId) return;
@@ -181,11 +182,12 @@ function DrivePlanningRoutes() {
         draggableType: activeDraggableType,
         newIndex: activeNewIndex,
       } = active.data.current ?? {};
-      const { routeId: overRouteId } = over?.data.current ?? {};
+      const { routeId: overRouteId, sortable } = over?.data.current ?? {};
+      const { index: overIndex } = sortable ?? {};
       const overRouteTasks = localTasks[overRouteId] ?? [];
-      const newIndex = activeNewIndex === undefined ? overRouteTasks.length : activeNewIndex;
       // Dragged task is unallocated, newIndex is set within the handleDragOver function. Assign new index to task.
       if (activeDraggableType === DraggableType.UNALLOCATED_TASK && overRouteId) {
+        const newIndex = activeNewIndex === undefined ? overRouteTasks.length : activeNewIndex;
         handleAllocateTask({ ...activeDraggedTasks[0], orderNumber: newIndex, routeId: overRouteId });
         return;
       }
@@ -196,6 +198,7 @@ function DrivePlanningRoutes() {
       }
       // Dragged task is grouped task and overId is routeId. Assign new index to task. Backend handles the rest.
       if (activeDraggableType === DraggableType.GROUPED_TASK && overRouteId) {
+        const newIndex = overRouteTasks.length ? overIndex : 0;
         handleAllocateTask({ ...activeDraggedTasks[0], orderNumber: newIndex, routeId: overRouteId });
         return;
       }
@@ -227,12 +230,14 @@ function DrivePlanningRoutes() {
         }
         // Dragged task is unallocated. Add it to the corresponding routes tasks client-side.
         if (!activeRouteId && overRouteId) {
-          const tasks = [...(localTasks[overRouteId] ?? [])];
-          tasks.splice(newIndex, 0, ...activeDraggedTasks);
           setLocalTasks((previousLocalTasks) => {
             return {
               ...previousLocalTasks,
-              [overRouteId]: [...tasks],
+              [overRouteId]: [
+                ...previousLocalTasks[overRouteId].slice(0, newIndex),
+                ...activeDraggedTasks,
+                ...previousLocalTasks[overRouteId].slice(newIndex, previousLocalTasks[overRouteId].length),
+              ],
             };
           });
         } else if (activeRouteId && overRouteId) {
@@ -276,7 +281,7 @@ function DrivePlanningRoutes() {
 
   const renderDragOverlay = useCallback(() => {
     if (!activeDraggable) return null;
-    const { draggedTasks, routeId } = (activeDraggable?.data.current as GroupedTaskSortableData) ?? {};
+    const { draggedTasks, routeId } = (activeDraggable?.data.current as DraggedTaskData) ?? {};
     if (!draggedTasks || routeId) return null;
     const [task] = draggedTasks;
     const { type, groupNumber, customerSiteId } = task;
@@ -298,8 +303,6 @@ function DrivePlanningRoutes() {
                 tolerance: 5,
                 distance: 15,
               },
-              bypassActivationConstraint: ({ activeNode }) =>
-                activeNode?.data?.current?.draggableType !== DraggableType.UNALLOCATED_TASK,
             }),
           )}
           onDragOver={handleDragOver}

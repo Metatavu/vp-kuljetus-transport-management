@@ -18,7 +18,7 @@ import { QUERY_KEYS, useFreights } from "hooks/use-queries";
 import { useSortable } from "@dnd-kit/sortable";
 import { useNavigate } from "@tanstack/react-router";
 import { useCallback, useMemo, useState } from "react";
-import { GroupedTaskSortableData, DraggableType } from "../../../types";
+import { DraggedTaskData, DraggableType } from "../../../types";
 import { CSS } from "@dnd-kit/utilities";
 
 type Props = {
@@ -29,19 +29,9 @@ type Props = {
   taskCount: number;
   groupedTasksKey: string;
   routeId: string;
-  allTasks: Task[];
 };
 
-const RoutesTasksTableRow = ({
-  tasks,
-  type,
-  site,
-  groupNumber,
-  taskCount,
-  groupedTasksKey,
-  routeId,
-  allTasks,
-}: Props) => {
+const RoutesTasksTableRow = ({ tasks, type, site, groupNumber, taskCount, groupedTasksKey, routeId }: Props) => {
   const { tasksApi } = useApi();
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -51,15 +41,14 @@ const RoutesTasksTableRow = ({
 
   const { name, address, postalCode, locality } = site;
 
-  const draggableData: GroupedTaskSortableData = useMemo(
+  const draggableData: DraggedTaskData = useMemo(
     () => ({
       draggableType: DraggableType.GROUPED_TASK,
       draggedTasks: tasks,
       routeId: routeId,
-      allTasks: allTasks,
       key: groupedTasksKey,
     }),
-    [tasks, routeId, allTasks, groupedTasksKey],
+    [tasks, routeId, groupedTasksKey],
   );
 
   const { listeners, setNodeRef, isOver, over, active, transition, transform } = useSortable({
@@ -99,7 +88,7 @@ const RoutesTasksTableRow = ({
         }),
       ),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.TASKS] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.TASKS_BY_ROUTE, routeId] });
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ROUTES] });
     },
   });
@@ -145,8 +134,8 @@ const RoutesTasksTableRow = ({
   );
 
   return (
-    <>
-      <TableRow ref={setNodeRef} sx={{ height: "38px", ...rowStyle }} onClick={handleTableRowClick} {...listeners}>
+    <div ref={setNodeRef} {...listeners}>
+      <TableRow sx={{ height: "38px", ...rowStyle }} onClick={handleTableRowClick}>
         <TableCell>{LocalizationUtils.getLocalizedTaskType(type, t)}</TableCell>
         <TableCell>{groupNumber}</TableCell>
         <TableCell>{name}</TableCell>
@@ -177,7 +166,7 @@ const RoutesTasksTableRow = ({
           {renderPopoverContent()}
         </List>
       </Popover>
-    </>
+    </div>
   );
 };
 

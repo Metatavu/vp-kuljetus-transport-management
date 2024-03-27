@@ -14,7 +14,6 @@ import { useTranslation } from "react-i18next";
 import ExpandableRoutesTableRow from "./expandable-routes-table-row";
 import { useDrivers, useTrucks } from "hooks/use-queries";
 import { deepEqual } from "@tanstack/react-router";
-import AsyncDataGridCell from "components/generic/async-data-grid-cell";
 import { useApi } from "hooks/use-api";
 import { useSingleClickCellEditMode } from "hooks/use-single-click-cell-edit-mode";
 
@@ -39,6 +38,7 @@ const RoutesTable = ({
 }: Props) => {
   const { t } = useTranslation();
   const { tasksApi } = useApi();
+
   const { cellModesModel, handleCellClick, handleCellModelsChange } = useSingleClickCellEditMode();
   const [expandedRows, setExpandedRows] = useState<string[]>([]);
 
@@ -109,13 +109,9 @@ const RoutesTable = ({
         sortable: false,
         flex: 1,
         renderCell: ({ row: { id } }: GridRenderCellParams<Route>) => {
+          // TODO: Fix infinite loop with AsyncDataGridCell usage
           if (!id) return null;
-          return (
-            <AsyncDataGridCell
-              promise={tasksApi.listTasks({ routeId: id })}
-              valueGetter={(tasks) => tasks.length.toString()}
-            />
-          );
+          return tasksByRoute[id] !== undefined ? tasksByRoute[id].length : 0;
         },
       },
       {

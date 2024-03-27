@@ -2,7 +2,7 @@ import { Site, Task, TaskType } from "generated/client";
 import { useMemo } from "react";
 import TasksTableRow from "./tasks-table-row";
 import { useSortable } from "@dnd-kit/sortable";
-import { DraggableType, GroupedTaskSortableData } from "../../../types";
+import { DraggableType, DraggedTaskData } from "../../../types";
 import { CSS } from "@dnd-kit/utilities";
 
 type Props = {
@@ -13,19 +13,17 @@ type Props = {
   taskCount: number;
   groupedTasksKey: string;
   routeId: string;
-  allTasks: Task[];
 };
 
-const DraggableTasksTableRow = ({ tasks, taskType, site, groupNumber, groupedTasksKey, routeId, allTasks }: Props) => {
-  const draggableData: GroupedTaskSortableData = useMemo(
+const DraggableTasksTableRow = ({ tasks, taskType, site, groupNumber, groupedTasksKey, routeId }: Props) => {
+  const draggableData: DraggedTaskData = useMemo(
     () => ({
       draggableType: DraggableType.GROUPED_TASK,
       draggedTasks: tasks,
       routeId: routeId,
-      allTasks: allTasks,
       key: groupedTasksKey,
     }),
-    [tasks, routeId, allTasks, groupedTasksKey],
+    [tasks, routeId, groupedTasksKey],
   );
 
   const { listeners, attributes, isDragging, transform, transition, setNodeRef } = useSortable({

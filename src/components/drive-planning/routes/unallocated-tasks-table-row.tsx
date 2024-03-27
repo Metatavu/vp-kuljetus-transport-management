@@ -15,7 +15,7 @@ type Props = {
   freightUnitsContents: string;
 };
 
-const UnallocatedTaskTableRow = ({ task, freightNumber, name, address, freightUnitsContents }: Props) => {
+const UnallocatedTasksTableRow = ({ task, freightNumber, name, address, freightUnitsContents }: Props) => {
   const navigate = useNavigate({ from: "/drive-planning/routes" });
   const { t } = useTranslation();
 
@@ -60,4 +60,4 @@ const UnallocatedTaskTableRow = ({ task, freightNumber, name, address, freightUn
   );
 };
 
-export default UnallocatedTaskTableRow;
+export default UnallocatedTasksTableRow;

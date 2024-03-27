@@ -2,8 +2,8 @@ import { Collapse } from "@mui/material";
 import { GridRow, GridRowProps } from "@mui/x-data-grid";
 import RoutesTasksTable from "./routes-tasks-table";
 import { Site, Task } from "generated/client";
-import { DroppableData, DroppableType, GroupedTask } from "../../../types";
-import { useCallback, useMemo } from "react";
+import { DroppableType, GroupedTask } from "../../../types";
+import { useMemo } from "react";
 import { useDroppable } from "@dnd-kit/core";
 
 type Props = GridRowProps & {
@@ -42,25 +42,9 @@ const ExpandableRoutesTableRow = ({ expanded, routeId, tasks, sites, ...props }:
     [tasks, sites, routeId],
   );
 
-  const getAllTasks = useCallback(() => {
-    const tasks: Task[] = [];
-    for (const key of Object.keys(groupedTasks)) {
-      tasks.push(...groupedTasks[key].tasks);
-    }
-    return tasks;
-  }, [groupedTasks]);
-
-  const droppableData: DroppableData = useMemo(
-    () => ({
-      routeId: routeId,
-      allTasks: getAllTasks(),
-    }),
-    [routeId, getAllTasks],
-  );
-
   const { isOver, setNodeRef } = useDroppable({
     id: `${DroppableType.ROUTES_TASKS_DROPPABLE}-${routeId}`,
-    data: droppableData,
+    data: { routeId: routeId },
   });
 
   const droppableStyle = useMemo(
