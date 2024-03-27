@@ -1,5 +1,14 @@
 import { ArrowForward, Remove } from "@mui/icons-material";
-import { IconButton, List, ListItemButton, ListItemText, ListSubheader, Popover, TableCell, TableRow } from "@mui/material";
+import {
+  IconButton,
+  List,
+  ListItemButton,
+  ListItemText,
+  ListSubheader,
+  Popover,
+  TableCell,
+  TableRow,
+} from "@mui/material";
 import { useApi } from "hooks/use-api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Site, Task, TaskType } from "generated/client";
@@ -23,7 +32,16 @@ type Props = {
   allTasks: Task[];
 };
 
-const TaskTableRow = ({ tasks, type, site, groupNumber, taskCount, groupedTasksKey, routeId, allTasks }: Props) => {
+const RoutesTasksTableRow = ({
+  tasks,
+  type,
+  site,
+  groupNumber,
+  taskCount,
+  groupedTasksKey,
+  routeId,
+  allTasks,
+}: Props) => {
   const { tasksApi } = useApi();
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -100,7 +118,9 @@ const TaskTableRow = ({ tasks, type, site, groupNumber, taskCount, groupedTasksK
           title="Freight"
           divider
         >
-          <ListItemText primary={t("drivePlanning.freights.dialog.title", { freightNumber: foundFreight.freightNumber })} />
+          <ListItemText
+            primary={t("drivePlanning.freights.dialog.title", { freightNumber: foundFreight.freightNumber })}
+          />
           <ArrowForward fontSize="small" />
         </ListItemButton>
       );
@@ -109,7 +129,6 @@ const TaskTableRow = ({ tasks, type, site, groupNumber, taskCount, groupedTasksK
 
   const handleTableRowClick = useCallback(
     ({ clientX, clientY, target }: React.MouseEvent<HTMLTableRowElement>) => {
-      tasks.map((task) => console.log("orderNumber", task.orderNumber));
       if ((target as HTMLElement).closest("button")) return;
       if (taskCount === 1) {
         const { freightId } = tasks[0];
@@ -162,4 +181,4 @@ const TaskTableRow = ({ tasks, type, site, groupNumber, taskCount, groupedTasksK
   );
 };
 
-export default TaskTableRow;
+export default RoutesTasksTableRow;

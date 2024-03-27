@@ -30,8 +30,14 @@ function AddRoute() {
 
   const createRoute = useMutation({
     mutationFn: async (route: TRoute) => {
-      const { departureTime } = route;
-      await routesApi.createRoute({ route: route });
+      const { departureTime, truckId, driverId } = route;
+      await routesApi.createRoute({
+        route: {
+          ...route,
+          truckId: truckId === "EMPTY" ? undefined : truckId,
+          driverId: driverId === "EMPTY" ? undefined : driverId,
+        },
+      });
       navigate({ to: "/drive-planning/routes", search: { date: DateTime.fromJSDate(departureTime) } });
     },
     onSuccess: () => {

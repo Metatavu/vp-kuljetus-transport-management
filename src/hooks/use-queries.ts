@@ -129,16 +129,13 @@ export const useFreights = (requestParams: ListFreightUnitsRequest = {}, enabled
   });
 };
 
-export const useFreight = (freightId?: string, enabled = true) => {
+export const useFreight = (freightId: string, enabled = true) => {
   const { freightsApi } = useApi();
 
   return useQuery({
     queryKey: [QUERY_KEYS.FREIGHTS, freightId],
     enabled: enabled,
-    queryFn: () => {
-      if (!freightId) return Promise.reject();
-      return freightsApi.findFreight({ freightId: freightId });
-    },
+    queryFn: () => freightsApi.findFreight({ freightId: freightId }),
   });
 };
 

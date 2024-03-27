@@ -1,5 +1,3 @@
-import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
 import { useNavigate } from "@tanstack/react-router";
 import { Task } from "generated/client";
 import { useTranslation } from "react-i18next";
@@ -8,7 +6,6 @@ import { TableCell, TableRow, Tooltip } from "@mui/material";
 import LocalizationUtils from "utils/localization-utils";
 import { useMemo } from "react";
 import { useDraggable } from "@dnd-kit/core";
-import { theme } from "../../../theme";
 
 type Props = {
   task: Task;
@@ -21,30 +18,25 @@ type Props = {
 const UnallocatedTaskTableRow = ({ task, freightNumber, name, address, freightUnitsContents }: Props) => {
   const navigate = useNavigate({ from: "/drive-planning/routes" });
   const { t } = useTranslation();
-  const { attributes, listeners, setNodeRef, transform } = useDraggable({
-    id: task.id ?? "",
-    data: {
+
+  const draggableData = useMemo(
+    () => ({
       draggableType: DraggableType.UNALLOCATED_TASK,
-      task: task,
-      index: -1,
-    },
+      draggedTasks: [task],
+    }),
+    [task],
+  );
+
+  const { attributes, listeners, setNodeRef } = useDraggable({
+    id: task.id ?? "",
+    data: draggableData,
   });
-  // const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-  //   id: task.id ?? "",
-  //   data: {
-  //     draggableType: DraggableType.UNALLOCATED_TASK,
-  //     task: task,
-  //     index: -1,
-  //   },
-  // });
 
   const rowStyle = useMemo(
     () => ({
       cursor: "grab",
-      transform: CSS.Translate.toString(transform),
-      zIndex: theme.zIndex.modal + 1000,
     }),
-    [transform],
+    [],
   );
 
   return (

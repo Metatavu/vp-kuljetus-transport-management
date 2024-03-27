@@ -23,7 +23,7 @@ export enum VehicleListColumns {
 export type GroupedTask = {
   tasks: Task[];
   groupNumber: number;
-  type: TaskType;
+  taskType: TaskType;
   site: Site;
   taskCount: number;
   groupedTasksKey: string;

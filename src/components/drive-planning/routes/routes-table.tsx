@@ -8,41 +8,42 @@ import {
   GridRowProps,
 } from "@mui/x-data-grid";
 import GenericDataGrid from "components/generic/generic-data-grid";
-import { Driver, Route, Site, Truck } from "generated/client";
+import { Driver, Route, Site, Task, Truck } from "generated/client";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import ExpandableRoutesTableRow from "./expandable-routes-table-row";
-import { DateTime } from "luxon";
-import { QUERY_KEYS, useDrivers, useRoutes, useTrucks } from "hooks/use-queries";
+import { useDrivers, useTrucks } from "hooks/use-queries";
 import { deepEqual } from "@tanstack/react-router";
-import { useQueryClient } from "@tanstack/react-query";
 import AsyncDataGridCell from "components/generic/async-data-grid-cell";
 import { useApi } from "hooks/use-api";
 import { useSingleClickCellEditMode } from "hooks/use-single-click-cell-edit-mode";
 
 type Props = {
-  selectedDate: DateTime;
+  paginationModel: GridPaginationModel;
   sites: Site[];
+  routes: Route[];
+  totalRoutes: number;
+  tasksByRoute: Record<string, Task[]>;
+  onPaginationModelChange: (paginationModel: GridPaginationModel) => void;
   onUpdateRoute: (route: Route) => Promise<Route>;
 };
 
-const RoutesTable = ({ selectedDate, sites, onUpdateRoute }: Props) => {
+const RoutesTable = ({
+  paginationModel,
+  sites,
+  routes,
+  totalRoutes,
+  tasksByRoute,
+  onPaginationModelChange,
+  onUpdateRoute,
+}: Props) => {
   const { t } = useTranslation();
   const { tasksApi } = useApi();
-  const queryClient = useQueryClient();
   const { cellModesModel, handleCellClick, handleCellModelsChange } = useSingleClickCellEditMode();
-
-  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({ page: 0, pageSize: 25 });
   const [expandedRows, setExpandedRows] = useState<string[]>([]);
 
   const trucksQuery = useTrucks();
   const driversQuery = useDrivers();
-  const routesQuery = useRoutes({
-    departureAfter: selectedDate.startOf("day").toJSDate(),
-    departureBefore: selectedDate.endOf("day").toJSDate(),
-    first: paginationModel.pageSize * paginationModel.page,
-    max: paginationModel.pageSize * paginationModel.page + paginationModel.pageSize,
-  });
 
   const processRowUpdate = async (newRow: Route, oldRow: Route) => {
     if (deepEqual(oldRow, newRow)) return oldRow;
@@ -107,15 +108,15 @@ const RoutesTable = ({ selectedDate, sites, onUpdateRoute }: Props) => {
         headerName: t("drivePlanning.routes.tasks"),
         sortable: false,
         flex: 1,
-        renderCell: ({ row: { id } }: GridRenderCellParams<Route>) => (
-          <AsyncDataGridCell
-            promise={queryClient.fetchQuery({
-              queryKey: [QUERY_KEYS.TASKS_BY_ROUTE, id],
-              queryFn: id ? () => tasksApi.listTasks({ routeId: id }) : undefined,
-            })}
-            valueGetter={(tasks) => tasks.length.toString()}
-          />
-        ),
+        renderCell: ({ row: { id } }: GridRenderCellParams<Route>) => {
+          if (!id) return null;
+          return (
+            <AsyncDataGridCell
+              promise={tasksApi.listTasks({ routeId: id })}
+              valueGetter={(tasks) => tasks.length.toString()}
+            />
+          );
+        },
       },
       {
         field: "truckId",
@@ -163,29 +164,29 @@ const RoutesTable = ({ selectedDate, sites, onUpdateRoute }: Props) => {
     ],
     [
       t,
-      trucksQuery,
-      driversQuery,
-      expandedRows,
-      tasksApi,
-      queryClient,
+      trucksQuery.data?.trucks,
+      driversQuery.data?.drivers,
       renderTruckSingleSelectCell,
       renderDriverSingleSelectCell,
+      tasksApi,
+      expandedRows,
     ],
   );
 
   const renderExpandableRoutesTableRow = useCallback(
     (params: GridRowProps) => {
-      if (!params.row?.id) return null;
+      if (!params.rowId || typeof params.rowId !== "string") return null;
       return (
         <ExpandableRoutesTableRow
           {...params}
-          routeId={params.row.id}
+          routeId={params.rowId}
+          tasks={tasksByRoute[params.rowId] ?? []}
           sites={sites}
-          expanded={expandedRows.includes(params.row.id)}
+          expanded={expandedRows.includes(params.rowId)}
         />
       );
     },
-    [sites, expandedRows],
+    [sites, expandedRows, tasksByRoute],
   );
 
   return (
@@ -195,12 +196,12 @@ const RoutesTable = ({ selectedDate, sites, onUpdateRoute }: Props) => {
       disableRowSelectionOnClick
       fullScreen={false}
       columns={columns}
-      rows={routesQuery.data?.routes ?? []}
-      rowCount={routesQuery.data?.totalResults ?? 0}
+      rows={routes}
+      rowCount={totalRoutes}
       cellModesModel={cellModesModel}
       paginationModel={paginationModel}
       slots={{ row: renderExpandableRoutesTableRow }}
-      onPaginationModelChange={setPaginationModel}
+      onPaginationModelChange={onPaginationModelChange}
       onCellModesModelChange={handleCellModelsChange}
       onCellClick={handleCellClick}
       processRowUpdate={processRowUpdate}

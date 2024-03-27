@@ -111,7 +111,8 @@
       "unallocatedTasksTable": {
         "title": "Unallocated tasks",
         "freightNumber": "Waybill",
-        "contents": "Freight"
+        "contents": "Freight",
+        "taskRowTooltip": "Drag task to a route"
       },
       "successToast": "Route saved!",
       "errorToast": "Failed to save route!"

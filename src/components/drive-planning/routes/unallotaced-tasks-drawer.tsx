@@ -2,16 +2,17 @@ import { Collapse } from "@mui/material";
 import DialogHeader from "components/generic/dialog-header";
 import { useTranslation } from "react-i18next";
 import { AssignmentSharp, ExpandLess, ExpandMore } from "@mui/icons-material";
-import { Site } from "generated/client";
+import { Site, Task } from "generated/client";
 import UnallocatedTasksTable from "./unallocated-tasks-table";
 
 type Props = {
   open: boolean;
   sites: Site[];
+  allocatedTasks: Task[];
   onClose: () => void;
 };
 
-const UnallocatedTasksDrawer = ({ open, sites, onClose }: Props) => {
+const UnallocatedTasksDrawer = ({ open, sites, allocatedTasks, onClose }: Props) => {
   const { t } = useTranslation();
 
   return (
@@ -26,7 +27,7 @@ const UnallocatedTasksDrawer = ({ open, sites, onClose }: Props) => {
         CloseIcon={open ? ExpandMore : ExpandLess}
         onClose={onClose}
       />
-      <UnallocatedTasksTable sites={sites} />
+      <UnallocatedTasksTable sites={sites} allocatedTasks={allocatedTasks} />
     </Collapse>
   );
 };

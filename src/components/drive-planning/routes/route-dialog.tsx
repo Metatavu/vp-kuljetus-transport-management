@@ -62,7 +62,7 @@ const RouteDialog = ({ initialDate, routeId, onSave }: Props) => {
 
   const renderTruck = (truck: Truck) => (
     <MenuItem key={truck.id} value={truck.id}>
-      {truck.name}
+      {truck.name} ({truck.plateNumber})
     </MenuItem>
   );
 

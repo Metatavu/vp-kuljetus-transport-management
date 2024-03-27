@@ -2,9 +2,6 @@ import { Collapse } from "@mui/material";
 import { GridRow, GridRowProps } from "@mui/x-data-grid";
 import RoutesTasksTable from "./routes-tasks-table";
 import { Site, Task } from "generated/client";
-import { QUERY_KEYS } from "hooks/use-queries";
-import { useQuery } from "@tanstack/react-query";
-import { useApi } from "hooks/use-api";
 import { DroppableData, DroppableType, GroupedTask } from "../../../types";
 import { useCallback, useMemo } from "react";
 import { useDroppable } from "@dnd-kit/core";
@@ -12,15 +9,13 @@ import { useDroppable } from "@dnd-kit/core";
 type Props = GridRowProps & {
   expanded: boolean;
   routeId: string;
+  tasks: Task[];
   sites: Site[];
 };
 
-const ExpandableRoutesTableRow = ({ expanded, routeId, sites, ...props }: Props) => {
-  const { tasksApi } = useApi();
-  const tasksQuery = useQuery({
-    queryKey: [QUERY_KEYS.TASKS_BY_ROUTE, routeId],
-    queryFn: () => tasksApi.listTasks({ routeId: routeId }),
-    select: (tasks) =>
+const ExpandableRoutesTableRow = ({ expanded, routeId, tasks, sites, ...props }: Props) => {
+  const groupedTasks = useMemo(
+    () =>
       tasks.reduce(
         (groupedTasks, task) => {
           const key = `${task.groupNumber}-${task.customerSiteId}-${task.type}`;
@@ -32,7 +27,7 @@ const ExpandableRoutesTableRow = ({ expanded, routeId, sites, ...props }: Props)
             ...groupedTasks[key],
             tasks: [...(groupedTasks[key]?.tasks ?? []), task],
             groupNumber: task.groupNumber,
-            type: task.type,
+            taskType: task.type,
             site: site,
             taskCount: (groupedTasks[key]?.taskCount ?? 0) + 1,
             groupedTasksKey: key,
@@ -44,16 +39,16 @@ const ExpandableRoutesTableRow = ({ expanded, routeId, sites, ...props }: Props)
         },
         {} as Record<string, GroupedTask>,
       ),
-  });
+    [tasks, sites, routeId],
+  );
 
   const getAllTasks = useCallback(() => {
-    const groupedTasks = tasksQuery.data ?? {};
     const tasks: Task[] = [];
     for (const key of Object.keys(groupedTasks)) {
       tasks.push(...groupedTasks[key].tasks);
     }
     return tasks;
-  }, [tasksQuery.data]);
+  }, [groupedTasks]);
 
   const droppableData: DroppableData = useMemo(
     () => ({
@@ -83,7 +78,7 @@ const ExpandableRoutesTableRow = ({ expanded, routeId, sites, ...props }: Props)
     <div ref={setNodeRef} style={{ ...droppableStyle }}>
       <GridRow {...props} />
       <Collapse in={expanded}>
-        <RoutesTasksTable groupedTasks={tasksQuery.data ?? {}} routeId={row.id} />
+        <RoutesTasksTable groupedTasks={groupedTasks} routeId={row.id} />
       </Collapse>
     </div>
   );

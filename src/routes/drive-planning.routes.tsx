@@ -2,17 +2,17 @@ import { Button, Paper, Stack, Typography } from "@mui/material";
 import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router";
 import ToolbarRow from "components/generic/toolbar-row";
 import { RouterContext } from "./__root";
-import { Add, LocalShipping } from "@mui/icons-material";
-import { useCallback, useEffect, useState } from "react";
+import { Add } from "@mui/icons-material";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { DateTime } from "luxon";
 import { useApi } from "hooks/use-api";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueries, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import LoaderWrapper from "components/generic/loader-wrapper";
 import { Route as TRoute, Task } from "generated/client";
 import UnallocatedTasksDrawer from "components/drive-planning/routes/unallotaced-tasks-drawer";
 import RoutesTable from "components/drive-planning/routes/routes-table";
-import { QUERY_KEYS, useSites } from "hooks/use-queries";
+import { QUERY_KEYS, useRoutes, useSites } from "hooks/use-queries";
 import {
   Active,
   DndContext,
@@ -22,17 +22,15 @@ import {
   useSensor,
   useSensors,
   PointerSensor,
+  DragOverEvent,
 } from "@dnd-kit/core";
 import { snapCenterToCursor } from "@dnd-kit/modifiers";
 import DatePickerWithArrows from "components/generic/date-picker-with-arrows";
 import { toast } from "react-toastify";
-import {
-  DraggableType,
-  DroppableData,
-  DroppableType,
-  GroupedTaskSortableData,
-  UnallocatedTaskDraggableData,
-} from "../types";
+import { DraggableType, DroppableType, GroupedTaskSortableData } from "../types";
+import TasksTableRow from "components/drive-planning/routes/tasks-table-row";
+import { GridPaginationModel } from "@mui/x-data-grid";
+import DataValidation from "utils/data-validation-utils";
 
 export const Route = createFileRoute("/drive-planning/routes")({
   component: DrivePlanningRoutes,
@@ -55,6 +53,10 @@ function DrivePlanningRoutes() {
   const [selectedDate, setSelectedDate] = useState<DateTime | null>(DateTime.now());
   const [unallocatedDrawerOpen, setUnallocatedDrawerOpen] = useState(true);
   const [activeDraggable, setActiveDraggable] = useState<Active | null>(null);
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({ page: 0, pageSize: 25 });
+  const [localTasks, setLocalTasks] = useState<Record<string, Task[]>>({});
+
+  const localTasksBeforeDrag = useRef<null | Record<string, Task[]>>(null);
 
   const initialDate = Route.useSearch({
     select: ({ date }) => date,
@@ -63,6 +65,37 @@ function DrivePlanningRoutes() {
   useEffect(() => {
     if (initialDate) setSelectedDate(initialDate);
   }, [initialDate]);
+
+  const routesQuery = useRoutes(
+    {
+      departureAfter: selectedDate?.startOf("day").toJSDate(),
+      departureBefore: selectedDate?.endOf("day").toJSDate(),
+      first: paginationModel.pageSize * paginationModel.page,
+      max: paginationModel.pageSize * paginationModel.page + paginationModel.pageSize,
+    },
+    !!selectedDate,
+  );
+
+  const routeTasks = useQueries({
+    queries: (routesQuery.data?.routes ?? []).map((route) => ({
+      queryKey: [QUERY_KEYS.TASKS_BY_ROUTE, route.id],
+      queryFn: () => tasksApi.listTasks({ routeId: route.id }),
+    })),
+    combine: (results) => ({
+      data: results.flatMap((result) => result.data).filter(DataValidation.validateValueIsNotUndefinedNorNull),
+    }),
+  });
+
+  useEffect(() => {
+    if (routeTasks.data) {
+      const tasks: Record<string, Task[]> = {};
+      for (const task of routeTasks.data) {
+        if (!task.routeId) continue;
+        tasks[task.routeId] = [...(tasks[task.routeId] ?? []), task];
+      }
+      setLocalTasks(tasks);
+    }
+  }, [routeTasks.data]);
 
   const updateRoute = useMutation({
     mutationFn: (route: TRoute) => {
@@ -82,8 +115,10 @@ function DrivePlanningRoutes() {
       return tasksApi.updateTask({ taskId: task.id, task });
     },
     onSuccess: () => {
+      toast.success("Tehtävän siirto onnistui!");
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.TASKS] });
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ROUTES, selectedDate] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.TASKS_BY_ROUTE] });
     },
   });
 
@@ -118,59 +153,138 @@ function DrivePlanningRoutes() {
     [navigate, selectedDate, t],
   );
 
-  const handleAllocateTask = async (task: Task) => await updateTask.mutateAsync({ ...task });
+  const handleAllocateTask = useCallback(async (task: Task) => await updateTask.mutateAsync({ ...task }), [updateTask]);
 
-  const handleUnallocateGroupedTasks = async (tasks: Task[]) =>
-    await Promise.all(
-      tasks.map((task) => updateTask.mutateAsync({ ...task, routeId: undefined, orderNumber: undefined })),
-    );
+  const handleUnallocateGroupedTasks = useCallback(
+    async (tasks: Task[]) =>
+      await Promise.all(
+        tasks.map((task) => updateTask.mutateAsync({ ...task, routeId: undefined, orderNumber: undefined })),
+      ),
+    [updateTask],
+  );
 
-  const handleDragStart = useCallback(({ active }: DragStartEvent) => {
-    setActiveDraggable(active);
-  }, []);
-
-  // const isDraggingGroupedTasks = (id: string) =>
-  //   /^\d+\-[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\-(?:LOAD|UNLOAD)/.test(id);
+  const handleDragStart = useCallback(
+    ({ active }: DragStartEvent) => {
+      localTasksBeforeDrag.current = { ...localTasks };
+      setActiveDraggable(active);
+    },
+    [localTasks],
+  );
 
   const handleDragEnd = useCallback(
     async ({ active, over }: DragEndEvent) => {
-      const { current: currentOver } = over?.data ?? {};
-      const { current: currentActive } = active?.data ?? {};
-      if (currentActive?.draggableType === DraggableType.UNALLOCATED_TASK && currentOver?.routeId) {
-        const { task } = currentActive as UnallocatedTaskDraggableData;
-        const { routeId, allTasks } = currentOver as DroppableData;
-
-        handleAllocateTask({ ...task, orderNumber: allTasks.length, routeId: routeId });
+      const { id: activeId } = active;
+      const { id: overId } = over ?? {};
+      if (activeId === overId) return;
+      const {
+        draggedTasks: activeDraggedTasks,
+        draggableType: activeDraggableType,
+        newIndex: activeNewIndex,
+      } = active.data.current ?? {};
+      const { routeId: overRouteId } = over?.data.current ?? {};
+      const overRouteTasks = localTasks[overRouteId] ?? [];
+      const newIndex = activeNewIndex === undefined ? overRouteTasks.length : activeNewIndex;
+      // Dragged task is unallocated, newIndex is set within the handleDragOver function. Assign new index to task.
+      if (activeDraggableType === DraggableType.UNALLOCATED_TASK && overRouteId) {
+        handleAllocateTask({ ...activeDraggedTasks[0], orderNumber: newIndex, routeId: overRouteId });
+        return;
       }
-
-      if (
-        currentActive?.draggableType === DraggableType.GROUPED_TASK &&
-        over?.id === DroppableType.UNALLOCATED_TASKS_DROPPABLE
-      ) {
-        const { draggedTasks } = currentActive as GroupedTaskSortableData;
-
-        handleUnallocateGroupedTasks(draggedTasks);
+      // Dragged task is grouped task and overId is unallocated tasks droppable. Unallocate dragged tasks.
+      if (activeDraggableType === DraggableType.GROUPED_TASK && overId === DroppableType.UNALLOCATED_TASKS_DROPPABLE) {
+        handleUnallocateGroupedTasks(activeDraggedTasks);
+        return;
       }
-
-      if (currentActive?.draggableType === DraggableType.GROUPED_TASK) {
-        if (over?.id.toString().startsWith(DroppableType.ROUTES_TASKS_DROPPABLE)) {
-        }
+      // Dragged task is grouped task and overId is routeId. Assign new index to task. Backend handles the rest.
+      if (activeDraggableType === DraggableType.GROUPED_TASK && overRouteId) {
+        handleAllocateTask({ ...activeDraggedTasks[0], orderNumber: newIndex, routeId: overRouteId });
+        return;
       }
-
-      if (currentActive?.draggableType === DraggableType.GROUPED_TASK && currentOver?.routeId) {
-        const { draggedTasks: overDraggedTasks, allTasks } = currentOver as GroupedTaskSortableData;
-        const { draggedTasks: activeDraggedTasks } = currentActive as GroupedTaskSortableData;
-        const lastDraggedTask = overDraggedTasks[overDraggedTasks.length - 1];
-        const overIndex = allTasks.indexOf(lastDraggedTask);
-
-        for (const [index, task] of activeDraggedTasks.entries()) {
-          await handleAllocateTask({ ...task, orderNumber: overIndex + index });
-        }
-      }
-      setActiveDraggable(null);
     },
-    [handleAllocateTask, handleUnallocateGroupedTasks],
+    [handleAllocateTask, handleUnallocateGroupedTasks, localTasks],
   );
+
+  const handleDragOver = ({ active, over }: DragOverEvent) => {
+    const { id: activeId } = active;
+    const { id: overId } = over || {};
+    if (activeId === overId) return;
+    const { routeId: activeRouteId, draggedTasks: activeDraggedTasks } = active.data.current ?? {};
+    const { routeId: overRouteId, draggedTasks: overDraggedTasks } = over?.data.current ?? {};
+    // Dragged task is unallocated OR it belongs to another route.
+    if (activeRouteId !== overRouteId && activeDraggedTasks?.length) {
+      // Currently over grouped tasks. Assign new index to task.
+      if (overDraggedTasks?.length) {
+        const firstOverTaskIndex =
+          localTasks[overRouteId]?.findIndex((task) => task.id === overDraggedTasks[0].id) ?? -1;
+        const isBelowOverItem =
+          over &&
+          active.rect.current.translated &&
+          active.rect.current.translated.top > over.rect.top + over.rect.height;
+        const modifier = isBelowOverItem ? 1 : 0;
+        const newIndex = firstOverTaskIndex >= 0 ? firstOverTaskIndex + modifier : overDraggedTasks.length + 1;
+        // Save new index to active draggable data. To be used within handleDragEnd function.
+        if (active.data.current) {
+          active.data.current.newIndex = newIndex;
+        }
+        // Dragged task is unallocated. Add it to the corresponding routes tasks client-side.
+        if (!activeRouteId && overRouteId) {
+          const tasks = [...(localTasks[overRouteId] ?? [])];
+          tasks.splice(newIndex, 0, ...activeDraggedTasks);
+          setLocalTasks((previousLocalTasks) => {
+            return {
+              ...previousLocalTasks,
+              [overRouteId]: [...tasks],
+            };
+          });
+        } else if (activeRouteId && overRouteId) {
+          // Dragged task belongs to another route. Remove it from the active route and add it to the over route.
+          setLocalTasks((previousLocalTasks) => {
+            const tasks = previousLocalTasks[activeRouteId] ?? [];
+            const activeDraggedTaskIds = activeDraggedTasks.map((task: Task) => task.id);
+            const newTasks = tasks.filter((task) => !activeDraggedTaskIds.includes(task.id));
+            return {
+              ...previousLocalTasks,
+              [activeRouteId]: newTasks,
+              [overRouteId]: [
+                ...previousLocalTasks[overRouteId].slice(0, newIndex),
+                ...activeDraggedTasks,
+                ...previousLocalTasks[overRouteId].slice(newIndex, previousLocalTasks[overRouteId].length),
+              ],
+            };
+          });
+        }
+      } else {
+        // Not over grouped tasks. Assign dragged task(s) to corresponding routes tasks client-side.
+        setLocalTasks((previousLocalTasks) => {
+          const tasks = previousLocalTasks[activeRouteId] ?? [];
+          const activeDraggedTaskIds = activeDraggedTasks.map((task: Task) => task.id);
+          const newTasks = tasks.filter((task) => !activeDraggedTaskIds.includes(task.id));
+          return {
+            ...previousLocalTasks,
+            [activeRouteId]: newTasks,
+            [overRouteId]: [...(previousLocalTasks[overRouteId] ?? []), ...activeDraggedTasks],
+          };
+        });
+      }
+    }
+  };
+
+  const handleDragCancel = useCallback(() => {
+    setLocalTasks(localTasksBeforeDrag.current ?? {});
+    localTasksBeforeDrag.current = null;
+    setActiveDraggable(null);
+  }, []);
+
+  const renderDragOverlay = useCallback(() => {
+    if (!activeDraggable) return null;
+    const { draggedTasks, routeId } = (activeDraggable?.data.current as GroupedTaskSortableData) ?? {};
+    if (!draggedTasks || routeId) return null;
+    const [task] = draggedTasks;
+    const { type, groupNumber, customerSiteId } = task;
+    const foundSite = sitesQuery.data?.sites.find((site) => site.id === customerSiteId);
+    if (!foundSite) return null;
+
+    return <TasksTableRow tasks={[task]} taskType={type} groupNumber={groupNumber} site={foundSite} isOverlay />;
+  }, [activeDraggable, sitesQuery.data?.sites]);
 
   return (
     <>
@@ -185,84 +299,33 @@ function DrivePlanningRoutes() {
                 distance: 15,
               },
               bypassActivationConstraint: ({ activeNode }) =>
-                activeNode?.data?.current?.draggableType === "unallocatedTask",
+                activeNode?.data?.current?.draggableType !== DraggableType.UNALLOCATED_TASK,
             }),
           )}
-          // Example of collision detection
-          // collisionDetection={(args) => {
-          //   const {
-          //     active: {
-          //       data: { current },
-          //     },
-          //   } = args;
-          //   const task = current?.task as Task;
-          //   const groupedKey = `${task.groupNumber}-${task.customerSiteId}-${task.type}`;
-          //   const { droppableContainers } = args;
-          //   const { droppableRects, pointerCoordinates } = args;
-          //   if (!pointerCoordinates) return [];
-          //   let closestDistance = Number.MAX_SAFE_INTEGER;
-          //   let closestSide: "top" | "bottom" = "top";
-          //   let closestRectangle: { id: UniqueIdentifier; rect: ClientRect } | null = null;
-          //   let foundGroup: any = {};
-          //   droppableContainers.forEach((container) => {
-          //     const key = container.data.current?.key;
-          //     if (key === groupedKey) {
-          //       foundGroup = container;
-          //     }
-          //   });
-          //   for (const [id, rect] of droppableRects.entries()) {
-          //     const { top, bottom } = rect;
-          //     const distanceToTop = Math.abs(top - pointerCoordinates.y);
-          //     const distanceToBottom = Math.abs(bottom - pointerCoordinates.y);
-          //     if (distanceToTop < closestDistance) {
-          //       closestDistance = distanceToTop;
-          //       closestSide = "top";
-          //       closestRectangle = { id, rect };
-          //     }
-          //     if (distanceToBottom < closestDistance) {
-          //       closestDistance = distanceToBottom;
-          //       closestSide = "bottom";
-          //       closestRectangle = { id, rect };
-          //     }
-          //   }
-          //   console.log("closest", closestSide, closestRectangle?.rect);
-          //   if (closestRectangle) {
-          //     return [foundGroup];
-          //   }
-          //   return [];
-          // }}
+          onDragOver={handleDragOver}
           onDragStart={handleDragStart}
+          onDragCancel={handleDragCancel}
           onDragEnd={handleDragEnd}
         >
           <ToolbarRow leftToolbar={renderLeftToolbar()} toolbarButtons={renderRightToolbar()} />
           <LoaderWrapper loading={sitesQuery.isLoading}>
             <RoutesTable
-              selectedDate={selectedDate ?? DateTime.now()}
+              paginationModel={paginationModel}
               sites={sitesQuery.data?.sites ?? []}
+              routes={routesQuery.data?.routes ?? []}
+              tasksByRoute={localTasks}
+              totalRoutes={routesQuery.data?.totalResults ?? 0}
+              onPaginationModelChange={setPaginationModel}
               onUpdateRoute={updateRoute.mutateAsync}
             />
             <UnallocatedTasksDrawer
               open={unallocatedDrawerOpen}
               sites={sitesQuery.data?.sites ?? []}
+              allocatedTasks={routeTasks.data ?? []}
               onClose={() => setUnallocatedDrawerOpen(!unallocatedDrawerOpen)}
             />
           </LoaderWrapper>
-          <DragOverlay modifiers={[snapCenterToCursor]}>
-            {/* {activeDraggable?.data.current?.draggableType === DraggableType.UNALLOCATED_TASK ? (
-              <div
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  userSelect: "none",
-                }}
-              >
-                <LocalShipping fontSize="large" />
-              </div>
-            ) : null} */}
-          </DragOverlay>
+          <DragOverlay modifiers={[snapCenterToCursor]}>{renderDragOverlay()}</DragOverlay>
         </DndContext>
       </Paper>
     </>

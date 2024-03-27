@@ -110,7 +110,8 @@
       "unallocatedTasksTable": {
         "title": "Järjestelemättömät tehtävät",
         "freightNumber": "Rahtikirja",
-        "contents": "Sisältö"
+        "contents": "Sisältö",
+        "taskRowTooltip": "Raahaa tehtävä reitille"
       },
       "successToast": "Reitti tallennettu!",
       "errorToast": "Reitin tallennus epäonnistui!"
