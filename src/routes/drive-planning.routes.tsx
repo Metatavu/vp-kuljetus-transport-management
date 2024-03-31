@@ -23,14 +23,15 @@ import {
   useSensors,
   PointerSensor,
   DragOverEvent,
+  MeasuringStrategy,
 } from "@dnd-kit/core";
-import { snapCenterToCursor } from "@dnd-kit/modifiers";
 import DatePickerWithArrows from "components/generic/date-picker-with-arrows";
 import { toast } from "react-toastify";
 import { DraggableType, DroppableType, DraggedTaskData } from "../types";
-import TasksTableRow from "components/drive-planning/routes/tasks-table-row";
 import { GridPaginationModel } from "@mui/x-data-grid";
 import DataValidation from "utils/data-validation-utils";
+import DraggedTaskOverlay from "components/drive-planning/routes/dragged-task-overlay";
+// import { snapCenterToCursor } from "@dnd-kit/modifiers";
 
 export const Route = createFileRoute("/drive-planning/routes")({
   component: DrivePlanningRoutes,
@@ -57,6 +58,7 @@ function DrivePlanningRoutes() {
   const [localTasks, setLocalTasks] = useState<Record<string, Task[]>>({});
 
   const localTasksBeforeDrag = useRef<null | Record<string, Task[]>>(null);
+  const activeDraggedTasksBeforeDrag = useRef<Task[]>([]);
 
   const initialDate = Route.useSearch({
     select: ({ date }) => date,
@@ -165,6 +167,8 @@ function DrivePlanningRoutes() {
 
   const handleDragStart = useCallback(
     ({ active }: DragStartEvent) => {
+      const { draggedTasks } = active.data.current as DraggedTaskData;
+      activeDraggedTasksBeforeDrag.current = draggedTasks;
       localTasksBeforeDrag.current = { ...localTasks };
       setActiveDraggable(active);
     },
@@ -173,16 +177,15 @@ function DrivePlanningRoutes() {
 
   const handleDragEnd = useCallback(
     async ({ active, over }: DragEndEvent) => {
-      console.log(over);
       const { id: activeId } = active;
       const { id: overId } = over ?? {};
-      if (activeId === overId) return;
       const {
         draggedTasks: activeDraggedTasks,
         draggableType: activeDraggableType,
         newIndex: activeNewIndex,
       } = active.data.current ?? {};
-      const { routeId: overRouteId, sortable } = over?.data.current ?? {};
+      const { routeId: overRouteId, draggableType: overDraggableType, sortable } = over?.data.current ?? {};
+      if (activeId === overId && activeDraggableType === overDraggableType) return;
       const { index: overIndex } = sortable ?? {};
       const overRouteTasks = localTasks[overRouteId] ?? [];
       // Dragged task is unallocated, newIndex is set within the handleDragOver function. Assign new index to task.
@@ -198,85 +201,115 @@ function DrivePlanningRoutes() {
       }
       // Dragged task is grouped task and overId is routeId. Assign new index to task. Backend handles the rest.
       if (activeDraggableType === DraggableType.GROUPED_TASK && overRouteId) {
-        const newIndex = overRouteTasks.length ? overIndex : 0;
+        const newIndex = overRouteTasks.length ? overIndex ?? overRouteTasks.length : 0;
         handleAllocateTask({ ...activeDraggedTasks[0], orderNumber: newIndex, routeId: overRouteId });
         return;
       }
+      setActiveDraggable(null);
+      activeDraggedTasksBeforeDrag.current = [];
     },
     [handleAllocateTask, handleUnallocateGroupedTasks, localTasks],
   );
 
-  const handleDragOver = ({ active, over }: DragOverEvent) => {
-    const { id: activeId } = active;
-    const { id: overId } = over || {};
-    if (activeId === overId) return;
-    const { routeId: activeRouteId, draggedTasks: activeDraggedTasks } = active.data.current ?? {};
-    const { routeId: overRouteId, draggedTasks: overDraggedTasks } = over?.data.current ?? {};
-    // Dragged task is unallocated OR it belongs to another route.
-    if (activeRouteId !== overRouteId && activeDraggedTasks?.length) {
-      // Currently over grouped tasks. Assign new index to task.
-      if (overDraggedTasks?.length) {
-        const firstOverTaskIndex =
-          localTasks[overRouteId]?.findIndex((task) => task.id === overDraggedTasks[0].id) ?? -1;
-        const isBelowOverItem =
-          over &&
-          active.rect.current.translated &&
-          active.rect.current.translated.top > over.rect.top + over.rect.height;
-        const modifier = isBelowOverItem ? 1 : 0;
-        const newIndex = firstOverTaskIndex >= 0 ? firstOverTaskIndex + modifier : overDraggedTasks.length + 1;
-        // Save new index to active draggable data. To be used within handleDragEnd function.
-        if (active.data.current) {
-          active.data.current.newIndex = newIndex;
-        }
-        // Dragged task is unallocated. Add it to the corresponding routes tasks client-side.
-        if (!activeRouteId && overRouteId) {
-          setLocalTasks((previousLocalTasks) => {
-            return {
-              ...previousLocalTasks,
-              [overRouteId]: [
-                ...previousLocalTasks[overRouteId].slice(0, newIndex),
-                ...activeDraggedTasks,
-                ...previousLocalTasks[overRouteId].slice(newIndex, previousLocalTasks[overRouteId].length),
-              ],
-            };
-          });
-        } else if (activeRouteId && overRouteId) {
-          // Dragged task belongs to another route. Remove it from the active route and add it to the over route.
+  const handleDragOver = useCallback(
+    ({ active, over }: DragOverEvent) => {
+      const { id: activeId } = active;
+      const { id: overId } = over || {};
+      if (activeId === overId) return;
+      const { routeId: activeRouteId, draggedTasks: activeDraggedTasks } = active.data.current ?? {};
+      const { routeId: overRouteId, draggedTasks: overDraggedTasks } = over?.data.current ?? {};
+      const draggedTasksBeforeDrag = activeDraggedTasksBeforeDrag.current ?? [];
+
+      // Check whether the dragged task is below the over item.
+      const isBelowOverItem =
+        over && active.rect.current.translated && active.rect.current.translated.top > over.rect.top + over.rect.height;
+
+      // If the dragged task is below the over item, add 1 to the new index.
+      const modifier = isBelowOverItem ? 1 : 0;
+
+      // Restrict dragging grouped tasks away from any route as that for some reason drops all the
+      // if (!overRouteId && activeDraggableType === DraggableType.GROUPED_TASK) return;
+
+      // Dragged task is unallocated OR it belongs to another route.
+      if (activeRouteId !== overRouteId && draggedTasksBeforeDrag?.length) {
+        // Currently over grouped tasks. Assign new index to task.
+        if (overDraggedTasks?.length) {
+          const firstOverTaskIndex =
+            localTasks[overRouteId]?.findIndex((task) => task.id === overDraggedTasks[0].id) ?? -1;
+          const newIndex = firstOverTaskIndex >= 0 ? firstOverTaskIndex + modifier : overDraggedTasks.length + 1;
+          const newLocalTasks = [
+            ...localTasks[overRouteId].slice(0, newIndex),
+            ...activeDraggedTasks,
+            ...localTasks[overRouteId].slice(newIndex, localTasks[overRouteId].length),
+          ];
+          // Save new index to active draggable data. To be used within handleDragEnd function.
+          if (active.data.current) {
+            active.data.current.newIndex = newIndex;
+          }
+          // Dragged task is unallocated. Add it to the corresponding routes tasks client-side.
+          if (!activeRouteId && overRouteId) {
+            setLocalTasks((previousLocalTasks) => {
+              const tasks = previousLocalTasks[overRouteId] ?? [];
+              const activeDraggedTaskIds = activeDraggedTasks.map((task: Task) => task.id);
+              const newTasks = tasks.filter((task) => !activeDraggedTaskIds.includes(task.id));
+              return {
+                ...previousLocalTasks,
+                [overRouteId]: [
+                  ...newTasks.slice(0, newIndex),
+                  ...activeDraggedTasks,
+                  ...newTasks.slice(newIndex, newTasks.length),
+                ].filter((task, index, self) => index === self.findIndex((t) => t.id === task.id)),
+              };
+            });
+          } else if (activeRouteId && overRouteId) {
+            // Dragged task belongs to another route. Remove it from the active route and add it to the over route.
+            setLocalTasks((previousLocalTasks) => {
+              const tasks = previousLocalTasks[activeRouteId] ?? [];
+              const activeDraggedTaskIds = activeDraggedTasks.map((task: Task) => task.id);
+              const newTasks = tasks.filter((task) => !activeDraggedTaskIds.includes(task.id));
+              return {
+                ...previousLocalTasks,
+                [activeRouteId]: newTasks.filter(
+                  (task, index, self) => index === self.findIndex((t) => t.id === task.id),
+                ),
+                [overRouteId]: newLocalTasks.filter(
+                  (task, index, array) => index === array.findIndex((t) => t.id === task.id),
+                ),
+              };
+            });
+          }
+        } else {
+          // Not over grouped tasks. Assign dragged task(s) to corresponding routes tasks client-side.
           setLocalTasks((previousLocalTasks) => {
             const tasks = previousLocalTasks[activeRouteId] ?? [];
-            const activeDraggedTaskIds = activeDraggedTasks.map((task: Task) => task.id);
+            const activeDraggedTaskIds = draggedTasksBeforeDrag.map((task: Task) => task.id);
             const newTasks = tasks.filter((task) => !activeDraggedTaskIds.includes(task.id));
             return {
               ...previousLocalTasks,
               [activeRouteId]: newTasks,
-              [overRouteId]: [
-                ...previousLocalTasks[overRouteId].slice(0, newIndex),
-                ...activeDraggedTasks,
-                ...previousLocalTasks[overRouteId].slice(newIndex, previousLocalTasks[overRouteId].length),
-              ],
+              [overRouteId]: [...(previousLocalTasks[overRouteId] ?? []), ...draggedTasksBeforeDrag],
             };
           });
         }
-      } else {
-        // Not over grouped tasks. Assign dragged task(s) to corresponding routes tasks client-side.
-        setLocalTasks((previousLocalTasks) => {
-          const tasks = previousLocalTasks[activeRouteId] ?? [];
-          const activeDraggedTaskIds = activeDraggedTasks.map((task: Task) => task.id);
+      } else if (!over && !activeRouteId) {
+        const newLocalTasks: Record<string, Task[]> = {};
+        for (const key of Object.keys(localTasks)) {
+          const tasks = localTasks[key];
+          const activeDraggedTaskIds = (activeDraggedTasks ?? draggedTasksBeforeDrag).map((task: Task) => task.id);
           const newTasks = tasks.filter((task) => !activeDraggedTaskIds.includes(task.id));
-          return {
-            ...previousLocalTasks,
-            [activeRouteId]: newTasks,
-            [overRouteId]: [...(previousLocalTasks[overRouteId] ?? []), ...activeDraggedTasks],
-          };
-        });
+          newLocalTasks[key] = newTasks;
+        }
+        setLocalTasks(newLocalTasks);
       }
-    }
-  };
+    },
+    [localTasks],
+  );
 
   const handleDragCancel = useCallback(() => {
     setLocalTasks(localTasksBeforeDrag.current ?? {});
     localTasksBeforeDrag.current = null;
     setActiveDraggable(null);
+    activeDraggedTasksBeforeDrag.current = [];
   }, []);
 
   const renderDragOverlay = useCallback(() => {
@@ -288,7 +321,7 @@ function DrivePlanningRoutes() {
     const foundSite = sitesQuery.data?.sites.find((site) => site.id === customerSiteId);
     if (!foundSite) return null;
 
-    return <TasksTableRow tasks={[task]} taskType={type} groupNumber={groupNumber} site={foundSite} isOverlay />;
+    return <DraggedTaskOverlay tasks={draggedTasks} taskType={type} groupNumber={groupNumber} site={foundSite} />;
   }, [activeDraggable, sitesQuery.data?.sites]);
 
   return (
@@ -305,6 +338,11 @@ function DrivePlanningRoutes() {
               },
             }),
           )}
+          measuring={{
+            droppable: {
+              strategy: MeasuringStrategy.Always,
+            },
+          }}
           onDragOver={handleDragOver}
           onDragStart={handleDragStart}
           onDragCancel={handleDragCancel}
@@ -324,11 +362,24 @@ function DrivePlanningRoutes() {
             <UnallocatedTasksDrawer
               open={unallocatedDrawerOpen}
               sites={sitesQuery.data?.sites ?? []}
-              allocatedTasks={routeTasks.data ?? []}
               onClose={() => setUnallocatedDrawerOpen(!unallocatedDrawerOpen)}
             />
           </LoaderWrapper>
-          <DragOverlay modifiers={[snapCenterToCursor]}>{renderDragOverlay()}</DragOverlay>
+          <DragOverlay
+            modifiers={[
+              // snapCenterToCursor,
+              (args) => {
+                // For some reason, first datagrid row is positioned few hundred pixels away when dragged. This fixes it visually but still need to resolve how to actually re-position it.
+                const { activatorEvent, transform, active, draggingNodeRect } = args;
+                if (!active || !activatorEvent || !draggingNodeRect) return transform;
+                const { clientY } = activatorEvent as PointerEvent;
+                const { top, height } = draggingNodeRect;
+                return { ...transform, y: transform.y + clientY - top - height / 2, x: transform.x + 50 };
+              },
+            ]}
+          >
+            {renderDragOverlay()}
+          </DragOverlay>
         </DndContext>
       </Paper>
     </>

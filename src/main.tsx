@@ -16,11 +16,14 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterLuxon } from "@mui/x-date-pickers/AdapterLuxon";
 import { Flip, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 const router = createRouter({ routeTree });
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: { staleTime: 30_000 },
+  },
+});
 
 declare module "@tanstack/react-router" {
   interface Register {
@@ -44,7 +47,6 @@ if (!rootElement.innerHTML) {
             <QueryClientProvider client={queryClient}>
               <ConfirmDialogProvider>
                 <RouterProvider router={router} />
-                {/* <ReactQueryDevtools initialIsOpen={false} /> */}
               </ConfirmDialogProvider>
             </QueryClientProvider>
           </AuthenticationProvider>

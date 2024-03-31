@@ -1,30 +1,34 @@
 import { useDroppable } from "@dnd-kit/core";
-import { DraggableType, DroppableType } from "../../../types";
+import { DraggableType, DroppableType, UnallocatedTasksRowDragHandles } from "../../../types";
 import DataValidation from "utils/data-validation-utils";
 import { QUERY_KEYS, useTasks } from "hooks/use-queries";
 import { useQueries } from "@tanstack/react-query";
 import { useApi } from "hooks/use-api";
 import { useTranslation } from "react-i18next";
-import { Site, Task } from "generated/client";
-import { useCallback, useMemo } from "react";
-import { GridCellParams, GridColDef, GridRowProps } from "@mui/x-data-grid";
+import { Site } from "generated/client";
+import { useCallback, useMemo, useState } from "react";
+import { GridColDef, GridRowProps } from "@mui/x-data-grid";
 import LocalizationUtils from "utils/localization-utils";
 import GenericDataGrid from "components/generic/generic-data-grid";
-import DraggableUnallocatedTasksDataGridRow from "./draggable-unallocated-tasks-data-grid-row";
+import DraggableUnallocatedTasksTableRow from "./draggable-unallocated-tasks-table-row";
+import { theme } from "../../../theme";
+import { DragHandle } from "@mui/icons-material";
+import { IconButton } from "@mui/material";
 import { useNavigate } from "@tanstack/react-router";
 
 type Props = {
   sites: Site[];
-  allocatedTasks: Task[];
 };
 
 const UnallocatedTasksTable = ({ sites }: Props) => {
   const { t } = useTranslation();
-  const navigate = useNavigate({ from: "/drive-planning/routes" });
   const { freightsApi, freightUnitsApi } = useApi();
-  const { isOver, setNodeRef, active } = useDroppable({
+  const { setNodeRef, active, isOver } = useDroppable({
     id: DroppableType.UNALLOCATED_TASKS_DROPPABLE,
   });
+
+  const navigate = useNavigate({ from: "/drive-planning/routes" });
+  const [rowDragHandles, setRowDragHandles] = useState<UnallocatedTasksRowDragHandles>({});
 
   const { draggableType } = active?.data.current ?? {};
 
@@ -57,6 +61,21 @@ const UnallocatedTasksTable = ({ sites }: Props) => {
   const columns: GridColDef[] = useMemo(
     () => [
       {
+        field: "actions",
+        type: "actions",
+        width: 50,
+        renderHeader: () => null,
+        renderCell: ({ id }) => {
+          const { setActivatorNodeRef, attributes, listeners } = rowDragHandles[id as string] ?? {};
+
+          return (
+            <IconButton ref={setActivatorNodeRef} sx={{ cursor: "grab" }} {...attributes} {...listeners}>
+              <DragHandle />
+            </IconButton>
+          );
+        },
+      },
+      {
         field: "taskType",
         headerName: t("drivePlanning.routes.tasksTable.task"),
         sortable: false,
@@ -80,7 +99,7 @@ const UnallocatedTasksTable = ({ sites }: Props) => {
       {
         field: "customerSiteId",
         headerName: t("drivePlanning.routes.tasksTable.customerSite"),
-        sortable: false,
+        sortable: true,
         flex: 3,
         renderCell: ({ row: { customerSiteId } }) => sites.find((site) => site.id === customerSiteId)?.name,
       },
@@ -106,30 +125,29 @@ const UnallocatedTasksTable = ({ sites }: Props) => {
         },
       },
     ],
-    [sites, t, freightsQueries.data, freightUnitsQueries.data],
+    [sites, t, freightsQueries.data, freightUnitsQueries.data, rowDragHandles],
   );
 
   const renderRow = useCallback((props: GridRowProps) => {
-    return <DraggableUnallocatedTasksDataGridRow {...props} />;
+    return <DraggableUnallocatedTasksTableRow {...props} setRowDragHandles={setRowDragHandles} />;
   }, []);
+
+  const dataGridStyle = useMemo(
+    () =>
+      isOver && draggableType === DraggableType.GROUPED_TASK
+        ? {
+            outline: `2px solid ${theme.palette.primary.main}`,
+            outlineOffset: "-2px",
+          }
+        : {},
+    [draggableType, isOver],
+  );
 
   return (
     <div ref={setNodeRef}>
-      {isOver && draggableType === DraggableType.GROUPED_TASK && (
-        <div
-          style={{
-            backgroundColor: "rgb(78, 138, 156, 0.6)",
-            position: "absolute",
-            width: "100%",
-            height: "100%",
-            overflow: "hidden",
-            textAlign: "center",
-            justifyContent: "center",
-            zIndex: 1,
-          }}
-        />
-      )}
+      {/* TODO: Disable user-select with CSS */}
       <GenericDataGrid
+        sx={{ ...dataGridStyle }}
         columns={columns}
         rows={tasksQuery.data?.tasks ?? []}
         rowCount={tasksQuery.data?.totalResults ?? 0}
@@ -137,9 +155,9 @@ const UnallocatedTasksTable = ({ sites }: Props) => {
         slots={{
           row: (props) => renderRow(props),
         }}
-        onCellClick={({ row: { freightId } }: GridCellParams<Task>) =>
-          navigate({ search: { freightId: freightId, date: undefined } })
-        }
+        onCellClick={({ row: { freightId } }) => {
+          navigate({ search: { freightId: freightId, date: undefined } });
+        }}
       />
     </div>
   );

@@ -6,14 +6,16 @@ import { useState } from "react";
  *
  * Overrides default behaviour of DataGrid to enter edit mode on double click.
  *
+ * @param onCellClick - Callback function to be called when a cell is clicked. This function will be called before toggling edit mode.
  * @returns {Object} cellModesModel, setCellModesModel, handleCellClick, handleCellModelsChange
  */
-export const useSingleClickCellEditMode = () => {
+export const useSingleClickCellEditMode = (onCellClick?: (params: GridCellParams) => void) => {
   const [ cellModesModel, setCellModesModel ] = useState<GridCellModesModel>({});
 
   const handleCellModelsChange = (newModel: GridCellModesModel) => setCellModesModel(newModel);
 
   const handleCellClick = (params: GridCellParams) => {
+    onCellClick?.(params);
     if (!params.isEditable) return;
 
     setCellModesModel((prevModel) => {

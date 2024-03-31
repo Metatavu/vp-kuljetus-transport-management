@@ -12,10 +12,12 @@ import { Driver, Route, Site, Task, Truck } from "generated/client";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import ExpandableRoutesTableRow from "./expandable-routes-table-row";
-import { useDrivers, useTrucks } from "hooks/use-queries";
+import { QUERY_KEYS, useDrivers, useTrucks } from "hooks/use-queries";
 import { deepEqual } from "@tanstack/react-router";
 import { useApi } from "hooks/use-api";
 import { useSingleClickCellEditMode } from "hooks/use-single-click-cell-edit-mode";
+import AsyncDataGridCell from "components/generic/async-data-grid-cell";
+import { useQueryClient } from "@tanstack/react-query";
 
 type Props = {
   paginationModel: GridPaginationModel;
@@ -38,8 +40,15 @@ const RoutesTable = ({
 }: Props) => {
   const { t } = useTranslation();
   const { tasksApi } = useApi();
+  const queryClient = useQueryClient();
 
-  const { cellModesModel, handleCellClick, handleCellModelsChange } = useSingleClickCellEditMode();
+  const { cellModesModel, handleCellClick, handleCellModelsChange } = useSingleClickCellEditMode((params) => {
+    if (params.field !== "tasks") return;
+    if (!params.row.id) return;
+    setExpandedRows((prev) =>
+      prev.includes(params.row.id) ? prev.filter((id) => id !== params.row.id) : [...prev, params.row.id],
+    );
+  });
   const [expandedRows, setExpandedRows] = useState<string[]>([]);
 
   const trucksQuery = useTrucks();
@@ -109,9 +118,16 @@ const RoutesTable = ({
         sortable: false,
         flex: 1,
         renderCell: ({ row: { id } }: GridRenderCellParams<Route>) => {
-          // TODO: Fix infinite loop with AsyncDataGridCell usage
           if (!id) return null;
-          return tasksByRoute[id] !== undefined ? tasksByRoute[id].length : 0;
+          return (
+            <AsyncDataGridCell
+              promise={queryClient.fetchQuery({
+                queryKey: [QUERY_KEYS.TASKS_BY_ROUTE, id],
+                queryFn: () => tasksApi.listTasks({ routeId: id }),
+              })}
+              valueGetter={(tasks) => tasks.length.toString()}
+            />
+          );
         },
       },
       {
@@ -166,6 +182,7 @@ const RoutesTable = ({
       renderDriverSingleSelectCell,
       tasksApi,
       expandedRows,
+      queryClient,
     ],
   );
 

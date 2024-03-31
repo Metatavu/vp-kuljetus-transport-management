@@ -1,7 +1,7 @@
 import { Close } from "@mui/icons-material";
 import { IconButton, Stack, Typography, styled } from "@mui/material";
 import { ElementType } from "react";
-import { theme } from "../../theme"
+import { theme } from "../../theme";
 
 const StyledDialogHeader = styled(Stack, {
   label: "styled-dialog-header",
@@ -33,7 +33,11 @@ const DialogHeader = ({ title, StartIcon, CloseIcon, onClose }: Props) => {
 
     return (
       <IconButton onClick={onClose}>
-        {CloseIcon ? <CloseIcon htmlColor={theme.palette.primary.contrastText} /> : <Close htmlColor={theme.palette.primary.contrastText} />}
+        {CloseIcon ? (
+          <CloseIcon htmlColor={theme.palette.primary.contrastText} />
+        ) : (
+          <Close htmlColor={theme.palette.primary.contrastText} />
+        )}
       </IconButton>
     );
   };
