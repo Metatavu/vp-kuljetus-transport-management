@@ -9,7 +9,6 @@
   "noSelection": "No selection",
   "noResults": "No results",
   "actions": "Actions",
-  "vehicleList": "Vehicle list",
   "menu": "Menu",
   "vehicleInfo": "Vehicle information",
   "workingTime": "Working time",
@@ -30,6 +29,29 @@
     "showDetails": "Show details",
     "openCalendar": "Open calendar",
     "closeDialog": "Close dialog"
+  },
+  "vehicleList": {
+    "title": "Vehicle list",
+    "vehicle": {
+      "type": "Type",
+      "plateNumber": "Vehicle",
+      "number": "Number",
+      "temperature": "Temperature",
+      "address": "Address",
+      "location": "Location",
+      "status": "Status",
+      "maintenance": "Maintenance",
+      "trailer": "Trailer",
+      "driver": "Driver"
+    },
+    "mapView": {
+      "title": "Map",
+      "speed": "Speed: ",
+      "gps": "GPS",
+      "heading": "Direction: ",
+      "lastUpdated": "Last updated: ",
+      "connection": "Connection"
+    }
   },
   "management": {
     "title": "Management",

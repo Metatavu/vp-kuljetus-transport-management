@@ -25,37 +25,13 @@ export interface ModelError {
      * @type {number}
      * @memberof ModelError
      */
-    status?: number;
+    status: number;
     /**
      * 
      * @type {string}
      * @memberof ModelError
      */
     message: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ModelError
-     */
-    readonly creatorId?: string;
-    /**
-     * 
-     * @type {Date}
-     * @memberof ModelError
-     */
-    readonly createdAt?: Date;
-    /**
-     * 
-     * @type {string}
-     * @memberof ModelError
-     */
-    readonly lastModifierId?: string;
-    /**
-     * 
-     * @type {Date}
-     * @memberof ModelError
-     */
-    readonly modifiedAt?: Date;
 }
 
 /**
@@ -63,6 +39,7 @@ export interface ModelError {
  */
 export function instanceOfModelError(value: object): boolean {
     let isInstance = true;
+    isInstance = isInstance && "status" in value;
     isInstance = isInstance && "message" in value;
 
     return isInstance;
@@ -78,12 +55,8 @@ export function ModelErrorFromJSONTyped(json: any, ignoreDiscriminator: boolean)
     }
     return {
         
-        'status': !exists(json, 'status') ? undefined : json['status'],
+        'status': json['status'],
         'message': json['message'],
-        'creatorId': !exists(json, 'creatorId') ? undefined : json['creatorId'],
-        'createdAt': !exists(json, 'createdAt') ? undefined : (new Date(json['createdAt'])),
-        'lastModifierId': !exists(json, 'lastModifierId') ? undefined : json['lastModifierId'],
-        'modifiedAt': !exists(json, 'modifiedAt') ? undefined : (new Date(json['modifiedAt'])),
     };
 }
 

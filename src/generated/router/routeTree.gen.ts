@@ -1,10 +1,12 @@
 import { Route as rootRoute } from "./../../routes/__root"
+import { Route as VehicleListImport } from "./../../routes/vehicle-list"
 import { Route as ManagementImport } from "./../../routes/management"
 import { Route as DrivePlanningImport } from "./../../routes/drive-planning"
 import { Route as IndexImport } from "./../../routes/index"
 import { Route as WorkingTimeIndexImport } from "./../../routes/working-time.index"
-import { Route as VehicleListIndexImport } from "./../../routes/vehicle-list.index"
 import { Route as VehicleInfoIndexImport } from "./../../routes/vehicle-info.index"
+import { Route as VehicleListVehiclesImport } from "./../../routes/vehicle-list.vehicles"
+import { Route as VehicleListMapViewImport } from "./../../routes/vehicle-list.map-view"
 import { Route as ManagementVehiclesImport } from "./../../routes/management.vehicles"
 import { Route as ManagementEquipmentImport } from "./../../routes/management.equipment"
 import { Route as ManagementCustomerSitesImport } from "./../../routes/management.customer-sites"
@@ -16,6 +18,11 @@ import { Route as DrivePlanningRoutesAddRouteImport } from "./../../routes/drive
 import { Route as DrivePlanningFreightsAddFreightImport } from "./../../routes/drive-planning.freights.add-freight"
 import { Route as ManagementEquipmentEquipmentIdModifyImport } from "./../../routes/management.equipment_.$equipmentId.modify"
 import { Route as ManagementCustomerSitesCustomerSiteIdModifyImport } from "./../../routes/management.customer-sites_.$customerSiteId.modify"
+
+const VehicleListRoute = VehicleListImport.update({
+  path: "/vehicle-list",
+  getParentRoute: () => rootRoute,
+} as any)
 
 const ManagementRoute = ManagementImport.update({
   path: "/management",
@@ -37,14 +44,19 @@ const WorkingTimeIndexRoute = WorkingTimeIndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const VehicleListIndexRoute = VehicleListIndexImport.update({
-  path: "/vehicle-list/",
-  getParentRoute: () => rootRoute,
-} as any)
-
 const VehicleInfoIndexRoute = VehicleInfoIndexImport.update({
   path: "/vehicle-info/",
   getParentRoute: () => rootRoute,
+} as any)
+
+const VehicleListVehiclesRoute = VehicleListVehiclesImport.update({
+  path: "/vehicles",
+  getParentRoute: () => VehicleListRoute,
+} as any)
+
+const VehicleListMapViewRoute = VehicleListMapViewImport.update({
+  path: "/map-view",
+  getParentRoute: () => VehicleListRoute,
 } as any)
 
 const ManagementVehiclesRoute = ManagementVehiclesImport.update({
@@ -121,6 +133,10 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof ManagementImport
       parentRoute: typeof rootRoute
     }
+    "/vehicle-list": {
+      preLoaderRoute: typeof VehicleListImport
+      parentRoute: typeof rootRoute
+    }
     "/drive-planning/freights": {
       preLoaderRoute: typeof DrivePlanningFreightsImport
       parentRoute: typeof DrivePlanningImport
@@ -141,12 +157,16 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof ManagementVehiclesImport
       parentRoute: typeof ManagementImport
     }
+    "/vehicle-list/map-view": {
+      preLoaderRoute: typeof VehicleListMapViewImport
+      parentRoute: typeof VehicleListImport
+    }
+    "/vehicle-list/vehicles": {
+      preLoaderRoute: typeof VehicleListVehiclesImport
+      parentRoute: typeof VehicleListImport
+    }
     "/vehicle-info/": {
       preLoaderRoute: typeof VehicleInfoIndexImport
-      parentRoute: typeof rootRoute
-    }
-    "/vehicle-list/": {
-      preLoaderRoute: typeof VehicleListIndexImport
       parentRoute: typeof rootRoute
     }
     "/working-time/": {
@@ -196,7 +216,10 @@ export const routeTree = rootRoute.addChildren([
     ManagementCustomerSitesCustomerSiteIdModifyRoute,
     ManagementEquipmentEquipmentIdModifyRoute,
   ]),
+  VehicleListRoute.addChildren([
+    VehicleListMapViewRoute,
+    VehicleListVehiclesRoute,
+  ]),
   VehicleInfoIndexRoute,
-  VehicleListIndexRoute,
   WorkingTimeIndexRoute,
 ])
