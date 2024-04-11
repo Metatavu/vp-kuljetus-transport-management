@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { RouterContext } from "src/routes/__root";
 import { Stack, List, ListItemText, Typography, ListItemButton, Chip } from "@mui/material";
-import { MapContainer, TileLayer } from "react-leaflet";
-import { Map as LeafletMap, latLng } from "leaflet";
+import { MapContainer, Marker, TileLayer } from "react-leaflet";
+import { Map as LeafletMap, divIcon, latLng } from "leaflet";
 import { useEffect, useRef, useState } from "react";
 import GpsFixedIcon from "@mui/icons-material/GpsFixed";
 import SignalCellularAltIcon from "@mui/icons-material/SignalCellularAlt";
@@ -28,6 +28,9 @@ const VehicleListMapView = () => {
   const [selectedTruck, setSelectedTruck] = useState<Truck>();
   const [truckSpeed, setTruckSpeed] = useState<TruckSpeed>();
   const [truckLocation, setTruckLocation] = useState<TruckLocation>();
+  const [truckAngle, setTruckAngle] = useState(0);
+
+  const truckPosition = DEFAULT_MAP_CENTER;
 
   const {
     mapbox: { baseUrl, publicApiKey },
@@ -65,7 +68,24 @@ const VehicleListMapView = () => {
   useEffect(() => {
     getTruckSpeed();
     getTruckLocation();
+    setTruckAngle(truckAngle + 10);
   }, [selectedTruck]);
+
+  // Define the CSS styles for the custom marker icon
+  const customMarkerIcon = divIcon({
+    html: `
+      '<div
+          style="
+          width: 0;
+          height: 0;
+          border-left: 8px solid transparent; /* Adjust size as needed */
+          border-right: 8px solid transparent;
+          border-bottom: 30px solid red; /* Adjust color and size as needed */
+          transform: rotate(${truckAngle}deg);"
+      >
+      </div>'
+    `,
+  });
 
   return (
     <LoaderWrapper loading={trucks.isLoading}>
@@ -95,7 +115,7 @@ const VehicleListMapView = () => {
         <Chip style={{ backgroundColor: "#B9F6CA" }} icon={<GpsFixedIcon />} label={t("vehicleList.mapView.gps")} />
         <Typography variant="body2">
           {t("vehicleList.mapView.lastUpdated")}
-          {truckLocation?.timestamp ?? "-"}{" "}
+          {truckLocation?.timestamp ?? "-"}
         </Typography>
         <Chip
           style={{ backgroundColor: "#B9F6CA" }}
@@ -123,6 +143,7 @@ const VehicleListMapView = () => {
               attribution='<a href="https://www.mapbox.com/about/maps/">© Mapbox</a> <a href="https://www.openstreetmap.org/copyright">© OpenStreetMap</a> <a href="https://www.mapbox.com/map-feedback/">Improve this map</a>'
               url={`${baseUrl}/styles/v1/metatavu/clsszigf302jx01qy0e4q0c7e/tiles/{z}/{x}/{y}?access_token=${publicApiKey}`}
             />
+            {truckPosition && <Marker position={truckPosition} icon={customMarkerIcon} />}
           </MapContainer>
         </Stack>
       </Stack>
