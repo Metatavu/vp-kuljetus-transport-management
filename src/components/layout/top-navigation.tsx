@@ -17,7 +17,7 @@ const TopNavigation = () => {
   const accountMenuState = usePopupState({ variant: "popover", popupId: "accountMenu" });
 
   const routeLinks: readonly NavigationItem[] = [
-    ["/vehicle-list", "vehicleList", undefined],
+    ["/vehicle-list/vehicles", "vehicleList.title", undefined],
     ["/vehicle-info", "vehicleInfo", undefined],
     ["/drive-planning/routes", "drivePlanning.title", undefined],
     ["/working-time", "workingTime", undefined],

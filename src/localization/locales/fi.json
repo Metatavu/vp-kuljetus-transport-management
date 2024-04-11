@@ -9,7 +9,6 @@
   "noSelection": "Ei valintaa",
   "noResults": "Ei tuloksia",
   "actions": "Toiminnot",
-  "vehicleList": "Ajoneuvolista",
   "menu": "Valikko",
   "vehicleInfo": "Ajoneuvon tiedot",
   "workingTime": "Työaika",
@@ -30,6 +29,29 @@
     "showDetails": "Näytä tiedot",
     "openCalendar": "Avaa kalenteri",
     "closeDialog": "Sulje ikkuna"
+  },
+  "vehicleList": {
+    "title": "Ajoneuvot",
+    "vehicle": {
+      "type": "Tyyppi",
+      "plateNumber": "Auto",
+      "number": "Tunnus",
+      "temperature": "Lämpötila",
+      "address": "Osoite",
+      "location": "Osoite",
+      "status": "Tila",
+      "maintenance": "Huolto",
+      "trailer": "Kalusto",
+      "driver": "Kuljettaja"
+    },
+    "mapView": {
+      "title": "Kartta",
+      "speed": "Nopeus: ",
+      "gps": "GPS",
+      "heading": "Suunta: ",
+      "lastUpdated": "Viimeksi päivitetty: ",
+      "connection": "Tietoliikenneyhteys"
+    }
   },
   "management": {
     "title": "Hallinta",

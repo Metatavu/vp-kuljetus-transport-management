@@ -20,6 +20,10 @@ models/TaskStatus.ts
 models/TaskType.ts
 models/Towable.ts
 models/Truck.ts
+models/TruckDriveState.ts
+models/TruckDriveStateEnum.ts
+models/TruckLocation.ts
+models/TruckSpeed.ts
 models/Vehicle.ts
 models/index.ts
 runtime.ts

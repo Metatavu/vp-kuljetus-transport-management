@@ -11,4 +11,8 @@ export * from './TaskStatus';
 export * from './TaskType';
 export * from './Towable';
 export * from './Truck';
+export * from './TruckDriveState';
+export * from './TruckDriveStateEnum';
+export * from './TruckLocation';
+export * from './TruckSpeed';
 export * from './Vehicle';
