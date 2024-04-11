@@ -94,7 +94,7 @@ function VehicleListVehicles() {
   );
 
   return (
-    <Paper sx={{ height: "100%", padding: "10px" }}>
+    <Paper>
       <GenericDataGrid
         rows={trucks.data ?? []}
         columns={columns}
