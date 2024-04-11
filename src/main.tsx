@@ -6,12 +6,16 @@ import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
-import { CssBaseline, ThemeProvider } from "@mui/material";
+import { CssBaseline, ThemeProvider, responsiveFontSizes } from "@mui/material";
 import { theme } from "./theme";
 import "localization/i18n";
 import AuthenticationProvider from "components/auth/auth-provider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ConfirmDialogProvider from "components/providers/confirm-dialog-provider";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterLuxon } from "@mui/x-date-pickers/AdapterLuxon";
+import { Flip, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const router = createRouter({ routeTree });
 
@@ -31,15 +35,18 @@ if (!rootElement) throw new Error("No root element in index.html");
 if (!rootElement.innerHTML) {
   ReactDOM.createRoot(rootElement).render(
     <StrictMode>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <AuthenticationProvider>
-          <QueryClientProvider client={queryClient}>
-            <ConfirmDialogProvider>
-              <RouterProvider router={router} />
-            </ConfirmDialogProvider>
-          </QueryClientProvider>
-        </AuthenticationProvider>
+      <ThemeProvider theme={responsiveFontSizes(theme)}>
+        <ToastContainer autoClose={3000} hideProgressBar transition={Flip} />
+        <LocalizationProvider dateAdapter={AdapterLuxon} adapterLocale="fi">
+          <CssBaseline />
+          <AuthenticationProvider>
+            <QueryClientProvider client={queryClient}>
+              <ConfirmDialogProvider>
+                <RouterProvider router={router} />
+              </ConfirmDialogProvider>
+            </QueryClientProvider>
+          </AuthenticationProvider>
+        </LocalizationProvider>
       </ThemeProvider>
     </StrictMode>,
   );

@@ -1,8 +1,15 @@
-import { Box, Breadcrumbs, Typography } from "@mui/material";
+import { Box, Breadcrumbs, Typography, styled } from "@mui/material";
 import { useRouter } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { RouterContext } from "src/routes/__root";
 import DataValidation from "utils/data-validation-utils";
+
+const BreadCrumbBar = styled(Box, {
+  label: "styled-breeadcrumb-bar",
+})(({ theme }) => ({
+  backgroundColor: theme.palette.primary.light,
+  padding: theme.spacing(0.5, 3)
+}));
 
 const BreadcrumbsBar = () => {
   const { t } = useTranslation();
@@ -12,7 +19,7 @@ const BreadcrumbsBar = () => {
     .filter(DataValidation.validateValueIsNotUndefinedNorNull);
 
   return (
-    <Box height="32px" padding="4px 32px" bgcolor="#4E8A9C">
+    <BreadCrumbBar>
       <Breadcrumbs sx={{ color: "#ffffff" }}>
         {breadcrumbs.map((breadcrumb, index) => (
           <Typography
@@ -24,7 +31,7 @@ const BreadcrumbsBar = () => {
           </Typography>
         ))}
       </Breadcrumbs>
-    </Box>
+    </BreadCrumbBar>
   );
 };
 

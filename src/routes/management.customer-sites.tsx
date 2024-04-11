@@ -8,9 +8,10 @@ import { useTranslation } from "react-i18next";
 import { RouterContext } from "./__root";
 import { useMemo, useState } from "react";
 import { useApi } from "hooks/use-api";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import LoaderWrapper from "components/generic/loader-wrapper";
 import { Site } from "generated/client";
+import { QUERY_KEYS, useSites } from "hooks/use-queries";
 
 export const Route = createFileRoute("/management/customer-sites")({
   component: ManagementCustomerSites,
@@ -26,19 +27,10 @@ function ManagementCustomerSites() {
   const queryClient = useQueryClient();
 
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({ page: 0, pageSize: 25 });
-  const [totalResults, setTotalResults] = useState(0);
 
-  const customerSites = useQuery({
-    queryKey: ["sites", paginationModel],
-    queryFn: async () => {
-      const [sites, headers] = await sitesApi.listSitesWithHeaders({
-        first: paginationModel.pageSize * paginationModel.page,
-        max: paginationModel.pageSize * paginationModel.page + paginationModel.pageSize,
-      });
-      const count = parseInt(headers.get("x-total-count") ?? "0");
-      setTotalResults(count);
-      return sites;
-    },
+  const sitesQuery = useSites({
+    first: paginationModel.pageSize * paginationModel.page,
+    max: paginationModel.pageSize * paginationModel.page + paginationModel.pageSize,
   });
 
   const deleteCustomerSite = useMutation({
@@ -46,28 +38,28 @@ function ManagementCustomerSites() {
       if (!site.id) return Promise.reject();
       return sitesApi.updateSite({ siteId: site.id, site: { ...site, archivedAt: new Date() } });
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["sites"] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.SITES] }),
   });
 
   const columns: GridColDef[] = useMemo(
     () => [
       {
         field: "name",
-        headerAlign: "center",
+        headerAlign: "left",
         headerName: t("management.customerSites.name"),
         sortable: false,
         flex: 1,
       },
       {
         field: "postalCode",
-        headerAlign: "center",
+        headerAlign: "left",
         headerName: t("management.customerSites.postalCode"),
         sortable: false,
         width: 180,
       },
       {
         field: "locality",
-        headerAlign: "center",
+        headerAlign: "left",
         headerName: t("management.customerSites.municipality"),
         sortable: false,
         width: 180,
@@ -100,7 +92,7 @@ function ManagementCustomerSites() {
   );
 
   return (
-    <LoaderWrapper loading={deleteCustomerSite.isPending || customerSites.isLoading}>
+    <LoaderWrapper loading={deleteCustomerSite.isPending || sitesQuery.isLoading}>
       <Paper sx={{ height: "100%" }}>
         <ToolbarRow
           title={t("management.customerSites.title")}
@@ -120,9 +112,9 @@ function ManagementCustomerSites() {
           }
         />
         <GenericDataGrid
-          rows={customerSites.data ?? []}
+          rows={sitesQuery.data?.sites ?? []}
           columns={columns}
-          rowCount={totalResults}
+          rowCount={sitesQuery.data?.totalResults}
           disableRowSelectionOnClick
           paginationMode="server"
           paginationModel={paginationModel}

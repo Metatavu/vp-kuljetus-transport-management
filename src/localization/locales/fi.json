@@ -6,10 +6,31 @@
   "delete": "Poista",
   "archive": "Arkistoi",
   "open": "Avaa",
+  "noSelection": "Ei valintaa",
+  "noResults": "Ei tuloksia",
+  "actions": "Toiminnot",
   "vehicleList": "Ajoneuvolista",
+  "menu": "Valikko",
   "vehicleInfo": "Ajoneuvon tiedot",
   "workingTime": "Työaika",
   "addNew": "Lisää uusi",
+  "previousDay": "Edellinen päivä",
+  "nextDay": "Seuraava päivä",
+  "openCalendar": "Valitse päivä kalenterista",
+  "showMenu": "Näytä valikko",
+  "hideMenu": "Piilota valikko",
+  "equipmentType": {
+    "truck": "Kuorma-auto",
+    "semiTruck": "Vetoauto",
+    "trailer": "Täysperävaunu",
+    "semiTrailer": "Puoliperävaunu",
+    "dolly": "Dolly"
+  },
+  "tooltips": {
+    "showDetails": "Näytä tiedot",
+    "openCalendar": "Avaa kalenteri",
+    "closeDialog": "Sulje ikkuna"
+  },
   "management": {
     "title": "Hallinta",
     "customerSites": {
@@ -33,18 +54,32 @@
       "archiveDialog": {
         "title": "Arkistoi asiakaspaikka",
         "description": "Haluatko varmasti arkistoida asiakaspaikan {{name}}?"
-      }
+      },
+      "successToast": "Asiakaspaikka tallennettu!",
+      "errorToast": "Asiakaspaikan tallennus epäonnistui!"
     },
     "equipment": {
       "title": "Kalustoluettelo",
       "new": "Uusi kalusto",
+      "open": "Avaa",
       "modify": "Muokkaa kalustoa",
       "type": "Tyyppi",
       "name": "Nimi",
       "licensePlate": "Rekisterinumero",
+      "number": "Tunnus",
+      "vin": "Runkonumero",
       "errorMessages": {
-        "licensePlateMissing": "Rekisterinumero on pakollinen"
-      }
+        "licensePlateMissing": "Rekisterinumero on pakollinen",
+        "typeMissing": "Tyyppi on pakollinen",
+        "vinNumberMissing": "Runkonumero on pakollinen",
+        "numberMissing": "Tunnus on pakollinen"
+      },
+      "archiveDialog": {
+        "title": "Arkistoi ajoneuvo",
+        "description": "Haluatko varmasti arkistoida ajoneuvon {{name}}?"
+      },
+      "successToast": "Kalusto tallennettu!",
+      "errorToast": "Kaluston tallennus epäonnistui!"
     },
     "vehicles": {
       "title": "Ajoneuvot",
@@ -61,7 +96,36 @@
   "drivePlanning": {
     "title": "Ajojärjestely",
     "routes": {
-      "title": "Reitit"
+      "title": "Reitit",
+      "date": "Päivämäärä",
+      "newRoute": "Uusi reitti",
+      "name": "Nimi",
+      "truck": "Auto",
+      "driver": "Kuljettaja",
+      "tasks": "Tehtävät",
+      "helperText": "Voit valita tämän myöhemmin",
+      "dialog": {
+        "title": "Muokkaa reittiä",
+        "saveNewRoute": "Lisää reitti",
+        "saveExistingRoute": "Tallenna reitti"
+      },
+      "tasksTable": {
+        "task": "Tehtävä",
+        "groupNumber": "Tunnus",
+        "customerSite": "Asiakaspaikka",
+        "address": "Osoite",
+        "tasksAmount": "Tehtävien lkm",
+        "selectWaybill": "Valitse rahtikirja"
+      },
+      "unallocatedTasksTable": {
+        "title": "Järjestelemättömät tehtävät",
+        "minifyTasksDrawer": "Piilota järjestelemättömät tehtävät",
+        "expandTasksDrawer": "Näytä järjestelemättömät tehtävät",
+        "freightNumber": "Rahtikirja",
+        "contents": "Sisältö"
+      },
+      "successToast": "Reitti tallennettu!",
+      "errorToast": "Reitin tallennus epäonnistui!"
     },
     "freights": {
       "title": "Rahtikirjalistaus",
@@ -81,7 +145,24 @@
         "recipientSiteMissing": "Vastaanottaja on pakollinen",
         "pointOfDepartureMissing": "Lähtöpaikka on pakollinen",
         "destinationSiteMissing": "Määräpaikka on pakollinen"
-      }
+      },
+      "successToast": "Rahti tallennettu!",
+      "errorToast": "Rahdin tallennus epäonnistui!"
+    },
+    "freightUnits": {
+      "type": "Tyyppi",
+      "quantity": "Määrä",
+      "content": "Sisältö",
+      "addRow": "Lisää rivi"
+    },
+    "tasks": {
+      "tasks": "Tehtävät",
+      "groupNumber": "Tunnus",
+      "customerSite": "Asiakaspaikka",
+      "route": "Reitti",
+      "date": "Päivä",
+      "loadTaskType": "Lastaus",
+      "unloadTaskType": "Purku"
     }
   },
   "errorHandling": {

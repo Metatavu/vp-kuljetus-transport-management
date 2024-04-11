@@ -1,10 +1,10 @@
 import { Button, Paper, Stack } from "@mui/material";
-import { createFileRoute } from "@tanstack/react-router";
+import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router";
 import ToolbarRow from "components/generic/toolbar-row";
 import { RouterContext } from "./__root";
 import { useTranslation } from "react-i18next";
 import { useApi } from "hooks/use-api";
-import { useQueries, useQuery } from "@tanstack/react-query";
+import { useQueries } from "@tanstack/react-query";
 import { useCallback, useMemo, useState } from "react";
 import { GridColDef, GridPaginationModel, GridRenderCellParams, GridTreeNodeWithRender } from "@mui/x-data-grid";
 import { Add } from "@mui/icons-material";
@@ -12,7 +12,7 @@ import GenericDataGrid from "components/generic/generic-data-grid";
 import { Freight } from "generated/client";
 import LoaderWrapper from "components/generic/loader-wrapper";
 import DataValidation from "utils/data-validation-utils";
-import ServerSidePaginationUtils from "utils/server-side-pagination-utils";
+import { useFreights, useSites } from "hooks/use-queries";
 
 export const Route = createFileRoute("/drive-planning/freights")({
   component: DrivePlanningFreights,
@@ -23,31 +23,19 @@ export const Route = createFileRoute("/drive-planning/freights")({
 
 function DrivePlanningFreights() {
   const { t } = useTranslation();
-  const { freightsApi, sitesApi, freightUnitsApi } = useApi();
+  const navigate = useNavigate();
+  const { freightUnitsApi } = useApi();
 
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({ page: 0, pageSize: 25 });
-  const [totalResults, setTotalResults] = useState(0);
 
-  const freightsQuery = useQuery({
-    queryKey: ["freights", paginationModel],
-    queryFn: async () => {
-      const [freights, headers] = await freightsApi.listFreightsWithHeaders({
-        ...ServerSidePaginationUtils.paginationModelToRange(paginationModel),
-      });
-      const count = parseInt(headers.get("x-total-count") ?? "0");
-      setTotalResults(count);
-      return freights;
-    },
+  const freightsQuery = useFreights({
+    first: paginationModel.pageSize * paginationModel.page,
+    max: paginationModel.pageSize * paginationModel.page + paginationModel.pageSize,
   });
-
-  const customerSitesQuery = useQuery({
-    queryKey: ["customerSites"],
-    queryFn: () => sitesApi.listSites(),
-    enabled: !!freightsQuery.data,
-  });
+  const sitesQuery = useSites(undefined, !freightsQuery.isLoading);
 
   const freightUnitsQuery = useQueries({
-    queries: (freightsQuery.data ?? []).map((freight) => ({
+    queries: (freightsQuery.data?.freights ?? []).map((freight) => ({
       queryKey: ["freightUnits", freight.id],
       queryFn: () => freightUnitsApi.listFreightUnits({ freightId: freight.id }),
     })),
@@ -58,11 +46,11 @@ function DrivePlanningFreights() {
 
   const renderCustomerSiteCell = useCallback(
     ({ row, field }: GridRenderCellParams<Freight, unknown, unknown, GridTreeNodeWithRender>) => {
-      const site = customerSitesQuery.data?.find((site) => site.id === row[field as keyof Freight]);
+      const site = sitesQuery.data?.sites.find((site) => site.id === row[field as keyof Freight]);
 
       return site?.name;
     },
-    [customerSitesQuery.data],
+    [sitesQuery.data],
   );
 
   const columns: GridColDef[] = useMemo(
@@ -125,38 +113,51 @@ function DrivePlanningFreights() {
         field: "actions",
         type: "actions",
         renderHeader: () => null,
-        renderCell: () => (
+        renderCell: ({ id }) => (
           <Stack direction="row" spacing={1}>
-            <Button variant="text" color="primary" size="small">
+            <Button
+              variant="text"
+              color="primary"
+              size="small"
+              onClick={() => navigate({ params: {}, search: { freightId: id as string } })}
+            >
               {t("open")}
             </Button>
           </Stack>
         ),
       },
     ],
-    [t, renderCustomerSiteCell, freightUnitsQuery],
+    [t, navigate, renderCustomerSiteCell, freightUnitsQuery],
   );
 
   return (
-    <Paper sx={{ height: "100%" }}>
-      <ToolbarRow
-        toolbarButtons={
-          <Button size="small" variant="text" startIcon={<Add />}>
-            {t("drivePlanning.freights.new")}
-          </Button>
-        }
-      />
-      <LoaderWrapper loading={freightsQuery.isLoading || customerSitesQuery.isLoading}>
-        <GenericDataGrid
-          rows={freightsQuery.data ?? []}
-          columns={columns}
-          rowCount={totalResults}
-          disableRowSelectionOnClick
-          paginationMode="server"
-          paginationModel={paginationModel}
-          onPaginationModelChange={setPaginationModel}
+    <>
+      <Outlet />
+      <Paper sx={{ height: "100%" }}>
+        <ToolbarRow
+          toolbarButtons={
+            <Button
+              size="small"
+              variant="text"
+              startIcon={<Add />}
+              onClick={() => navigate({ to: "/drive-planning/freights/add-freight" })}
+            >
+              {t("drivePlanning.freights.new")}
+            </Button>
+          }
         />
-      </LoaderWrapper>
-    </Paper>
+        <LoaderWrapper loading={freightsQuery.isLoading || sitesQuery.isLoading}>
+          <GenericDataGrid
+            rows={freightsQuery.data?.freights ?? []}
+            columns={columns}
+            rowCount={freightsQuery.data?.totalResults}
+            disableRowSelectionOnClick
+            paginationMode="server"
+            paginationModel={paginationModel}
+            onPaginationModelChange={setPaginationModel}
+          />
+        </LoaderWrapper>
+      </Paper>
+    </>
   );
 }

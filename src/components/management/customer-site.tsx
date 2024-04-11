@@ -16,17 +16,17 @@ import LocationUtils from "utils/location-utils";
 
 type Props = {
   formType: "ADD" | "MODIFY";
-  initialData?: Site;
+  site?: Site;
   onSave: UseMutationResult<Site, Error, Site, unknown>;
 };
 
 const DEFAULT_MAP_CENTER = latLng(61.1621924, 28.65865865);
 
-function CustomerSiteComponent({ formType, initialData, onSave }: Props) {
+function CustomerSiteComponent({ formType, site, onSave }: Props) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const {
-    mapbox: { publicApiKey },
+    mapbox: { baseUrl, publicApiKey },
   } = config;
 
   const mapRef = useRef<LeafletMap>(null);
@@ -40,7 +40,7 @@ function CustomerSiteComponent({ formType, initialData, onSave }: Props) {
     formState: { errors, isDirty },
   } = useForm<Site>({
     mode: "onChange",
-    defaultValues: initialData,
+    defaultValues: site,
     shouldFocusError: true,
   });
 
@@ -62,7 +62,7 @@ function CustomerSiteComponent({ formType, initialData, onSave }: Props) {
   const renderToolbarButtons = () => (
     <Stack direction="row" spacing={1}>
       {isDirty && (
-        <Button variant="text" startIcon={<Close />} onClick={() => reset(initialData)}>
+        <Button variant="text" startIcon={<Close />} onClick={() => reset(site)}>
           {t("cancel")}
         </Button>
       )}
@@ -88,7 +88,7 @@ function CustomerSiteComponent({ formType, initialData, onSave }: Props) {
         <Stack direction="row" height="calc(100% - 52px)">
           <CustomerSiteForm
             errors={errors}
-            customerSite={initialData}
+            customerSite={site}
             register={register}
             setFormValue={setValue}
             watch={watch}
@@ -97,7 +97,7 @@ function CustomerSiteComponent({ formType, initialData, onSave }: Props) {
             <MapContainer ref={mapRef} style={{ height: "100%" }} center={DEFAULT_MAP_CENTER} zoom={13}>
               <TileLayer
                 attribution='<a href="https://www.mapbox.com/about/maps/">© Mapbox</a> <a href="https://www.openstreetmap.org/copyright">© OpenStreetMap</a> <a href="https://www.mapbox.com/map-feedback/">Improve this map</a>'
-                url={`https://api.mapbox.com/styles/v1/metatavu/clsszigf302jx01qy0e4q0c7e/tiles/{z}/{x}/{y}@2x?access_token=${publicApiKey}`}
+                url={`${baseUrl}/styles/v1/metatavu/clsszigf302jx01qy0e4q0c7e/tiles/{z}/{x}/{y}?access_token=${publicApiKey}`}
               />
               {markerPosition && <Marker position={markerPosition} />}
             </MapContainer>
