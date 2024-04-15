@@ -23,7 +23,7 @@ const Root = styled(Paper, {
   minHeight: "100%",
   maxHeight: "100%",
   display: "flex",
-  flexDirection: "column"
+  flexDirection: "column",
 }));
 
 export const Route = createFileRoute("/drive-planning/routes")({
@@ -68,10 +68,8 @@ function DrivePlanningRoutes() {
   });
 
   const renderLeftToolbar = useCallback(
-    () => (
-      <DatePickerWithArrows buttonsWithText labelVisible={false} date={selectedDate} setDate={setSelectedDate} />
-    ),
-    [selectedDate, t],
+    () => <DatePickerWithArrows buttonsWithText labelVisible={false} date={selectedDate} setDate={setSelectedDate} />,
+    [selectedDate],
   );
 
   const renderRightToolbar = useCallback(

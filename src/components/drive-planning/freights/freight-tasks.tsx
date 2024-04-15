@@ -35,6 +35,13 @@ const FreightTasks = ({ tasks, customerSites, onEditTask }: Props) => {
   const processRowUpdate = (newRow: Task, oldRow: Task) => {
     if (deepEqual(oldRow, newRow)) return oldRow;
     onEditTask(newRow);
+
+    if (oldRow.routeId === undefined && newRow.routeId !== undefined) {
+      newRow.orderNumber = 9999;
+    } else if (oldRow.routeId !== undefined && newRow.routeId === undefined) {
+      newRow.orderNumber = undefined;
+    }
+
     return newRow;
   };
 
