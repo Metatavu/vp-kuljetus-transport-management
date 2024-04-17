@@ -6,7 +6,6 @@ import { TanStackRouterVite } from "@tanstack/router-vite-plugin";
 export default defineConfig({
   plugins: [
     react(),
-    // codegen(),
     TanStackRouterVite(),
   ],
   resolve: {
@@ -19,6 +18,11 @@ export default defineConfig({
       pages: "/src/pages",
       theme: "/src/theme",
       types: "/src/types",
+      utils: "/src/utils",
+      hooks: "/src/hooks",
     },
   },
+  optimizeDeps: {
+    exclude: ["@mapbox/search-js-core", "@dnd-kit/sortable"]
+  }
 });

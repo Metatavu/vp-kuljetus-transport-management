@@ -1,22 +1,25 @@
-import { Router, RouterProvider } from "@tanstack/react-router";
+import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import { routeTree } from "generated/router/routeTree.gen";
-import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
-import { CssBaseline, ThemeProvider } from "@mui/material";
+import { CssBaseline, ThemeProvider, responsiveFontSizes } from "@mui/material";
 import { theme } from "./theme";
 import "localization/i18n";
+import AuthenticationProvider from "components/auth/auth-provider";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import ConfirmDialogProvider from "components/providers/confirm-dialog-provider";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterLuxon } from "@mui/x-date-pickers/AdapterLuxon";
+import { Flip, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-const client = new ApolloClient({
-  uri: import.meta.env.VITE_GRAPHQL_API_URL,
-  cache: new InMemoryCache(),
-});
+const router = createRouter({ routeTree });
 
-const router = new Router({ routeTree });
+const queryClient = new QueryClient();
 
 declare module "@tanstack/react-router" {
   interface Register {
@@ -32,12 +35,19 @@ if (!rootElement) throw new Error("No root element in index.html");
 if (!rootElement.innerHTML) {
   ReactDOM.createRoot(rootElement).render(
     <StrictMode>
-      <ApolloProvider client={client}>
-        <ThemeProvider theme={theme}>
+      <ThemeProvider theme={responsiveFontSizes(theme)}>
+        <ToastContainer autoClose={3000} hideProgressBar transition={Flip} />
+        <LocalizationProvider dateAdapter={AdapterLuxon} adapterLocale="fi">
           <CssBaseline />
-          <RouterProvider router={router} />
-        </ThemeProvider>
-      </ApolloProvider>
+          <AuthenticationProvider>
+            <QueryClientProvider client={queryClient}>
+              <ConfirmDialogProvider>
+                <RouterProvider router={router} />
+              </ConfirmDialogProvider>
+            </QueryClientProvider>
+          </AuthenticationProvider>
+        </LocalizationProvider>
+      </ThemeProvider>
     </StrictMode>,
   );
 }

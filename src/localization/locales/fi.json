@@ -1,8 +1,209 @@
 {
+  "save": "Tallenna",
+  "cancel": "Peruuta",
   "logout": "Kirjaudu ulos",
-  "vehicleList": "Ajoneuvolista",
+  "edit": "Muokkaa",
+  "delete": "Poista",
+  "archive": "Arkistoi",
+  "open": "Avaa",
+  "noSelection": "Ei valintaa",
+  "noResults": "Ei tuloksia",
+  "actions": "Toiminnot",
+  "menu": "Valikko",
   "vehicleInfo": "Ajoneuvon tiedot",
-  "drivePlanning": "Ajojärjestely",
   "workingTime": "Työaika",
-  "management": "Hallinta"
+  "addNew": "Lisää uusi",
+  "previousDay": "Edellinen päivä",
+  "nextDay": "Seuraava päivä",
+  "openCalendar": "Valitse päivä kalenterista",
+  "showMenu": "Näytä valikko",
+  "hideMenu": "Piilota valikko",
+  "equipmentType": {
+    "truck": "Kuorma-auto",
+    "semiTruck": "Vetoauto",
+    "trailer": "Täysperävaunu",
+    "semiTrailer": "Puoliperävaunu",
+    "dolly": "Dolly"
+  },
+  "tooltips": {
+    "showDetails": "Näytä tiedot",
+    "openCalendar": "Avaa kalenteri",
+    "closeDialog": "Sulje ikkuna"
+  },
+  "vehicleList": {
+    "title": "Ajoneuvot",
+    "vehicle": {
+      "type": "Tyyppi",
+      "plateNumber": "Auto",
+      "number": "Tunnus",
+      "temperature": "Lämpötila",
+      "address": "Osoite",
+      "location": "Osoite",
+      "status": "Tila",
+      "maintenance": "Huolto",
+      "trailer": "Kalusto",
+      "driver": "Kuljettaja"
+    },
+    "mapView": {
+      "title": "Kartta",
+      "speed": "Nopeus: ",
+      "gps": "GPS",
+      "heading": "Suunta: ",
+      "lastUpdated": "Viimeksi päivitetty: ",
+      "connection": "Tietoliikenneyhteys"
+    }
+  },
+  "management": {
+    "title": "Hallinta",
+    "customerSites": {
+      "title": "Asiakaspaikat",
+      "new": "Uusi asiakaspaikka",
+      "modify": "Muokkaa asiakaspaikkaa",
+      "type": "Tyyppi",
+      "name": "Nimi",
+      "address": "Osoite",
+      "postalCode": "Postinumero",
+      "municipality": "Paikkakunta",
+      "additionalInfo": "Lisätiedot",
+      "errorMessages": {
+        "nameMissing": "Nimi on pakollinen",
+        "addressMissing": "Osoite on pakollinen",
+        "postalCodeMissing": "Postinumero on pakollinen",
+        "postalCodeTooShort": "Postinumeron tulee olla 5-merkkiä pitkä",
+        "postalCodeInvalidFormat": "Postinumero saa sisältää vain numeroita",
+        "municipalityMissing": "Paikkakunta on pakollinen"
+      },
+      "archiveDialog": {
+        "title": "Arkistoi asiakaspaikka",
+        "description": "Haluatko varmasti arkistoida asiakaspaikan {{name}}?"
+      },
+      "successToast": "Asiakaspaikka tallennettu!",
+      "errorToast": "Asiakaspaikan tallennus epäonnistui!"
+    },
+    "equipment": {
+      "title": "Kalustoluettelo",
+      "new": "Uusi kalusto",
+      "open": "Avaa",
+      "modify": "Muokkaa kalustoa",
+      "type": "Tyyppi",
+      "name": "Nimi",
+      "licensePlate": "Rekisterinumero",
+      "number": "Tunnus",
+      "vin": "Runkonumero",
+      "errorMessages": {
+        "licensePlateMissing": "Rekisterinumero on pakollinen",
+        "typeMissing": "Tyyppi on pakollinen",
+        "vinNumberMissing": "Runkonumero on pakollinen",
+        "numberMissing": "Tunnus on pakollinen"
+      },
+      "archiveDialog": {
+        "title": "Arkistoi ajoneuvo",
+        "description": "Haluatko varmasti arkistoida ajoneuvon {{name}}?"
+      },
+      "successToast": "Kalusto tallennettu!",
+      "errorToast": "Kaluston tallennus epäonnistui!"
+    },
+    "vehicles": {
+      "title": "Ajoneuvot",
+      "new": "Uusi ajoneuvo",
+      "modify": "Muokkaa ajoneuvoa",
+      "type": "Tyyppi",
+      "name": "Nimi",
+      "licensePlate": "Rekisterinumero",
+      "errorMessages": {
+        "licensePlateMissing": "Rekisterinumero on pakollinen"
+      }
+    }
+  },
+  "drivePlanning": {
+    "title": "Ajojärjestely",
+    "routes": {
+      "title": "Reitit",
+      "date": "Päivämäärä",
+      "newRoute": "Uusi reitti",
+      "name": "Nimi",
+      "truck": "Auto",
+      "driver": "Kuljettaja",
+      "tasks": "Tehtävät",
+      "helperText": "Voit valita tämän myöhemmin",
+      "dialog": {
+        "title": "Muokkaa reittiä",
+        "saveNewRoute": "Lisää reitti",
+        "saveExistingRoute": "Tallenna reitti"
+      },
+      "tasksTable": {
+        "task": "Tehtävä",
+        "groupNumber": "Tunnus",
+        "customerSite": "Asiakaspaikka",
+        "address": "Osoite",
+        "tasksAmount": "Tehtävien lkm",
+        "selectWaybill": "Valitse rahtikirja"
+      },
+      "unallocatedTasksTable": {
+        "title": "Järjestelemättömät tehtävät",
+        "minifyTasksDrawer": "Piilota järjestelemättömät tehtävät",
+        "expandTasksDrawer": "Näytä järjestelemättömät tehtävät",
+        "freightNumber": "Rahtikirja",
+        "contents": "Sisältö"
+      },
+      "successToast": "Reitti tallennettu!",
+      "errorToast": "Reitin tallennus epäonnistui!"
+    },
+    "freights": {
+      "title": "Rahtikirjalistaus",
+      "new": "Uusi rahtikirja",
+      "freightNumber": "Rahtikirjan numero",
+      "sender": "Lähettäjä",
+      "recipient": "Vastaanottaja",
+      "pointOfDeparture": "Lähtöpaikka",
+      "destination": "Määräpaikka",
+      "freightUnits": "Sisältö",
+      "dialog": {
+        "title": "Rahtikirja {{freightNumber}}",
+        "save": "Tallenna rahtikirja"
+      },
+      "errorMessages": {
+        "senderSiteMissing": "Lähettäjä on pakollinen",
+        "recipientSiteMissing": "Vastaanottaja on pakollinen",
+        "pointOfDepartureMissing": "Lähtöpaikka on pakollinen",
+        "destinationSiteMissing": "Määräpaikka on pakollinen"
+      },
+      "successToast": "Rahti tallennettu!",
+      "errorToast": "Rahdin tallennus epäonnistui!"
+    },
+    "freightUnits": {
+      "type": "Tyyppi",
+      "quantity": "Määrä",
+      "content": "Sisältö",
+      "addRow": "Lisää rivi"
+    },
+    "tasks": {
+      "tasks": "Tehtävät",
+      "groupNumber": "Tunnus",
+      "customerSite": "Asiakaspaikka",
+      "route": "Reitti",
+      "date": "Päivä",
+      "loadTaskType": "Lastaus",
+      "unloadTaskType": "Purku"
+    }
+  },
+  "errorHandling": {
+    "vehicleListing": "Ajoneuvolistauksessa tapahtui virhe"
+  },
+  "vehicleListScreen": {
+    "vehicleList": {
+      "headings": {
+        "type": "Tyyppi",
+        "name": "Auto",
+        "number": "Tunnus",
+        "temperature": "Lämpötila",
+        "address": "Osoite",
+        "location": "Sijainti",
+        "status": "Tila",
+        "maintenance": "Huolto",
+        "trailer": "Kalusto",
+        "driver": "Kuljettaja"
+      }
+    }
+  }
 }
