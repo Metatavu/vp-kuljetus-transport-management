@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { RouterContext } from "src/routes/__root";
 import { Stack, List, ListItemText, Typography, ListItemButton, Chip } from "@mui/material";
-import { MapContainer, Marker, TileLayer } from "react-leaflet";
+import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import { Map as LeafletMap, divIcon, latLng } from "leaflet";
 import { useEffect, useRef, useState } from "react";
 import GpsFixedIcon from "@mui/icons-material/GpsFixed";
@@ -20,6 +20,11 @@ export const Route = createFileRoute("/vehicle-list/map-view")({
   }),
 });
 
+type TruckLocationWithId = {
+  truckId: string;
+  location: TruckLocation;
+};
+
 const DEFAULT_MAP_CENTER = latLng(61.1621924, 28.65865865);
 
 const VehicleListMapView = () => {
@@ -27,10 +32,7 @@ const VehicleListMapView = () => {
   const { t } = useTranslation();
   const [selectedTruck, setSelectedTruck] = useState<Truck>();
   const [truckSpeed, setTruckSpeed] = useState<TruckSpeed>();
-  const [truckLocation, setTruckLocation] = useState<TruckLocation>();
-  const [truckAngle, setTruckAngle] = useState(0);
-
-  const truckPosition = DEFAULT_MAP_CENTER;
+  const [truckLocations, setTruckLocations] = useState<TruckLocationWithId[]>();
 
   const {
     mapbox: { baseUrl, publicApiKey },
@@ -46,46 +48,84 @@ const VehicleListMapView = () => {
     },
   });
 
+  const locations = useQuery({
+    queryKey: ["trucksLocations"],
+    queryFn: async () => {
+      const trucksLocationsWithIds = [] as TruckLocationWithId[];
+
+      trucks?.data?.map(async (truck) => {
+        // biome-ignore lint/style/noNonNullAssertion: <explanation>
+        const truckLocations = await trucksApi.listTruckLocations({ truckId: truck.id!, max: 1, first: 0 });
+        // biome-ignore lint/style/noNonNullAssertion: <explanation>
+        trucksLocationsWithIds.push({ truckId: truck.id!, location: truckLocations[0] });
+      });
+      setTruckLocations(trucksLocationsWithIds);
+      return trucksLocationsWithIds;
+    },
+    refetchInterval: 5000,
+  });
+
   const getTruckSpeed = async () => {
     if (!selectedTruck || !selectedTruck.id) {
       return;
     }
 
-    const truckSpeed = await trucksApi.listTruckSpeeds({ truckId: selectedTruck.id });
+    const truckSpeed = await trucksApi.listTruckSpeeds({ truckId: selectedTruck.id, max: 1, first: 0 });
     setTruckSpeed(truckSpeed[0]);
-  };
-
-  const getTruckLocation = async () => {
-    if (!selectedTruck || !selectedTruck.id) {
-      return;
-    }
-
-    const truckLocation = await trucksApi.listTruckLocations({ truckId: selectedTruck.id });
-    setTruckLocation(truckLocation[0]);
   };
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     getTruckSpeed();
-    getTruckLocation();
-    setTruckAngle(truckAngle + 10);
   }, [selectedTruck]);
 
-  // Define the CSS styles for the custom marker icon
-  const customMarkerIcon = divIcon({
-    html: `
+  const renderTruckMarkers = () => {
+    const markers = trucks.data?.map((truck) => {
+      //const { latitude, longitude } = truckLocation.location;
+
+      const truckIsSelected = selectedTruck?.id === truck.id;
+
+      const truckHeading =
+        truckLocations?.find((truckLocation) => truckLocation.truckId === truck.id)?.location?.heading ?? 90;
+      // Define the CSS styles for the custom marker icon
+      const customMarkerIcon = divIcon({
+        html: `
       '<div
           style="
           width: 0;
           height: 0;
-          border-left: 8px solid transparent; /* Adjust size as needed */
+          border-left: 8px solid transparent;
           border-right: 8px solid transparent;
-          border-bottom: 30px solid red; /* Adjust color and size as needed */
-          transform: rotate(${truckAngle}deg);"
+          border-bottom: 30px solid ${truckIsSelected ? "blue" : "red"};
+          transform: rotate(${truckHeading}deg);"
+          position="relative"
+          top="-80px"
+          left="-8px"
       >
       </div>'
     `,
-  });
+      });
+
+      return (
+        <Marker
+          title="Truck location"
+          key={truck.id}
+          position={latLng(
+            61.1621924 + Number(Math.random().toFixed(0) / 100),
+            28.65865865 + Number(Math.random().toFixed(0)) / 100,
+          )}
+          icon={customMarkerIcon}
+        >
+          <Popup>
+            <Typography variant="body1">{truck.plateNumber}</Typography>
+          </Popup>
+        </Marker>
+      );
+    });
+    return markers;
+  };
+
+  const truckLocation = truckLocations?.find((truckLocation) => truckLocation.truckId === selectedTruck?.id)?.location;
 
   return (
     <LoaderWrapper loading={trucks.isLoading}>
@@ -143,7 +183,7 @@ const VehicleListMapView = () => {
               attribution='<a href="https://www.mapbox.com/about/maps/">© Mapbox</a> <a href="https://www.openstreetmap.org/copyright">© OpenStreetMap</a> <a href="https://www.mapbox.com/map-feedback/">Improve this map</a>'
               url={`${baseUrl}/styles/v1/metatavu/clsszigf302jx01qy0e4q0c7e/tiles/{z}/{x}/{y}?access_token=${publicApiKey}`}
             />
-            {truckPosition && <Marker position={truckPosition} icon={customMarkerIcon} />}
+            {renderTruckMarkers()}
           </MapContainer>
         </Stack>
       </Stack>
