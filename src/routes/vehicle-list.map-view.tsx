@@ -7,11 +7,12 @@ import { useEffect, useRef, useState } from "react";
 import GpsFixedIcon from "@mui/icons-material/GpsFixed";
 import SignalCellularAltIcon from "@mui/icons-material/SignalCellularAlt";
 import config from "../app/config";
-import { useQuery } from "@tanstack/react-query";
+import { useQueries, useQuery } from "@tanstack/react-query";
 import { useApi } from "../hooks/use-api";
 import { useTranslation } from "react-i18next";
 import LoaderWrapper from "components/generic/loader-wrapper";
 import { Truck, TruckLocation, TruckSpeed } from "generated/client";
+import { DateTime } from "luxon";
 
 export const Route = createFileRoute("/vehicle-list/map-view")({
   component: () => <VehicleListMapView />,
@@ -20,11 +21,6 @@ export const Route = createFileRoute("/vehicle-list/map-view")({
   }),
 });
 
-type TruckLocationWithId = {
-  truckId: string;
-  location: TruckLocation;
-};
-
 const DEFAULT_MAP_CENTER = latLng(61.1621924, 28.65865865);
 
 const VehicleListMapView = () => {
@@ -32,7 +28,7 @@ const VehicleListMapView = () => {
   const { t } = useTranslation();
   const [selectedTruck, setSelectedTruck] = useState<Truck>();
   const [truckSpeed, setTruckSpeed] = useState<TruckSpeed>();
-  const [truckLocations, setTruckLocations] = useState<TruckLocationWithId[]>();
+  const [selectedTruckLocation, setSelectedTruckLocation] = useState<TruckLocation>();
 
   const {
     mapbox: { baseUrl, publicApiKey },
@@ -48,45 +44,55 @@ const VehicleListMapView = () => {
     },
   });
 
-  const locations = useQuery({
-    queryKey: ["trucksLocations"],
-    queryFn: async () => {
-      const trucksLocationsWithIds = [] as TruckLocationWithId[];
-
-      trucks?.data?.map(async (truck) => {
+  const trucksLocations = useQueries({
+    queries: (trucks.data ?? []).map((truck) => ({
+      queryKey: ["trucksLocations", truck.id],
+      queryFn: async () => ({
         // biome-ignore lint/style/noNonNullAssertion: <explanation>
-        const truckLocations = await trucksApi.listTruckLocations({ truckId: truck.id!, max: 1, first: 0 });
+        truckId: truck.id!,
         // biome-ignore lint/style/noNonNullAssertion: <explanation>
-        trucksLocationsWithIds.push({ truckId: truck.id!, location: truckLocations[0] });
-      });
-      setTruckLocations(trucksLocationsWithIds);
-      return trucksLocationsWithIds;
-    },
-    refetchInterval: 5000,
+        location: (await trucksApi.listTruckLocations({ truckId: truck.id!, max: 1, first: 0 })).at(0),
+      }),
+      refetchInterval: 10_000,
+      enabled: trucks.isSuccess,
+    })),
+    combine: (results) => results.map((result) => result.data),
   });
 
-  const getTruckSpeed = async () => {
-    if (!selectedTruck || !selectedTruck.id) {
+  const getTruckSpeed = async (truckId: string) => {
+    if (!truckId) {
       return;
     }
 
-    const truckSpeed = await trucksApi.listTruckSpeeds({ truckId: selectedTruck.id, max: 1, first: 0 });
+    const truckSpeed = await trucksApi.listTruckSpeeds({ truckId: truckId, max: 1, first: 0 });
     setTruckSpeed(truckSpeed[0]);
   };
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  const getLocationTimestampAsDatetime = (location: TruckLocation | undefined) => {
+    if (!location || !location.timestamp) {
+      return "-";
+    }
+    return DateTime.fromSeconds(location.timestamp).toFormat("dd.MM.yyyy HH:mm:ss");
+  };
+
+  const handleTruckSelection = (truck: Truck) => {
+    setSelectedTruck(truck);
+    getTruckSpeed(truck.id ?? "");
+    setSelectedTruckLocation(trucksLocations.find((truckLocation) => truckLocation?.truckId === truck.id)?.location);
+  };
+
   useEffect(() => {
-    getTruckSpeed();
-  }, [selectedTruck]);
+    if (mapRef.current && selectedTruckLocation) {
+      mapRef.current.setView(latLng(selectedTruckLocation.latitude, selectedTruckLocation.longitude));
+    }
+  }, [selectedTruckLocation]);
 
   const renderTruckMarkers = () => {
     const markers = trucks.data?.map((truck) => {
-      //const { latitude, longitude } = truckLocation.location;
-
       const truckIsSelected = selectedTruck?.id === truck.id;
 
-      const truckHeading =
-        truckLocations?.find((truckLocation) => truckLocation.truckId === truck.id)?.location?.heading ?? 90;
+      const truckLocation = trucksLocations.find((truckLocation) => truckLocation?.truckId === truck.id)?.location;
+
       // Define the CSS styles for the custom marker icon
       const customMarkerIcon = divIcon({
         html: `
@@ -97,7 +103,7 @@ const VehicleListMapView = () => {
           border-left: 8px solid transparent;
           border-right: 8px solid transparent;
           border-bottom: 30px solid ${truckIsSelected ? "blue" : "red"};
-          transform: rotate(${truckHeading}deg);"
+          transform: rotate(${truckLocation?.heading ?? 0}deg);"
           position="relative"
           top="-80px"
           left="-8px"
@@ -111,8 +117,8 @@ const VehicleListMapView = () => {
           title="Truck location"
           key={truck.id}
           position={latLng(
-            61.1621924 + Number(Math.random().toFixed(0) / 100),
-            28.65865865 + Number(Math.random().toFixed(0)) / 100,
+            truckLocation?.latitude ?? DEFAULT_MAP_CENTER.lat,
+            truckLocation?.longitude ?? DEFAULT_MAP_CENTER.lng,
           )}
           icon={customMarkerIcon}
         >
@@ -124,8 +130,6 @@ const VehicleListMapView = () => {
     });
     return markers;
   };
-
-  const truckLocation = truckLocations?.find((truckLocation) => truckLocation.truckId === selectedTruck?.id)?.location;
 
   return (
     <LoaderWrapper loading={trucks.isLoading}>
@@ -146,16 +150,18 @@ const VehicleListMapView = () => {
         </Typography>
         <Typography variant="body2">
           {t("vehicleList.mapView.speed")}
-          {truckSpeed?.speed ?? "-"}{" "}
+          {truckSpeed?.speed ?? "-"}
         </Typography>
         <Typography variant="body2">
-          {t("vehicleList.mapView.heading")} {truckLocation?.heading ?? "-"}
+          {t("vehicleList.mapView.heading")} {selectedTruckLocation?.heading ?? "-"}
         </Typography>
-        <Typography variant="body2">{truckLocation?.heading ?? "-"}</Typography>
+        <Typography variant="body2">
+          {`${selectedTruckLocation?.latitude} : ${selectedTruckLocation?.longitude}`}
+        </Typography>
         <Chip style={{ backgroundColor: "#B9F6CA" }} icon={<GpsFixedIcon />} label={t("vehicleList.mapView.gps")} />
         <Typography variant="body2">
           {t("vehicleList.mapView.lastUpdated")}
-          {truckLocation?.timestamp ?? "-"}
+          {getLocationTimestampAsDatetime(selectedTruckLocation ?? undefined)}
         </Typography>
         <Chip
           style={{ backgroundColor: "#B9F6CA" }}
@@ -168,7 +174,11 @@ const VehicleListMapView = () => {
           <List>
             {trucks.data
               ? trucks.data.map((truck) => (
-                  <ListItemButton onClick={() => setSelectedTruck(truck)} key={truck.id}>
+                  <ListItemButton
+                    onClick={() => handleTruckSelection(truck)}
+                    key={truck.id}
+                    style={{ backgroundColor: selectedTruck?.id === truck.id ? "rgba(0, 0, 0, 0.1)" : "transparent" }}
+                  >
                     <ListItemText primary={truck.name} />
                     <ListItemText primary={truck.plateNumber} />
                   </ListItemButton>

@@ -6,7 +6,7 @@ import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import { useMemo, useState } from "react";
 import GenericDataGrid from "components/generic/generic-data-grid";
 import { useApi } from "../hooks/use-api";
-import { useQuery } from "@tanstack/react-query";
+import { useQueries, useQuery } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/vehicle-list/vehicles")({
   component: VehicleListVehicles,
@@ -34,6 +34,21 @@ function VehicleListVehicles() {
       setTotalTruckResults(count);
       return trucks;
     },
+  });
+
+  const trucksDriveStates = useQueries({
+    queries: (trucks.data ?? []).map((truck) => ({
+      queryKey: ["trucksDriveStates", truck.id],
+      queryFn: async () => ({
+        // biome-ignore lint/style/noNonNullAssertion: <explanation>
+        truckId: truck.id!,
+        // biome-ignore lint/style/noNonNullAssertion: <explanation>
+        driveState: (await trucksApi.listDriveStates({ truckId: truck.id!, max: 1, first: 0 })).at(0),
+      }),
+      refetchInterval: 10_000,
+      enabled: trucks.isSuccess,
+    })),
+    combine: (results) => results.map((result) => result.data),
   });
 
   const columns: GridColDef[] = useMemo(
@@ -93,10 +108,21 @@ function VehicleListVehicles() {
     [t],
   );
 
+  /**
+   * Combine the truck data with drive state data
+   */
+  const trucksWithDriveState = trucks.data?.map((truck) => {
+    const driveState = trucksDriveStates.find((driveState) => driveState?.truckId === truck.id)?.driveState;
+    return {
+      ...truck,
+      status: driveState ?? "-",
+    };
+  });
+
   return (
     <Paper>
       <GenericDataGrid
-        rows={trucks.data ?? []}
+        rows={trucksWithDriveState ?? []}
         columns={columns}
         pagination
         showCellVerticalBorder
