@@ -7,10 +7,10 @@ dotenv.config();
  * This script is used to load secrets from Infisical into the environment.
  */
 const main = async () => {
-  const { INFISICAL_TOKEN, INFISICAL_SECRET_PATH } = process.env;
+  const { INFISICAL_TOKEN, INFISICAL_SECRET_PATH, INFISICAL_ENVIRONMENT } = process.env;
 
-  if (!(INFISICAL_TOKEN && INFISICAL_SECRET_PATH)) {
-    throw Error("INFISICAL_TOKEN and INFISICAL_SECRET_PATH must be set in the environment.");
+  if (!(INFISICAL_TOKEN && INFISICAL_SECRET_PATH && INFISICAL_ENVIRONMENT)) {
+    throw Error("INFISICAL_TOKEN, INFISICAL_SECRET_PATH and INFISICAL_ENVIRONMENT must be set in the environment.");
   }
 
   const infisical = new InfisicalClient({
@@ -20,7 +20,7 @@ const main = async () => {
   const secrets = await infisical.getAllSecrets({
     attachToProcessEnv: false,
     path: INFISICAL_SECRET_PATH,
-    environment: "staging",
+    environment: INFISICAL_ENVIRONMENT,
     includeImports: false,
   });
 
