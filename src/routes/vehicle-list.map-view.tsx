@@ -48,7 +48,7 @@ const VehicleListMapView = () => {
     queries: (trucks.data ?? []).map((truck) => ({
       queryKey: ["trucksLocations", truck.id],
       queryFn: async () => ({
-        // biome-ignore lint/style/noNonNullAssertion: <explanation>
+        // biome-ignore lint/style/noNonNullAssertion: id must exist in trucks from API
         truckId: truck.id!,
         // biome-ignore lint/style/noNonNullAssertion: <explanation>
         location: (await trucksApi.listTruckLocations({ truckId: truck.id!, max: 1, first: 0 })).at(0),
