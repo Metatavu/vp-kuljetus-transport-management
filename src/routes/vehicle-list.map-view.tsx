@@ -69,9 +69,7 @@ const VehicleListMapView = () => {
   };
 
   const getLocationTimestampAsDatetime = (location: TruckLocation | undefined) => {
-    if (!location || !location.timestamp) {
-      return "-";
-    }
+    if (!location || !location.timestamp) return "-";
     return DateTime.fromSeconds(location.timestamp).toFormat("dd.MM.yyyy HH:mm:ss");
   };
 
