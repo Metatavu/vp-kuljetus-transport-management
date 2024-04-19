@@ -38,7 +38,7 @@
       "number": "Tunnus",
       "temperature": "Lämpötila",
       "address": "Osoite",
-      "location": "Osoite",
+      "location": "Sijainti",
       "status": "Tila",
       "maintenance": "Huolto",
       "trailer": "Kalusto",
