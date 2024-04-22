@@ -50,15 +50,11 @@ const VehicleInfo = () => {
 
   const driveStates = useQuery({
     queryKey: ["driveStates"],
-    queryFn: async () => {
-      const driveStates = await trucksApi.listDriveStates({
-        truckId: vehicleId,
-        first: paginationModel.pageSize * paginationModel.page,
-        max: paginationModel.pageSize * paginationModel.page + paginationModel.pageSize,
-      });
-
-      return driveStates;
-    },
+    queryFn: () => trucksApi.listDriveStates({
+      truckId: vehicleId,
+      first: paginationModel.pageSize * paginationModel.page,
+      max: paginationModel.pageSize * paginationModel.page + paginationModel.pageSize,
+    }),
   });
 
   const columns: GridColDef[] = useMemo(
