@@ -4,7 +4,7 @@ import GpsFixedIcon from "@mui/icons-material/GpsFixed";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SignalCellularAltIcon from "@mui/icons-material/SignalCellularAlt";
 import { t } from "i18next";
-import { DateTime } from "luxon";
+import TimeUtils from "../../utils/time-utils";
 
 type Props = {
   selectedTruck: Truck | undefined;
@@ -15,10 +15,6 @@ type Props = {
 };
 
 export const VehicleInfoBar = ({ selectedTruck, truckSpeed, selectedTruckLocation, title, navigateBack }: Props) => {
-  const getLocationTimestampAsDatetime = (location: TruckLocation | undefined) => {
-    if (!location || !location.timestamp) return "-";
-    return DateTime.fromSeconds(location.timestamp).toFormat("dd.MM.yyyy HH:mm:ss");
-  };
   return (
     <Stack
       justifyContent="space-between"
@@ -55,7 +51,7 @@ export const VehicleInfoBar = ({ selectedTruck, truckSpeed, selectedTruckLocatio
       <Chip style={{ backgroundColor: "#B9F6CA" }} icon={<GpsFixedIcon />} label={t("vehicleList.mapView.gps")} />
       <Typography variant="body2">
         {t("vehicleList.mapView.lastUpdated")}
-        {getLocationTimestampAsDatetime(selectedTruckLocation ?? undefined)}
+        {TimeUtils.displayAsDateTime(selectedTruckLocation?.timestamp, "-")}
       </Typography>
       <Chip
         style={{ backgroundColor: "#B9F6CA" }}
