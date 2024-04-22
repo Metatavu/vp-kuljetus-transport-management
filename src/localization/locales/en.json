@@ -51,6 +51,14 @@
       "heading": "Direction: ",
       "lastUpdated": "Last updated: ",
       "connection": "Connection"
+    },
+    "info": {
+      "title": "Vehicle information",
+      "timeStamp": "Time",
+      "event": "Event",
+      "duration": "Duration",
+      "location": "Location",
+      "driver": "Driver"
     }
   },
   "management": {

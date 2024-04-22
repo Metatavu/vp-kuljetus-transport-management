@@ -1,5 +1,5 @@
-import { Paper } from "@mui/material";
-import { createFileRoute } from "@tanstack/react-router";
+import { Button, Paper, Stack } from "@mui/material";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { RouterContext } from "./__root";
 import { useTranslation } from "react-i18next";
 import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
@@ -17,7 +17,7 @@ export const Route = createFileRoute("/vehicle-list/vehicles")({
 
 function VehicleListVehicles() {
   const { trucksApi } = useApi();
-
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const [totalTruckResults, setTotalTruckResults] = useState(0);
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({ page: 0, pageSize: 25 });
@@ -60,6 +60,23 @@ function VehicleListVehicles() {
         sortable: false,
         width: 150,
         align: "center",
+        renderCell: (params) => (
+          <Stack direction="row" spacing={1}>
+            <Button
+              variant="text"
+              color="primary"
+              size="small"
+              onClick={() =>
+                navigate({
+                  to: "/vehicle-list/vehicles/$vehicleId/info",
+                  params: { vehicleId: params.row.id as string },
+                })
+              }
+            >
+              {params.row.plateNumber}
+            </Button>
+          </Stack>
+        ),
       },
       {
         field: "name",
@@ -105,7 +122,7 @@ function VehicleListVehicles() {
         flex: 1,
       },
     ],
-    [t],
+    [t, navigate],
   );
 
   /**

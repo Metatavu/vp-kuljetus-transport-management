@@ -5,10 +5,10 @@ import { RouterContext } from "src/routes/__root";
 import DataValidation from "utils/data-validation-utils";
 
 const BreadCrumbBar = styled(Box, {
-  label: "styled-breeadcrumb-bar",
+  label: "styled-breadcrumb-bar",
 })(({ theme }) => ({
   backgroundColor: theme.palette.primary.light,
-  padding: theme.spacing(0.5, 3)
+  padding: theme.spacing(0.5, 3),
 }));
 
 const BreadcrumbsBar = () => {
