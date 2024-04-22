@@ -35,11 +35,7 @@ const VehicleInfo = () => {
 
   const truck = useQuery({
     queryKey: ["truck"],
-    queryFn: async () => {
-      const truck = await trucksApi.findTruck({ truckId: vehicleId });
-
-      return truck;
-    },
+    queryFn: () => trucksApi.findTruck({ truckId: vehicleId }),
   });
 
   const truckLocation = useQuery({
