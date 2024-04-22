@@ -19,7 +19,6 @@ export const VehicleInfoBar = ({ selectedTruck, truckSpeed, selectedTruckLocatio
     if (!location || !location.timestamp) return "-";
     return DateTime.fromSeconds(location.timestamp).toFormat("dd.MM.yyyy HH:mm:ss");
   };
-  console.log("Tricl location", selectedTruckLocation);
   return (
     <Stack
       justifyContent="space-between"
