@@ -51,6 +51,14 @@
       "heading": "Suunta: ",
       "lastUpdated": "Viimeksi päivitetty: ",
       "connection": "Tietoliikenneyhteys"
+    },
+    "info": {
+      "title": "Ajoneuvon tiedot",
+      "timeStamp": "Aika",
+      "event": "Tapahtuma",
+      "duration": "Kesto",
+      "location": "Sijainti",
+      "driver": "Kuljettaja"
     }
   },
   "management": {

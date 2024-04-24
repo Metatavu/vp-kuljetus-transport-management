@@ -16,6 +16,7 @@ import { Route as ManagementEquipmentAddEquipmentImport } from "./../../routes/m
 import { Route as ManagementCustomerSitesAddCustomerSiteImport } from "./../../routes/management.customer-sites_.add-customer-site_"
 import { Route as DrivePlanningRoutesAddRouteImport } from "./../../routes/drive-planning.routes.add-route"
 import { Route as DrivePlanningFreightsAddFreightImport } from "./../../routes/drive-planning.freights.add-freight"
+import { Route as VehicleListVehiclesVehicleIdInfoImport } from "./../../routes/vehicle-list_.vehicles.$vehicleId.info"
 import { Route as ManagementEquipmentEquipmentIdModifyImport } from "./../../routes/management.equipment_.$equipmentId.modify"
 import { Route as ManagementCustomerSitesCustomerSiteIdModifyImport } from "./../../routes/management.customer-sites_.$customerSiteId.modify"
 
@@ -108,6 +109,12 @@ const DrivePlanningFreightsAddFreightRoute =
     getParentRoute: () => DrivePlanningFreightsRoute,
   } as any)
 
+const VehicleListVehiclesVehicleIdInfoRoute =
+  VehicleListVehiclesVehicleIdInfoImport.update({
+    path: "/vehicle-list/vehicles/$vehicleId/info",
+    getParentRoute: () => rootRoute,
+  } as any)
+
 const ManagementEquipmentEquipmentIdModifyRoute =
   ManagementEquipmentEquipmentIdModifyImport.update({
     path: "/equipment/$equipmentId/modify",
@@ -197,6 +204,10 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof ManagementEquipmentEquipmentIdModifyImport
       parentRoute: typeof ManagementImport
     }
+    "/vehicle-list/vehicles/$vehicleId/info": {
+      preLoaderRoute: typeof VehicleListVehiclesVehicleIdInfoImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 export const routeTree = rootRoute.addChildren([
@@ -222,4 +233,5 @@ export const routeTree = rootRoute.addChildren([
   ]),
   VehicleInfoIndexRoute,
   WorkingTimeIndexRoute,
+  VehicleListVehiclesVehicleIdInfoRoute,
 ])
