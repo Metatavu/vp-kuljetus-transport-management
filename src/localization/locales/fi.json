@@ -50,7 +50,8 @@
       "gps": "GPS",
       "heading": "Suunta: ",
       "lastUpdated": "Viimeksi päivitetty: ",
-      "connection": "Tietoliikenneyhteys"
+      "connection": "Tietoliikenneyhteys",
+      "showVehicleInfo": "Siirry ajoneuvon tietoihin"
     },
     "info": {
       "title": "Ajoneuvon tiedot",

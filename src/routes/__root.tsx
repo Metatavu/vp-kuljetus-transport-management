@@ -25,7 +25,7 @@ function RootLayout() {
       <RootFreightDialog />
       <TopNavigation />
       <BreadcrumbsBar />
-      <Box component="main" sx={{ flex: 1 }}>
+      <Box component="main" sx={{ display: "flex", flex: 1, maxHeight: "100%", width: "100%" }}>
         <Outlet />
       </Box>
     </Box>
