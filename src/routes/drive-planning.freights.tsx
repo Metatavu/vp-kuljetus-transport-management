@@ -1,4 +1,4 @@
-import { Button, Paper, Stack, styled } from "@mui/material";
+import { Button, Stack, styled } from "@mui/material";
 import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router";
 import ToolbarRow from "components/generic/toolbar-row";
 import { RouterContext } from "./__root";
