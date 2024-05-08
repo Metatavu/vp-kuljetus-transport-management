@@ -193,6 +193,7 @@ const RoutesTable = ({ selectedDate, sites, onUpdateRoute }: Props) => {
       editMode="cell"
       paginationMode="server"
       disableRowSelectionOnClick
+      autoHeight={false}
       fullScreen={false}
       columns={columns}
       rows={routesQuery.data?.routes ?? []}

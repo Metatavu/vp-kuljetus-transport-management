@@ -6,7 +6,8 @@ const ViewContainer = styled(Box, {
   display: "flex",
   flexDirection: "column",
   flex: 1,
-  width: "100%"
+  width: "100%",
+  maxHeight: "100%"
 }));
 
 export default ViewContainer;

@@ -47,7 +47,7 @@ function EquipmentComponent({ formType, initialData, onSave }: Props) {
   );
 
   return (
-    <Paper sx={{ height: "100%" }}>
+    <Paper sx={{ height: "100%", width: "100%" }}>
       <ToolbarRow
         title={formType === "ADD" ? t("management.equipment.new") : t("management.equipment.modify")}
         navigateBack={() => navigate({ to: "/management/equipment" })}

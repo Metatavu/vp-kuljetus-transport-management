@@ -1,4 +1,4 @@
-import { Button, Paper, Stack } from "@mui/material";
+import { Button, Paper, Stack, styled } from "@mui/material";
 import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router";
 import ToolbarRow from "components/generic/toolbar-row";
 import { RouterContext } from "./__root";
@@ -20,6 +20,16 @@ export const Route = createFileRoute("/drive-planning/freights")({
     breadcrumb: "drivePlanning.freights.title",
   }),
 });
+
+// Styled root component
+const Root = styled(Stack, {
+  label: "drive-planning-freights-root",
+})(({ theme }) => ({
+  height: "100%",
+  width: "100%",
+  backgroundColor: theme.palette.background.paper,
+  flexDirection: "column",
+}));
 
 function DrivePlanningFreights() {
   const { t } = useTranslation();
@@ -133,7 +143,7 @@ function DrivePlanningFreights() {
   return (
     <>
       <Outlet />
-      <Paper sx={{ height: "100%" }}>
+      <Root>
         <ToolbarRow
           toolbarButtons={
             <Button
@@ -148,6 +158,8 @@ function DrivePlanningFreights() {
         />
         <LoaderWrapper loading={freightsQuery.isLoading || sitesQuery.isLoading}>
           <GenericDataGrid
+            fullScreen
+            autoHeight={false}
             rows={freightsQuery.data?.freights ?? []}
             columns={columns}
             rowCount={freightsQuery.data?.totalResults}
@@ -157,7 +169,7 @@ function DrivePlanningFreights() {
             onPaginationModelChange={setPaginationModel}
           />
         </LoaderWrapper>
-      </Paper>
+      </Root>
     </>
   );
 }
