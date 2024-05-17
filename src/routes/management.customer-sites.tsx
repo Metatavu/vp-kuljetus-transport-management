@@ -1,5 +1,5 @@
 import { Add } from "@mui/icons-material";
-import { Button, Paper, Stack } from "@mui/material";
+import { Button, Stack, styled } from "@mui/material";
 import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import GenericDataGrid from "components/generic/generic-data-grid";
@@ -19,6 +19,16 @@ export const Route = createFileRoute("/management/customer-sites")({
     breadcrumb: "management.customerSites.title",
   }),
 });
+
+// Styled root component
+const Root = styled(Stack, {
+  label: "management-customer-sites-root",
+})(({ theme }) => ({
+  height: "100%",
+  width: "100%",
+  backgroundColor: theme.palette.background.paper,
+  flexDirection: "column",
+}));
 
 function ManagementCustomerSites() {
   const { t } = useTranslation();
@@ -93,7 +103,7 @@ function ManagementCustomerSites() {
 
   return (
     <LoaderWrapper loading={deleteCustomerSite.isPending || sitesQuery.isLoading}>
-      <Paper sx={{ height: "100%" }}>
+      <Root>
         <ToolbarRow
           title={t("management.customerSites.title")}
           toolbarButtons={
@@ -112,6 +122,8 @@ function ManagementCustomerSites() {
           }
         />
         <GenericDataGrid
+          fullScreen
+          autoHeight={false}
           rows={sitesQuery.data?.sites ?? []}
           columns={columns}
           rowCount={sitesQuery.data?.totalResults}
@@ -120,7 +132,7 @@ function ManagementCustomerSites() {
           paginationModel={paginationModel}
           onPaginationModelChange={setPaginationModel}
         />
-      </Paper>
+      </Root>
     </LoaderWrapper>
   );
 }

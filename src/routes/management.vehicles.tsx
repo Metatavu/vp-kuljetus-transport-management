@@ -1,4 +1,4 @@
-import { Button, Paper, Stack } from "@mui/material";
+import { Button, Stack } from "@mui/material";
 import { createFileRoute } from "@tanstack/react-router";
 import ToolbarRow from "components/generic/toolbar-row";
 import { RouterContext } from "./__root";
@@ -54,9 +54,9 @@ function ManagementVehicles() {
   );
 
   return (
-    <Paper sx={{ height: "100%" }}>
+    <Stack sx={{ height: "100%", width: "100%" }}>
       <ToolbarRow title={t("management.vehicles.title")} />
       <GenericDataGrid rows={[]} columns={columns} />
-    </Paper>
+    </Stack>
   );
 }

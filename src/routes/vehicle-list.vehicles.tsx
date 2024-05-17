@@ -137,8 +137,10 @@ function VehicleListVehicles() {
   });
 
   return (
-    <Paper>
+    <Paper sx={{ display: "flex", height: "calc(100% - 32px)" }}>
       <GenericDataGrid
+        fullScreen
+        autoHeight={false}
         rows={trucksWithDriveState ?? []}
         columns={columns}
         pagination

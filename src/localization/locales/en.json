@@ -50,7 +50,8 @@
       "gps": "GPS",
       "heading": "Direction: ",
       "lastUpdated": "Last updated: ",
-      "connection": "Connection"
+      "connection": "Connection",
+      "showVehicleInfo": "Go to vehicle details"
     },
     "info": {
       "title": "Vehicle information",

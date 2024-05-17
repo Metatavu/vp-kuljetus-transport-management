@@ -17,11 +17,7 @@ const ViewNavigationLayout = styled(Stack, {
   label: "styled-view-navigation-layout",
 })(() => ({
   position: "sticky",
-  borderRadius: 0,
-  backgroundColor: "transparent",
-  width: "100%",
-  minHeight: "42px",
-  marginTop: "10px",
+  width: "100%"
 }));
 
 function VehicleListLayoutComponent() {
@@ -32,33 +28,22 @@ function VehicleListLayoutComponent() {
   const selectedRouteIndex = navigationItems.findIndex(([route]) => location.pathname.startsWith(route));
 
   return (
-    <Stack direction="column" height="100%" padding={2}>
-      <Stack direction="row" minHeight="42px">
-        <ViewNavigationLayout>
-          <Tabs
-            orientation="horizontal"
-            value={selectedRouteIndex}
-            sx={{
-              justifyContent: "flex-start",
-              alignContent: "flex-start",
-            }}
-          >
-            {navigationItems.map(([path, title], index) => (
-              <Tab
-                key={path}
-                label={t(title)}
-                value={index}
-                onClick={() => navigate({ to: path, params: {}, search: {} })}
-                sx={{
-                  justifyContent: "flex-start",
-                  minHeight: "42px",
-                  backgroundColor: selectedRouteIndex === index ? "rgba(0, 65, 79, 0.1)" : "transparent",
-                }}
-              />
-            ))}
-          </Tabs>
-        </ViewNavigationLayout>
-      </Stack>
+    <Stack direction="column" flex={1} padding={2}>
+      <ViewNavigationLayout>
+        <Tabs
+          orientation="horizontal"
+          value={selectedRouteIndex}
+        >
+          {navigationItems.map(([path, title], index) => (
+            <Tab
+              key={path}
+              label={t(title)}
+              value={index}
+              onClick={() => navigate({ to: path, params: {}, search: {} })}
+            />
+          ))}
+        </Tabs>
+      </ViewNavigationLayout>
       <ViewContainer>
         <Outlet />
       </ViewContainer>

@@ -1,4 +1,4 @@
-import { Button, Paper, Stack } from "@mui/material";
+import { Button, Stack, styled } from "@mui/material";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import ToolbarRow from "components/generic/toolbar-row";
 import { RouterContext } from "./__root";
@@ -17,6 +17,16 @@ export const Route = createFileRoute("/management/equipment")({
     breadcrumb: "management.equipment.title",
   }),
 });
+
+// Styled root component
+const Root = styled(Stack, {
+  label: "management-equipment-root",
+})(({ theme }) => ({
+  height: "100%",
+  width: "100%",
+  backgroundColor: theme.palette.background.paper,
+  flexDirection: "column",
+}));
 
 function ManagementEquipment() {
   const { t } = useTranslation();
@@ -143,23 +153,27 @@ function ManagementEquipment() {
   );
 
   return (
-    <Paper sx={{ height: "100%" }}>
+    <Root>
       <ToolbarRow title={t("management.equipment.title")} toolbarButtons={renderToolbarButtons()} />
-      <GenericDataGrid
-        rows={localizedEquipment ?? []}
-        columns={columns}
-        pagination
-        showCellVerticalBorder
-        showColumnVerticalBorder
-        disableColumnSelector
-        loading={false}
-        getRowId={row => `${row.id}-${equipment.find(e => e.id === row.id)?.type}`}
-        paginationMode="server"
-        pageSizeOptions={[25, 50, 100]}
-        rowCount={totalTruckResults + totalTowableResults}
-        paginationModel={paginationModel}
-        onPaginationModelChange={setPaginationModel}
-      />
-    </Paper>
+      <Stack flex={1} sx={{ height: "100%", overflowY: "auto" }}>
+        <GenericDataGrid
+          fullScreen
+          autoHeight={false}
+          rows={localizedEquipment ?? []}
+          columns={columns}
+          pagination
+          showCellVerticalBorder
+          showColumnVerticalBorder
+          disableColumnSelector
+          loading={false}
+          getRowId={row => `${row.id}-${equipment.find(e => e.id === row.id)?.type}`}
+          paginationMode="server"
+          pageSizeOptions={[25, 50, 100]}
+          rowCount={totalTruckResults + totalTowableResults}
+          paginationModel={paginationModel}
+          onPaginationModelChange={setPaginationModel}
+        />
+      </Stack>
+    </Root>
   );
 }

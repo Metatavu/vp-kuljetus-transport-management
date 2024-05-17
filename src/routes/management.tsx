@@ -20,7 +20,7 @@ function ManagementLayoutComponent() {
   ] as const;
 
   return (
-    <Stack direction="row" height="100%">
+    <Stack direction="row" height="100%" width="100%">
       <SideNavigation navigationItems={sideNavigationItems} />
       <ViewContainer>
         <Outlet />

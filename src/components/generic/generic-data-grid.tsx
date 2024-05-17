@@ -19,10 +19,11 @@ const StyledDataGrid = styled(DataGrid, {
     borderRight: "1px solid rgba(0, 0, 0, 0.12)",
   },
   "& .MuiDataGrid-footerContainer": {
-    border: "none",
+    borderTop: "1px solid rgba(0, 0, 0, 0.12)",
   },
   "& .MuiDataGrid-virtualScroller": {
-    overflow: "hidden",
+    overflowY: "auto",
+    overflowX: "hidden",
   },
 }));
 

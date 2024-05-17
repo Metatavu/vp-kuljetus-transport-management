@@ -101,7 +101,7 @@ const VehicleInfo = () => {
   );
 
   return (
-    <Paper>
+    <Paper sx={{ height: "100%", width: "100%" }}>
       <VehicleInfoBar
         selectedTruck={truck.data}
         truckSpeed={truckSpeed.data}
