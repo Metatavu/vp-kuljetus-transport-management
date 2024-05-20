@@ -1,5 +1,6 @@
 import { createTheme } from "@mui/material";
 import type {} from "@mui/x-date-pickers/themeAugmentation";
+import type {} from "@mui/x-data-grid/themeAugmentation";
 import { fiFI } from "@mui/x-date-pickers";
 
 /**
@@ -273,6 +274,15 @@ const theme = createTheme(
             borderRight: "1px solid rgba(0, 0, 0, 0.12)",
             borderBottom: "1px solid rgba(0, 0, 0, 0.12)",
             borderLeft: "1px solid rgba(0, 0, 0, 0.12)",
+          },
+        },
+      },
+      MuiDataGrid: {
+        styleOverrides: {
+          cell: {
+            "&:focus, &:focus-within": {
+              outline: "transparent",
+            },
           },
         },
       },
