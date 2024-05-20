@@ -1,17 +1,27 @@
+import { InfoOutlined } from "@mui/icons-material";
+import {
+  Box,
+  CircularProgress,
+  IconButton,
+  List,
+  ListItemAvatar,
+  ListItemButton,
+  ListItemSecondaryAction,
+  ListItemText,
+  Stack,
+  Typography,
+} from "@mui/material";
+import { useQueries, useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { RouterContext } from "src/routes/__root";
-import { Stack, List, ListItemText, Typography, ListItemButton, ListItemSecondaryAction, IconButton, ListItemAvatar } from "@mui/material";
-import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
+import { VehicleInfoBar } from "components/vehicles/vehicleInfoBar";
+import { Truck, TruckLocation } from "generated/client";
 import { Map as LeafletMap, divIcon, latLng } from "leaflet";
 import { useEffect, useRef, useState } from "react";
-import config from "../app/config";
-import { useQueries, useQuery } from "@tanstack/react-query";
-import { useApi } from "../hooks/use-api";
-import LoaderWrapper from "components/generic/loader-wrapper";
-import { Truck, TruckLocation } from "generated/client";
-import { VehicleInfoBar } from "components/vehicles/vehicleInfoBar";
-import { InfoOutlined } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
+import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
+import { RouterContext } from "src/routes/__root";
+import config from "../app/config";
+import { useApi } from "../hooks/use-api";
 
 export const Route = createFileRoute("/vehicle-list/map-view")({
   component: () => <VehicleListMapView />,
@@ -124,8 +134,28 @@ const VehicleListMapView = () => {
     return markers;
   };
 
+  const renderMap = () => {
+    if (trucks.isLoading) {
+      return (
+        <Box flex={1} display="flex" justifyContent="center" alignItems="center">
+          <CircularProgress />
+        </Box>
+      );
+    }
+
+    return (
+      <MapContainer ref={mapRef} style={{ height: "100%" }} center={DEFAULT_MAP_CENTER} zoom={13}>
+        <TileLayer
+          attribution='<a href="https://www.mapbox.com/about/maps/">© Mapbox</a> <a href="https://www.openstreetmap.org/copyright">© OpenStreetMap</a> <a href="https://www.mapbox.com/map-feedback/">Improve this map</a>'
+          url={`${baseUrl}/styles/v1/metatavu/clsszigf302jx01qy0e4q0c7e/tiles/{z}/{x}/{y}?access_token=${publicApiKey}`}
+        />
+        {renderTruckMarkers()}
+      </MapContainer>
+    );
+  };
+
   return (
-    <LoaderWrapper loading={trucks.isLoading}>
+    <>
       <VehicleInfoBar
         selectedTruck={selectedTruck}
         truckSpeed={truckSpeed.data}
@@ -137,51 +167,42 @@ const VehicleListMapView = () => {
           <List>
             {trucks.data
               ? trucks.data.map((truck) => (
-                <ListItemButton
-                  onClick={() => handleTruckSelection(truck)}
-                  key={truck.id}
-                  selected={selectedTruck?.id === truck.id}
-                  divider
-                  dense
-                >
-                  <ListItemAvatar>
-                    <Typography variant="h6">{truck.name}</Typography>
-                  </ListItemAvatar>
-                  <ListItemText primary={truck.plateNumber} />
-                  {selectedTruck?.id === truck.id &&
-                    <ListItemSecondaryAction>
-                      <IconButton
-                        size="small"
-                        edge="end"
-                        aria-label="info"
-                        title={t("vehicleList.mapView.showVehicleInfo")}
-                        onClick={() =>
-                          navigate({
-                            to: "/vehicle-list/vehicles/$vehicleId/info",
-                            params: { vehicleId: truck.id as string },
-                          })
-                        }
-                      >
-                        <InfoOutlined />
-                      </IconButton>
-                    </ListItemSecondaryAction>
-                  }
-                </ListItemButton>
-              ))
+                  <ListItemButton
+                    onClick={() => handleTruckSelection(truck)}
+                    key={truck.id}
+                    selected={selectedTruck?.id === truck.id}
+                    divider
+                    dense
+                  >
+                    <ListItemAvatar>
+                      <Typography variant="h6">{truck.name}</Typography>
+                    </ListItemAvatar>
+                    <ListItemText primary={truck.plateNumber} />
+                    {selectedTruck?.id === truck.id && (
+                      <ListItemSecondaryAction>
+                        <IconButton
+                          size="small"
+                          edge="end"
+                          aria-label="info"
+                          title={t("vehicleList.mapView.showVehicleInfo")}
+                          onClick={() =>
+                            navigate({
+                              to: "/vehicle-list/vehicles/$vehicleId/info",
+                              params: { vehicleId: truck.id as string },
+                            })
+                          }
+                        >
+                          <InfoOutlined />
+                        </IconButton>
+                      </ListItemSecondaryAction>
+                    )}
+                  </ListItemButton>
+                ))
               : null}
           </List>
         </Stack>
-
-        <Stack sx={{ width: "100%", height: "100%" }}>
-          <MapContainer ref={mapRef} style={{ height: "100%" }} center={DEFAULT_MAP_CENTER} zoom={13}>
-            <TileLayer
-              attribution='<a href="https://www.mapbox.com/about/maps/">© Mapbox</a> <a href="https://www.openstreetmap.org/copyright">© OpenStreetMap</a> <a href="https://www.mapbox.com/map-feedback/">Improve this map</a>'
-              url={`${baseUrl}/styles/v1/metatavu/clsszigf302jx01qy0e4q0c7e/tiles/{z}/{x}/{y}?access_token=${publicApiKey}`}
-            />
-            {renderTruckMarkers()}
-          </MapContainer>
-        </Stack>
+        <Stack sx={{ width: "100%", height: "100%" }}>{renderMap()}</Stack>
       </Stack>
-    </LoaderWrapper>
+    </>
   );
 };
