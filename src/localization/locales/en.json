@@ -130,6 +130,7 @@
     "routes": {
       "title": "Routes",
       "date": "Date",
+      "departureTime": "Departure time",
       "newRoute": "New route",
       "name": "Name",
       "truck": "Truck",

@@ -105,14 +105,11 @@ const UnallocatedTasksDrawer = ({ open, sites, onClose }: Props) => {
     [sites, t, freightsQueries.data, freightUnitsQueries.data],
   );
   return (
-    <Collapse
-      in={open}
-      collapsedSize={42}
-    >
+    <Collapse in={open} collapsedSize={42}>
       <Stack direction="column" height={360}>
         <DialogHeader
           title={t("drivePlanning.routes.unallocatedTasksTable.title")}
-          closeTooltip={open ? t("drivePlanning.routes.unallocatedTasksTable.minifyTasksDrawer") : t("drivePlanning.routes.unallocatedTasksTable.expandTasksDrawer")}
+          closeTooltip={t(`drivePlanning.routes.unallocatedTasksTable.${open ? "minify" : "expand"}TasksDrawer`)}
           StartIcon={AssignmentSharp}
           CloseIcon={open ? ExpandMore : ExpandLess}
           onClose={onClose}
@@ -122,6 +119,7 @@ const UnallocatedTasksDrawer = ({ open, sites, onClose }: Props) => {
           autoHeight={false}
           columns={columns}
           rows={tasksQuery.data?.tasks ?? []}
+          loading={tasksQuery.isFetching}
           rowCount={tasksQuery.data?.totalResults ?? 0}
           onCellClick={({ row: { freightId } }: GridCellParams<Task>) =>
             navigate({ search: { freightId: freightId, date: undefined } })

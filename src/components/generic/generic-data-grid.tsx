@@ -30,6 +30,7 @@ const StyledDataGrid = styled(DataGrid, {
 const GenericDataGrid = ({
   columns,
   rows,
+  loading,
   paginationMode,
   paginationModel,
   rowCount,
@@ -58,6 +59,7 @@ const GenericDataGrid = ({
       apiRef={apiRef}
       columns={columns}
       rows={rows}
+      loading={loading}
       columnHeaderHeight={30}
       rowHeight={38}
       disableColumnMenu
