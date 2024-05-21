@@ -1,13 +1,13 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { RouterContext } from "./__root";
 import { Paper } from "@mui/material";
-import { useTranslation } from "react-i18next";
 import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
-import { useMemo, useState } from "react";
-import GenericDataGrid from "components/generic/generic-data-grid";
 import { useQuery } from "@tanstack/react-query";
-import { VehicleInfoBar } from "components/vehicles/vehicleInfoBar";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import GenericDataGrid from "components/generic/generic-data-grid";
+import { VehicleInfoBar } from "components/vehicles/vehicle-info-bar";
+import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useApi } from "../hooks/use-api";
+import { RouterContext } from "./__root";
 
 export const Route = createFileRoute("/vehicle-list/vehicles/$vehicleId/info")({
   component: () => <VehicleInfo />,
@@ -50,11 +50,12 @@ const VehicleInfo = () => {
 
   const driveStates = useQuery({
     queryKey: ["driveStates"],
-    queryFn: () => trucksApi.listDriveStates({
-      truckId: vehicleId,
-      first: paginationModel.pageSize * paginationModel.page,
-      max: paginationModel.pageSize * paginationModel.page + paginationModel.pageSize,
-    }),
+    queryFn: () =>
+      trucksApi.listDriveStates({
+        truckId: vehicleId,
+        first: paginationModel.pageSize * paginationModel.page,
+        max: paginationModel.pageSize * paginationModel.page + paginationModel.pageSize,
+      }),
   });
 
   const columns: GridColDef[] = useMemo(
