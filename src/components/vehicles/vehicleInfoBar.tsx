@@ -1,4 +1,4 @@
-import { Stack, Typography, Chip, IconButton } from "@mui/material";
+import { Stack, Typography, Chip, IconButton, Tooltip } from "@mui/material";
 import { Truck, TruckSpeed, TruckLocation } from "generated/client";
 import GpsFixedIcon from "@mui/icons-material/GpsFixed";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -24,7 +24,9 @@ export const VehicleInfoBar = ({ selectedTruck, truckSpeed, selectedTruckLocatio
     >
       {navigateBack && (
         <IconButton sx={{ padding: "5px" }} onClick={navigateBack}>
-          <ArrowBackIcon />
+          <Tooltip title={t("tooltips.backToVehicles")} placement="bottom">
+            <ArrowBackIcon />
+          </Tooltip>
         </IconButton>
       )}
       {title && (

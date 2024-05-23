@@ -28,7 +28,8 @@
   "tooltips": {
     "showDetails": "Näytä tiedot",
     "openCalendar": "Avaa kalenteri",
-    "closeDialog": "Sulje ikkuna"
+    "closeDialog": "Sulje ikkuna",
+    "backToVehicles": "Takaisin ajoneuvolistaukseen"
   },
   "vehicleList": {
     "title": "Ajoneuvot",
@@ -59,6 +60,14 @@
       "duration": "Kesto",
       "location": "Sijainti",
       "driver": "Kuljettaja"
+    },
+    "truckDriveState": {
+      "rest": "Tauko",
+      "driverAvailable": "Kuljettaja saatavilla",
+      "work": "Työ",
+      "drive": "Ajossa",
+      "error": "Virhe",
+      "notAvailable": "Ei saatavilla"
     }
   },
   "management": {
