@@ -28,7 +28,8 @@
   "tooltips": {
     "showDetails": "Show details",
     "openCalendar": "Open calendar",
-    "closeDialog": "Close dialog"
+    "closeDialog": "Close dialog",
+    "backToVehicles": "Back to vehicles"
   },
   "vehicleList": {
     "title": "Vehicle list",
@@ -60,6 +61,14 @@
       "duration": "Duration",
       "location": "Location",
       "driver": "Driver"
+    },
+    "truckDriveState": {
+      "rest": "Rest",
+      "driverAvailable": "Driver available",
+      "work": "Work",
+      "drive": "Drive",
+      "error": "Error",
+      "notAvailable": "Not available"
     }
   },
   "management": {

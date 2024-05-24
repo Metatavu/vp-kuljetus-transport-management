@@ -1,7 +1,7 @@
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import GpsFixedIcon from "@mui/icons-material/GpsFixed";
 import SignalCellularAltIcon from "@mui/icons-material/SignalCellularAlt";
-import { Chip, IconButton, Stack, Typography } from "@mui/material";
+import { Chip, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import { Truck, TruckLocation, TruckSpeed } from "generated/client";
 import { t } from "i18next";
 import TimeUtils from "../../utils/time-utils";
@@ -24,7 +24,9 @@ export const VehicleInfoBar = ({ selectedTruck, truckSpeed, selectedTruckLocatio
     >
       {navigateBack && (
         <IconButton sx={{ padding: "5px" }} onClick={navigateBack}>
-          <ArrowBackIcon />
+          <Tooltip title={t("tooltips.backToVehicles")} placement="bottom">
+            <ArrowBackIcon />
+          </Tooltip>
         </IconButton>
       )}
       {title && (

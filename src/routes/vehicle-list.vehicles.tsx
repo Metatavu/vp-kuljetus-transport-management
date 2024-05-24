@@ -3,10 +3,13 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { RouterContext } from "./__root";
 import { useTranslation } from "react-i18next";
 import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import GenericDataGrid from "components/generic/generic-data-grid";
 import { useApi } from "../hooks/use-api";
 import { useQueries, useQuery } from "@tanstack/react-query";
+import { DateTime } from "luxon";
+import LocalizationUtils from "../utils/localization-utils";
+import clsx from "clsx";
 
 export const Route = createFileRoute("/vehicle-list/vehicles")({
   component: VehicleListVehicles,
@@ -50,6 +53,35 @@ function VehicleListVehicles() {
     })),
     combine: (results) => results.map((result) => result.data),
   });
+
+  /**
+   * Render the drive state cell with a timer that shows how long the truck has been in the current drive state
+   *
+   * @param driveState drive state of the truck
+   * @param timestamp timestamp of the latest drive state
+   * @returns
+   */
+  const getDriveStateWithTimer = (driveState: string, timestamp: number | undefined) => {
+    const [currentTime, setTime] = useState(DateTime.now());
+
+    useEffect(() => {
+      const interval = setInterval(() => {
+        setTime(DateTime.now());
+      }, 1000);
+
+      return () => clearInterval(interval);
+    }, []);
+
+    if (!driveState || !timestamp) {
+      return "";
+    }
+
+    const dateFromTimestamp = DateTime.fromSeconds(timestamp);
+    const timePassedInCurrentDriveState = currentTime.diff(dateFromTimestamp, ["seconds", "minutes", "hours"]);
+    const formattedTimeString = `(${timePassedInCurrentDriveState.toFormat("hh:mm:ss")})`;
+
+    return formattedTimeString;
+  };
 
   const columns: GridColDef[] = useMemo(
     () => [
@@ -106,6 +138,24 @@ function VehicleListVehicles() {
         headerName: t("vehicleList.vehicle.status"),
         sortable: false,
         flex: 1,
+        cellClassName: (params) => {
+          if (params.value !== "-") {
+            return clsx("driveState", {
+              drive: params.value === LocalizationUtils.getLocalizedTruckDriveState("DRIVE", t),
+            });
+          }
+          // Default class if drive state is not recognized
+          return "";
+        },
+        renderCell: (params) => (
+          <Stack>
+            {params.value}{" "}
+            {getDriveStateWithTimer(
+              params.value,
+              trucksDriveStates.find((driveState) => driveState?.truckId === params.row.id)?.driveState?.timestamp,
+            )}
+          </Stack>
+        ),
       },
       {
         field: "trailer",
@@ -122,22 +172,30 @@ function VehicleListVehicles() {
         flex: 1,
       },
     ],
-    [t, navigate],
+    [t, navigate, getDriveStateWithTimer],
   );
 
   /**
    * Combine the truck data with drive state data
    */
   const trucksWithDriveState = trucks.data?.map((truck) => {
-    const driveState = trucksDriveStates.find((driveState) => driveState?.truckId === truck.id)?.driveState;
+    const driveState = trucksDriveStates.find((driveState) => driveState?.truckId === truck.id)?.driveState?.state;
     return {
       ...truck,
-      status: driveState ?? "-",
+      status: driveState ? LocalizationUtils.getLocalizedTruckDriveState(driveState, t) : "-",
     };
   });
 
   return (
-    <Paper sx={{ display: "flex", height: "calc(100% - 32px)" }}>
+    <Paper
+      sx={{
+        display: "flex",
+        height: "calc(100% - 32px)",
+        "& .driveState.drive": {
+          backgroundColor: "rgba(157, 255, 118, 0.49)",
+        },
+      }}
+    >
       <GenericDataGrid
         fullScreen
         autoHeight={false}

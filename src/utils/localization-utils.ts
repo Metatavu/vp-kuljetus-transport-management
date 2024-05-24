@@ -1,4 +1,4 @@
-import { TaskType } from "generated/client";
+import { TaskType, TruckDriveStateEnum } from "generated/client";
 import { TFunction } from "i18next";
 
 namespace LocalizationUtils {
@@ -14,6 +14,15 @@ namespace LocalizationUtils {
     SEMI_TRAILER: t("equipmentType.semiTrailer"),
     DOLLY: t("equipmentType.dolly")
   })[type];
+
+  export const getLocalizedTruckDriveState = (status: TruckDriveStateEnum, t: TFunction) => ({
+    REST: t("vehicleList.truckDriveState.rest"),
+    DRIVER_AVAILABLE: t("vehicleList.truckDriveState.driverAvailable"),
+    WORK: t("vehicleList.truckDriveState.work"),
+    DRIVE: t("vehicleList.truckDriveState.drive"),
+    ERROR: t("vehicleList.truckDriveState.error"),
+    NOT_AVAILABLE: t("vehicleList.truckDriveState.notAvailable"),
+  })[status];
 }
 
 export default LocalizationUtils;
