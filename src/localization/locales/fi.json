@@ -138,6 +138,7 @@
     "routes": {
       "title": "Reitit",
       "date": "Päivämäärä",
+      "departureTime": "Lähtöaika",
       "newRoute": "Uusi reitti",
       "name": "Nimi",
       "truck": "Auto",

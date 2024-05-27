@@ -17,6 +17,7 @@ const ExpandableRoutesTableRow = ({ expanded, routeId, sites, ...props }: Props)
   const { tasksApi } = useApi();
   const tasksQuery = useQuery({
     queryKey: [QUERY_KEYS.TASKS_BY_ROUTE, routeId],
+    staleTime: 10_000,
     queryFn: () => tasksApi.listTasks({ routeId: routeId }),
     select: (tasks) =>
       tasks.reduce(

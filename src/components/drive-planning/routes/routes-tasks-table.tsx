@@ -17,19 +17,24 @@ const RoutesTasksTable = ({ groupedTasks }: Props) => {
     [groupedTasks],
   );
 
-  const baseCellWidth = dataGridApiRef.current.getColumnPosition("tasks");
+  const leftOffset = dataGridApiRef.current.getColumnPosition("departureTime");
 
   return (
-    <TableContainer sx={{ marginLeft: `${baseCellWidth}px` }}>
+    <TableContainer sx={{ width: `calc(100% - ${leftOffset}px)`, marginLeft: `${leftOffset - 1}px` }}>
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell width={baseCellWidth}>{t("drivePlanning.routes.tasksTable.task")}</TableCell>
-            <TableCell width={baseCellWidth}>{t("drivePlanning.routes.tasksTable.groupNumber")}</TableCell>
-            <TableCell width={baseCellWidth * 5}>{t("drivePlanning.routes.tasksTable.customerSite")}</TableCell>
-            <TableCell width={baseCellWidth * 5}>{t("drivePlanning.routes.tasksTable.address")}</TableCell>
-            <TableCell>{t("drivePlanning.routes.tasksTable.tasksAmount")}</TableCell>
-            <TableCell />
+            <TableCell sx={{ minWidth: 100, maxWidth: 100 }}>{t("drivePlanning.routes.tasksTable.task")}</TableCell>
+            <TableCell sx={{ minWidth: 100, maxWidth: 100 }}>
+              {t("drivePlanning.routes.tasksTable.groupNumber")}
+            </TableCell>
+            <TableCell sx={{ minWidth: 200, maxWidth: 200 }}>
+              {t("drivePlanning.routes.tasksTable.customerSite")}
+            </TableCell>
+            <TableCell sx={{ width: "100%" }}>{t("drivePlanning.routes.tasksTable.address")}</TableCell>
+            <TableCell sx={{ minWidth: 120, maxWidth: 120 }}>
+              {t("drivePlanning.routes.tasksTable.tasksAmount")}
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>{Object.keys(groupedTasks).map(renderTaskRow)}</TableBody>

@@ -6,7 +6,7 @@ import { Driver, Route, Truck } from "generated/client";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useApi } from "hooks/use-api";
-import { DatePicker } from "@mui/x-date-pickers";
+import { TimePicker } from "@mui/x-date-pickers";
 import { DateTime } from "luxon";
 import DialogHeader from "components/generic/dialog-header";
 import { QUERY_KEYS } from "hooks/use-queries";
@@ -127,12 +127,13 @@ const RouteDialog = ({ initialDate, routeId, onSave }: Props) => {
         <form onSubmit={handleSubmit(onSaveClick)}>
           <DialogContent sx={{ padding: "16px" }}>
             <Stack spacing={2}>
-              <DatePicker
-                label={t("drivePlanning.routes.date")}
+              <TimePicker
+                label={t("drivePlanning.routes.departureTime")}
                 value={initialDate}
                 onChange={(value: DateTime | null) =>
                   value ? setValue("departureTime", value.toJSDate()) : resetField("departureTime")
                 }
+                slotProps={{ inputAdornment: { sx: { marginRight: 1 } } }}
               />
               <TextField {...register("name", { required: true })} label={t("drivePlanning.routes.name")} />
               <TextField
