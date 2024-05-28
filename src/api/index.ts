@@ -10,22 +10,22 @@ import {
   FreightUnitsApi,
   TasksApi,
   RoutesApi,
-  DriversApi
+  DriversApi,
 } from "../generated/client";
 
 type ConfigConstructor<T> = new (_params: ConfigurationParameters) => T;
 
 const getConfigurationFactory =
-  <T>(ConfigConstructor: ConfigConstructor<T>, basePath: string, accessToken?: string) =>
+  <T>(ConfigConstructor: ConfigConstructor<T>, basePath: string, getAccessToken?: () => Promise<string>) =>
   () => {
     return new ConfigConstructor({
       basePath: basePath,
-      accessToken: accessToken
+      accessToken: getAccessToken,
     });
   };
 
-export const getApiClient = (accessToken?: string) => {
-  const getConfiguration = getConfigurationFactory(Configuration, config.api.baseUrl, accessToken);
+export const getApiClient = (getAccessToken?: () => Promise<string>) => {
+  const getConfiguration = getConfigurationFactory(Configuration, config.api.baseUrl, getAccessToken);
 
   return {
     vehiclesApi: new VehiclesApi(getConfiguration()),
@@ -36,6 +36,6 @@ export const getApiClient = (accessToken?: string) => {
     freightUnitsApi: new FreightUnitsApi(getConfiguration()),
     tasksApi: new TasksApi(getConfiguration()),
     routesApi: new RoutesApi(getConfiguration()),
-    driversApi: new DriversApi(getConfiguration())
+    driversApi: new DriversApi(getConfiguration()),
   };
 };

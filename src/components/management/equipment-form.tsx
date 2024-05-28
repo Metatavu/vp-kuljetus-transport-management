@@ -2,10 +2,10 @@ import { Button, MenuItem, Stack, TextField } from "@mui/material";
 import { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Towable, TowableTypeEnum, Truck, TruckTypeEnum } from "generated/client";
-import LocalizationUtils from "../../../src/utils/localization-utils";
+import LocalizationUtils from "utils/localization-utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useConfirmDialog } from "components/providers/confirm-dialog-provider";
-import { useApi } from "../../../src/hooks/use-api";
+import { useApi } from "hooks/use-api";
 import { useNavigate } from "@tanstack/react-router";
 import { Close } from "@mui/icons-material";
 
@@ -30,7 +30,10 @@ const EquipmentForm = ({ errors, register, equipment, watch }: Props) => {
     </MenuItem>
   );
 
-  const renderMenuItems = () => Object.values(TruckTypeEnum).map(renderEquipmentType).concat(Object.values(TowableTypeEnum).map(renderEquipmentType));
+  const renderMenuItems = () =>
+    Object.values(TruckTypeEnum)
+      .map(renderEquipmentType)
+      .concat(Object.values(TowableTypeEnum).map(renderEquipmentType));
 
   const onArchiveEquipment = async (equipment: Truck | Towable) => {
     if (Object.values(TruckTypeEnum).includes(equipment.type as TruckTypeEnum)) {
@@ -38,7 +41,7 @@ const EquipmentForm = ({ errors, register, equipment, watch }: Props) => {
     } else {
       archiveTowable.mutate(equipment as Towable);
     }
-  }
+  };
 
   const archiveTruck = useMutation({
     mutationKey: ["archiveTruck", watch("id")],
@@ -49,7 +52,7 @@ const EquipmentForm = ({ errors, register, equipment, watch }: Props) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["trucks"] });
       queryClient.invalidateQueries({ queryKey: ["trucks", equipment?.id] });
-      navigate({ to: "/management/equipment" })
+      navigate({ to: "/management/equipment" });
     },
   });
 
@@ -62,7 +65,7 @@ const EquipmentForm = ({ errors, register, equipment, watch }: Props) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["towables"] });
       queryClient.invalidateQueries({ queryKey: ["towables", equipment?.id] });
-      navigate({ to: "/management/equipment" })
+      navigate({ to: "/management/equipment" });
     },
   });
 
@@ -120,4 +123,3 @@ const EquipmentForm = ({ errors, register, equipment, watch }: Props) => {
 };
 
 export default EquipmentForm;
-
