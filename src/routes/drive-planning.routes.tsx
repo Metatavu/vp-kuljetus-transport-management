@@ -52,9 +52,18 @@ function DrivePlanningRoutes() {
       if (!route.id) return Promise.reject();
       return routesApi.updateRoute({ routeId: route.id, route });
     },
-    onSuccess: () => {
+    onSuccess: (route) => {
       toast.success(t("drivePlanning.routes.successToast"));
-      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ROUTES, selectedDate] });
+      const routeDate = DateTime.fromJSDate(route.departureTime);
+      queryClient.invalidateQueries({
+        queryKey: [
+          QUERY_KEYS.ROUTES,
+          {
+            departureAfter: routeDate.startOf("day").toJSDate(),
+            departureBefore: routeDate.endOf("day").toJSDate(),
+          },
+        ],
+      });
     },
     onError: () => toast.error(t("drivePlanning.routes.errorToast")),
   });

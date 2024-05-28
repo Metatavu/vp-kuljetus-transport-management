@@ -50,25 +50,15 @@ const RoutesTable = ({ selectedDate, onUpdateRoute }: Props) => {
       enabled: !!route.id,
       queryFn: async () => {
         if (!route.id) throw Error("Route id is missing");
-
-        const tasks = await tasksApi.listTasks({ routeId: route.id });
-
-        return {
-          routeId: route.id,
-          tasksLength: tasks.length,
-        };
+        return tasksApi.listTasks({ routeId: route.id });
       },
     })),
-    combine: (results) => {
-      const routeTaskLengthsMap = new Map<string, number>();
-
-      results.reduce((map, { data }) => {
-        if (data) map.set(data.routeId, data.tasksLength);
+    combine: (results) =>
+      results.reduce((map, { data }, index) => {
+        const routeId = routesQuery.data?.routes.at(index)?.id;
+        if (data && routeId) map.set(routeId, data.length);
         return map;
-      }, routeTaskLengthsMap);
-
-      return routeTaskLengthsMap;
-    },
+      }, new Map<string, number>()),
   });
 
   const processRowUpdate = async (newRow: Route, oldRow: Route) => {
@@ -80,6 +70,7 @@ const RoutesTable = ({ selectedDate, onUpdateRoute }: Props) => {
   const renderTruckSingleSelectCell = useCallback(
     ({ api, id, field, value }: GridRenderEditCellParams) => {
       const { setEditCellValue } = api;
+
       return (
         <TextField
           select
@@ -89,7 +80,7 @@ const RoutesTable = ({ selectedDate, onUpdateRoute }: Props) => {
         >
           {trucksQuery.data?.trucks.map((truck) => (
             <MenuItem key={truck.id} value={truck.id}>
-              {truck.name} ({truck.plateNumber})
+              {truck.name && truck.plateNumber ? `${truck.name} (${truck.plateNumber})` : ""}
             </MenuItem>
           ))}
         </TextField>
@@ -187,7 +178,7 @@ const RoutesTable = ({ selectedDate, onUpdateRoute }: Props) => {
         field: "actions",
         type: "actions",
         align: "right",
-        width: 120,
+        width: 180,
         renderHeader: () => null,
         renderCell: ({ row: { id } }) => (
           <IconButton
