@@ -52,12 +52,15 @@ const FreightDialog = ({ freight, onSave, onClose }: Props) => {
     mutationFn: () =>
       Promise.all(
         pendingTasks.map((task) => {
-          if (!task.id) return Promise.reject();
-          tasksApi.updateTask({ taskId: task.id, task: task });
+          if (!task.id) throw Error("Task id is missing");
+          return tasksApi.updateTask({ taskId: task.id, task: task });
         }),
       ),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.TASKS, freight?.id] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.TASKS] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.TASKS_BY_ROUTE] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ROUTES] });
+      setPendingTasks([]);
     },
   });
 

@@ -4,25 +4,26 @@ import { TanStackRouterVite } from "@tanstack/router-vite-plugin";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [
-    react(),
-    TanStackRouterVite(),
-  ],
+  plugins: [react(), TanStackRouterVite()],
   resolve: {
     alias: {
+      api: "/src/api",
+      app: "/src/app",
       assets: "/src/assets",
+      atoms: "/src/atoms",
       components: "/src/components",
       generated: "/src/generated",
-      layouts: "/src/layouts",
+      hooks: "/src/hooks",
       localization: "/src/localization",
-      pages: "/src/pages",
+      mapbox: "/src/mapbox",
+      routes: "/src/routes",
+      src: "/src",
       theme: "/src/theme",
       types: "/src/types",
       utils: "/src/utils",
-      hooks: "/src/hooks",
     },
   },
   optimizeDeps: {
-    exclude: ["@mapbox/search-js-core", "@dnd-kit/sortable"]
-  }
+    exclude: ["@mapbox/search-js-core", "@dnd-kit/sortable"],
+  },
 });

@@ -1,5 +1,14 @@
 import { ArrowForward, Remove } from "@mui/icons-material";
-import { IconButton, List, ListItemButton, ListItemText, ListSubheader, Popover, TableCell, TableRow } from "@mui/material";
+import {
+  IconButton,
+  List,
+  ListItemButton,
+  ListItemText,
+  ListSubheader,
+  Popover,
+  TableCell,
+  TableRow,
+} from "@mui/material";
 import { useApi } from "hooks/use-api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Site, Task, TaskType } from "generated/client";
@@ -41,6 +50,11 @@ const TaskTableRow = ({ tasks, type, site, groupNumber, taskCount }: Props) => {
     },
   });
 
+  const openFreightDialog = useCallback(
+    (freightId: string) => navigate({ search: (prev) => ({ ...prev, freightId: freightId }) }),
+    [navigate],
+  );
+
   const renderPopoverContent = useCallback(() => {
     return tasks.map((task) => {
       if (!task.freightId) return null;
@@ -51,32 +65,37 @@ const TaskTableRow = ({ tasks, type, site, groupNumber, taskCount }: Props) => {
       return (
         <ListItemButton
           key={task.id}
-          onClick={() => navigate({ search: { freightId: foundFreight.id, date: undefined } })}
+          onClick={() => foundFreight.id && openFreightDialog(foundFreight.id)}
           title="Freight"
           divider
         >
-          <ListItemText primary={t("drivePlanning.freights.dialog.title", { freightNumber: foundFreight.freightNumber })} />
+          <ListItemText
+            primary={t("drivePlanning.freights.dialog.title", { freightNumber: foundFreight.freightNumber })}
+          />
           <ArrowForward fontSize="small" />
         </ListItemButton>
       );
     });
-  }, [freightsQuery.data, navigate, t, tasks]);
+  }, [freightsQuery.data, t, tasks, openFreightDialog]);
 
   const handleTableRowClick = ({ clientX, clientY }: React.MouseEvent<HTMLTableRowElement>) => {
     if (taskCount === 1) {
       const { freightId } = tasks[0];
       const foundFreight = freightsQuery.data?.freights.find((freight) => freight.id === freightId);
-      if (!foundFreight?.id) return;
-      return navigate({ search: { freightId: freightId, date: undefined } });
+      if (foundFreight?.id) openFreightDialog(foundFreight.id);
     }
 
     if (taskCount > 1) {
       setMenuCoordinates({ clientX: clientX, clientY: clientY });
     }
   };
+
   return (
     <>
-      <TableRow onClick={handleTableRowClick}>
+      <TableRow
+        sx={{ "&:hover": { backgroundColor: (theme) => theme.palette.action.hover, cursor: "pointer" } }}
+        onClick={handleTableRowClick}
+      >
         <TableCell>{LocalizationUtils.getLocalizedTaskType(type, t)}</TableCell>
         <TableCell>{groupNumber}</TableCell>
         <TableCell>{name}</TableCell>
@@ -84,8 +103,8 @@ const TaskTableRow = ({ tasks, type, site, groupNumber, taskCount }: Props) => {
           {address}, {postalCode} {locality}
         </TableCell>
         <TableCell>{taskCount}</TableCell>
-        <TableCell align="right">
-          <IconButton sx={{ padding: 0 }} onClick={() => saveTask.mutate()}>
+        <TableCell align="center">
+          <IconButton onClick={() => saveTask.mutate()}>
             <Remove />
           </IconButton>
         </TableCell>

@@ -15,32 +15,29 @@ type Props = GridRowProps & {
 
 const ExpandableRoutesTableRow = ({ expanded, routeId, sites, ...props }: Props) => {
   const { tasksApi } = useApi();
+
   const tasksQuery = useQuery({
     queryKey: [QUERY_KEYS.TASKS_BY_ROUTE, routeId],
     staleTime: 10_000,
     queryFn: () => tasksApi.listTasks({ routeId: routeId }),
     select: (tasks) =>
-      tasks.reduce(
-        (groupedTasks, task) => {
-          const key = `${task.groupNumber}-${task.customerSiteId}-${task.type}`;
-          const site = sites.find((site) => site.id === task.customerSiteId);
+      tasks.reduce<Record<string, GroupedTask>>((groupedTasks, task) => {
+        const key = `${task.groupNumber}-${task.customerSiteId}-${task.type}`;
+        const site = sites.find((site) => site.id === task.customerSiteId);
 
-          if (!site) return groupedTasks;
+        if (!site) return groupedTasks;
 
-          const groupedTask = {
-            ...groupedTasks[key],
-            tasks: [...(groupedTasks[key]?.tasks ?? []), task],
-            groupNumber: task.groupNumber,
-            type: task.type,
-            site: site,
-            taskCount: (groupedTasks[key]?.taskCount ?? 0) + 1,
-          };
-          groupedTasks[key] = groupedTask;
+        groupedTasks[key] = {
+          ...groupedTasks[key],
+          tasks: [...(groupedTasks[key]?.tasks ?? []), task],
+          groupNumber: task.groupNumber,
+          type: task.type,
+          site: site,
+          taskCount: (groupedTasks[key]?.taskCount ?? 0) + 1,
+        };
 
-          return groupedTasks;
-        },
-        {} as Record<string, GroupedTask>,
-      ),
+        return groupedTasks;
+      }, {}),
   });
 
   return (

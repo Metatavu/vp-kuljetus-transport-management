@@ -7,9 +7,9 @@ import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import { useMemo, useState } from "react";
 import GenericDataGrid from "components/generic/generic-data-grid";
 import { Add } from "@mui/icons-material";
-import { useApi } from "../../src/hooks/use-api";
+import { useApi } from "hooks/use-api";
 import { useQuery } from "@tanstack/react-query";
-import LocalizationUtils from "../../src/utils/localization-utils";
+import LocalizationUtils from "utils/localization-utils";
 
 export const Route = createFileRoute("/management/equipment")({
   component: ManagementEquipment,
@@ -89,7 +89,7 @@ function ManagementEquipment() {
         headerName: t("management.equipment.number"),
         sortable: false,
         width: 150,
-        align: "center"
+        align: "center",
       },
       {
         field: "plateNumber",
@@ -97,7 +97,7 @@ function ManagementEquipment() {
         headerName: t("management.equipment.licensePlate"),
         sortable: false,
         width: 200,
-        align: "center"
+        align: "center",
       },
       {
         field: "type",
@@ -111,7 +111,7 @@ function ManagementEquipment() {
         headerAlign: "left",
         headerName: t("management.equipment.vin"),
         sortable: false,
-        flex: 1
+        flex: 1,
       },
       {
         field: "actions",
@@ -142,11 +142,15 @@ function ManagementEquipment() {
 
   const renderToolbarButtons = () => (
     <Stack direction="row" spacing={1}>
-      <Button onClick={() =>
-        navigate({
-          to: "/management/equipment/add-equipment",
-        })
-      } variant="contained" startIcon={<Add />}>
+      <Button
+        onClick={() =>
+          navigate({
+            to: "/management/equipment/add-equipment",
+          })
+        }
+        variant="contained"
+        startIcon={<Add />}
+      >
         {t("addNew")}
       </Button>
     </Stack>
@@ -166,7 +170,7 @@ function ManagementEquipment() {
           showColumnVerticalBorder
           disableColumnSelector
           loading={false}
-          getRowId={row => `${row.id}-${equipment.find(e => e.id === row.id)?.type}`}
+          getRowId={(row) => `${row.id}-${equipment.find((e) => e.id === row.id)?.type}`}
           paginationMode="server"
           pageSizeOptions={[25, 50, 100]}
           rowCount={totalTruckResults + totalTowableResults}
