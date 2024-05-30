@@ -1,17 +1,27 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { RouterContext } from "src/routes/__root";
-import { Stack, List, ListItemText, Typography, ListItemButton, Chip } from "@mui/material";
-import { MapContainer, TileLayer } from "react-leaflet";
-import { Map as LeafletMap, latLng } from "leaflet";
+import { InfoOutlined } from "@mui/icons-material";
+import {
+  Box,
+  CircularProgress,
+  IconButton,
+  List,
+  ListItemAvatar,
+  ListItemButton,
+  ListItemSecondaryAction,
+  ListItemText,
+  Stack,
+  Typography,
+} from "@mui/material";
+import { useQueries, useQuery } from "@tanstack/react-query";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { VehicleInfoBar } from "components/vehicles/vehicle-info-bar";
+import { TruckLocation } from "generated/client";
+import { Map as LeafletMap, divIcon, latLng } from "leaflet";
 import { useEffect, useRef, useState } from "react";
-import GpsFixedIcon from "@mui/icons-material/GpsFixed";
-import SignalCellularAltIcon from "@mui/icons-material/SignalCellularAlt";
-import config from "../app/config";
-import { useQuery } from "@tanstack/react-query";
-import { useApi } from "../hooks/use-api";
 import { useTranslation } from "react-i18next";
-import LoaderWrapper from "components/generic/loader-wrapper";
-import { Truck, TruckLocation, TruckSpeed } from "generated/client";
+import { MapContainer, Marker, TileLayer, Tooltip } from "react-leaflet";
+import { RouterContext } from "src/routes/__root";
+import config from "../app/config";
+import { useApi } from "../hooks/use-api";
 
 export const Route = createFileRoute("/vehicle-list/map-view")({
   component: () => <VehicleListMapView />,
@@ -23,11 +33,10 @@ export const Route = createFileRoute("/vehicle-list/map-view")({
 const DEFAULT_MAP_CENTER = latLng(61.1621924, 28.65865865);
 
 const VehicleListMapView = () => {
+  const { t } = useTranslation("translation");
+  const navigate = useNavigate();
   const { trucksApi } = useApi();
-  const { t } = useTranslation();
-  const [selectedTruck, setSelectedTruck] = useState<Truck>();
-  const [truckSpeed, setTruckSpeed] = useState<TruckSpeed>();
-  const [truckLocation, setTruckLocation] = useState<TruckLocation>();
+  const [selectedTruckId, setSelectedTruckId] = useState<string>();
 
   const {
     mapbox: { baseUrl, publicApiKey },
@@ -43,89 +52,161 @@ const VehicleListMapView = () => {
     },
   });
 
-  const getTruckSpeed = async () => {
-    if (!selectedTruck || !selectedTruck.id) {
-      return;
-    }
+  const truckSpeed = useQuery({
+    queryKey: ["truckSpeed"],
+    queryFn: async () => {
+      if (!selectedTruckId) throw new Error("Truck must be selected to fetch truck speed");
 
-    const truckSpeed = await trucksApi.listTruckSpeeds({ truckId: selectedTruck.id });
-    setTruckSpeed(truckSpeed[0]);
-  };
+      const truckSpeeds = await trucksApi.listTruckSpeeds({ truckId: selectedTruckId, max: 1, first: 0 });
+      return truckSpeeds[0];
+    },
+    refetchInterval: 10_000,
+    enabled: !!selectedTruckId,
+  });
 
-  const getTruckLocation = async () => {
-    if (!selectedTruck || !selectedTruck.id) {
-      return;
-    }
+  const truckLocations = useQueries({
+    queries: (trucks.data ?? []).map((truck) => ({
+      queryKey: ["trucksLocations", truck.id],
+      queryFn: async () => ({
+        // biome-ignore lint/style/noNonNullAssertion: id must exist in trucks from API
+        truckId: truck.id!,
+        // biome-ignore lint/style/noNonNullAssertion: id must exist in trucks from API
+        location: (await trucksApi.listTruckLocations({ truckId: truck.id!, max: 1, first: 0 })).at(0),
+      }),
+      refetchInterval: 10_000,
+      enabled: trucks.isSuccess,
+    })),
+    combine: (results) => {
+      const truckLocationsMap = new Map<string, TruckLocation>();
 
-    const truckLocation = await trucksApi.listTruckLocations({ truckId: selectedTruck.id });
-    setTruckLocation(truckLocation[0]);
-  };
+      results.reduce((map, result) => {
+        const { truckId, location } = result.data ?? {};
+        if (truckId && location) map.set(truckId, location);
+        return map;
+      }, truckLocationsMap);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+      return truckLocationsMap;
+    },
+  });
+
   useEffect(() => {
-    getTruckSpeed();
-    getTruckLocation();
-  }, [selectedTruck]);
+    if (!mapRef.current || !selectedTruckId) return;
+    const truckLocation = truckLocations.get(selectedTruckId);
+    if (!truckLocation) return;
+    mapRef.current.setView(latLng(truckLocation.latitude, truckLocation.longitude));
+  }, [selectedTruckId, truckLocations]);
+
+  const renderTruckMarkers = () => {
+    return (trucks.data ?? []).map((truck) => {
+      if (!truck.id) return null;
+      const truckLocation = truckLocations.get(truck.id);
+
+      // Define the CSS styles for the custom marker icon
+      const customMarkerIcon = divIcon({
+        html: `
+          '<div
+              style="
+              width: 0;
+              height: 0;
+              border-left: 8px solid transparent;
+              border-right: 8px solid transparent;
+              border-bottom: 30px solid ${selectedTruckId === truck.id ? "blue" : "red"};
+              transform: rotate(${truckLocation?.heading ?? 0}deg);"
+              position="relative"
+              top="-80px"
+              left="-8px"
+          >
+          </div>'
+        `,
+      });
+
+      return (
+        <Marker
+          key={truck.id}
+          title="Truck location"
+          icon={customMarkerIcon}
+          position={latLng(
+            truckLocation?.latitude ?? DEFAULT_MAP_CENTER.lat,
+            truckLocation?.longitude ?? DEFAULT_MAP_CENTER.lng,
+          )}
+          eventHandlers={{ click: () => setSelectedTruckId(truck.id) }}
+        >
+          <Tooltip>
+            <Typography variant="body1">{truck.plateNumber}</Typography>
+          </Tooltip>
+        </Marker>
+      );
+    });
+  };
+
+  const renderMap = () => {
+    if (trucks.isLoading) {
+      return (
+        <Box flex={1} display="flex" justifyContent="center" alignItems="center">
+          <CircularProgress />
+        </Box>
+      );
+    }
+
+    return (
+      <MapContainer ref={mapRef} style={{ height: "100%" }} center={DEFAULT_MAP_CENTER} zoom={13}>
+        <TileLayer
+          attribution='<a href="https://www.mapbox.com/about/maps/">© Mapbox</a> <a href="https://www.openstreetmap.org/copyright">© OpenStreetMap</a> <a href="https://www.mapbox.com/map-feedback/">Improve this map</a>'
+          url={`${baseUrl}/styles/v1/metatavu/clsszigf302jx01qy0e4q0c7e/tiles/{z}/{x}/{y}?access_token=${publicApiKey}`}
+        />
+        {renderTruckMarkers()}
+      </MapContainer>
+    );
+  };
 
   return (
-    <LoaderWrapper loading={trucks.isLoading}>
-      <Stack
-        justifyContent="space-between"
-        alignItems="center"
-        direction="row"
-        style={{ height: "58px", backgroundColor: "white", padding: "0 20px" }}
-      >
-        <Typography
-          style={{ width: "250px", margin: 0, padding: 0, borderRight: "1px solid rgba(0, 0, 0, 0.1)" }}
-          variant="h5"
-        >
-          {t("management.vehicles.title")}
-        </Typography>
-        <Typography variant="h5">
-          {selectedTruck?.name} / {selectedTruck?.plateNumber}
-        </Typography>
-        <Typography variant="body2">
-          {t("vehicleList.mapView.speed")}
-          {truckSpeed?.speed ?? "-"}{" "}
-        </Typography>
-        <Typography variant="body2">
-          {t("vehicleList.mapView.heading")} {truckLocation?.heading ?? "-"}
-        </Typography>
-        <Typography variant="body2">{truckLocation?.heading ?? "-"}</Typography>
-        <Chip style={{ backgroundColor: "#B9F6CA" }} icon={<GpsFixedIcon />} label={t("vehicleList.mapView.gps")} />
-        <Typography variant="body2">
-          {t("vehicleList.mapView.lastUpdated")}
-          {truckLocation?.timestamp ?? "-"}{" "}
-        </Typography>
-        <Chip
-          style={{ backgroundColor: "#B9F6CA" }}
-          icon={<SignalCellularAltIcon />}
-          label={t("vehicleList.mapView.connection")}
-        />
-      </Stack>
-      <Stack direction="row" sx={{ width: "100%", height: "100vh" }}>
-        <Stack sx={{ backgroundColor: "white", width: "300px" }}>
+    <>
+      <VehicleInfoBar
+        selectedTruck={trucks.data?.find((truck) => truck.id === selectedTruckId)}
+        truckSpeed={truckSpeed.data}
+        selectedTruckLocation={selectedTruckId ? truckLocations.get(selectedTruckId) : undefined}
+        title
+      />
+      <Stack direction="row" sx={{ width: "100%", height: "100%" }}>
+        <Stack sx={{ backgroundColor: "white", width: 300, overflow: "auto" }}>
           <List>
-            {trucks.data
-              ? trucks.data.map((truck) => (
-                  <ListItemButton onClick={() => setSelectedTruck(truck)} key={truck.id}>
-                    <ListItemText primary={truck.name} />
-                    <ListItemText primary={truck.plateNumber} />
-                  </ListItemButton>
-                ))
-              : null}
+            {(trucks.data ?? []).map((truck) => (
+              <ListItemButton
+                onClick={() => setSelectedTruckId(truck.id)}
+                key={truck.id}
+                selected={selectedTruckId === truck.id}
+                divider
+                dense
+              >
+                <ListItemAvatar>
+                  <Typography variant="h6">{truck.name}</Typography>
+                </ListItemAvatar>
+                <ListItemText primary={truck.plateNumber} />
+                {selectedTruckId === truck.id && (
+                  <ListItemSecondaryAction>
+                    <IconButton
+                      size="small"
+                      edge="end"
+                      aria-label="info"
+                      title={t("vehicleList.mapView.showVehicleInfo")}
+                      onClick={() =>
+                        truck.id &&
+                        navigate({
+                          to: "/vehicle-list/vehicles/$vehicleId/info",
+                          params: { vehicleId: truck.id },
+                        })
+                      }
+                    >
+                      <InfoOutlined />
+                    </IconButton>
+                  </ListItemSecondaryAction>
+                )}
+              </ListItemButton>
+            ))}
           </List>
         </Stack>
-
-        <Stack sx={{ width: "100%", height: "100%" }}>
-          <MapContainer ref={mapRef} style={{ height: "80%" }} center={DEFAULT_MAP_CENTER} zoom={13}>
-            <TileLayer
-              attribution='<a href="https://www.mapbox.com/about/maps/">© Mapbox</a> <a href="https://www.openstreetmap.org/copyright">© OpenStreetMap</a> <a href="https://www.mapbox.com/map-feedback/">Improve this map</a>'
-              url={`${baseUrl}/styles/v1/metatavu/clsszigf302jx01qy0e4q0c7e/tiles/{z}/{x}/{y}?access_token=${publicApiKey}`}
-            />
-          </MapContainer>
-        </Stack>
+        <Stack sx={{ width: "100%", height: "100%" }}>{renderMap()}</Stack>
       </Stack>
-    </LoaderWrapper>
+    </>
   );
 };

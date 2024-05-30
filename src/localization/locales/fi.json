@@ -28,7 +28,8 @@
   "tooltips": {
     "showDetails": "Näytä tiedot",
     "openCalendar": "Avaa kalenteri",
-    "closeDialog": "Sulje ikkuna"
+    "closeDialog": "Sulje ikkuna",
+    "backToVehicles": "Takaisin ajoneuvolistaukseen"
   },
   "vehicleList": {
     "title": "Ajoneuvot",
@@ -38,7 +39,7 @@
       "number": "Tunnus",
       "temperature": "Lämpötila",
       "address": "Osoite",
-      "location": "Osoite",
+      "location": "Sijainti",
       "status": "Tila",
       "maintenance": "Huolto",
       "trailer": "Kalusto",
@@ -50,7 +51,24 @@
       "gps": "GPS",
       "heading": "Suunta: ",
       "lastUpdated": "Viimeksi päivitetty: ",
-      "connection": "Tietoliikenneyhteys"
+      "connection": "Tietoliikenneyhteys",
+      "showVehicleInfo": "Siirry ajoneuvon tietoihin"
+    },
+    "info": {
+      "title": "Ajoneuvon tiedot",
+      "timeStamp": "Aika",
+      "event": "Tapahtuma",
+      "duration": "Kesto",
+      "location": "Sijainti",
+      "driver": "Kuljettaja"
+    },
+    "truckDriveState": {
+      "rest": "Tauko",
+      "driverAvailable": "Kuljettaja saatavilla",
+      "work": "Työ",
+      "drive": "Ajossa",
+      "error": "Virhe",
+      "notAvailable": "Ei saatavilla"
     }
   },
   "management": {
@@ -120,6 +138,7 @@
     "routes": {
       "title": "Reitit",
       "date": "Päivämäärä",
+      "departureTime": "Lähtöaika",
       "newRoute": "Uusi reitti",
       "name": "Nimi",
       "truck": "Auto",

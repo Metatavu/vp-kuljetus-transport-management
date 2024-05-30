@@ -19,16 +19,18 @@ const StyledDataGrid = styled(DataGrid, {
     borderRight: "1px solid rgba(0, 0, 0, 0.12)",
   },
   "& .MuiDataGrid-footerContainer": {
-    border: "none",
+    borderTop: "1px solid rgba(0, 0, 0, 0.12)",
   },
   "& .MuiDataGrid-virtualScroller": {
-    overflow: "hidden",
+    overflowY: "auto",
+    overflowX: "hidden",
   },
 }));
 
 const GenericDataGrid = ({
   columns,
   rows,
+  loading,
   paginationMode,
   paginationModel,
   rowCount,
@@ -57,6 +59,7 @@ const GenericDataGrid = ({
       apiRef={apiRef}
       columns={columns}
       rows={rows}
+      loading={loading}
       columnHeaderHeight={30}
       rowHeight={38}
       disableColumnMenu

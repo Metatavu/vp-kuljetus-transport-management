@@ -1,5 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
-import { ListFreightUnitsRequest, ListRoutesRequest, ListSitesRequest, ListTasksRequest, ListTrucksRequest } from "generated/client";
+import {
+  ListFreightUnitsRequest,
+  ListRoutesRequest,
+  ListSitesRequest,
+  ListTasksRequest,
+  ListTrucksRequest,
+} from "generated/client";
 import { useApi } from "./use-api";
 
 export const QUERY_KEYS = {
@@ -15,7 +21,7 @@ export const QUERY_KEYS = {
 } as const;
 
 export const useSites = (requestParams: ListSitesRequest = {}, enabled = true) => {
-  const { sitesApi } = useApi();;
+  const { sitesApi } = useApi();
 
   return useQuery({
     queryKey: [QUERY_KEYS.SITES, requestParams],
@@ -30,7 +36,7 @@ export const useSites = (requestParams: ListSitesRequest = {}, enabled = true) =
 };
 
 export const useSite = (siteId: string, enabled = true) => {
-  const { sitesApi }  = useApi();
+  const { sitesApi } = useApi();
 
   return useQuery({
     queryKey: [QUERY_KEYS.SITES, siteId],

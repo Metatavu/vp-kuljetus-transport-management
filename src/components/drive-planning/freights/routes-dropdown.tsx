@@ -26,7 +26,8 @@ type Props = GridRenderEditCellParams<Task> & {
 const RoutesDropdown = (props: Props) => {
   const { t } = useTranslation();
 
-  const { api, colDef, id, field, routes, cellMode, selectedDepartureDate, setSelectedDepartureDate } = props;
+  const { selectedDepartureDate, setSelectedDepartureDate, ...rest } = props;
+  const { api, colDef, id, field, routes, cellMode } = rest;
   const { getCellElement, setEditCellValue, stopRowEditMode } = api;
 
   if (!colDef) return null;
@@ -40,11 +41,14 @@ const RoutesDropdown = (props: Props) => {
 
   return (
     <>
-      <GridEditInputCell {...props} disabled={true} value={getSelectedValue} />
+      <GridEditInputCell {...rest} disabled={true} value={getSelectedValue} />
       <Popper anchorEl={domElement} open={cellMode === GridCellModes.Edit} sx={{ zIndex: theme.zIndex.modal + 1 }}>
         <DropDownPaper elevation={1} sx={{ width: colDef.computedWidth }}>
           <Stack flex={1}>
-            <DatePickerWithArrows date={selectedDepartureDate} setDate={setSelectedDepartureDate} />
+            <DatePickerWithArrows
+              date={selectedDepartureDate || DateTime.now().startOf("day")}
+              setDate={setSelectedDepartureDate}
+            />
             <List sx={{ flex: 1, overflowY: "auto" }}>
               {routes.map((route) => (
                 <ListItemButton

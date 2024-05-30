@@ -28,7 +28,8 @@
   "tooltips": {
     "showDetails": "Show details",
     "openCalendar": "Open calendar",
-    "closeDialog": "Close dialog"
+    "closeDialog": "Close dialog",
+    "backToVehicles": "Back to vehicles"
   },
   "vehicleList": {
     "title": "Vehicle list",
@@ -50,7 +51,24 @@
       "gps": "GPS",
       "heading": "Direction: ",
       "lastUpdated": "Last updated: ",
-      "connection": "Connection"
+      "connection": "Connection",
+      "showVehicleInfo": "Go to vehicle details"
+    },
+    "info": {
+      "title": "Vehicle information",
+      "timeStamp": "Time",
+      "event": "Event",
+      "duration": "Duration",
+      "location": "Location",
+      "driver": "Driver"
+    },
+    "truckDriveState": {
+      "rest": "Rest",
+      "driverAvailable": "Driver available",
+      "work": "Work",
+      "drive": "Drive",
+      "error": "Error",
+      "notAvailable": "Not available"
     }
   },
   "management": {
@@ -121,6 +139,7 @@
     "routes": {
       "title": "Routes",
       "date": "Date",
+      "departureTime": "Departure time",
       "newRoute": "New route",
       "name": "Name",
       "truck": "Truck",

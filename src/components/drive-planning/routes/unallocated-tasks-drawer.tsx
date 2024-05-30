@@ -1,4 +1,4 @@
-import { Collapse } from "@mui/material";
+import { Collapse, Stack } from "@mui/material";
 import { GridColDef, GridCellParams } from "@mui/x-data-grid";
 import { useQueries } from "@tanstack/react-query";
 import GenericDataGrid from "components/generic/generic-data-grid";
@@ -105,26 +105,27 @@ const UnallocatedTasksDrawer = ({ open, sites, onClose }: Props) => {
     [sites, t, freightsQueries.data, freightUnitsQueries.data],
   );
   return (
-    <Collapse
-      in={open}
-      collapsedSize={42}
-      sx={{ maxHeight: "30%", overflowY: "scroll", scrollbarWidth: 0, "::-webkit-scrollbar": { display: "none" } }}
-    >
-      <DialogHeader
-        title={t("drivePlanning.routes.unallocatedTasksTable.title")}
-        closeTooltip={open ? t("drivePlanning.routes.unallocatedTasksTable.minifyTasksDrawer") : t("drivePlanning.routes.unallocatedTasksTable.expandTasksDrawer")}
-        StartIcon={AssignmentSharp}
-        CloseIcon={open ? ExpandMore : ExpandLess}
-        onClose={onClose}
-      />
-      <GenericDataGrid
-        columns={columns}
-        rows={tasksQuery.data?.tasks ?? []}
-        rowCount={tasksQuery.data?.totalResults ?? 0}
-        onCellClick={({ row: { freightId } }: GridCellParams<Task>) =>
-          navigate({ search: { freightId: freightId, date: undefined } })
-        }
-      />
+    <Collapse in={open} collapsedSize={42}>
+      <Stack direction="column" height={360}>
+        <DialogHeader
+          title={t("drivePlanning.routes.unallocatedTasksTable.title")}
+          closeTooltip={t(`drivePlanning.routes.unallocatedTasksTable.${open ? "minify" : "expand"}TasksDrawer`)}
+          StartIcon={AssignmentSharp}
+          CloseIcon={open ? ExpandMore : ExpandLess}
+          onClose={onClose}
+        />
+        <GenericDataGrid
+          fullScreen
+          autoHeight={false}
+          columns={columns}
+          rows={tasksQuery.data?.tasks ?? []}
+          loading={tasksQuery.isFetching}
+          rowCount={tasksQuery.data?.totalResults ?? 0}
+          onCellClick={({ row: { freightId } }: GridCellParams<Task>) =>
+            navigate({ search: { freightId: freightId, date: undefined } })
+          }
+        />
+      </Stack>
     </Collapse>
   );
 };
