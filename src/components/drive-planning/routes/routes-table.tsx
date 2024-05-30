@@ -12,15 +12,15 @@ import { Driver, Route, Task, Truck } from "generated/client";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import ExpandableRoutesTableRow from "./expandable-routes-table-row";
-import { QUERY_KEYS, useDrivers, useSites, useTrucks } from "hooks/use-queries";
+import { useDrivers, useSites, useTrucks } from "hooks/use-queries";
 import { deepEqual } from "@tanstack/react-router";
 import { useApi } from "hooks/use-api";
 import { useSingleClickCellEditMode } from "hooks/use-single-click-cell-edit-mode";
 import { TimePicker } from "@mui/x-date-pickers";
+import { DateTime } from "luxon";
 
 type Props = {
   paginationModel: GridPaginationModel;
-  sites: Site[];
   routes: Route[];
   totalRoutes: number;
   tasksByRoute: Record<string, Task[]>;
@@ -30,7 +30,6 @@ type Props = {
 
 const RoutesTable = ({
   paginationModel,
-  sites,
   routes,
   totalRoutes,
   tasksByRoute,
@@ -43,8 +42,10 @@ const RoutesTable = ({
   const { cellModesModel, handleCellClick, handleCellModelsChange } = useSingleClickCellEditMode((params) => {
     if (params.field !== "tasks") return;
     if (!params.row.id) return;
-    setExpandedRows((prev) =>
-      prev.includes(params.row.id) ? prev.filter((id) => id !== params.row.id) : [...prev, params.row.id],
+    setExpandedRows((previousExpandedRows) =>
+      previousExpandedRows.includes(params.row.id)
+        ? previousExpandedRows.filter((id) => id !== params.row.id)
+        : [...previousExpandedRows, params.row.id],
     );
   });
   const [expandedRows, setExpandedRows] = useState<string[]>([]);
@@ -138,7 +139,7 @@ const RoutesTable = ({
         headerName: t("drivePlanning.routes.tasks"),
         sortable: false,
         width: 100,
-        renderCell: ({ row: { id } }: GridRenderCellParams<Route>) => routeTaskLengths.get(id ?? "") ?? 0,
+        renderCell: ({ row: { id } }: GridRenderCellParams<Route>) => tasksByRoute[id ?? ""]?.length ?? 0,
       },
       {
         field: "truckId",
@@ -193,7 +194,6 @@ const RoutesTable = ({
       renderDriverSingleSelectCell,
       tasksApi,
       expandedRows,
-      queryClient,
     ],
   );
 
@@ -230,7 +230,7 @@ const RoutesTable = ({
       onCellModesModelChange={handleCellModelsChange}
       onCellClick={handleCellClick}
       processRowUpdate={processRowUpdate}
-      loading={routesQuery.isFetching || trucksQuery.isFetching || driversQuery.isFetching || sitesQuery.isFetching}
+      loading={trucksQuery.isFetching || driversQuery.isFetching || sitesQuery.isFetching}
     />
   );
 };

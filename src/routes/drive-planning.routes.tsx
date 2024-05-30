@@ -3,7 +3,7 @@ import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router";
 import ToolbarRow from "components/generic/toolbar-row";
 import { RouterContext } from "./__root";
 import { Add } from "@mui/icons-material";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { DateTime } from "luxon";
 import { useApi } from "hooks/use-api";
 import { useMutation, useQueries, useQueryClient } from "@tanstack/react-query";
@@ -60,8 +60,6 @@ function DrivePlanningRoutes() {
 
   const sitesQuery = useSites();
 
-  const { date: selectedDate } = Route.useSearch();
-
   const [unallocatedDrawerOpen, setUnallocatedDrawerOpen] = useState(true);
   const [activeDraggable, setActiveDraggable] = useState<Active | null>(null);
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({ page: 0, pageSize: 25 });
@@ -70,13 +68,9 @@ function DrivePlanningRoutes() {
   const localTasksBeforeDrag = useRef<null | Record<string, Task[]>>(null);
   const activeDraggedTasksBeforeDrag = useRef<Task[]>([]);
 
-  const initialDate = Route.useSearch({
-    select: ({ date }) => date,
+  const selectedDate = Route.useSearch({
+    select: ({ date }) => date ?? DateTime.now(),
   });
-
-  useEffect(() => {
-    if (initialDate) setSelectedDate(initialDate);
-  }, [initialDate]);
 
   const routesQuery = useRoutes(
     {
@@ -368,22 +362,19 @@ function DrivePlanningRoutes() {
           onDragEnd={handleDragEnd}
         >
           <ToolbarRow leftToolbar={renderLeftToolbar()} toolbarButtons={renderRightToolbar()} />
-          <LoaderWrapper loading={sitesQuery.isLoading}>
-            <RoutesTable
-              paginationModel={paginationModel}
-              sites={sitesQuery.data?.sites ?? []}
-              routes={routesQuery.data?.routes ?? []}
-              tasksByRoute={localTasks}
-              totalRoutes={routesQuery.data?.totalResults ?? 0}
-              onPaginationModelChange={setPaginationModel}
-              onUpdateRoute={updateRoute.mutateAsync}
-            />
-            <UnallocatedTasksDrawer
-              open={unallocatedDrawerOpen}
-              sites={sitesQuery.data?.sites ?? []}
-              onClose={() => setUnallocatedDrawerOpen(!unallocatedDrawerOpen)}
-            />
-          </LoaderWrapper>
+          <RoutesTable
+            paginationModel={paginationModel}
+            routes={routesQuery.data?.routes ?? []}
+            tasksByRoute={localTasks}
+            totalRoutes={routesQuery.data?.totalResults ?? 0}
+            onPaginationModelChange={setPaginationModel}
+            onUpdateRoute={updateRoute.mutateAsync}
+          />
+          <UnallocatedTasksDrawer
+            open={unallocatedDrawerOpen}
+            sites={sitesQuery.data?.sites ?? []}
+            onClose={() => setUnallocatedDrawerOpen(!unallocatedDrawerOpen)}
+          />
           <DragOverlay
             modifiers={[
               // snapCenterToCursor,

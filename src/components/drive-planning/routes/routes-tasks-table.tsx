@@ -1,6 +1,6 @@
 import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Box } from "@mui/material";
 import { t } from "i18next";
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
 import { useGridApiContext } from "@mui/x-data-grid";
 import { SortableContext } from "@dnd-kit/sortable";
 import { GroupedTask } from "../../../types";
@@ -25,12 +25,13 @@ const RoutesTasksTable = ({ routeId, groupedTasks }: Props) => {
 
   return (
     <Box display="flex" alignItems="stretch">
-      <Box width={leftOffset - 1} bgcolor="rgba(0, 0, 0, .025)" borderBottom="1px solid rgba(0, 0, 0, 0.12)" />
-      <TableContainer sx={{ width: `calc(100% - ${leftOffset}px)` }}>
+      <Box width={leftOffset - 46} bgcolor="rgba(0, 0, 0, .025)" borderBottom="1px solid rgba(0, 0, 0, 0.12)" />
+      <TableContainer sx={{ width: `calc(100% - ${leftOffset - 45}px)` }}>
         <SortableContext items={Object.keys(groupedTasks)}>
           <Table>
             <TableHead>
               <TableRow>
+                <TableCell sx={{ minWidth: 45, maxWidth: 45 }} />
                 <TableCell sx={{ minWidth: 100, maxWidth: 100 }}>{t("drivePlanning.routes.tasksTable.task")}</TableCell>
                 <TableCell sx={{ minWidth: 100, maxWidth: 100 }}>
                   {t("drivePlanning.routes.tasksTable.groupNumber")}
