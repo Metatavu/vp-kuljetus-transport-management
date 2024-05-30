@@ -1,16 +1,15 @@
-import { Button, Paper, Stack, Typography } from "@mui/material";
+import { Button, Paper, styled } from "@mui/material";
 import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router";
 import ToolbarRow from "components/generic/toolbar-row";
 import { RouterContext } from "./__root";
 import { Add } from "@mui/icons-material";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { DateTime } from "luxon";
 import { useApi } from "hooks/use-api";
 import { useMutation, useQueries, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import LoaderWrapper from "components/generic/loader-wrapper";
 import { Route as TRoute, Task } from "generated/client";
-import UnallocatedTasksDrawer from "components/drive-planning/routes/unallotaced-tasks-drawer";
+import UnallocatedTasksDrawer from "components/drive-planning/routes/unallocated-tasks-drawer";
 import RoutesTable from "components/drive-planning/routes/routes-table";
 import { QUERY_KEYS, useRoutes, useSites } from "hooks/use-queries";
 import {
@@ -33,6 +32,16 @@ import DataValidation from "utils/data-validation-utils";
 import DraggedTaskOverlay from "components/drive-planning/routes/dragged-task-overlay";
 // import { snapCenterToCursor } from "@dnd-kit/modifiers";
 
+// Styled components
+const Root = styled(Paper, {
+  label: "drive-planning-routes--root",
+})(() => ({
+  minHeight: "100%",
+  maxHeight: "100%",
+  display: "flex",
+  flexDirection: "column",
+}));
+
 export const Route = createFileRoute("/drive-planning/routes")({
   component: DrivePlanningRoutes,
   beforeLoad: (): RouterContext => ({
@@ -46,12 +55,13 @@ export const Route = createFileRoute("/drive-planning/routes")({
 function DrivePlanningRoutes() {
   const { routesApi, tasksApi } = useApi();
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const navigate = useNavigate({ from: Route.fullPath });
   const queryClient = useQueryClient();
 
   const sitesQuery = useSites();
 
-  const [selectedDate, setSelectedDate] = useState<DateTime | null>(DateTime.now());
+  const { date: selectedDate } = Route.useSearch();
+
   const [unallocatedDrawerOpen, setUnallocatedDrawerOpen] = useState(true);
   const [activeDraggable, setActiveDraggable] = useState<Active | null>(null);
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({ page: 0, pageSize: 25 });
@@ -104,9 +114,18 @@ function DrivePlanningRoutes() {
       if (!route.id) return Promise.reject();
       return routesApi.updateRoute({ routeId: route.id, route });
     },
-    onSuccess: () => {
+    onSuccess: (route) => {
       toast.success(t("drivePlanning.routes.successToast"));
-      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ROUTES, selectedDate] });
+      const routeDate = DateTime.fromJSDate(route.departureTime);
+      queryClient.invalidateQueries({
+        queryKey: [
+          QUERY_KEYS.ROUTES,
+          {
+            departureAfter: routeDate.startOf("day").toJSDate(),
+            departureBefore: routeDate.endOf("day").toJSDate(),
+          },
+        ],
+      });
     },
     onError: () => toast.error(t("drivePlanning.routes.errorToast")),
   });
@@ -126,14 +145,14 @@ function DrivePlanningRoutes() {
 
   const renderLeftToolbar = useCallback(
     () => (
-      <Stack direction="row">
-        <Typography variant="h6" sx={{ opacity: 0.6 }} alignSelf="center">
-          {t("drivePlanning.routes.date")}
-        </Typography>
-        <DatePickerWithArrows labelVisible={false} date={selectedDate} setDate={setSelectedDate} />
-      </Stack>
+      <DatePickerWithArrows
+        buttonsWithText
+        labelVisible={false}
+        date={selectedDate ?? DateTime.now().startOf("day")}
+        setDate={(date) => navigate({ search: (search) => ({ ...search, date: date }) })}
+      />
     ),
-    [selectedDate, t],
+    [selectedDate, navigate],
   );
 
   const renderRightToolbar = useCallback(
@@ -327,7 +346,7 @@ function DrivePlanningRoutes() {
   return (
     <>
       <Outlet />
-      <Paper sx={{ minHeight: "100%", maxHeight: "100%", display: "flex", flexDirection: "column" }}>
+      <Root>
         <DndContext
           sensors={useSensors(
             useSensor(PointerSensor, {
@@ -381,7 +400,7 @@ function DrivePlanningRoutes() {
             {renderDragOverlay()}
           </DragOverlay>
         </DndContext>
-      </Paper>
+      </Root>
     </>
   );
 }

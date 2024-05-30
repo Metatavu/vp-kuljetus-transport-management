@@ -8,16 +8,15 @@ import {
   GridRowProps,
 } from "@mui/x-data-grid";
 import GenericDataGrid from "components/generic/generic-data-grid";
-import { Driver, Route, Site, Task, Truck } from "generated/client";
+import { Driver, Route, Task, Truck } from "generated/client";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import ExpandableRoutesTableRow from "./expandable-routes-table-row";
-import { QUERY_KEYS, useDrivers, useTrucks } from "hooks/use-queries";
+import { QUERY_KEYS, useDrivers, useSites, useTrucks } from "hooks/use-queries";
 import { deepEqual } from "@tanstack/react-router";
 import { useApi } from "hooks/use-api";
 import { useSingleClickCellEditMode } from "hooks/use-single-click-cell-edit-mode";
-import AsyncDataGridCell from "components/generic/async-data-grid-cell";
-import { useQueryClient } from "@tanstack/react-query";
+import { TimePicker } from "@mui/x-date-pickers";
 
 type Props = {
   paginationModel: GridPaginationModel;
@@ -40,7 +39,6 @@ const RoutesTable = ({
 }: Props) => {
   const { t } = useTranslation();
   const { tasksApi } = useApi();
-  const queryClient = useQueryClient();
 
   const { cellModesModel, handleCellClick, handleCellModelsChange } = useSingleClickCellEditMode((params) => {
     if (params.field !== "tasks") return;
@@ -53,6 +51,7 @@ const RoutesTable = ({
 
   const trucksQuery = useTrucks();
   const driversQuery = useDrivers();
+  const sitesQuery = useSites();
 
   const processRowUpdate = async (newRow: Route, oldRow: Route) => {
     if (deepEqual(oldRow, newRow)) return oldRow;
@@ -63,6 +62,7 @@ const RoutesTable = ({
   const renderTruckSingleSelectCell = useCallback(
     ({ api, id, field, value }: GridRenderEditCellParams) => {
       const { setEditCellValue } = api;
+
       return (
         <TextField
           select
@@ -72,7 +72,7 @@ const RoutesTable = ({
         >
           {trucksQuery.data?.trucks.map((truck) => (
             <MenuItem key={truck.id} value={truck.id}>
-              {truck.name} ({truck.plateNumber})
+              {truck.name && truck.plateNumber ? `${truck.name} (${truck.plateNumber})` : ""}
             </MenuItem>
           ))}
         </TextField>
@@ -108,33 +108,43 @@ const RoutesTable = ({
         field: "name",
         headerName: t("drivePlanning.routes.name"),
         sortable: false,
-        flex: 1,
+        width: 100,
         editable: true,
         type: "string",
+      },
+      {
+        field: "departureTime",
+        headerName: t("drivePlanning.routes.departureTime"),
+        sortable: false,
+        width: 100,
+        editable: true,
+        renderCell: ({ value }) => DateTime.fromJSDate(value).toFormat("HH:mm"),
+        renderEditCell: ({ value, api, id, field }) => (
+          <TimePicker
+            autoFocus
+            value={DateTime.fromJSDate(value)}
+            onChange={(newValue) => newValue && api.setEditCellValue({ id, field, value: newValue.toJSDate() })}
+            disableOpenPicker
+            onAccept={() => api.stopCellEditMode({ id, field })}
+            slotProps={{
+              textField: { variant: "outlined" },
+              inputAdornment: { sx: { marginRight: 1 } },
+            }}
+          />
+        ),
       },
       {
         field: "tasks",
         headerName: t("drivePlanning.routes.tasks"),
         sortable: false,
-        flex: 1,
-        renderCell: ({ row: { id } }: GridRenderCellParams<Route>) => {
-          if (!id) return null;
-          return (
-            <AsyncDataGridCell
-              promise={queryClient.fetchQuery({
-                queryKey: [QUERY_KEYS.TASKS_BY_ROUTE, id],
-                queryFn: () => tasksApi.listTasks({ routeId: id }),
-              })}
-              valueGetter={(tasks) => tasks.length.toString()}
-            />
-          );
-        },
+        width: 100,
+        renderCell: ({ row: { id } }: GridRenderCellParams<Route>) => routeTaskLengths.get(id ?? "") ?? 0,
       },
       {
         field: "truckId",
         headerName: t("drivePlanning.routes.truck"),
         sortable: false,
-        flex: 1,
+        width: 200,
         editable: true,
         type: "singleSelect",
         valueOptions: trucksQuery.data?.trucks ?? [],
@@ -147,7 +157,7 @@ const RoutesTable = ({
         field: "driverId",
         headerName: t("drivePlanning.routes.driver"),
         sortable: false,
-        flex: 10,
+        flex: 1,
         editable: true,
         type: "singleSelect",
         valueOptions: driversQuery.data?.drivers ?? [],
@@ -160,14 +170,15 @@ const RoutesTable = ({
         field: "actions",
         type: "actions",
         align: "right",
-        flex: 1,
+        width: 180,
         renderHeader: () => null,
         renderCell: ({ row: { id } }) => (
           <IconButton
-            onClick={() => {
-              if (expandedRows.includes(id)) setExpandedRows(expandedRows.filter((rowId) => rowId !== id));
-              else setExpandedRows([...expandedRows, id]);
-            }}
+            onClick={() =>
+              setExpandedRows(
+                expandedRows.includes(id) ? expandedRows.filter((rowId) => rowId !== id) : [...expandedRows, id],
+              )
+            }
           >
             {expandedRows.includes(id) ? <UnfoldLess /> : <UnfoldMore />}
           </IconButton>
@@ -194,12 +205,12 @@ const RoutesTable = ({
           {...params}
           routeId={params.rowId}
           tasks={tasksByRoute[params.rowId] ?? []}
-          sites={sites}
+          sites={sitesQuery.data?.sites ?? []}
           expanded={expandedRows.includes(params.rowId)}
         />
       );
     },
-    [sites, expandedRows, tasksByRoute],
+    [sitesQuery.data, expandedRows, tasksByRoute],
   );
 
   return (
@@ -207,6 +218,7 @@ const RoutesTable = ({
       editMode="cell"
       paginationMode="server"
       disableRowSelectionOnClick
+      autoHeight={false}
       fullScreen={false}
       columns={columns}
       rows={routes}
@@ -218,6 +230,7 @@ const RoutesTable = ({
       onCellModesModelChange={handleCellModelsChange}
       onCellClick={handleCellClick}
       processRowUpdate={processRowUpdate}
+      loading={routesQuery.isFetching || trucksQuery.isFetching || driversQuery.isFetching || sitesQuery.isFetching}
     />
   );
 };

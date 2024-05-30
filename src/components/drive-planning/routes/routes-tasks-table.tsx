@@ -1,4 +1,4 @@
-import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody } from "@mui/material";
+import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Box } from "@mui/material";
 import { t } from "i18next";
 import { useCallback, useMemo } from "react";
 import { useGridApiContext } from "@mui/x-data-grid";
@@ -21,33 +21,35 @@ const RoutesTasksTable = ({ routeId, groupedTasks }: Props) => {
     [groupedTasks, routeId],
   );
 
-  const baseCellWidth = useMemo(() => dataGridApiRef.current.getColumnPosition("tasks"), [dataGridApiRef]);
-  const hasRows = useMemo(() => Object.keys(groupedTasks).length > 0, [groupedTasks]);
-  const cellWidth = useMemo(() => {
-    if (hasRows) return baseCellWidth + 15;
-    return baseCellWidth;
-  }, [baseCellWidth, hasRows]);
+  const leftOffset = dataGridApiRef.current.getColumnPosition("departureTime");
 
   return (
-    <TableContainer sx={{ marginLeft: `${baseCellWidth}px`, maxWidth: `calc(100% - ${baseCellWidth}px)` }}>
-      <SortableContext items={Object.keys(groupedTasks)}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell width={cellWidth} colSpan={hasRows ? 2 : 1}>
-                {t("drivePlanning.routes.tasksTable.task")}
-              </TableCell>
-              <TableCell width={baseCellWidth}>{t("drivePlanning.routes.tasksTable.groupNumber")}</TableCell>
-              <TableCell width={baseCellWidth * 5}>{t("drivePlanning.routes.tasksTable.customerSite")}</TableCell>
-              <TableCell width={baseCellWidth * 5}>{t("drivePlanning.routes.tasksTable.address")}</TableCell>
-              <TableCell>{t("drivePlanning.routes.tasksTable.tasksAmount")}</TableCell>
-              <TableCell />
-            </TableRow>
-          </TableHead>
-          <TableBody>{Object.keys(groupedTasks).map(renderTaskRow)}</TableBody>
-        </Table>
-      </SortableContext>
-    </TableContainer>
+    <Box display="flex" alignItems="stretch">
+      <Box width={leftOffset - 1} bgcolor="rgba(0, 0, 0, .025)" borderBottom="1px solid rgba(0, 0, 0, 0.12)" />
+      <TableContainer sx={{ width: `calc(100% - ${leftOffset}px)` }}>
+        <SortableContext items={Object.keys(groupedTasks)}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell sx={{ minWidth: 100, maxWidth: 100 }}>{t("drivePlanning.routes.tasksTable.task")}</TableCell>
+                <TableCell sx={{ minWidth: 100, maxWidth: 100 }}>
+                  {t("drivePlanning.routes.tasksTable.groupNumber")}
+                </TableCell>
+                <TableCell sx={{ minWidth: 200, maxWidth: 200 }}>
+                  {t("drivePlanning.routes.tasksTable.customerSite")}
+                </TableCell>
+                <TableCell sx={{ width: "100%" }}>{t("drivePlanning.routes.tasksTable.address")}</TableCell>
+                <TableCell sx={{ minWidth: 120, maxWidth: 120 }}>
+                  {t("drivePlanning.routes.tasksTable.tasksAmount")}
+                </TableCell>
+                <TableCell sx={{ minWidth: 60, maxWidth: 60 }} />
+              </TableRow>
+            </TableHead>
+            <TableBody>{Object.keys(groupedTasks).map(renderTaskRow)}</TableBody>
+          </Table>
+        </SortableContext>
+      </TableContainer>
+    </Box>
   );
 };
 

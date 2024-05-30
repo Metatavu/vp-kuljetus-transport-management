@@ -7,7 +7,11 @@ import { DefaultNamespace, ParseKeys } from "i18next";
 
 export type LocalizedLabelKey = ParseKeys<DefaultNamespace> | TemplateStringsArray;
 
-export type NavigationItem = readonly [RoutePaths<RegisteredRouter["routeTree"]>, LocalizedLabelKey, typeof SvgIcon | undefined];
+export type NavigationItem = readonly [
+  RoutePaths<RegisteredRouter["routeTree"]>,
+  LocalizedLabelKey,
+  typeof SvgIcon | undefined,
+];
 
 type UnallocatedTasksRowDragHandle = {
   setActivatorNodeRef: (element: HTMLElement | null) => void;
@@ -28,7 +32,7 @@ export enum VehicleListColumns {
   Location = "location",
   Status = "status",
   Trailer = "trailer",
-  Driver = "driver"
+  Driver = "driver",
 }
 
 export type GroupedTask = {

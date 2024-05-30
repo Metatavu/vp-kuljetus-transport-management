@@ -1,4 +1,4 @@
-import { Popper, Paper, Stack, List, ListItemButton, ListItemText } from "@mui/material";
+import { Popper, Paper, Stack, List, ListItemButton, ListItemText, styled } from "@mui/material";
 import { GridCellModes, GridEditInputCell, GridRenderEditCellParams } from "@mui/x-data-grid";
 import DatePickerWithArrows from "components/generic/date-picker-with-arrows";
 import { Route, Task } from "generated/client";
@@ -6,6 +6,16 @@ import { DateTime } from "luxon";
 import { Dispatch, SetStateAction, useCallback } from "react";
 import { theme } from "../../../theme";
 import { useTranslation } from "react-i18next";
+
+// Styled components
+const DropDownPaper = styled(Paper, {
+  label: "styled-dropdown--dropdown-paper",
+})(() => ({
+  borderRadius: 0,
+  maxHeight: 250,
+  overflow: "hidden",
+  display: "flex",
+}));
 
 type Props = GridRenderEditCellParams<Task> & {
   routes: Route[];
@@ -16,7 +26,8 @@ type Props = GridRenderEditCellParams<Task> & {
 const RoutesDropdown = (props: Props) => {
   const { t } = useTranslation();
 
-  const { api, colDef, id, field, routes, cellMode, selectedDepartureDate, setSelectedDepartureDate } = props;
+  const { selectedDepartureDate, setSelectedDepartureDate, ...rest } = props;
+  const { api, colDef, id, field, routes, cellMode } = rest;
   const { getCellElement, setEditCellValue, stopRowEditMode } = api;
 
   if (!colDef) return null;
@@ -30,22 +41,15 @@ const RoutesDropdown = (props: Props) => {
 
   return (
     <>
-      <GridEditInputCell {...props} disabled={true} value={getSelectedValue} />
+      <GridEditInputCell {...rest} disabled={true} value={getSelectedValue} />
       <Popper anchorEl={domElement} open={cellMode === GridCellModes.Edit} sx={{ zIndex: theme.zIndex.modal + 1 }}>
-        <Paper
-          sx={{
-            width: colDef.computedWidth,
-            padding: "8px",
-            borderRadius: 0,
-            maxHeight: "250px",
-            overflowY: "scroll",
-            overflowX: "hidden",
-          }}
-          elevation={1}
-        >
-          <Stack spacing={1}>
-            <DatePickerWithArrows date={selectedDepartureDate} setDate={setSelectedDepartureDate} />
-            <List>
+        <DropDownPaper elevation={1} sx={{ width: colDef.computedWidth }}>
+          <Stack flex={1}>
+            <DatePickerWithArrows
+              date={selectedDepartureDate || DateTime.now().startOf("day")}
+              setDate={setSelectedDepartureDate}
+            />
+            <List sx={{ flex: 1, overflowY: "auto" }}>
               {routes.map((route) => (
                 <ListItemButton
                   key={route.id}
@@ -64,7 +68,7 @@ const RoutesDropdown = (props: Props) => {
               ))}
             </List>
           </Stack>
-        </Paper>
+        </DropDownPaper>
       </Popper>
     </>
   );

@@ -1,5 +1,6 @@
 import { createTheme } from "@mui/material";
 import type {} from "@mui/x-date-pickers/themeAugmentation";
+import type {} from "@mui/x-data-grid/themeAugmentation";
 import { fiFI } from "@mui/x-date-pickers";
 
 /**
@@ -95,6 +96,13 @@ const theme = createTheme(
           },
         },
       },
+      MuiLink: {
+        styleOverrides: {
+          root: {
+            cursor: "pointer",
+          },
+        },
+      },
       MuiTabs: {
         variants: [
           {
@@ -136,6 +144,15 @@ const theme = createTheme(
           size: "small",
           variant: "contained",
           color: "primary",
+          disableElevation: true,
+        },
+        styleOverrides: {
+          root: {
+            minWidth: "inherit",
+            width: "fit-content",
+            whiteSpace: "nowrap",
+            borderRadius: "3px",
+          },
         },
       },
       MuiIconButton: {
@@ -260,7 +277,16 @@ const theme = createTheme(
           },
         },
       },
-    }
+      MuiDataGrid: {
+        styleOverrides: {
+          cell: {
+            "&:focus, &:focus-within": {
+              outline: "transparent",
+            },
+          },
+        },
+      },
+    },
   },
   fiFI,
 );

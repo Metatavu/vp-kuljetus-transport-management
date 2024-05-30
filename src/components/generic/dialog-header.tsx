@@ -22,17 +22,18 @@ const StyledDialogHeaderContent = styled(Stack, {
 
 type Props = {
   title: string;
+  closeTooltip?: string;
   StartIcon?: ElementType;
   CloseIcon?: ElementType;
   onClose?: () => void;
 };
 
-const DialogHeader = ({ title, StartIcon, CloseIcon, onClose }: Props) => {
+const DialogHeader = ({ title, closeTooltip, StartIcon, CloseIcon, onClose }: Props) => {
   const renderCloseIcon = () => {
     if (!onClose) return null;
 
     return (
-      <IconButton onClick={onClose}>
+      <IconButton onClick={onClose} title={closeTooltip}>
         {CloseIcon ? (
           <CloseIcon htmlColor={theme.palette.primary.contrastText} />
         ) : (

@@ -12,6 +12,7 @@ import { useConfirmDialog } from "components/providers/confirm-dialog-provider";
 import { useApi } from "hooks/use-api";
 import { useNavigate } from "@tanstack/react-router";
 
+// Styled components
 const FlexTextarea = styled(TextField, {
   label: "flex-textarea",
 })(() => ({

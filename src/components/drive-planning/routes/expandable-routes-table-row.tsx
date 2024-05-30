@@ -16,14 +16,14 @@ type Props = GridRowProps & {
 const ExpandableRoutesTableRow = ({ expanded, routeId, tasks, sites, ...props }: Props) => {
   const groupedTasks = useMemo(
     () =>
-      tasks.reduce(
+      tasks.reduce<Record<string, GroupedTask>>(
         (groupedTasks, task) => {
           const key = `${task.groupNumber}-${task.customerSiteId}-${task.type}`;
           const site = sites.find((site) => site.id === task.customerSiteId);
 
           if (!site) return groupedTasks;
 
-          const groupedTask = {
+          groupedTasks[key] = {
             ...groupedTasks[key],
             tasks: [...(groupedTasks[key]?.tasks ?? []), task],
             groupNumber: task.groupNumber,
@@ -33,7 +33,6 @@ const ExpandableRoutesTableRow = ({ expanded, routeId, tasks, sites, ...props }:
             groupedTasksKey: key,
             routeId: routeId,
           };
-          groupedTasks[key] = groupedTask;
 
           return groupedTasks;
         },

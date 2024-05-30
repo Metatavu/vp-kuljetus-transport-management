@@ -9,17 +9,67 @@
   "noSelection": "Ei valintaa",
   "noResults": "Ei tuloksia",
   "actions": "Toiminnot",
-  "vehicleList": "Ajoneuvolista",
   "menu": "Valikko",
   "vehicleInfo": "Ajoneuvon tiedot",
   "workingTime": "Työaika",
   "addNew": "Lisää uusi",
+  "previousDay": "Edellinen päivä",
+  "nextDay": "Seuraava päivä",
+  "openCalendar": "Valitse päivä kalenterista",
+  "showMenu": "Näytä valikko",
+  "hideMenu": "Piilota valikko",
   "equipmentType": {
     "truck": "Kuorma-auto",
     "semiTruck": "Vetoauto",
     "trailer": "Täysperävaunu",
     "semiTrailer": "Puoliperävaunu",
     "dolly": "Dolly"
+  },
+  "tooltips": {
+    "showDetails": "Näytä tiedot",
+    "openCalendar": "Avaa kalenteri",
+    "closeDialog": "Sulje ikkuna",
+    "backToVehicles": "Takaisin ajoneuvolistaukseen"
+  },
+  "vehicleList": {
+    "title": "Ajoneuvot",
+    "vehicle": {
+      "type": "Tyyppi",
+      "plateNumber": "Auto",
+      "number": "Tunnus",
+      "temperature": "Lämpötila",
+      "address": "Osoite",
+      "location": "Sijainti",
+      "status": "Tila",
+      "maintenance": "Huolto",
+      "trailer": "Kalusto",
+      "driver": "Kuljettaja"
+    },
+    "mapView": {
+      "title": "Kartta",
+      "speed": "Nopeus: ",
+      "gps": "GPS",
+      "heading": "Suunta: ",
+      "lastUpdated": "Viimeksi päivitetty: ",
+      "connection": "Tietoliikenneyhteys",
+      "showVehicleInfo": "Siirry ajoneuvon tietoihin"
+    },
+    "info": {
+      "title": "Ajoneuvon tiedot",
+      "timeStamp": "Aika",
+      "event": "Tapahtuma",
+      "duration": "Kesto",
+      "location": "Sijainti",
+      "driver": "Kuljettaja"
+    },
+    "truckDriveState": {
+      "rest": "Tauko",
+      "driverAvailable": "Kuljettaja saatavilla",
+      "work": "Työ",
+      "drive": "Ajossa",
+      "error": "Virhe",
+      "notAvailable": "Ei saatavilla"
+    }
   },
   "management": {
     "title": "Hallinta",
@@ -88,6 +138,7 @@
     "routes": {
       "title": "Reitit",
       "date": "Päivämäärä",
+      "departureTime": "Lähtöaika",
       "newRoute": "Uusi reitti",
       "name": "Nimi",
       "truck": "Auto",
@@ -109,6 +160,8 @@
       },
       "unallocatedTasksTable": {
         "title": "Järjestelemättömät tehtävät",
+        "minifyTasksDrawer": "Piilota järjestelemättömät tehtävät",
+        "expandTasksDrawer": "Näytä järjestelemättömät tehtävät",
         "freightNumber": "Rahtikirja",
         "contents": "Sisältö",
         "taskRowTooltip": "Raahaa tehtävä reitille"

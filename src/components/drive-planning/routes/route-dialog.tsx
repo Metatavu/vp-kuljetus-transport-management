@@ -6,10 +6,18 @@ import { Driver, Route, Truck } from "generated/client";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useApi } from "hooks/use-api";
-import { DatePicker } from "@mui/x-date-pickers";
+import { TimePicker } from "@mui/x-date-pickers";
 import { DateTime } from "luxon";
 import DialogHeader from "components/generic/dialog-header";
 import { QUERY_KEYS } from "hooks/use-queries";
+import { useEffect } from "react";
+
+type RouteForm = {
+  truckId: string;
+  driverId: string;
+  name: string;
+  departureTime: Date;
+};
 
 type Props = {
   initialDate: DateTime;
@@ -28,21 +36,34 @@ const RouteDialog = ({ initialDate, routeId, onSave }: Props) => {
     enabled: !!routeId,
   });
 
-  const { truckId, driverId, departureTime } = routeQuery.data ?? {};
-
   const {
     handleSubmit,
     register,
     setValue,
     resetField,
     formState: { errors },
-  } = useForm<Route>({
+    reset,
+  } = useForm<RouteForm>({
     mode: "onChange",
     defaultValues: {
-      ...routeQuery.data,
-      departureTime: departureTime ?? initialDate.toJSDate(),
+      truckId: "EMPTY",
+      driverId: "EMPTY",
+      name: "",
+      departureTime: initialDate.toJSDate(),
     },
   });
+
+  useEffect(() => {
+    if (routeQuery.isFetchedAfterMount || !routeQuery.data) return;
+    const { truckId, driverId, name, departureTime } = routeQuery.data;
+
+    reset({
+      truckId: truckId ?? "EMPTY",
+      driverId: driverId ?? "EMPTY",
+      name: name ?? "",
+      departureTime: departureTime ?? initialDate.toJSDate(),
+    });
+  }, [routeQuery, reset, initialDate]);
 
   const trucksQuery = useQuery({
     queryKey: [QUERY_KEYS.TRUCKS],
@@ -54,11 +75,16 @@ const RouteDialog = ({ initialDate, routeId, onSave }: Props) => {
     queryFn: () => driversApi.listDrivers(),
   });
 
-  const onSaveClick = (route: Route) => onSave?.mutateAsync(route);
+  const onSaveClick = (form: RouteForm) =>
+    onSave?.mutateAsync({
+      ...(routeQuery.data ?? {}),
+      name: form.name,
+      truckId: form.truckId === "EMPTY" ? undefined : form.truckId,
+      driverId: form.driverId === "EMPTY" ? undefined : form.driverId,
+      departureTime: form.departureTime,
+    });
 
   const handleClose = () => navigate({ to: "/drive-planning/routes", search: { date: initialDate } });
-
-  const setSingleSelectValue = (value: string) => (value === "EMPTY" ? undefined : value);
 
   const renderTruck = (truck: Truck) => (
     <MenuItem key={truck.id} value={truck.id}>
@@ -94,33 +120,35 @@ const RouteDialog = ({ initialDate, routeId, onSave }: Props) => {
     >
       <LoaderWrapper loading={routeQuery.isLoading || trucksQuery.isLoading || driversQuery.isLoading}>
         <DialogHeader
+          closeTooltip={t("tooltips.closeDialog")}
           title={routeId ? t("drivePlanning.routes.dialog.title") : t("drivePlanning.routes.newRoute")}
           onClose={handleClose}
         />
         <form onSubmit={handleSubmit(onSaveClick)}>
           <DialogContent sx={{ padding: "16px" }}>
             <Stack spacing={2}>
-              <DatePicker
-                label={t("drivePlanning.routes.date")}
+              <TimePicker
+                label={t("drivePlanning.routes.departureTime")}
                 value={initialDate}
                 onChange={(value: DateTime | null) =>
                   value ? setValue("departureTime", value.toJSDate()) : resetField("departureTime")
                 }
+                slotProps={{ inputAdornment: { sx: { marginRight: 1 } } }}
               />
               <TextField {...register("name", { required: true })} label={t("drivePlanning.routes.name")} />
               <TextField
-                {...register("truckId", { setValueAs: setSingleSelectValue })}
+                {...register("truckId")}
                 select
-                defaultValue={truckId ?? "EMPTY"}
+                defaultValue="EMPTY"
                 label={t("drivePlanning.routes.truck")}
                 helperText={t("drivePlanning.routes.helperText")}
               >
                 {renderTrucks()}
               </TextField>
               <TextField
-                {...register("driverId", { setValueAs: setSingleSelectValue })}
+                {...register("driverId")}
                 select
-                defaultValue={driverId ?? "EMPTY"}
+                defaultValue="EMPTY"
                 label={t("drivePlanning.routes.driver")}
                 helperText={t("drivePlanning.routes.helperText")}
               >

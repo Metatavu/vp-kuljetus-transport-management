@@ -42,7 +42,7 @@ function AddRoute() {
     },
     onSuccess: () => {
       toast.success(t("drivePlanning.routes.successToast"));
-      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.FREIGHTS] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ROUTES] });
     },
     onError: () => toast.error(t("drivePlanning.routes.errorToast")),
   });
