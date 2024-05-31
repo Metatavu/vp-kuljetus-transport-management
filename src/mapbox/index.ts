@@ -22,7 +22,7 @@ namespace Mapbox {
    * @returns Array of {@link MapboxFeatureProperties}
    */
   export const getSuggestions = async (query: string, sessionToken: SessionToken) => {
-    const suggestions = await doRequest<MapboxSuggestionResponse>(`/search/searchbox/v1/suggest?q=${query}&session_token=${sessionToken}&language=${DEFAULT_COUNTRY}&limit=${DEFAULT_LIMIT}`);
+    const suggestions = await doRequest<MapboxSuggestionResponse>(`/search/searchbox/v1/suggest?q=${query}&types=street,address&country=FI&session_token=${sessionToken}&language=${DEFAULT_COUNTRY}&limit=${DEFAULT_LIMIT}`);
 
     return suggestions?.suggestions ?? [];
   };
@@ -80,7 +80,7 @@ type MapboxFeatureGeometry = {
 type MapboxFeatureProperties = {
   name: string,
   mapbox_id: string,
-  feature_type: string,
+  feature_type: MapboxFeatureType,
   address: string,
   full_address: string,
   place_formatted: string,
@@ -113,3 +113,5 @@ type MapboxFeatureProperties = {
   poi_category: string[];
   poi_category_ids: string[];
 }
+
+type MapboxFeatureType = "address" | "street" | "poi";
