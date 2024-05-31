@@ -23,6 +23,20 @@ namespace LocalizationUtils {
     ERROR: t("vehicleList.truckDriveState.error"),
     NOT_AVAILABLE: t("vehicleList.truckDriveState.notAvailable"),
   })[status];
+
+  export const getLocalizedDriveStateStatus = (status: TruckDriveStateEnum, t: TFunction) => ({
+    REST: t("vehicleList.truckDriveStateStatus.stopped"),
+    DRIVER_AVAILABLE: t("vehicleList.truckDriveStateStatus.stopped"),
+    WORK: t("vehicleList.truckDriveStateStatus.stopped"),
+    DRIVE: t("vehicleList.truckDriveStateStatus.driving"),
+    ERROR: t("vehicleList.truckDriveStateStatus.stopped"),
+    NOT_AVAILABLE: t("vehicleList.truckDriveStateStatus.stopped"),
+  })[status];
+
+  export const getLocalizedTruckEvent = (taskType: TaskType, t: TFunction) => ({
+    LOAD: t("vehicleList.truckEventType.load"),
+    UNLOAD: t("vehicleList.truckEventType.unload"),
+  })[taskType];
 }
 
 export default LocalizationUtils;

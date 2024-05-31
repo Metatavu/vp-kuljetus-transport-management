@@ -69,6 +69,14 @@
       "drive": "Ajossa",
       "error": "Virhe",
       "notAvailable": "Ei saatavilla"
+    },
+    "truckDriveStateStatus": {
+      "driving": "Ajo",
+      "stopped": "Pysähdys"
+    },
+    "truckEventType": {
+      "load": "Lastaus",
+      "unload": "Purku"
     }
   },
   "management": {
