@@ -173,10 +173,11 @@ function DrivePlanningRoutes() {
   const handleAllocateTask = useCallback(async (task: Task) => await updateTask.mutateAsync({ ...task }), [updateTask]);
 
   const handleUnallocateGroupedTasks = useCallback(
-    async (tasks: Task[]) =>
-      await Promise.all(
-        tasks.map((task) => updateTask.mutateAsync({ ...task, routeId: undefined, orderNumber: undefined })),
-      ),
+    async (tasks: Task[]) => {
+      for (const task of tasks) {
+        await updateTask.mutateAsync({ ...task, routeId: undefined, orderNumber: undefined });
+      }
+    },
     [updateTask],
   );
 
@@ -204,7 +205,7 @@ function DrivePlanningRoutes() {
 
       // Dragged task is unallocated, newIndex is set within the handleDragOver function. Assign new index to task.
       if (activeDraggableType === DraggableType.UNALLOCATED_TASK && overRouteId) {
-        handleAllocateTask({ ...draggedTasks[0], orderNumber: newIndex, routeId: overRouteId });
+        await handleAllocateTask({ ...draggedTasks[0], orderNumber: newIndex, routeId: overRouteId });
         return;
       }
       // Dragged task is grouped task and overId is unallocated tasks droppable. Unallocate dragged tasks.
@@ -216,7 +217,7 @@ function DrivePlanningRoutes() {
       if (activeDraggableType === DraggableType.GROUPED_TASK && overRouteId) {
         for (let i = 0; i < draggedTasks.length; i++) {
           const task = draggedTasks[i];
-          handleAllocateTask({ ...task, orderNumber: newIndex + i, routeId: overRouteId });
+          await handleAllocateTask({ ...task, orderNumber: newIndex + i, routeId: overRouteId });
         }
         return;
       }
