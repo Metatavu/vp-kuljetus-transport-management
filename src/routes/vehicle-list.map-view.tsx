@@ -104,20 +104,17 @@ const VehicleListMapView = () => {
       // Define the CSS styles for the custom marker icon
       const customMarkerIcon = divIcon({
         html: `
-          '<div
-              style="
-              width: 0;
-              height: 0;
-              border-left: 8px solid transparent;
-              border-right: 8px solid transparent;
-              border-bottom: 30px solid ${selectedTruckId === truck.id ? "blue" : "red"};
-              transform: rotate(${truckLocation?.heading ?? 0}deg);"
-              position="relative"
-              top="-80px"
-              left="-8px"
-          >
-          </div>'
-        `,
+           <div
+               style="
+               width: 0;
+               height: 0;
+               border-left: 8px solid transparent;
+               border-right: 8px solid transparent;
+               border-bottom: 30px solid ${selectedTruckId === truck.id ? "blue" : "red"};
+               transform: rotate(${truckLocation?.heading ?? 0}deg);"
+           />
+         `,
+         className: "custom-marker-icon",
       });
 
       return (

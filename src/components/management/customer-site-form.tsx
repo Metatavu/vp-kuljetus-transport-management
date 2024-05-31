@@ -13,8 +13,8 @@ import { useApi } from "hooks/use-api";
 import { useNavigate } from "@tanstack/react-router";
 
 // Styled components
-const FlexTextarea = styled(TextField, {
-  label: "flex-textarea",
+const FlexTextArea = styled(TextField, {
+  label: "flex-text-area",
 })(() => ({
   flex: 1,
   "& .MuiFilledInput-root": {
@@ -60,8 +60,8 @@ const CustomerSiteForm = ({ errors, customerSite, register, setFormValue, watch 
     queryKey: ["suggestions", debouncedSearchTerm],
     queryFn: () => Mapbox.getSuggestions(debouncedSearchTerm, mapboxSessionToken),
     select: (suggestions) =>
-      suggestions.map(({ address, place_formatted, mapbox_id }) => ({
-        title: address,
+      suggestions.map(({ name, place_formatted, mapbox_id }) => ({
+        title: name,
         subtitle: place_formatted,
         value: mapbox_id,
       })),
@@ -77,7 +77,8 @@ const CustomerSiteForm = ({ errors, customerSite, register, setFormValue, watch 
     onSuccess: () => navigate({ to: "/management/customer-sites" }),
   });
 
-  const onAutocompleteValueChange = async (_: SyntheticEvent, value: AutocompleteLocationOption | null) => {
+  const onAutocompleteValueChange = async (_: SyntheticEvent, value: string | AutocompleteLocationOption | null) => {
+    if (typeof value === "string") return;
     if (!value?.value) return;
     const retrievedSuggestion = await Mapbox.retrieveSuggestion(value.value, mapboxSessionToken);
     if (!retrievedSuggestion) return;
@@ -96,6 +97,16 @@ const CustomerSiteForm = ({ errors, customerSite, register, setFormValue, watch 
     return option.value === value.value;
   };
 
+  const getAutocompleteOptionLabel = (option?: string | AutocompleteLocationOption) => {
+    if (typeof option === "string") return option;
+    return option?.title ?? "";
+  }
+
+  const getAutocompleteOptionKey = (option?: string | AutocompleteLocationOption) => {
+    if (typeof option === "string") return option;
+    return option?.value ?? "";
+  }
+
   return (
     <Stack justifyContent="space-between" width={356} p={2}>
       <Stack spacing={2} flex={1}>
@@ -106,6 +117,7 @@ const CustomerSiteForm = ({ errors, customerSite, register, setFormValue, watch 
           {...register("name", { required: t("management.customerSites.errorMessages.nameMissing") })}
         />
         <Autocomplete
+          freeSolo
           options={suggestions.data ?? []}
           value={autocompleteValue}
           noOptionsText={t("noResults")}
@@ -115,9 +127,10 @@ const CustomerSiteForm = ({ errors, customerSite, register, setFormValue, watch 
               <ListItemText primary={option.title} secondary={option.subtitle} />
             </ListItem>
           )}
-          getOptionLabel={(option) => option.title ?? ""}
+          filterOptions={(options) => options}
+          getOptionLabel={getAutocompleteOptionLabel}
           isOptionEqualToValue={isOptionEqualToValue}
-          getOptionKey={(option) => option.value ?? ""}
+          getOptionKey={getAutocompleteOptionKey}
           renderInput={(params) => (
             <TextField
               {...params}
@@ -144,7 +157,7 @@ const CustomerSiteForm = ({ errors, customerSite, register, setFormValue, watch 
           helperText={errors.locality?.message}
           {...register("locality", { required: t("management.customerSites.errorMessages.municipalityMissing") })}
         />
-        <FlexTextarea
+        <FlexTextArea
           fullWidth
           multiline
           label={t("management.customerSites.additionalInfo")}
