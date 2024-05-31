@@ -17,8 +17,8 @@ const DraggableUnallocatedTasksTableRow = ({
   const navigate = useNavigate({ from: "/drive-planning/routes" });
 
   const draggableKey = useMemo(() => {
-    const { groupNumber, customerSiteId, type } = params.row as Task;
-    return `${groupNumber}-${customerSiteId}-${type}`;
+    const { groupNumber, customerSiteId, type, id } = params.row as Task;
+    return `${groupNumber}-${customerSiteId}-${type}-${id}`;
   }, [params.row]);
 
   const draggableData = useMemo(

@@ -1,6 +1,7 @@
 import { Add, UnfoldLess, UnfoldMore } from "@mui/icons-material";
 import { IconButton, MenuItem, TextField } from "@mui/material";
 import {
+  GridCellParams,
   GridColDef,
   GridPaginationModel,
   GridRenderCellParams,
@@ -39,15 +40,17 @@ const RoutesTable = ({
   const { t } = useTranslation();
   const { tasksApi } = useApi();
 
-  const { cellModesModel, handleCellClick, handleCellModelsChange } = useSingleClickCellEditMode((params) => {
-    if (params.field !== "tasks") return;
-    if (!params.row.id) return;
+  const onTasksCellClick = useCallback(({ field, row }: GridCellParams) => {
+    if (field !== "tasks") return;
+    if (!row.id) return;
     setExpandedRows((previousExpandedRows) =>
-      previousExpandedRows.includes(params.row.id)
-        ? previousExpandedRows.filter((id) => id !== params.row.id)
-        : [...previousExpandedRows, params.row.id],
+      previousExpandedRows.includes(row.id)
+        ? previousExpandedRows.filter((id) => id !== row.id)
+        : [...previousExpandedRows, row.id],
     );
-  });
+  }, []);
+
+  const { cellModesModel, handleCellClick, handleCellModelsChange } = useSingleClickCellEditMode(onTasksCellClick);
   const [expandedRows, setExpandedRows] = useState<string[]>([]);
 
   const trucksQuery = useTrucks();

@@ -1,9 +1,13 @@
-import { Collapse } from "@mui/material";
+import { Collapse, Stack } from "@mui/material";
 import DialogHeader from "components/generic/dialog-header";
 import { useTranslation } from "react-i18next";
 import { AssignmentSharp, ExpandLess, ExpandMore } from "@mui/icons-material";
 import { Site } from "generated/client";
 import UnallocatedTasksTable from "./unallocated-tasks-table";
+import { useDroppable } from "@dnd-kit/core";
+import { DraggableType, DroppableType } from "src/types";
+import { useMemo } from "react";
+import { theme } from "src/theme";
 
 type Props = {
   open: boolean;
@@ -13,25 +17,35 @@ type Props = {
 
 const UnallocatedTasksDrawer = ({ open, sites, onClose }: Props) => {
   const { t } = useTranslation();
+  const { setNodeRef, active, isOver } = useDroppable({
+    id: DroppableType.UNALLOCATED_TASKS_DROPPABLE,
+  });
+
+  const { draggableType } = active?.data.current ?? {};
+
+  const dataGridStyle = useMemo(
+    () =>
+      isOver && draggableType === DraggableType.GROUPED_TASK
+        ? {
+            outline: `2px solid ${theme.palette.primary.main}`,
+            outlineOffset: "-5px",
+          }
+        : {},
+    [draggableType, isOver],
+  );
 
   return (
-    <Collapse
-      in={open}
-      collapsedSize={42}
-      sx={{
-        maxHeight: "50%",
-        overflowY: "scroll",
-        scrollbarWidth: 0,
-        "::-webkit-scrollbar": { display: "none" },
-      }}
-    >
-      <DialogHeader
-        title={t("drivePlanning.routes.unallocatedTasksTable.title")}
-        StartIcon={AssignmentSharp}
-        CloseIcon={open ? ExpandMore : ExpandLess}
-        onClose={onClose}
-      />
-      <UnallocatedTasksTable sites={sites} />
+    <Collapse ref={setNodeRef} sx={{ ...dataGridStyle }} in={open} collapsedSize={42}>
+      <Stack height={360}>
+        <DialogHeader
+          title={t("drivePlanning.routes.unallocatedTasksTable.title")}
+          closeTooltip={t(`drivePlanning.routes.unallocatedTasksTable.${open ? "minify" : "expand"}TasksDrawer`)}
+          StartIcon={AssignmentSharp}
+          CloseIcon={open ? ExpandMore : ExpandLess}
+          onClose={onClose}
+        />
+        <UnallocatedTasksTable sites={sites} />
+      </Stack>
     </Collapse>
   );
 };

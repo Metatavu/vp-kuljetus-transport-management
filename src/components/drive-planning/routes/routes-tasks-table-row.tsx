@@ -103,11 +103,11 @@ const RoutesTasksTableRow = forwardRef(
       },
     });
 
-    const unAllocateTasks = () => {
+    const unAllocateTasks = useCallback(async () => {
       for (const task of tasks) {
-        saveTask.mutate({ ...task, routeId: undefined, orderNumber: undefined });
+        await saveTask.mutateAsync({ ...task, routeId: undefined, orderNumber: undefined });
       }
-    };
+    }, [tasks, saveTask]);
 
     return (
       <>

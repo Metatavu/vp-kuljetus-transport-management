@@ -30,7 +30,6 @@ import { DraggableType, DroppableType, DraggedTaskData } from "../types";
 import { GridPaginationModel } from "@mui/x-data-grid";
 import DataValidation from "utils/data-validation-utils";
 import DraggedTaskOverlay from "components/drive-planning/routes/dragged-task-overlay";
-// import { snapCenterToCursor } from "@dnd-kit/modifiers";
 
 // Styled components
 const Root = styled(Paper, {
@@ -242,25 +241,21 @@ function DrivePlanningRoutes() {
 
       // Restrict dragging grouped tasks away from any route as that for some reason drops all the
       // if (!overRouteId && activeDraggableType === DraggableType.GROUPED_TASK) return;
+      const firstOverTaskIndex =
+        localTasks[overRouteId]?.findIndex((task) => task.id === overDraggedTasks?.at(0)?.id) ?? -1;
+      const newIndex = firstOverTaskIndex >= 0 ? firstOverTaskIndex + modifier : (overDraggedTasks?.length ?? 0) + 1;
 
       // Dragged task is unallocated OR it belongs to another route.
       if (activeRouteId !== overRouteId && draggedTasksBeforeDrag?.length) {
         // Currently over grouped tasks. Assign new index to task.
         if (overDraggedTasks?.length) {
-          const firstOverTaskIndex =
-            localTasks[overRouteId]?.findIndex((task) => task.id === overDraggedTasks[0].id) ?? -1;
-          const newIndex = firstOverTaskIndex >= 0 ? firstOverTaskIndex + modifier : overDraggedTasks.length + 1;
-          const newLocalTasks = [
-            ...localTasks[overRouteId].slice(0, newIndex),
-            ...activeDraggedTasks,
-            ...localTasks[overRouteId].slice(newIndex, localTasks[overRouteId].length),
-          ];
           // Save new index to active draggable data. To be used within handleDragEnd function.
           if (active.data.current) {
             active.data.current.newIndex = newIndex;
           }
           // Dragged task is unallocated. Add it to the corresponding routes tasks client-side.
           if (!activeRouteId && overRouteId) {
+            console.log("1");
             setLocalTasks((previousLocalTasks) => {
               const tasks = previousLocalTasks[overRouteId] ?? [];
               const activeDraggedTaskIds = activeDraggedTasks.map((task: Task) => task.id);
@@ -276,6 +271,12 @@ function DrivePlanningRoutes() {
             });
           } else if (activeRouteId && overRouteId) {
             // Dragged task belongs to another route. Remove it from the active route and add it to the over route.
+            const newLocalTasks = [
+              ...localTasks[overRouteId].slice(0, newIndex),
+              ...activeDraggedTasks,
+              ...localTasks[overRouteId].slice(newIndex, localTasks[overRouteId].length),
+            ];
+            console.log("2");
             setLocalTasks((previousLocalTasks) => {
               const tasks = previousLocalTasks[activeRouteId] ?? [];
               const activeDraggedTaskIds = activeDraggedTasks.map((task: Task) => task.id);
@@ -293,6 +294,7 @@ function DrivePlanningRoutes() {
           }
         } else {
           // Not over grouped tasks. Assign dragged task(s) to corresponding routes tasks client-side.
+          console.log("3");
           setLocalTasks((previousLocalTasks) => {
             const tasks = previousLocalTasks[activeRouteId] ?? [];
             const activeDraggedTaskIds = draggedTasksBeforeDrag.map((task: Task) => task.id);
@@ -312,6 +314,7 @@ function DrivePlanningRoutes() {
           const newTasks = tasks.filter((task) => !activeDraggedTaskIds.includes(task.id));
           newLocalTasks[key] = newTasks;
         }
+        console.log("4");
         setLocalTasks(newLocalTasks);
       }
     },
@@ -375,21 +378,7 @@ function DrivePlanningRoutes() {
             sites={sitesQuery.data?.sites ?? []}
             onClose={() => setUnallocatedDrawerOpen(!unallocatedDrawerOpen)}
           />
-          <DragOverlay
-            modifiers={[
-              // snapCenterToCursor,
-              (args) => {
-                // For some reason, first datagrid row is positioned few hundred pixels away when dragged. This fixes it visually but still need to resolve how to actually re-position it.
-                const { activatorEvent, transform, active, draggingNodeRect } = args;
-                if (!active || !activatorEvent || !draggingNodeRect) return transform;
-                const { clientY } = activatorEvent as PointerEvent;
-                const { top, height } = draggingNodeRect;
-                return { ...transform, y: transform.y + clientY - top - height / 2, x: transform.x + 50 };
-              },
-            ]}
-          >
-            {renderDragOverlay()}
-          </DragOverlay>
+          <DragOverlay>{renderDragOverlay()}</DragOverlay>
         </DndContext>
       </Root>
     </>
