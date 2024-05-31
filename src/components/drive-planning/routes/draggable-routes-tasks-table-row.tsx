@@ -20,7 +20,7 @@ const DraggableRoutesTasksTableRow = ({ tasks, taskType, site, groupNumber, grou
   const draggableData: DraggedTaskData = useMemo(
     () => ({
       draggableType: DraggableType.GROUPED_TASK,
-      draggedTasks: tasks,
+      tasks: tasks,
       routeId: routeId,
       key: groupedTasksKey,
     }),
@@ -29,7 +29,7 @@ const DraggableRoutesTasksTableRow = ({ tasks, taskType, site, groupNumber, grou
 
   const { listeners, attributes, isDragging, transform, transition, setNodeRef, setActivatorNodeRef, active } =
     useSortable({
-      id: groupedTasksKey,
+      id: `${groupedTasksKey}-${routeId}`,
       data: draggableData,
     });
 

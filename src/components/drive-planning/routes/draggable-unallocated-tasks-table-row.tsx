@@ -24,7 +24,7 @@ const DraggableUnallocatedTasksTableRow = ({
   const draggableData = useMemo(
     () => ({
       draggableType: DraggableType.UNALLOCATED_TASK,
-      draggedTasks: [params.row as Task],
+      tasks: [params.row as Task],
     }),
     [params.row],
   );

@@ -59,6 +59,7 @@ export type DroppableType = typeof DroppableType[keyof typeof DroppableType];
 
 export type DraggedTaskData = {
   draggableType: "grouped-task";
-  draggedTasks: Task[];
+  tasks: Task[];
   routeId: string;
+  key: string;
 };
