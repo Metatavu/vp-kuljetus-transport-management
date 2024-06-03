@@ -46,7 +46,7 @@ const ExpandableRoutesTableRow = ({ expanded, routeId, tasks, sites, ...props }:
     data: { routeId: routeId },
   });
 
-  const droppableStyle = useMemo(
+  const droppableStyle = useMemo<React.CSSProperties>(
     () => ({
       outline: isOver ? "2px solid #4E8A9C" : "none",
       outlineOffset: "-2px",

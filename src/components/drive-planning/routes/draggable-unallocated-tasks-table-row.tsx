@@ -5,16 +5,17 @@ import { Task } from "generated/client";
 import { Dispatch, SetStateAction, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { DraggableType, UnallocatedTasksRowDragHandles } from "../../../types";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 
-const DraggableUnallocatedTasksTableRow = ({
-  setRowDragHandles,
-  ...params
-}: GridRowProps & {
+type Props = GridRowProps & {
   setRowDragHandles: Dispatch<SetStateAction<UnallocatedTasksRowDragHandles>>;
-}) => {
+};
+
+const DraggableUnallocatedTasksTableRow = ({ setRowDragHandles, ...params }: Props) => {
   const { t } = useTranslation();
   const navigate = useNavigate({ from: "/drive-planning/routes" });
+
+  const { date: currentDate } = useSearch({ from: "/drive-planning/routes" });
 
   const draggableKey = useMemo(() => {
     const { groupNumber, customerSiteId, type, id } = params.row as Task;
@@ -51,7 +52,7 @@ const DraggableUnallocatedTasksTableRow = ({
       <div ref={setNodeRef}>
         <GridRow
           {...params}
-          onClick={() => navigate({ search: { freightId: params.row?.freightId, date: undefined } })}
+          onClick={() => navigate({ search: { freightId: params.row?.freightId, date: currentDate } })}
         />
       </div>
     </Tooltip>

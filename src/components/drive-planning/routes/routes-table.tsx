@@ -41,8 +41,7 @@ const RoutesTable = ({
   const { tasksApi } = useApi();
 
   const onTasksCellClick = useCallback(({ field, row }: GridCellParams) => {
-    if (field !== "tasks") return;
-    if (!row.id) return;
+    if (field !== "tasks" || !row.id) return;
     setExpandedRows((previousExpandedRows) =>
       previousExpandedRows.includes(row.id)
         ? previousExpandedRows.filter((id) => id !== row.id)

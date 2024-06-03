@@ -65,7 +65,7 @@ function DrivePlanningRoutes() {
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({ page: 0, pageSize: 25 });
   const [localTasks, setLocalTasks] = useState<TRouteTasks>({});
 
-  const localTasksBeforeDrag = useRef<null | TRouteTasks>(null);
+  const localTasksBeforeDrag = useRef<TRouteTasks | null>(null);
   const activeDraggedTasksBeforeDrag = useRef<Task[]>([]);
   const activeRouteIdBeforeDrag = useRef<string | null>(null);
   const currentNewIndex = useRef<number | null>(null);
@@ -132,7 +132,7 @@ function DrivePlanningRoutes() {
       return tasksApi.updateTask({ taskId: task.id, task });
     },
     onSuccess: () => {
-      toast.success("Tehtävän siirto onnistui!");
+      toast.success(t("drivePlanning.routes.taskMovedToast"));
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.TASKS] });
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ROUTES, selectedDate] });
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.TASKS_BY_ROUTE] });

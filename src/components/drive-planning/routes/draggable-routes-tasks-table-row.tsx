@@ -39,7 +39,7 @@ const DraggableRoutesTasksTableRow = ({ tasks, taskType, site, groupNumber, grou
     }
   }, [isDragging, active, groupedTasksKey]);
 
-  const style: React.CSSProperties = useMemo(
+  const style = useMemo<React.CSSProperties>(
     () => ({
       transform: CSS.Transform.toString(transform),
       transition: transition,

@@ -166,6 +166,7 @@
         "contents": "Sisältö",
         "taskRowTooltip": "Raahaa tehtävä reitille"
       },
+      "taskMovedToast": "Tehtävä siirretty reitille!",
       "successToast": "Reitti tallennettu!",
       "errorToast": "Reitin tallennus epäonnistui!"
     },

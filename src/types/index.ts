@@ -17,7 +17,6 @@ type UnallocatedTasksRowDragHandle = {
   setActivatorNodeRef: (element: HTMLElement | null) => void;
   attributes: DraggableAttributes;
   listeners: SyntheticListenerMap | undefined;
-
 };
 
 export type UnallocatedTasksRowDragHandles = Record<string, UnallocatedTasksRowDragHandle | undefined>;

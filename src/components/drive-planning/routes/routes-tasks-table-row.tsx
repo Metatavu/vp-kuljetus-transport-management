@@ -16,7 +16,7 @@ import { useApi } from "hooks/use-api";
 import LocalizationUtils from "utils/localization-utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEYS, useFreights } from "hooks/use-queries";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 
 type Props = {
   tasks: Task[];
@@ -50,7 +50,9 @@ const RoutesTasksTableRow = forwardRef(
     const navigate = useNavigate({ from: "/drive-planning/routes" });
     const freightsQuery = useFreights();
 
-    const [menuCoordinates, setMenuCoordinates] = useState<{ clientX: number; clientY: number } | undefined>();
+    const { date: currentDate } = useSearch({ from: "/drive-planning/routes" });
+
+    const [menuCoordinates, setMenuCoordinates] = useState<{ clientX: number; clientY: number }>();
 
     const { name, address, postalCode, locality } = site;
 
@@ -84,14 +86,14 @@ const RoutesTasksTableRow = forwardRef(
           const { freightId } = tasks[0];
           const foundFreight = freightsQuery.data?.freights.find((freight) => freight.id === freightId);
           if (!foundFreight?.id) return;
-          return navigate({ search: { freightId: freightId, date: undefined } });
+          return navigate({ search: { freightId: freightId, date: currentDate } });
         }
 
         if (tasks.length > 1) {
           setMenuCoordinates({ clientX: clientX, clientY: clientY });
         }
       },
-      [freightsQuery.data, navigate, tasks],
+      [freightsQuery.data, navigate, tasks, currentDate],
     );
 
     const saveTask = useMutation({

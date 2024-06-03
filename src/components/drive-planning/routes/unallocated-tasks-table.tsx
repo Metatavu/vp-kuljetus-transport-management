@@ -4,7 +4,7 @@ import { QUERY_KEYS, useTasks } from "hooks/use-queries";
 import { useQueries } from "@tanstack/react-query";
 import { useApi } from "hooks/use-api";
 import { useTranslation } from "react-i18next";
-import { Site } from "generated/client";
+import { Site, Task } from "generated/client";
 import { useCallback, useMemo, useState } from "react";
 import { GridColDef, GridRowProps } from "@mui/x-data-grid";
 import LocalizationUtils from "utils/localization-utils";
@@ -27,11 +27,11 @@ const UnallocatedTasksTable = ({ sites }: Props) => {
 
   const tasksQuery = useTasks({ assignedToRoute: false });
 
-  const getDistinctFreights = () => [...new Set((tasksQuery.data?.tasks ?? []).map((task) => task.freightId))];
+  const getDistinctFreightIds = () => [...new Set((tasksQuery.data?.tasks ?? []).map((task) => task.freightId))];
 
   const freightsQueries = useQueries({
     queries:
-      getDistinctFreights().map((freightId) => ({
+      getDistinctFreightIds().map((freightId) => ({
         queryKey: [QUERY_KEYS.FREIGHTS, freightId],
         queryFn: () => freightsApi.findFreight({ freightId: freightId }),
       })) ?? [],
@@ -51,7 +51,7 @@ const UnallocatedTasksTable = ({ sites }: Props) => {
     }),
   });
 
-  const columns: GridColDef[] = useMemo(
+  const columns: GridColDef<Task>[] = useMemo(
     () => [
       {
         field: "actions",
