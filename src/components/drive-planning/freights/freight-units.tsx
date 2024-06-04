@@ -11,7 +11,21 @@ import { useSingleClickRowEditMode } from "hooks/use-single-click-row-edit-mode"
 import { QUERY_KEYS } from "hooks/use-queries";
 import { deepEqual } from "@tanstack/react-router";
 
-const FREIGHT_UNIT_TYPES = ["EUR", "FIN", "RLK"] as const;
+const FREIGHT_UNIT_TYPES = [
+  "EUR",
+  "FIN",
+  "RLK",
+  "PEU",
+  "DOLL",
+  "CCRLK",
+  "PMLA",
+  "MLA",
+  "QTR",
+  "MDL",
+  "MRLK",
+  "TN",
+  "KG",
+] as const;
 
 type Props = {
   freightUnits: FreightUnit[];
@@ -31,7 +45,7 @@ const FreightUnits = ({ freightUnits, freightId, onEditFreightUnit }: Props) => 
       freightUnitsApi.createFreightUnit({
         freightUnit: {
           freightId: freightId,
-          type: "EUR",
+          type: FREIGHT_UNIT_TYPES[0],
         },
       }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.FREIGHT_UNITS] }),
