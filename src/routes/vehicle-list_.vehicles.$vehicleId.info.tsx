@@ -72,21 +72,14 @@ const VehicleInfo = () => {
     refetchInterval: 10_000,
   });
 
+  const routesQueryParams = {
+    truckId: vehicleId,
+    departureAfter: selectedDate?.startOf("day").toJSDate(),
+    departureBefore: selectedDate?.endOf("day").toJSDate(),
+  };
   const routes = useQuery({
-    queryKey: [
-      "routes",
-      {
-        truckId: vehicleId,
-        departureAfter: selectedDate?.startOf("day").toJSDate(),
-        departureBefore: selectedDate?.endOf("day").toJSDate(),
-      },
-    ],
-    queryFn: async () =>
-      await routesApi.listRoutes({
-        truckId: vehicleId,
-        departureAfter: selectedDate?.startOf("day").toJSDate(),
-        departureBefore: selectedDate?.endOf("day").toJSDate(),
-      }),
+    queryKey: ["routes", routesQueryParams],
+    queryFn: async () => await routesApi.listRoutes(routesQueryParams),
   });
 
   const uniqueTasks = useQueries({
