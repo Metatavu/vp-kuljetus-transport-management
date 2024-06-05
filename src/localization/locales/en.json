@@ -69,6 +69,15 @@
       "drive": "Drive",
       "error": "Error",
       "notAvailable": "Not available"
+    },
+    "truckDriveStateStatus": {
+      "driving": "Driving",
+      "stopped": "Stopped",
+      "working": "Working"
+    },
+    "truckEventType": {
+      "load": "Load",
+      "unload": "Unload"
     }
   },
   "management": {

@@ -22,6 +22,7 @@ import { MapContainer, Marker, TileLayer, Tooltip } from "react-leaflet";
 import { RouterContext } from "src/routes/__root";
 import config from "../app/config";
 import { useApi } from "../hooks/use-api";
+import { DateTime } from "luxon";
 
 export const Route = createFileRoute("/vehicle-list/map-view")({
   component: () => <VehicleListMapView />,
@@ -191,6 +192,7 @@ const VehicleListMapView = () => {
                         navigate({
                           to: "/vehicle-list/vehicles/$vehicleId/info",
                           params: { vehicleId: truck.id },
+                          search: { date: DateTime.now() },
                         })
                       }
                     >
