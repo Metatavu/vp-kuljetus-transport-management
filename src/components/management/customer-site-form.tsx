@@ -18,8 +18,8 @@ const FlexTextArea = styled(TextField, {
 })(() => ({
   flex: 1,
   "& .MuiFilledInput-root": {
-    flex: 1
-  }
+    flex: 1,
+  },
 }));
 
 type Props = {
@@ -100,12 +100,12 @@ const CustomerSiteForm = ({ errors, customerSite, register, setFormValue, watch 
   const getAutocompleteOptionLabel = (option?: string | AutocompleteLocationOption) => {
     if (typeof option === "string") return option;
     return option?.title ?? "";
-  }
+  };
 
   const getAutocompleteOptionKey = (option?: string | AutocompleteLocationOption) => {
     if (typeof option === "string") return option;
     return option?.value ?? "";
-  }
+  };
 
   return (
     <Stack justifyContent="space-between" width={356} p={2}>

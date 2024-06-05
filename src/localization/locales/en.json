@@ -164,8 +164,10 @@
         "minifyTasksDrawer": "Minify tasks drawer",
         "expandTasksDrawer": "Expand tasks drawer",
         "freightNumber": "Waybill",
-        "contents": "Freight"
+        "contents": "Freight",
+        "taskRowTooltip": "Drag task to a route"
       },
+      "taskMovedToast": "Task moved to route!",
       "successToast": "Route saved!",
       "errorToast": "Failed to save route!"
     },

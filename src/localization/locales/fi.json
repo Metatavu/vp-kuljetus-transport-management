@@ -163,8 +163,10 @@
         "minifyTasksDrawer": "Piilota järjestelemättömät tehtävät",
         "expandTasksDrawer": "Näytä järjestelemättömät tehtävät",
         "freightNumber": "Rahtikirja",
-        "contents": "Sisältö"
+        "contents": "Sisältö",
+        "taskRowTooltip": "Raahaa tehtävä reitille"
       },
+      "taskMovedToast": "Tehtävä siirretty reitille!",
       "successToast": "Reitti tallennettu!",
       "errorToast": "Reitin tallennus epäonnistui!"
     },

@@ -19,7 +19,11 @@ import "react-toastify/dist/ReactToastify.css";
 
 const router = createRouter({ routeTree });
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: { staleTime: 30_000 },
+  },
+});
 
 declare module "@tanstack/react-router" {
   interface Register {
