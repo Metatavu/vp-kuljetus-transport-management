@@ -1,5 +1,5 @@
 import { Paper, Stack } from "@mui/material";
-import { GridColDef, GridPaginationModel, GridRenderCellParams } from "@mui/x-data-grid";
+import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import GenericDataGrid from "components/generic/generic-data-grid";
@@ -266,7 +266,7 @@ const VehicleInfo = () => {
     return tableRows;
   }, [driveStates.data, uniqueTasks, getRowsToAdd, getTaskRows, getDriveStateInterval]);
 
-  const columns: GridColDef[] = useMemo(
+  const columns: GridColDef<DriveStatesTableRow>[] = useMemo(
     () => [
       {
         field: "start",
@@ -275,8 +275,7 @@ const VehicleInfo = () => {
         sortable: false,
         width: 250,
         align: "left",
-        renderCell: ({ row }: GridRenderCellParams<DriveStatesTableRow>) =>
-          row.interval.toFormat("HH:mm:ss", { separator: " - " }),
+        renderCell: ({ row }) => row.interval.toFormat("HH:mm:ss", { separator: " - " }),
       },
       {
         field: "state",
@@ -294,7 +293,7 @@ const VehicleInfo = () => {
           // Default class if drive state is not recognized
           return "";
         },
-        renderCell: ({ row }: GridRenderCellParams<DriveStatesTableRow>) => (
+        renderCell: ({ row }) => (
           <Stack direction="row" justifyContent="space-between" width="100%" textAlign="center">
             <Stack width="50%" borderRight="1px solid rgba(0, 0, 0, 0.5)">
               {LocalizationUtils.getLocalizedDriveStateStatus(row.state, t)}
@@ -309,9 +308,7 @@ const VehicleInfo = () => {
         headerName: t("vehicleList.info.duration"),
         sortable: false,
         width: 400,
-        renderCell: ({ row }: GridRenderCellParams<DriveStatesTableRow>) => (
-          <Stack>{row.interval.toDuration().toFormat("hh:mm:ss")}</Stack>
-        ),
+        renderCell: ({ row }) => <Stack>{row.interval.toDuration().toFormat("hh:mm:ss")}</Stack>,
       },
       {
         field: "location",
@@ -319,8 +316,7 @@ const VehicleInfo = () => {
         headerName: t("vehicleList.info.location"),
         sortable: false,
         flex: 1,
-        valueGetter: ({ row }: GridRenderCellParams<DriveStatesTableRow>) =>
-          customerSitesMap.data?.get(row.siteId ?? "")?.name ?? "",
+        valueGetter: ({ row }) => customerSitesMap.data?.get(row.siteId ?? "")?.name ?? "",
       },
       {
         field: "driver",
@@ -328,8 +324,7 @@ const VehicleInfo = () => {
         headerName: t("vehicleList.info.driver"),
         sortable: false,
         flex: 1,
-        valueGetter: ({ row }: GridRenderCellParams<DriveStatesTableRow>) =>
-          driversDataMap.data?.get(row.siteId ?? "")?.displayName ?? "",
+        valueGetter: ({ row }) => driversDataMap.data?.get(row.siteId ?? "")?.displayName ?? "",
       },
     ],
     [t, customerSitesMap.data, driversDataMap.data],
