@@ -72,7 +72,8 @@
     },
     "truckDriveStateStatus": {
       "driving": "Driving",
-      "stopped": "Stopped"
+      "stopped": "Stopped",
+      "working": "Working"
     },
     "truckEventType": {
       "load": "Load",

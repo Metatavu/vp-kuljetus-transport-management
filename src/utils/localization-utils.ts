@@ -25,9 +25,9 @@ namespace LocalizationUtils {
   })[status];
 
   export const getLocalizedDriveStateStatus = (status: TruckDriveStateEnum, t: TFunction) => ({
-    REST: t("vehicleList.truckDriveStateStatus.stopped"),
-    DRIVER_AVAILABLE: t("vehicleList.truckDriveStateStatus.stopped"),
-    WORK: t("vehicleList.truckDriveStateStatus.stopped"),
+    REST: t("vehicleList.truckDriveStateStatus.working"),
+    DRIVER_AVAILABLE: t("vehicleList.truckDriveStateStatus.working"),
+    WORK: t("vehicleList.truckDriveStateStatus.working"),
     DRIVE: t("vehicleList.truckDriveStateStatus.driving"),
     ERROR: t("vehicleList.truckDriveStateStatus.stopped"),
     NOT_AVAILABLE: t("vehicleList.truckDriveStateStatus.stopped"),

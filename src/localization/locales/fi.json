@@ -72,7 +72,8 @@
     },
     "truckDriveStateStatus": {
       "driving": "Ajo",
-      "stopped": "Pysähdys"
+      "stopped": "Pysähdys",
+      "working": "Työ"
     },
     "truckEventType": {
       "load": "Lastaus",

@@ -11,7 +11,7 @@ import { RouterContext } from "./__root";
 import LocalizationUtils from "../utils/localization-utils";
 import { DateTime, Interval } from "luxon";
 import DatePickerWithArrows from "components/generic/date-picker-with-arrows";
-import { Driver, Site, Task, TaskType, TruckDriveStateEnum } from "generated/client";
+import { Driver, Site, Task, TaskType, TruckDriveState, TruckDriveStateEnum } from "generated/client";
 import clsx from "clsx";
 
 type DriveStatesTableRow = {
@@ -27,14 +27,18 @@ export const Route = createFileRoute("/vehicle-list/vehicles/$vehicleId/info")({
   beforeLoad: (): RouterContext => ({
     breadcrumb: "vehicleList.info.title",
   }),
+  validateSearch: ({ date }: Record<string, unknown>) => ({
+    date: DateTime.fromISO(date as string).isValid ? DateTime.fromISO(date as string) : DateTime.now(),
+  }),
 });
 
 const VehicleInfo = () => {
   const { trucksApi, routesApi, tasksApi, sitesApi, driversApi } = useApi();
   const { t } = useTranslation();
   const { vehicleId } = Route.useParams();
-  const navigate = useNavigate();
-  const [selectedDate, setSelectedDate] = useState(DateTime.now());
+  const navigate = useNavigate({ from: Route.parentRoute.fullPath });
+  const { date: selectedDate } = Route.useSearch();
+
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({ page: 0, pageSize: 25 });
 
   const truckSpeed = useQuery({
@@ -77,6 +81,7 @@ const VehicleInfo = () => {
     departureAfter: selectedDate?.startOf("day").toJSDate(),
     departureBefore: selectedDate?.endOf("day").toJSDate(),
   };
+
   const routes = useQuery({
     queryKey: ["routes", routesQueryParams],
     queryFn: async () => await routesApi.listRoutes(routesQueryParams),
@@ -116,38 +121,118 @@ const VehicleInfo = () => {
       }, new Map<string, Driver>()),
   });
 
+  const driveStatesQueryParams = {
+    truckId: vehicleId,
+    after: selectedDate?.startOf("day").toJSDate(),
+    before: selectedDate?.endOf("day").toJSDate(),
+  };
+
   const driveStates = useQuery({
-    queryKey: [
-      "driveStates",
-      {
-        truckId: vehicleId,
-        after: selectedDate?.startOf("day").toJSDate(),
-        before: selectedDate?.endOf("day").toJSDate(),
-      },
-    ],
-    queryFn: () =>
-      trucksApi.listDriveStates({
-        truckId: vehicleId,
-        after: selectedDate?.startOf("day").toJSDate(),
-        before: selectedDate?.endOf("day").toJSDate(),
-      }),
+    queryKey: ["driveStates", driveStatesQueryParams],
+    queryFn: () => trucksApi.listDriveStates(driveStatesQueryParams),
     select: (data) => data.sort((a, b) => a.timestamp - b.timestamp),
   });
 
+  const getRowsToAdd = (
+    taskRows: DriveStatesTableRow[],
+    driveStateInterval: Interval<true>,
+    driveState: TruckDriveState,
+  ) => {
+    return taskRows.reduce<DriveStatesTableRow[]>((list, row, index, rows) => {
+      if (index === 0 && row.interval.start > driveStateInterval.start) {
+        const intervalFromDriveStateStartToRowStart = Interval.fromDateTimes(
+          driveStateInterval.start,
+          row.interval.start,
+        );
+
+        if (intervalFromDriveStateStartToRowStart.isValid) {
+          list.push({
+            interval: intervalFromDriveStateStartToRowStart,
+            state: driveState.state,
+            driverId: driveState.driverId,
+          });
+        }
+      } else if (index === rows.length - 1 && row.interval.end < driveStateInterval.end) {
+        const intervalFromDriveStateEndToRowEnd = Interval.fromDateTimes(row.interval.end, driveStateInterval.end);
+
+        if (intervalFromDriveStateEndToRowEnd.isValid) {
+          list.push({
+            interval: intervalFromDriveStateEndToRowEnd,
+            state: driveState.state,
+            driverId: driveState.driverId,
+          });
+        }
+      } else {
+        const prevRow = rows[index - 1];
+        const intervalBetweenRows = Interval.fromDateTimes(prevRow.interval.end, row.interval.start);
+
+        if (intervalBetweenRows.isValid && intervalBetweenRows.length("seconds") > 0) {
+          list.push({
+            interval: intervalBetweenRows,
+            state: driveState.state,
+            driverId: driveState.driverId,
+          });
+        }
+      }
+
+      return list;
+    }, []);
+  };
+
+  const getTaskRows = (uniqueTasks: Task[], driveStateInterval: Interval<true>, driveState: TruckDriveState) => {
+    const taskRows: DriveStatesTableRow[] = [];
+
+    for (const task of uniqueTasks) {
+      if (!task.startedAt) continue;
+
+      const startTime = DateTime.fromJSDate(task.startedAt);
+      const endTime = task.finishedAt ? DateTime.fromJSDate(task.finishedAt) : DateTime.now();
+
+      const taskInterval = Interval.fromDateTimes(startTime, endTime);
+      if (!taskInterval.isValid) continue;
+
+      if (!taskInterval.overlaps(driveStateInterval)) continue;
+
+      const rowInterval = Interval.fromDateTimes(
+        taskInterval.start >= driveStateInterval.start ? taskInterval.start : driveStateInterval.start,
+        taskInterval.end <= driveStateInterval.end ? taskInterval.end : driveStateInterval.end,
+      );
+
+      if (!rowInterval.isValid) continue;
+
+      taskRows.push({
+        interval: rowInterval,
+        state: driveState.state,
+        event: task.type,
+        driverId: driveState.driverId,
+        siteId: task.customerSiteId,
+      });
+    }
+
+    return taskRows.sort((a, b) => a.interval.start.toMillis() - b.interval.start.toMillis());
+  };
+
+  const getDriveStateInterval = (driveState: TruckDriveState, nextState: TruckDriveState | undefined) => {
+    return Interval.fromDateTimes(
+      DateTime.fromSeconds(driveState.timestamp),
+      nextState?.timestamp
+        ? DateTime.fromSeconds(nextState.timestamp)
+        : selectedDate.hasSame(DateTime.now(), "day")
+          ? DateTime.now()
+          : selectedDate.endOf("day"),
+    );
+  };
+
+  /**
+   * Construct the rows for the drive state table
+   */
   const driveStateRows = useMemo(() => {
     if (!driveStates.data) return [];
 
     const tableRows = driveStates.data.reduce<DriveStatesTableRow[]>((rows, driveState, index, driveStates) => {
       const nextState = driveStates.at(index + 1);
 
-      const driveStateInterval = Interval.fromDateTimes(
-        DateTime.fromSeconds(driveState.timestamp),
-        nextState?.timestamp
-          ? DateTime.fromSeconds(nextState.timestamp)
-          : selectedDate.hasSame(DateTime.now(), "day")
-            ? DateTime.now()
-            : selectedDate.endOf("day"),
-      );
+      const driveStateInterval = getDriveStateInterval(driveState, nextState);
 
       if (!driveStateInterval.isValid) return rows;
 
@@ -161,76 +246,9 @@ const VehicleInfo = () => {
         return rows;
       }
 
-      const taskRows: DriveStatesTableRow[] = [];
+      const taskRows = getTaskRows(uniqueTasks, driveStateInterval, driveState);
 
-      for (const task of uniqueTasks) {
-        if (!task.startedAt) continue;
-
-        const startTime = DateTime.fromJSDate(task.startedAt);
-        const endTime = task.finishedAt ? DateTime.fromJSDate(task.finishedAt) : DateTime.now();
-
-        const taskInterval = Interval.fromDateTimes(startTime, endTime);
-        if (!taskInterval.isValid) continue;
-
-        if (!taskInterval.overlaps(driveStateInterval)) continue;
-
-        const rowInterval = Interval.fromDateTimes(
-          taskInterval.start >= driveStateInterval.start ? taskInterval.start : driveStateInterval.start,
-          taskInterval.end <= driveStateInterval.end ? taskInterval.end : driveStateInterval.end,
-        );
-
-        if (!rowInterval.isValid) continue;
-
-        taskRows.push({
-          interval: rowInterval,
-          state: driveState.state,
-          event: task.type,
-          driverId: driveState.driverId,
-          siteId: task.customerSiteId,
-        });
-      }
-
-      taskRows.sort((a, b) => a.interval.start.toMillis() - b.interval.start.toMillis());
-
-      const rowsToAdd = taskRows.reduce<DriveStatesTableRow[]>((list, row, index, rows) => {
-        if (index === 0 && row.interval.start > driveStateInterval.start) {
-          const intervalFromDriveStateStartToRowStart = Interval.fromDateTimes(
-            driveStateInterval.start,
-            row.interval.start,
-          );
-
-          if (intervalFromDriveStateStartToRowStart.isValid) {
-            list.push({
-              interval: intervalFromDriveStateStartToRowStart,
-              state: driveState.state,
-              driverId: driveState.driverId,
-            });
-          }
-        } else if (index === rows.length - 1 && row.interval.end < driveStateInterval.end) {
-          const intervalFromDriveStateEndToRowEnd = Interval.fromDateTimes(row.interval.end, driveStateInterval.end);
-
-          if (intervalFromDriveStateEndToRowEnd.isValid) {
-            list.push({
-              interval: intervalFromDriveStateEndToRowEnd,
-              state: driveState.state,
-              driverId: driveState.driverId,
-            });
-          }
-        } else {
-          const prevRow = rows[index - 1];
-          const intervalBetweenRows = Interval.fromDateTimes(prevRow.interval.end, row.interval.start);
-
-          if (intervalBetweenRows.isValid && intervalBetweenRows.length("seconds") > 0) {
-            list.push({
-              interval: intervalBetweenRows,
-              state: driveState.state,
-              driverId: driveState.driverId,
-            });
-          }
-        }
-
-        return list;
-      }, []);
+      const rowsToAdd = getRowsToAdd(taskRows, driveStateInterval, driveState);
 
       if (rowsToAdd.length) {
         rows.push(...rowsToAdd);
@@ -246,7 +264,7 @@ const VehicleInfo = () => {
     }, []);
 
     return tableRows;
-  }, [driveStates.data, uniqueTasks, selectedDate]);
+  }, [driveStates.data, uniqueTasks, getRowsToAdd, getTaskRows, getDriveStateInterval]);
 
   const columns: GridColDef[] = useMemo(
     () => [
@@ -337,7 +355,11 @@ const VehicleInfo = () => {
       />
       <Stack flex={1} borderTop="1px solid rgba(0, 0, 0, 0.1)" padding={1}>
         <Stack width="30%" marginLeft={1}>
-          <DatePickerWithArrows date={selectedDate ?? DateTime.now()} buttonsWithText setDate={setSelectedDate} />
+          <DatePickerWithArrows
+            date={selectedDate ?? DateTime.now()}
+            buttonsWithText
+            setDate={(date) => navigate({ search: (search) => ({ ...search, date: date.toISODate() }) })}
+          />
         </Stack>
       </Stack>
       <GenericDataGrid
