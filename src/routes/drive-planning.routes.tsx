@@ -84,7 +84,7 @@ function DrivePlanningRoutes() {
       max: paginationModel.pageSize * paginationModel.page + paginationModel.pageSize,
     },
     !!selectedDate && activeDraggable === null,
-    5_000,
+    10_000,
     () => setLastRefreshedAt(DateTime.now()),
   );
 
