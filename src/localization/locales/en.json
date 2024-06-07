@@ -149,6 +149,8 @@
       "title": "Routes",
       "date": "Date",
       "departureTime": "Departure time",
+      "expandTasks": "Show tasks",
+      "collapseTasks": "Hide tasks",
       "newRoute": "New route",
       "name": "Name",
       "truck": "Truck",
@@ -166,7 +168,8 @@
         "customerSite": "Customer site",
         "address": "Address",
         "tasksAmount": "Amount of tasks",
-        "selectWaybill": "Select waybill"
+        "selectWaybill": "Select waybill",
+        "removeTask": "Remove task from route"
       },
       "unallocatedTasksTable": {
         "title": "Unallocated tasks",

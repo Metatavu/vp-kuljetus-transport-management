@@ -67,14 +67,12 @@ function DrivePlanningFreights() {
     () => [
       {
         field: "freightNumber",
-        headerAlign: "center",
         headerName: t("drivePlanning.freights.freightNumber"),
         sortable: false,
-        flex: 1,
+        width: 120
       },
       {
         field: "senderSiteId",
-        headerAlign: "center",
         headerName: t("drivePlanning.freights.sender"),
         sortable: false,
         flex: 1,
@@ -82,7 +80,6 @@ function DrivePlanningFreights() {
       },
       {
         field: "pointOfDepartureSiteId",
-        headerAlign: "center",
         headerName: t("drivePlanning.freights.pointOfDeparture"),
         sortable: false,
         flex: 1,
@@ -90,7 +87,6 @@ function DrivePlanningFreights() {
       },
       {
         field: "recipientSiteId",
-        headerAlign: "center",
         headerName: t("drivePlanning.freights.recipient"),
         sortable: false,
         flex: 1,
@@ -98,7 +94,6 @@ function DrivePlanningFreights() {
       },
       {
         field: "destinationSiteId",
-        headerAlign: "center",
         headerName: t("drivePlanning.freights.destination"),
         sortable: false,
         flex: 1,
@@ -106,7 +101,6 @@ function DrivePlanningFreights() {
       },
       {
         field: "freightUnits",
-        headerAlign: "center",
         headerName: t("drivePlanning.freights.freightUnits"),
         sortable: false,
         flex: 1,

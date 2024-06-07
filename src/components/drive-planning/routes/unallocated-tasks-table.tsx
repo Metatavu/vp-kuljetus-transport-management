@@ -62,7 +62,7 @@ const UnallocatedTasksTable = ({ sites }: Props) => {
           const { setActivatorNodeRef, attributes, listeners } = rowDragHandles[id as string] ?? {};
 
           return (
-            <IconButton size="small" ref={setActivatorNodeRef} sx={{ cursor: "grab" }} {...attributes} {...listeners}>
+            <IconButton size="small" ref={setActivatorNodeRef} sx={{ cursor: "grab" }} {...attributes} {...listeners} title={t("drivePlanning.routes.unallocatedTasksTable.taskRowTooltip")} >
               <DragHandle />
             </IconButton>
           );
@@ -85,7 +85,7 @@ const UnallocatedTasksTable = ({ sites }: Props) => {
         field: "freightNumber",
         headerName: t("drivePlanning.routes.unallocatedTasksTable.freightNumber"),
         sortable: false,
-        flex: 3,
+        flex: 1,
         renderCell: ({ row: { freightId } }) =>
           freightsQueries.data?.find((freight) => freight.id === freightId)?.freightNumber,
       },
@@ -107,7 +107,7 @@ const UnallocatedTasksTable = ({ sites }: Props) => {
         field: "contents",
         headerName: t("drivePlanning.routes.unallocatedTasksTable.contents"),
         sortable: false,
-        flex: 2,
+        flex: 4,
         renderCell: ({ row: { freightId } }) => {
           const freightUnits = freightUnitsQueries.data?.filter((freightUnit) => freightUnit.freightId === freightId);
 

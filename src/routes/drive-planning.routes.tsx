@@ -18,9 +18,6 @@ import {
   DragEndEvent,
   DragOverlay,
   DragStartEvent,
-  useSensor,
-  useSensors,
-  PointerSensor,
   DragOverEvent,
   MeasuringStrategy,
 } from "@dnd-kit/core";
@@ -321,15 +318,6 @@ function DrivePlanningRoutes() {
       <Outlet />
       <Root>
         <DndContext
-          sensors={useSensors(
-            useSensor(PointerSensor, {
-              activationConstraint: {
-                delay: 250,
-                tolerance: 5,
-                distance: 15,
-              },
-            }),
-          )}
           measuring={{
             droppable: {
               strategy: MeasuringStrategy.Always,
