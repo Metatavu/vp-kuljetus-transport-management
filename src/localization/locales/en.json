@@ -162,6 +162,8 @@
         "saveNewRoute": "Add route",
         "saveExistingRoute": "Save route"
       },
+      "lastRefreshedAt": "Last refreshed at {{lastRefreshedAt}}",
+      "refresh": "Refresh",
       "tasksTable": {
         "task": "Task",
         "groupNumber": "Identifier",

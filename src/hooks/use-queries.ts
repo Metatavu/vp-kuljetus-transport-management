@@ -45,7 +45,7 @@ export const useSite = (siteId: string, enabled = true) => {
   });
 };
 
-export const useRoutes = (requestParams: ListRoutesRequest = {}, enabled = true) => {
+export const useRoutes = (requestParams: ListRoutesRequest = {}, enabled = true, refetchInterval?: number, onSuccess?: () => void) => {
   const { routesApi } = useApi();
 
   return useQuery({
@@ -54,9 +54,11 @@ export const useRoutes = (requestParams: ListRoutesRequest = {}, enabled = true)
     queryFn: async () => {
       const [routes, headers] = await routesApi.listRoutesWithHeaders(requestParams);
       const totalResults = getTotalResultsFromHeaders(headers);
+      onSuccess?.();
 
       return { routes, totalResults };
     },
+    refetchInterval: refetchInterval,
   });
 };
 

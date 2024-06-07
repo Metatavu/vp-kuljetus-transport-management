@@ -161,6 +161,8 @@
         "saveNewRoute": "Lisää reitti",
         "saveExistingRoute": "Tallenna reitti"
       },
+      "lastRefreshedAt": "Tiedot päivitetty {{lastRefreshedAt}}",
+      "refresh": "Päivitä tiedot",
       "tasksTable": {
         "task": "Tehtävä",
         "groupNumber": "Tunnus",
