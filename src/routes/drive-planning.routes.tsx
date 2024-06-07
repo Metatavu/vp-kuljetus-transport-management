@@ -1,8 +1,9 @@
-import { Button, Paper, styled } from "@mui/material";
+import { Button, Paper, Stack, Typography, styled } from "@mui/material";
 import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router";
 import ToolbarRow from "components/generic/toolbar-row";
 import { RouterContext } from "./__root";
-import { Add } from "@mui/icons-material";
+import { Add, Refresh } from "@mui/icons-material";
+import { LoadingButton } from "@mui/lab";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { DateTime } from "luxon";
 import { useApi } from "hooks/use-api";
@@ -64,6 +65,7 @@ function DrivePlanningRoutes() {
   const [activeDraggable, setActiveDraggable] = useState<Active | null>(null);
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({ page: 0, pageSize: 25 });
   const [localTasks, setLocalTasks] = useState<TRouteTasks>({});
+  const [lastRefreshedAt, setLastRefreshedAt] = useState<DateTime>();
 
   const localTasksBeforeDrag = useRef<TRouteTasks | null>(null);
   const activeDraggedTasksBeforeDrag = useRef<Task[]>([]);
@@ -81,7 +83,9 @@ function DrivePlanningRoutes() {
       first: paginationModel.pageSize * paginationModel.page,
       max: paginationModel.pageSize * paginationModel.page + paginationModel.pageSize,
     },
-    !!selectedDate,
+    !!selectedDate && activeDraggable === null,
+    10_000,
+    () => setLastRefreshedAt(DateTime.now()),
   );
 
   const routeTasks = useQueries({
@@ -153,21 +157,36 @@ function DrivePlanningRoutes() {
 
   const renderRightToolbar = useCallback(
     () => (
-      <Button
-        size="small"
-        variant="text"
-        startIcon={<Add />}
-        onClick={() =>
-          navigate({
-            to: "/drive-planning/routes/add-route",
-            search: { date: selectedDate ?? DateTime.now() },
-          })
-        }
-      >
-        {t("drivePlanning.routes.newRoute")}
-      </Button>
+      <Stack direction={"row"} gap={2} alignItems="center">
+        <Typography variant="caption" color="primary">
+          {t("drivePlanning.routes.lastRefreshedAt", {
+            lastRefreshedAt: lastRefreshedAt?.toFormat("HH:mm"),
+          })}
+        </Typography>
+        <LoadingButton
+          variant="text"
+          loading={routesQuery.isLoading}
+          onClick={() => routesQuery.refetch()}
+          title={t("drivePlanning.routes.refresh")}
+        >
+          <Refresh />
+        </LoadingButton>
+        <Button
+          size="small"
+          variant="text"
+          startIcon={<Add />}
+          onClick={() =>
+            navigate({
+              to: "/drive-planning/routes/add-route",
+              search: { date: selectedDate ?? DateTime.now() },
+            })
+          }
+        >
+          {t("drivePlanning.routes.newRoute")}
+        </Button>
+      </Stack>
     ),
-    [navigate, selectedDate, t],
+    [navigate, selectedDate, t, routesQuery, lastRefreshedAt],
   );
 
   const handleAllocateTask = useCallback(async (task: Task) => await updateTask.mutateAsync({ ...task }), [updateTask]);
