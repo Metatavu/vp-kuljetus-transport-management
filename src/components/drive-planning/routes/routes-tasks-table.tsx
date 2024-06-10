@@ -16,6 +16,13 @@ const EmptyCell = styled(TableCell, {
   borderLeft: `1px solid ${theme.palette.background.default}`,
 }));
 
+const FlexTableContainer = styled(TableContainer, {
+  label: "styled-flex-table-container",
+})(() => ({
+  display: "flex",
+  flex: 1,
+}));
+
 type Props = {
   routeId: string;
   groupedTasks: Record<string, GroupedTask>;
@@ -35,8 +42,8 @@ const RoutesTasksTable = ({ routeId, groupedTasks }: Props) => {
 
   return (
     <Stack direction="row">
-      <Box width={leftOffset - 41} bgcolor={theme.palette.background.default} borderBottom="1px solid rgba(0, 0, 0, 0.12)" />
-      <TableContainer >
+      <Box width={leftOffset - 56} bgcolor={theme.palette.background.default} borderBottom="1px solid rgba(0, 0, 0, 0.12)" />
+      <FlexTableContainer>
         <SortableContext items={Object.keys(groupedTasks).map((key) => `${key}-${routeId}`)}>
           <Table>
             <TableHead>
@@ -59,7 +66,7 @@ const RoutesTasksTable = ({ routeId, groupedTasks }: Props) => {
             <TableBody>{Object.keys(groupedTasks).map(renderTaskRow)}</TableBody>
           </Table>
         </SortableContext>
-      </TableContainer>
+      </FlexTableContainer>
     </Stack>
   );
 };
