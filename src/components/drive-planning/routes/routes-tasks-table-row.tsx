@@ -135,7 +135,7 @@ const RoutesTasksTableRow = forwardRef(
           </TableCell>
           <TableCell>{tasks.length}</TableCell>
           <TableCell align="center">
-            <IconButton title={t("drivePlanning.routes.tasksTable.selectWaybill")} size="small" disabled={isOverlay || isDragging} onClick={unAllocateTasks}>
+            <IconButton title={t("drivePlanning.routes.tasksTable.removeTask")} size="small" disabled={isOverlay || isDragging} onClick={unAllocateTasks}>
               <Remove color="error" />
             </IconButton>
           </TableCell>
