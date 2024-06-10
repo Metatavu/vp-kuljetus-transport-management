@@ -6,7 +6,7 @@ import { useState } from "react";
  * 
  * Overrides default behaviour of DataGrid to enter edit mode on double click.
  * 
- * @returns {Object} rowModesModel, setRowModesModel, handleCellClick, handleRowModelsChange
+ * @returns rowModesModel, setRowModesModel, handleCellClick, handleRowModelsChange
  */
 export const useSingleClickRowEditMode = () => {
   const [ rowModesModel, setRowModesModel ] = useState<GridRowModesModel>({});

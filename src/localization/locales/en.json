@@ -69,6 +69,15 @@
       "drive": "Drive",
       "error": "Error",
       "notAvailable": "Not available"
+    },
+    "truckDriveStateStatus": {
+      "driving": "Driving",
+      "stopped": "Stopped",
+      "working": "Working"
+    },
+    "truckEventType": {
+      "load": "Load",
+      "unload": "Unload"
     }
   },
   "management": {
@@ -151,6 +160,8 @@
         "saveNewRoute": "Add route",
         "saveExistingRoute": "Save route"
       },
+      "lastRefreshedAt": "Last refreshed at {{lastRefreshedAt}}",
+      "refresh": "Refresh",
       "tasksTable": {
         "task": "Task",
         "groupNumber": "Identifier",
@@ -164,8 +175,10 @@
         "minifyTasksDrawer": "Minify tasks drawer",
         "expandTasksDrawer": "Expand tasks drawer",
         "freightNumber": "Waybill",
-        "contents": "Freight"
+        "contents": "Freight",
+        "taskRowTooltip": "Drag task to a route"
       },
+      "taskMovedToast": "Task moved to route!",
       "successToast": "Route saved!",
       "errorToast": "Failed to save route!"
     },

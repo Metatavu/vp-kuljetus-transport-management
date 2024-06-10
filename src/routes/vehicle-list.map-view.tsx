@@ -22,6 +22,7 @@ import { MapContainer, Marker, TileLayer, Tooltip } from "react-leaflet";
 import { RouterContext } from "src/routes/__root";
 import config from "../app/config";
 import { useApi } from "../hooks/use-api";
+import { DateTime } from "luxon";
 
 export const Route = createFileRoute("/vehicle-list/map-view")({
   component: () => <VehicleListMapView />,
@@ -104,17 +105,17 @@ const VehicleListMapView = () => {
       // Define the CSS styles for the custom marker icon
       const customMarkerIcon = divIcon({
         html: `
-           <div
-               style="
-               width: 0;
-               height: 0;
-               border-left: 8px solid transparent;
-               border-right: 8px solid transparent;
-               border-bottom: 30px solid ${selectedTruckId === truck.id ? "blue" : "red"};
-               transform: rotate(${truckLocation?.heading ?? 0}deg);"
-           />
-         `,
-         className: "custom-marker-icon",
+          <div
+              style="
+              width: 0;
+              height: 0;
+              border-left: 8px solid transparent;
+              border-right: 8px solid transparent;
+              border-bottom: 30px solid ${selectedTruckId === truck.id ? "blue" : "red"};
+              transform: rotate(${truckLocation?.heading ?? 0}deg);"
+          />
+        `,
+        className: "custom-marker-icon",
       });
 
       return (
@@ -191,6 +192,7 @@ const VehicleListMapView = () => {
                         navigate({
                           to: "/vehicle-list/vehicles/$vehicleId/info",
                           params: { vehicleId: truck.id },
+                          search: { date: DateTime.now() },
                         })
                       }
                     >
