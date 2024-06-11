@@ -1,10 +1,27 @@
-import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Box } from "@mui/material";
+import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Box, Stack, styled } from "@mui/material";
 import { t } from "i18next";
 import { useCallback } from "react";
 import { useGridApiContext } from "@mui/x-data-grid";
 import { SortableContext } from "@dnd-kit/sortable";
 import { GroupedTask } from "../../../types";
 import DraggableRoutesTasksTableRow from "./draggable-routes-tasks-table-row";
+import { theme } from "src/theme";
+
+const EmptyCell = styled(TableCell, {
+  label: "styled-empty-cell",
+})(({ theme }) => ({
+  backgroundColor: theme.palette.background.default,
+  minWidth: 45,
+  maxWidth: 45,
+  borderLeft: `1px solid ${theme.palette.background.default}`,
+}));
+
+const FlexTableContainer = styled(TableContainer, {
+  label: "styled-flex-table-container",
+})(() => ({
+  display: "flex",
+  flex: 1,
+}));
 
 type Props = {
   routeId: string;
@@ -21,19 +38,19 @@ const RoutesTasksTable = ({ routeId, groupedTasks }: Props) => {
     [groupedTasks, routeId],
   );
 
-  const leftOffset = dataGridApiRef.current.getColumnPosition("departureTime");
+  const leftOffset = dataGridApiRef.current.getColumnPosition("tasks");
 
   return (
-    <Box display="flex" alignItems="stretch">
-      <Box width={leftOffset - 46} bgcolor="rgba(0, 0, 0, .025)" borderBottom="1px solid rgba(0, 0, 0, 0.12)" />
-      <TableContainer sx={{ width: `calc(100% - ${leftOffset - 45}px)` }}>
+    <Stack direction="row">
+      <Box width={leftOffset - 56} bgcolor={theme.palette.background.default} borderBottom="1px solid rgba(0, 0, 0, 0.12)" />
+      <FlexTableContainer>
         <SortableContext items={Object.keys(groupedTasks).map((key) => `${key}-${routeId}`)}>
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell sx={{ minWidth: 45, maxWidth: 45 }} />
+                <EmptyCell />
                 <TableCell sx={{ minWidth: 100, maxWidth: 100 }}>{t("drivePlanning.routes.tasksTable.task")}</TableCell>
-                <TableCell sx={{ minWidth: 100, maxWidth: 100 }}>
+                <TableCell sx={{ minWidth: 200, maxWidth: 200 }}>
                   {t("drivePlanning.routes.tasksTable.groupNumber")}
                 </TableCell>
                 <TableCell sx={{ minWidth: 200, maxWidth: 200 }}>
@@ -49,8 +66,8 @@ const RoutesTasksTable = ({ routeId, groupedTasks }: Props) => {
             <TableBody>{Object.keys(groupedTasks).map(renderTaskRow)}</TableBody>
           </Table>
         </SortableContext>
-      </TableContainer>
-    </Box>
+      </FlexTableContainer>
+    </Stack>
   );
 };
 

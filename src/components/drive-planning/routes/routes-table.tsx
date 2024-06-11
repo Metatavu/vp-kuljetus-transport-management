@@ -1,10 +1,9 @@
-import { Add, UnfoldLess, UnfoldMore } from "@mui/icons-material";
-import { IconButton, MenuItem, TextField } from "@mui/material";
+import { Add, ExpandLess, ExpandMore, UnfoldLess, UnfoldMore } from "@mui/icons-material";
+import { IconButton, MenuItem, Stack, TextField, Tooltip, Typography } from "@mui/material";
 import {
   GridCellParams,
   GridColDef,
   GridPaginationModel,
-  GridRenderCellParams,
   GridRenderEditCellParams,
   GridRowProps,
 } from "@mui/x-data-grid";
@@ -105,7 +104,7 @@ const RoutesTable = ({
     [driversQuery],
   );
 
-  const columns: GridColDef[] = useMemo(
+  const columns: GridColDef<Route>[] = useMemo(
     () => [
       {
         field: "name",
@@ -139,9 +138,23 @@ const RoutesTable = ({
       {
         field: "tasks",
         headerName: t("drivePlanning.routes.tasks"),
+        align: "center",
         sortable: false,
         width: 100,
-        renderCell: ({ row: { id } }: GridRenderCellParams<Route>) => tasksByRoute[id ?? ""]?.length ?? 0,
+        cellClassName: "clickable",
+        renderCell: ({ row: { id } }) => {
+          if (!id) return null;
+          return (
+            <Stack direction="row" alignItems="center" flex={1}>
+              <Typography sx={{ flex: 1 }} variant="subtitle2">{tasksByRoute[id ?? ""]?.length ?? 0}</Typography>
+              <Tooltip title={expandedRows.includes(id) ? t("drivePlanning.routes.collapseTasks") : t("drivePlanning.routes.expandTasks")} placement="right-start">
+                <IconButton size="small">
+                  {expandedRows.includes(id) ? <ExpandLess /> : <ExpandMore />}
+                </IconButton>
+              </Tooltip>
+            </Stack>
+          )
+        },
       },
       {
         field: "truckId",
@@ -153,7 +166,7 @@ const RoutesTable = ({
         valueOptions: trucksQuery.data?.trucks ?? [],
         getOptionLabel: ({ name, plateNumber }: Truck) => `${name} (${plateNumber})`,
         getOptionValue: ({ id }: Truck) => id,
-        renderCell: ({ row: { truckId } }: GridRenderCellParams<Route>) => (truckId ? undefined : <Add />),
+        renderCell: ({ row: { truckId } }) => (truckId ? undefined : <Add />),
         renderEditCell: renderTruckSingleSelectCell,
       },
       {
@@ -166,7 +179,7 @@ const RoutesTable = ({
         valueOptions: driversQuery.data?.drivers ?? [],
         getOptionLabel: ({ displayName }: Driver) => displayName,
         getOptionValue: ({ id }: Driver) => id,
-        renderCell: ({ row: { driverId } }: GridRenderCellParams<Route>) => (driverId ? undefined : <Add />),
+        renderCell: ({ row: { driverId } }) => (driverId ? undefined : <Add />),
         renderEditCell: renderDriverSingleSelectCell,
       },
       {
@@ -175,17 +188,22 @@ const RoutesTable = ({
         align: "right",
         width: 180,
         renderHeader: () => null,
-        renderCell: ({ row: { id } }) => (
-          <IconButton
-            onClick={() =>
-              setExpandedRows(
-                expandedRows.includes(id) ? expandedRows.filter((rowId) => rowId !== id) : [...expandedRows, id],
-              )
-            }
-          >
-            {expandedRows.includes(id) ? <UnfoldLess /> : <UnfoldMore />}
-          </IconButton>
-        ),
+        renderCell: ({ row: { id } }) => {
+          if (!id) return null;
+          return (
+            <IconButton
+              size="small"
+              title={expandedRows.includes(id) ? t("drivePlanning.routes.collapseTasks") : t("drivePlanning.routes.expandTasks")}
+              onClick={() =>
+                setExpandedRows(
+                  expandedRows.includes(id) ? expandedRows.filter((rowId) => rowId !== id) : [...expandedRows, id],
+                )
+              }
+            >
+              {expandedRows.includes(id) ? <UnfoldLess /> : <UnfoldMore />}
+            </IconButton>
+          )
+        },
       },
     ],
     [

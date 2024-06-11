@@ -8,6 +8,7 @@ import {
   Popover,
   TableCell,
   TableRow,
+  styled,
 } from "@mui/material";
 import { Site, Task, TaskType } from "generated/client";
 import { ForwardedRef, forwardRef, useCallback, useState } from "react";
@@ -17,6 +18,13 @@ import LocalizationUtils from "utils/localization-utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEYS, useFreights } from "hooks/use-queries";
 import { useNavigate, useSearch } from "@tanstack/react-router";
+
+const HandleCell = styled(TableCell, {
+  label: "styled-empty-cell",
+})(({ theme }) => ({
+  borderTopLeftRadius: theme.shape.borderRadius,
+  borderBottomLeftRadius: theme.shape.borderRadius,
+}));
 
 type Props = {
   tasks: Task[];
@@ -114,9 +122,11 @@ const RoutesTasksTableRow = forwardRef(
     return (
       <>
         <TableRow ref={ref} sx={{ ...style }} onClick={handleTableRowClick}>
-          <TableCell width={15} ref={setActivatorNodeRef} sx={{ cursor: "grab" }} {...rest}>
-            <DragHandle />
-          </TableCell>
+          <HandleCell>
+            <IconButton color="primary" ref={setActivatorNodeRef} sx={{ cursor: "grab" }} {...rest} size="small" title={t("drivePlanning.routes.unallocatedTasksTable.taskRowTooltip")} >
+              <DragHandle />
+            </IconButton>
+          </HandleCell>
           <TableCell>{LocalizationUtils.getLocalizedTaskType(taskType, t)}</TableCell>
           <TableCell>{groupNumber}</TableCell>
           <TableCell>{name}</TableCell>
@@ -124,9 +134,9 @@ const RoutesTasksTableRow = forwardRef(
             {address}, {postalCode} {locality}
           </TableCell>
           <TableCell>{tasks.length}</TableCell>
-          <TableCell align="right">
-            <IconButton sx={{ padding: 0 }} disabled={isOverlay || isDragging} onClick={unAllocateTasks}>
-              <Remove />
+          <TableCell align="center">
+            <IconButton title={t("drivePlanning.routes.tasksTable.removeTask")} size="small" disabled={isOverlay || isDragging} onClick={unAllocateTasks}>
+              <Remove color="error" />
             </IconButton>
           </TableCell>
         </TableRow>
@@ -140,7 +150,7 @@ const RoutesTasksTableRow = forwardRef(
             dense
             subheader={
               <ListSubheader component="div" id="nested-list-subheader">
-                {t("drivePlanning.routes.tasksTable.selectWaybill")}
+                {t("drivePlanning.routes.tasksTable.removeTask")}
               </ListSubheader>
             }
           >

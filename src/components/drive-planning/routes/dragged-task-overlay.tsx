@@ -16,7 +16,7 @@ const DraggedTaskOverlay = ({ tasks, taskType, groupNumber, site }: Props) => {
   const { name, address, postalCode, locality } = site;
 
   return (
-    <ListItem sx={{ display: "flex", flexDirection: "row" }}>
+    <ListItem sx={{ display: "flex", flexDirection: "row", backgroundColor: "rgba(255,255,255,0.5)" }}>
       <ListItemText primary={LocalizationUtils.getLocalizedTaskType(taskType, t)} />
       <ListItemText primary={groupNumber} />
       <ListItemText primary={name} />
