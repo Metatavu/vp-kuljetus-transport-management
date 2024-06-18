@@ -69,6 +69,15 @@
       "drive": "Drive",
       "error": "Error",
       "notAvailable": "Not available"
+    },
+    "truckDriveStateStatus": {
+      "driving": "Driving",
+      "stopped": "Stopped",
+      "working": "Working"
+    },
+    "truckEventType": {
+      "load": "Load",
+      "unload": "Unload"
     }
   },
   "management": {
@@ -140,6 +149,8 @@
       "title": "Routes",
       "date": "Date",
       "departureTime": "Departure time",
+      "expandTasks": "Show tasks",
+      "collapseTasks": "Hide tasks",
       "newRoute": "New route",
       "name": "Name",
       "truck": "Truck",
@@ -151,21 +162,26 @@
         "saveNewRoute": "Add route",
         "saveExistingRoute": "Save route"
       },
+      "lastRefreshedAt": "Last refreshed at {{lastRefreshedAt}}",
+      "refresh": "Refresh",
       "tasksTable": {
         "task": "Task",
         "groupNumber": "Identifier",
         "customerSite": "Customer site",
         "address": "Address",
         "tasksAmount": "Amount of tasks",
-        "selectWaybill": "Select waybill"
+        "selectWaybill": "Select waybill",
+        "removeTask": "Remove task from route"
       },
       "unallocatedTasksTable": {
         "title": "Unallocated tasks",
         "minifyTasksDrawer": "Minify tasks drawer",
         "expandTasksDrawer": "Expand tasks drawer",
         "freightNumber": "Waybill",
-        "contents": "Freight"
+        "contents": "Freight",
+        "taskRowTooltip": "Drag task to a route"
       },
+      "taskMovedToast": "Task moved to route!",
       "successToast": "Route saved!",
       "errorToast": "Failed to save route!"
     },

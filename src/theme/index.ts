@@ -283,6 +283,16 @@ const theme = createTheme(
             "&:focus, &:focus-within": {
               outline: "transparent",
             },
+            "&.clickable": {
+              cursor: "pointer",
+              transition: "background-color 0.2s",
+              "&:hover": {
+                backgroundColor: "rgb(84, 116, 118, 0.1)",
+              },
+              "&:active": {
+                backgroundColor: "rgb(84, 116, 118, 0.15)",
+              },
+            },
           },
         },
       },

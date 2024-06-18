@@ -11,7 +11,7 @@ const RootFreightDialog = () => {
   const navigate = useNavigate();
   const searchParams = useSearch({ strict: false });
   const { freightId } = searchParams;
-  const freightQuery = useFreight(freightId as string | undefined);
+  const freightQuery = useFreight(freightId as string, !!freightId);
   const { freightsApi } = useApi();
   const queryClient = useQueryClient();
   const { t } = useTranslation();

@@ -103,9 +103,9 @@ const TaskTableRow = ({ tasks, type, site, groupNumber, taskCount }: Props) => {
           {address}, {postalCode} {locality}
         </TableCell>
         <TableCell>{taskCount}</TableCell>
-        <TableCell align="center">
-          <IconButton onClick={() => saveTask.mutate()}>
-            <Remove />
+        <TableCell>
+          <IconButton onClick={() => saveTask.mutate()} >
+            <Remove color="error" />
           </IconButton>
         </TableCell>
       </TableRow>

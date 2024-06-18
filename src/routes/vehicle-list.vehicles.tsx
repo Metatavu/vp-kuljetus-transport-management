@@ -102,6 +102,7 @@ function VehicleListVehicles() {
                 navigate({
                   to: "/vehicle-list/vehicles/$vehicleId/info",
                   params: { vehicleId: params.row.id as string },
+                  search: { date: DateTime.now() },
                 })
               }
             >

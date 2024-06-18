@@ -69,6 +69,15 @@
       "drive": "Ajossa",
       "error": "Virhe",
       "notAvailable": "Ei saatavilla"
+    },
+    "truckDriveStateStatus": {
+      "driving": "Ajo",
+      "stopped": "Pysähdys",
+      "working": "Työ"
+    },
+    "truckEventType": {
+      "load": "Lastaus",
+      "unload": "Purku"
     }
   },
   "management": {
@@ -139,6 +148,8 @@
       "title": "Reitit",
       "date": "Päivämäärä",
       "departureTime": "Lähtöaika",
+      "expandTasks": "Näytä tehtävät",
+      "collapseTasks": "Piilota tehtävät",
       "newRoute": "Uusi reitti",
       "name": "Nimi",
       "truck": "Auto",
@@ -150,28 +161,33 @@
         "saveNewRoute": "Lisää reitti",
         "saveExistingRoute": "Tallenna reitti"
       },
+      "lastRefreshedAt": "Tiedot päivitetty {{lastRefreshedAt}}",
+      "refresh": "Päivitä tiedot",
       "tasksTable": {
         "task": "Tehtävä",
         "groupNumber": "Tunnus",
         "customerSite": "Asiakaspaikka",
         "address": "Osoite",
         "tasksAmount": "Tehtävien lkm",
-        "selectWaybill": "Valitse rahtikirja"
+        "selectWaybill": "Valitse rahtikirja",
+        "removeTask": "Poista tehtävä reitiltä"
       },
       "unallocatedTasksTable": {
         "title": "Järjestelemättömät tehtävät",
         "minifyTasksDrawer": "Piilota järjestelemättömät tehtävät",
         "expandTasksDrawer": "Näytä järjestelemättömät tehtävät",
         "freightNumber": "Rahtikirja",
-        "contents": "Sisältö"
+        "contents": "Sisältö",
+        "taskRowTooltip": "Raahaa tehtävä reitille"
       },
+      "taskMovedToast": "Tehtävä siirretty reitille!",
       "successToast": "Reitti tallennettu!",
       "errorToast": "Reitin tallennus epäonnistui!"
     },
     "freights": {
       "title": "Rahtikirjalistaus",
       "new": "Uusi rahtikirja",
-      "freightNumber": "Rahtikirjan numero",
+      "freightNumber": "Rahtikirjan nro",
       "sender": "Lähettäjä",
       "recipient": "Vastaanottaja",
       "pointOfDeparture": "Lähtöpaikka",
