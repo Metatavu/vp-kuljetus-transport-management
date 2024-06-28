@@ -12,6 +12,8 @@ import { deepEqual } from "@tanstack/react-router";
 import AsyncDataGridCell from "../../generic/async-data-grid-cell";
 import { useQueryClient } from "@tanstack/react-query";
 import { useApi } from "hooks/use-api";
+import { IconButton, Stack } from "@mui/material";
+import ClearIcon from "@mui/icons-material/Clear";
 
 type Props = {
   customerSites: Site[];
@@ -33,6 +35,7 @@ const FreightTasks = ({ tasks, customerSites, onEditTask }: Props) => {
   const { rowModesModel, handleCellClick, handleRowModelsChange } = useSingleClickRowEditMode();
 
   const processRowUpdate = (newRow: Task, oldRow: Task) => {
+    console.log("PROCESSROWUPDATE!");
     if (deepEqual(oldRow, newRow)) return oldRow;
     onEditTask(newRow);
 
@@ -45,7 +48,7 @@ const FreightTasks = ({ tasks, customerSites, onEditTask }: Props) => {
     return newRow;
   };
 
-  const columns: GridColDef[] = useMemo(
+  const columns: GridColDef<Task>[] = useMemo(
     () => [
       {
         field: "type",
@@ -88,14 +91,25 @@ const FreightTasks = ({ tasks, customerSites, onEditTask }: Props) => {
         type: "singleSelect",
         getOptionLabel: ({ name }: Route) => name ?? t("noSelection"),
         getOptionValue: ({ id }: Route) => id,
-        renderCell: ({ row: { routeId } }) => (
-          <AsyncDataGridCell
-            promise={queryClient.fetchQuery({
-              queryKey: [QUERY_KEYS.ROUTES, routeId],
-              queryFn: () => (routeId ? routesApi.findRoute({ routeId: routeId }) : undefined),
-            })}
-            valueGetter={(route) => route?.name ?? t("noSelection")}
-          />
+        renderCell: ({ api, row }) => (
+          <Stack direction="row" width="100%" alignItems="center" justifyContent="space-between">
+            <AsyncDataGridCell
+              promise={queryClient.fetchQuery({
+                queryKey: [QUERY_KEYS.ROUTES, row.routeId],
+                queryFn: () => (row.routeId ? routesApi.findRoute({ routeId: row.routeId }) : undefined),
+              })}
+              valueGetter={(route) => route?.name ?? t("noSelection")}
+            />
+            <IconButton
+              onClick={async (e) => {
+                e.stopPropagation();
+                api.updateRows([{ ...row, routeId: undefined, orderNumber: undefined }]);
+                onEditTask({ ...row, routeId: undefined, orderNumber: undefined });
+              }}
+            >
+              <ClearIcon />
+            </IconButton>
+          </Stack>
         ),
         renderEditCell: (params) => (
           <RoutesDropdown

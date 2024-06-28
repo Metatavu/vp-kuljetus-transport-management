@@ -37,14 +37,14 @@ const FreightDialog = ({ freight, onSave, onClose }: Props) => {
       Promise.all(
         pendingFreightUnits.map((freightUnit) => {
           if (!freightUnit.id) return Promise.reject();
-          freightUnitsApi.updateFreightUnit({
+          return freightUnitsApi.updateFreightUnit({
             freightUnitId: freightUnit.id,
             freightUnit: freightUnit,
           });
         }),
       ),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.FREIGHT_UNITS, freight?.id] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.FREIGHT_UNITS, { freightId: freight?.id }] });
     },
   });
 
