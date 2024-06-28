@@ -1,6 +1,6 @@
 import GenericDataGrid from "components/generic/generic-data-grid";
-import { GridColDef } from "@mui/x-data-grid";
-import { useMemo, useState } from "react";
+import { GridColDef, GridRenderCellParams, useGridApiRef } from "@mui/x-data-grid";
+import { MouseEvent, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import LocalizationUtils from "utils/localization-utils";
 import { Route, Site, Task } from "generated/client";
@@ -12,6 +12,8 @@ import { deepEqual } from "@tanstack/react-router";
 import AsyncDataGridCell from "../../generic/async-data-grid-cell";
 import { useQueryClient } from "@tanstack/react-query";
 import { useApi } from "hooks/use-api";
+import { IconButton, Stack } from "@mui/material";
+import ClearIcon from "@mui/icons-material/Clear";
 
 type Props = {
   customerSites: Site[];
@@ -23,6 +25,8 @@ const FreightTasks = ({ tasks, customerSites, onEditTask }: Props) => {
   const { routesApi } = useApi();
   const { t } = useTranslation();
   const queryClient = useQueryClient();
+  const dataGridApiRef = useGridApiRef();
+
   const [selectedDepartureDate, setSelectedDepartureDate] = useState<DateTime | null>(DateTime.now());
 
   const routesQuery = useRoutes({
@@ -45,7 +49,36 @@ const FreightTasks = ({ tasks, customerSites, onEditTask }: Props) => {
     return newRow;
   };
 
-  const columns: GridColDef[] = useMemo(
+  const onClearRoute = useCallback(
+    (e: MouseEvent, task: Task) => {
+      e.stopPropagation();
+      dataGridApiRef.current.updateRows([{ ...task, routeId: undefined, orderNumber: undefined }]);
+      onEditTask({ ...task, routeId: undefined, orderNumber: undefined });
+    },
+    [dataGridApiRef, onEditTask],
+  );
+
+  const renderRouteCell = useCallback(
+    ({ row }: GridRenderCellParams<Task>) => (
+      <Stack direction="row" width="100%" alignItems="center" justifyContent="space-between">
+        <AsyncDataGridCell
+          promise={queryClient.fetchQuery({
+            queryKey: [QUERY_KEYS.ROUTES, row.routeId],
+            queryFn: () => (row.routeId ? routesApi.findRoute({ routeId: row.routeId }) : undefined),
+          })}
+          valueGetter={(route) => route?.name ?? t("noSelection")}
+        />
+        {row.routeId && (
+          <IconButton onClick={(e) => onClearRoute(e, row)}>
+            <ClearIcon />
+          </IconButton>
+        )}
+      </Stack>
+    ),
+    [t, queryClient, routesApi, onClearRoute],
+  );
+
+  const columns: GridColDef<Task>[] = useMemo(
     () => [
       {
         field: "type",
@@ -88,15 +121,7 @@ const FreightTasks = ({ tasks, customerSites, onEditTask }: Props) => {
         type: "singleSelect",
         getOptionLabel: ({ name }: Route) => name ?? t("noSelection"),
         getOptionValue: ({ id }: Route) => id,
-        renderCell: ({ row: { routeId } }) => (
-          <AsyncDataGridCell
-            promise={queryClient.fetchQuery({
-              queryKey: [QUERY_KEYS.ROUTES, routeId],
-              queryFn: () => (routeId ? routesApi.findRoute({ routeId: routeId }) : undefined),
-            })}
-            valueGetter={(route) => route?.name ?? t("noSelection")}
-          />
-        ),
+        renderCell: renderRouteCell,
         renderEditCell: (params) => (
           <RoutesDropdown
             {...params}
@@ -125,11 +150,12 @@ const FreightTasks = ({ tasks, customerSites, onEditTask }: Props) => {
         ),
       },
     ],
-    [t, customerSites, routesQuery, selectedDepartureDate, queryClient, routesApi],
+    [t, customerSites, renderRouteCell, routesQuery.data?.routes, queryClient, routesApi, selectedDepartureDate],
   );
 
   return (
     <GenericDataGrid
+      apiRef={dataGridApiRef}
       editMode="row"
       processRowUpdate={processRowUpdate}
       onCellClick={handleCellClick}
