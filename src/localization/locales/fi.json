@@ -195,7 +195,17 @@
       "freightUnits": "Sisältö",
       "dialog": {
         "title": "Rahtikirja {{freightNumber}}",
-        "save": "Tallenna rahtikirja"
+        "save": "Tallenna rahtikirja",
+        "printAndSave": "Tulosta ja tallenna"
+      },
+      "print": {
+        "waybill": "Rahtikirja  {{freightNumber}}",
+        "copies": {
+          "sender": "Lähettäjä",
+          "recipient": "Vastaanottaja",
+          "driver": "Kuljettaja",
+          "carrier": "Kuljetusliike"
+        }
       },
       "errorMessages": {
         "senderSiteMissing": "Lähettäjä on pakollinen",
