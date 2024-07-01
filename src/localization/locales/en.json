@@ -196,7 +196,17 @@
       "freightUnits": "Contents",
       "dialog": {
         "title": "Freight {{freightNumber}}",
-        "save": "Save freight"
+        "save": "Save freight",
+        "printAndSave": "Print and save"
+      },
+      "print": {
+        "waybill": "Waybill {{freightNumber}}",
+        "copies": {
+          "sender": "Sender",
+          "recipient": "Recipient",
+          "driver": "Driver",
+          "carrier": "Carrier"
+        }
       },
       "errorMessages": {
         "senderSiteMissing": "Sender is required",

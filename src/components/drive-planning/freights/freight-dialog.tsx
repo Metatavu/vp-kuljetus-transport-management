@@ -11,6 +11,9 @@ import LoaderWrapper from "components/generic/loader-wrapper";
 import { FormProvider, useForm } from "react-hook-form";
 import DialogHeader from "components/generic/dialog-header";
 import { QUERY_KEYS, useFreightUnits, useSites, useTasks } from "hooks/use-queries";
+import { BlobProvider } from "@react-pdf/renderer";
+import FreightWaybill from "./freight-waybill";
+import PrintIcon from "@mui/icons-material/Print";
 
 type Props = {
   freight?: Freight;
@@ -128,6 +131,21 @@ const FreightDialog = ({ freight, onSave, onClose }: Props) => {
               <Button variant="text" onClick={onClose}>
                 {t("cancel")}
               </Button>
+              <BlobProvider document={<FreightWaybill freight={freight} />}>
+                {({ loading, url }) => {
+                  if (!url) return null;
+                  return (
+                    <Button
+                      variant="contained"
+                      disabled={!form.formState.isValid || !freight?.id || loading}
+                      onClick={() => window.open(url, "_blank")}
+                      startIcon={<PrintIcon />}
+                    >
+                      {t("drivePlanning.freights.dialog.printAndSave")}
+                    </Button>
+                  );
+                }}
+              </BlobProvider>
               <Button variant="contained" disabled={!form.formState.isValid} type="submit">
                 {t("drivePlanning.freights.dialog.save")}
               </Button>
