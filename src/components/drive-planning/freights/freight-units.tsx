@@ -48,7 +48,7 @@ const FreightUnits = ({ freightUnits, freightId, onEditFreightUnit }: Props) => 
           type: FREIGHT_UNIT_TYPES[0],
         },
       }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.FREIGHT_UNITS] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.FREIGHT_UNITS, { freightId }] }),
   });
 
   const deleteFreightUnit = useMutation({

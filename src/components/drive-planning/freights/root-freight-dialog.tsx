@@ -1,4 +1,4 @@
-import { useNavigate, useSearch } from "@tanstack/react-router";
+import { deepEqual, useNavigate, useSearch } from "@tanstack/react-router";
 import { QUERY_KEYS, useFreight } from "hooks/use-queries";
 import FreightDialog from "./freight-dialog";
 import { useApi } from "hooks/use-api";
@@ -21,13 +21,15 @@ const RootFreightDialog = () => {
   const updateFreight = useMutation({
     mutationFn: async (freight: Freight) => {
       if (!freightId) return Promise.reject();
+      const initialFreight = freightQuery.data;
+      if (deepEqual(initialFreight, freight)) return Promise.resolve();
       await freightsApi.updateFreight({ freightId, freight });
       onClose();
     },
     onSuccess: () => {
       toast.success(t("drivePlanning.freights.successToast"));
-      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.FREIGHTS, freightId] });
-      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.FREIGHT_UNITS_BY_FREIGHT, freightId] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.FREIGHTS, { freightId }] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.FREIGHT_UNITS_BY_FREIGHT, { freightId }] });
     },
     onError: () => toast.error(t("drivePlanning.freights.errorToast")),
   });

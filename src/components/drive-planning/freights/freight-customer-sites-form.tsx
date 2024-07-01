@@ -1,16 +1,27 @@
-import { Stack, MenuItem, TextField } from "@mui/material";
+import { MenuItem, TextField, Grid, Box } from "@mui/material";
 import { Freight, Site } from "generated/client";
+import { useMemo } from "react";
 import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
+import { LocalizedLabelKey } from "src/types";
 
 type Props = {
   freight?: Freight;
   customerSites: Site[];
 };
 
+type SiteField = {
+  key: keyof Freight;
+  label: LocalizedLabelKey;
+  errorMessage: LocalizedLabelKey;
+};
+
 const FreightCustomerSitesForm = ({ freight, customerSites }: Props) => {
   const { t } = useTranslation();
-  const { register } = useFormContext<Freight>();
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext<Freight>();
 
   const renderCustomerSite = (site: Site) => (
     <MenuItem key={site.id} value={site.id}>
@@ -22,59 +33,54 @@ const FreightCustomerSitesForm = ({ freight, customerSites }: Props) => {
 
   const validateSiteId = (value: unknown) => value !== "EMPTY";
 
-  const { senderSiteId, recipientSiteId, destinationSiteId, pointOfDepartureSiteId } = freight ?? {};
+  const siteFields: SiteField[] = useMemo(
+    () => [
+      {
+        key: "senderSiteId",
+        label: "drivePlanning.freights.sender",
+        errorMessage: "drivePlanning.freights.errorMessages.senderSiteMissing",
+      },
+      {
+        key: "recipientSiteId",
+        label: "drivePlanning.freights.recipient",
+        errorMessage: "drivePlanning.freights.errorMessages.recipientSiteMissing",
+      },
+      {
+        key: "destinationSiteId",
+        label: "drivePlanning.freights.destination",
+        errorMessage: "drivePlanning.freights.errorMessages.destinationSiteMissing",
+      },
+      {
+        key: "pointOfDepartureSiteId",
+        label: "drivePlanning.freights.pointOfDeparture",
+        errorMessage: "drivePlanning.freights.errorMessages.pointOfDepartureMissing",
+      },
+    ],
+    [],
+  );
 
   return (
-    <Stack spacing={2} paddingX={2} paddingTop={3}>
-      <Stack direction="row" spacing={2}>
-        <TextField
-          select
-          defaultValue={senderSiteId}
-          {...register("senderSiteId", {
-            required: t("drivePlanning.freights.errorMessages.senderSiteMissing"),
-            validate: validateSiteId,
-          })}
-          label={t("drivePlanning.freights.sender")}
-        >
-          {renderMenuItems()}
-        </TextField>
-        <TextField
-          select
-          defaultValue={recipientSiteId}
-          {...register("recipientSiteId", {
-            required: t("drivePlanning.freights.errorMessages.recipientSiteMissing"),
-            validate: validateSiteId,
-          })}
-          label={t("drivePlanning.freights.recipient")}
-        >
-          {renderMenuItems()}
-        </TextField>
-      </Stack>
-      <Stack direction="row" spacing={2}>
-        <TextField
-          select
-          defaultValue={pointOfDepartureSiteId}
-          {...register("pointOfDepartureSiteId", {
-            required: t("drivePlanning.freights.errorMessages.pointOfDepartureMissing"),
-            validate: validateSiteId,
-          })}
-          label={t("drivePlanning.freights.pointOfDeparture")}
-        >
-          {renderMenuItems()}
-        </TextField>
-        <TextField
-          select
-          defaultValue={destinationSiteId}
-          {...register("destinationSiteId", {
-            required: t("drivePlanning.freights.errorMessages.destinationSiteMissing"),
-            validate: validateSiteId,
-          })}
-          label={t("drivePlanning.freights.destination")}
-        >
-          {renderMenuItems()}
-        </TextField>
-      </Stack>
-    </Stack>
+    <Box>
+      <Grid container spacing={2} padding={2} columns={2}>
+        {siteFields.map(({ key, label, errorMessage }) => (
+          <Grid item xs={1}>
+            <TextField
+              select
+              defaultValue={freight?.[key]}
+              inputProps={register(key, {
+                required: t(errorMessage),
+                validate: validateSiteId,
+              })}
+              helperText={errors[key]?.message}
+              error={!!errors[key]?.message}
+              label={t(label)}
+            >
+              {renderMenuItems()}
+            </TextField>
+          </Grid>
+        ))}
+      </Grid>
+    </Box>
   );
 };
 
