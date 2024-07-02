@@ -131,7 +131,15 @@ const FreightDialog = ({ freight, onSave, onClose }: Props) => {
               <Button variant="text" onClick={onClose}>
                 {t("cancel")}
               </Button>
-              <BlobProvider document={<FreightWaybill freight={freight} />}>
+              <BlobProvider
+                document={
+                  <FreightWaybill
+                    freight={freight}
+                    sites={customerSitesQuery.data?.sites ?? []}
+                    tasks={tasksQuery.data?.tasks ?? []}
+                  />
+                }
+              >
                 {({ loading, url }) => {
                   if (!url) return null;
                   return (
