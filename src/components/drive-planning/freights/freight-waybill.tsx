@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Freight, FreightUnit, Site, Task, TaskType } from "generated/client";
 import { Text, Page, Document, Image, View, Styles } from "@react-pdf/renderer";
 import { LocalizedLabelKey } from "src/types";
@@ -6,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import JsBarcode from "jsbarcode";
 import { useCallback, useMemo } from "react";
 import logo from "assets/vp-kuljetus-logo.jpeg";
+import TimeUtils from "src/utils/time-utils";
 
 type WaybillPage = {
   number: number;
@@ -38,11 +38,11 @@ type Props = {
   freightUnits: FreightUnit[];
 };
 
-const RowView = ({ children, style }: { children: React.ReactNode; style?: Styles }) => (
+const RowView = ({ children, style }: { children?: React.ReactNode; style?: { [key: string]: keyof Styles } }) => (
   <View style={{ display: "flex", flexDirection: "row", ...style }}>{children}</View>
 );
 
-const ColumnView = ({ children, style }: { children: React.ReactNode; style?: Styles }) => (
+const ColumnView = ({ children, style }: { children?: React.ReactNode; style?: { [key: string]: keyof Styles } }) => (
   <View style={{ display: "flex", flexDirection: "column", ...style }}>{children}</View>
 );
 
@@ -60,10 +60,8 @@ const FreightWaybill = ({ freight, sites, tasks, freightUnits }: Props) => {
     return dataUrl;
   }, [freight]);
 
-  const { freightNumber } = freight ?? {};
-
   const renderSite = useCallback(
-    (siteId: string, inner: boolean) => {
+    (siteId?: string, inner?: boolean) => {
       const foundSite = sites.find((site) => site.id === siteId);
       if (!foundSite) return null;
       const { name, address, locality, postalCode } = foundSite;
@@ -98,7 +96,7 @@ const FreightWaybill = ({ freight, sites, tasks, freightUnits }: Props) => {
           <RowView style={{ width: "50%" }}>
             <ColumnView style={{ width: "70%" }}>
               <Text style={{ fontSize: 5 }}>Lähettäjä Avsändare</Text>
-              {renderSite(freight?.senderSiteId)}
+              {renderSite(freight?.senderSiteId, false)}
             </ColumnView>
             <ColumnView style={{ width: "30%" }}>
               <ColumnView>
@@ -120,7 +118,7 @@ const FreightWaybill = ({ freight, sites, tasks, freightUnits }: Props) => {
               <ColumnView>
                 <Text style={{ fontSize: 5 }}>Lähetyspäivämäärä Avsändningsdatum</Text>
                 <Text style={{ padding: 1, fontSize: 10 }}>
-                  {tasks.find((task) => task.type === TaskType.Load)?.createdAt?.toLocaleDateString()}
+                  {TimeUtils.displayAsDate(tasks.find((task) => task.type === TaskType.Load)?.createdAt)}
                 </Text>
               </ColumnView>
               <ColumnView>
@@ -159,7 +157,6 @@ const FreightWaybill = ({ freight, sites, tasks, freightUnits }: Props) => {
               width: "50%",
               borderRight: "1px solid #000",
               borderBottom: "1px solid #000",
-              padding: 2,
               paddingBottom: 20,
             }}
           >
@@ -249,7 +246,7 @@ const FreightWaybill = ({ freight, sites, tasks, freightUnits }: Props) => {
           </Text>
         </ColumnView>
         <ColumnView style={{ width: "25%", padding: 2 }}>
-          <Text style={{ fontSize: 10 }}>{freightUnit.content}</Text>
+          <Text style={{ fontSize: 10 }}>{freightUnit.contents}</Text>
         </ColumnView>
         <ColumnView style={{ width: "12%", padding: 2 }}>
           <Text style={{ fontSize: 10 }}> </Text>
@@ -311,16 +308,16 @@ const FreightWaybill = ({ freight, sites, tasks, freightUnits }: Props) => {
           <Text style={{ fontSize: 5 }}>Kollit kolliantal</Text>
           <Text style={{ fontSize: 10, marginTop: 5, marginLeft: 5 }}>
             {freightUnits.reduce((acc, freightUnit) => {
-              return acc + freightUnit.quantity ?? 0;
+              return acc + (freightUnit.quantity ?? 0);
             }, 0)}
           </Text>
         </ColumnView>
         <ColumnView style={{ width: "25%", borderRight: "1px solid #000", padding: 2 }}>
-          <Text style={{ fontSize: 5 }}>Lavametrit Flakmeter</Text>
+          <Text style={{ fontSize: 5 }}> </Text>
           <Text style={{ fontSize: 10, marginTop: 5, marginLeft: 5 }}> </Text>
         </ColumnView>
         <ColumnView style={{ width: "12%", borderRight: "1px solid #000", padding: 2 }}>
-          <Text style={{ fontSize: 5 }}> </Text>
+          <Text style={{ fontSize: 5 }}>Lavametrit Flakmeter</Text>
           <Text style={{ fontSize: 10, marginTop: 5, marginLeft: 5 }}> </Text>
         </ColumnView>
         <ColumnView style={{ width: "12%", borderRight: "1px solid #000", padding: 2 }}>
@@ -336,6 +333,75 @@ const FreightWaybill = ({ freight, sites, tasks, freightUnits }: Props) => {
     [freightUnits],
   );
 
+  const renderAdditionalInfo = useCallback(
+    () => (
+      <RowView style={{ borderLeft: "2px solid #000", borderBottom: "1px solid #000" }}>
+        <ColumnView style={{ width: "50%", borderRight: "1px solid #000", padding: 2 }}>
+          <Text style={{ fontSize: 5 }}>Lisäohjeet Tillägginstruktioner</Text>
+          <Text style={{ fontSize: 10 }}> </Text>
+        </ColumnView>
+        <ColumnView style={{ width: "50%", padding: 2 }}>
+          <Text style={{ fontSize: 5 }}>Muut tiedot /toimituslauseke Tilläggsuppgifter /leveransklausul</Text>
+          <Text style={{ fontSize: 10 }}> </Text>
+        </ColumnView>
+      </RowView>
+    ),
+    [],
+  );
+
+  const renderReservations = useCallback(
+    () => (
+      <RowView style={{ borderLeft: "2px solid #000", borderBottom: "1px solid #000", padding: 2 }}>
+        <Text style={{ fontSize: 5 }}>
+          Varaumat, pvm, aika, paikka ja kuittaus Förbehåll, datum, tid och kvittering
+        </Text>
+        <Text style={{ fontSize: 10 }}> </Text>
+      </RowView>
+    ),
+    [],
+  );
+
+  const renderEmptyBoxes = useCallback(
+    () => (
+      <RowView style={{ borderLeft: "2px solid #000", borderBottom: "2px solid #000" }}>
+        <ColumnView style={{ width: "12.5%", height: "1cm", borderRight: "1px solid #000" }} />
+        <ColumnView style={{ width: "12.5%", height: "1cm", borderRight: "1px solid #000" }} />
+        <ColumnView style={{ width: "12.5%", height: "1cm", borderRight: "1px solid #000" }} />
+        <ColumnView style={{ width: "12.5%", height: "1cm", borderRight: "1px solid #000" }} />
+        <ColumnView style={{ width: "12.5%", height: "1cm", borderRight: "1px solid #000" }} />
+        <ColumnView style={{ width: "12.5%", height: "1cm", borderRight: "1px solid #000" }} />
+        <ColumnView style={{ width: "12.5%", height: "1cm", borderRight: "1px solid #000" }} />
+        <ColumnView style={{ width: "12.5%", height: "1cm" }} />
+      </RowView>
+    ),
+    [],
+  );
+
+  const renderSignatures = useCallback(
+    () => (
+      <RowView style={{ borderLeft: "2px solid #000", height: "3cm" }}>
+        <ColumnView style={{ width: "37.5%", borderRight: "1px solid #000", padding: 2 }}>
+          <Text style={{ fontSize: 5 }}>Vastaanottaja, pvm, aika ja allekirjoitus</Text>
+          <Text style={{ fontSize: 5 }}>Mottagare, datum, tid och underskrift</Text>
+        </ColumnView>
+        <ColumnView
+          style={{ width: "37.5%", borderRight: "1px solid #000", padding: 2, justifyContent: "space-between" }}
+        >
+          <ColumnView>
+            <Text style={{ fontSize: 5 }}>Otettu kuljetettavaksi, kuljettaja, pvm, aika ja allekirjoitus</Text>
+            <Text style={{ fontSize: 5 }}>Mottaget för transport, chaufför, datum, tid och underskrift</Text>
+          </ColumnView>
+          <Text style={{ fontSize: 6 }}>Nimenselvennykset Namnförtydliganden</Text>
+        </ColumnView>
+        <ColumnView style={{ width: "25%", padding: 2 }}>
+          <Text style={{ fontSize: 5 }}>Lähettäjä, pvm, aika ja allekirjoitus</Text>
+          <Text style={{ fontSize: 5 }}>Avsändare, datum, tid och underskrift</Text>
+        </ColumnView>
+      </RowView>
+    ),
+    [],
+  );
+
   return (
     <Document>
       {WAYBILL_PAGES.map((waybillPage) => (
@@ -344,6 +410,10 @@ const FreightWaybill = ({ freight, sites, tasks, freightUnits }: Props) => {
           {renderSiteInfo()}
           {renderFreightUnits()}
           {renderFreightUnitsSummary()}
+          {renderAdditionalInfo()}
+          {renderReservations()}
+          {renderEmptyBoxes()}
+          {renderSignatures()}
         </Page>
       ))}
     </Document>
