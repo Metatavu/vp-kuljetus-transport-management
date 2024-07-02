@@ -137,6 +137,7 @@ const FreightDialog = ({ freight, onSave, onClose }: Props) => {
                     freight={freight}
                     sites={customerSitesQuery.data?.sites ?? []}
                     tasks={tasksQuery.data?.tasks ?? []}
+                    freightUnits={freightUnitsQuery.data?.freightUnits ?? []}
                   />
                 }
               >

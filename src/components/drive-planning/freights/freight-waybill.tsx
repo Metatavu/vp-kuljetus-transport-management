@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { Freight, Site, Task, TaskType } from "generated/client";
+import { Freight, FreightUnit, Site, Task, TaskType } from "generated/client";
 import { Text, Page, Document, Image, View, Styles } from "@react-pdf/renderer";
 import { LocalizedLabelKey } from "src/types";
 import { useTranslation } from "react-i18next";
@@ -35,6 +35,7 @@ type Props = {
   freight?: Freight;
   sites: Site[];
   tasks: Task[];
+  freightUnits: FreightUnit[];
 };
 
 const RowView = ({ children, style }: { children: React.ReactNode; style?: Styles }) => (
@@ -45,7 +46,7 @@ const ColumnView = ({ children, style }: { children: React.ReactNode; style?: St
   <View style={{ display: "flex", flexDirection: "column", ...style }}>{children}</View>
 );
 
-const FreightWaybill = ({ freight, sites, tasks }: Props) => {
+const FreightWaybill = ({ freight, sites, tasks, freightUnits }: Props) => {
   const { t } = useTranslation();
 
   const barcodeImageDataUrl = useMemo(() => {
@@ -213,18 +214,18 @@ const FreightWaybill = ({ freight, sites, tasks }: Props) => {
                 <Text style={{ fontSize: 10 }}>+2 TOIMITUS</Text>
               </ColumnView>
               <RowView style={{ width: "100%" }}>
-                <ColumnView style={{ width: "70%" }}>
+                <ColumnView style={{ width: "80%" }}>
                   <Text style={{ fontSize: 5 }}>Rahdinmaksaja Fraktbetalare</Text>
                   {renderSite(freight?.senderSiteId, true)}
                 </ColumnView>
-                <ColumnView style={{ width: "30%" }}>
+                <ColumnView style={{ width: "20%" }}>
                   <ColumnView>
-                    <Text style={{ fontSize: 5 }}>Asiakasnro Kundnr</Text>
-                    <Text style={{ fontSize: 10, alignSelf: "flex-end" }}>2430</Text>
+                    <Text style={{ fontSize: 5, alignSelf: "flex-end" }}>Asiakasnro Kundnr</Text>
+                    <Text style={{ fontSize: 10, margin: 1, alignSelf: "flex-end" }}>2430</Text>
                   </ColumnView>
                   <ColumnView>
-                    <Text style={{ fontSize: 5 }}>Sopimusnro Avtalsnr</Text>
-                    <Text style={{ fontSize: 10, alignSelf: "flex-end" }}>2430</Text>
+                    <Text style={{ fontSize: 5, alignSelf: "flex-end" }}>Sopimusnro Avtalsnr</Text>
+                    <Text style={{ fontSize: 10, margin: 1, alignSelf: "flex-end" }}>2430</Text>
                   </ColumnView>
                 </ColumnView>
               </RowView>
@@ -236,12 +237,113 @@ const FreightWaybill = ({ freight, sites, tasks }: Props) => {
     [renderSite, freight, barcodeImageDataUrl],
   );
 
+  const renderFreightUnit = useCallback(
+    (freightUnit: FreightUnit) => (
+      <RowView>
+        <ColumnView style={{ width: "25%", padding: 2 }}>
+          <Text style={{ fontSize: 10 }}> </Text>
+        </ColumnView>
+        <ColumnView style={{ width: "12%", padding: 2 }}>
+          <Text style={{ fontSize: 10 }}>
+            {freightUnit.quantity} {freightUnit.type}
+          </Text>
+        </ColumnView>
+        <ColumnView style={{ width: "25%", padding: 2 }}>
+          <Text style={{ fontSize: 10 }}>{freightUnit.content}</Text>
+        </ColumnView>
+        <ColumnView style={{ width: "12%", padding: 2 }}>
+          <Text style={{ fontSize: 10 }}> </Text>
+        </ColumnView>
+        <ColumnView style={{ width: "12%", padding: 2 }}>
+          <Text style={{ fontSize: 10 }}> </Text>
+        </ColumnView>
+        <ColumnView style={{ width: "12%", padding: 2 }}>
+          <Text style={{ fontSize: 10 }}> </Text>
+        </ColumnView>
+      </RowView>
+    ),
+    [],
+  );
+
+  const renderFreightUnits = useCallback(
+    () => (
+      <ColumnView style={{ borderLeft: "2px solid #000", borderBottom: "1px solid #000", height: "35%" }}>
+        <RowView>
+          <ColumnView style={{ width: "25%", borderRight: "1px solid #000", padding: 2 }}>
+            <Text style={{ fontSize: 5 }}>Merkki / nro</Text>
+            <Text style={{ fontSize: 5 }}>Märke / nr</Text>
+          </ColumnView>
+          <ColumnView style={{ width: "12%", borderRight: "1px solid #000", padding: 2 }}>
+            <Text style={{ fontSize: 5 }}>Kolliluku ja -laji</Text>
+            <Text style={{ fontSize: 5 }}>Kolliantal och -slag</Text>
+          </ColumnView>
+          <ColumnView style={{ width: "25%", borderRight: "1px solid #000", padding: 2 }}>
+            <Text style={{ fontSize: 5 }}>Sisältö, ulkomitat ja VAK-tiedot</Text>
+            <Text style={{ fontSize: 5 }}>Innehål, yttermåt och ADR-information</Text>
+          </ColumnView>
+          <ColumnView style={{ width: "12%", borderRight: "1px solid #000", padding: 2 }}>
+            <Text style={{ fontSize: 5 }}>(Koodi)</Text>
+            <Text style={{ fontSize: 5 }}>(Kod)</Text>
+          </ColumnView>
+          <ColumnView style={{ width: "12%", borderRight: "1px solid #000", padding: 2 }}>
+            <Text style={{ fontSize: 5 }}>Brutto, kg</Text>
+          </ColumnView>
+          <ColumnView style={{ width: "12%", padding: 2 }}>
+            <Text style={{ fontSize: 5 }}>Tilavuus, m3</Text>
+            <Text style={{ fontSize: 5 }}>Volym</Text>
+          </ColumnView>
+        </RowView>
+        {freightUnits.map(renderFreightUnit)}
+      </ColumnView>
+    ),
+    [freightUnits, renderFreightUnit],
+  );
+
+  const renderFreightUnitsSummary = useCallback(
+    () => (
+      <RowView style={{ borderLeft: "2px solid #000", borderBottom: "2px solid #000" }}>
+        <ColumnView style={{ width: "25%", borderRight: "1px solid #000", padding: 2 }}>
+          <Text style={{ fontSize: 5 }}>Lähetyksen tiedot yhteensä</Text>
+          <Text style={{ fontSize: 5 }}>Sändningsinformation, totalt</Text>
+          <Text style={{ fontSize: 10, marginTop: 5, marginLeft: 5 }}> </Text>
+        </ColumnView>
+        <ColumnView style={{ width: "12%", borderRight: "1px solid #000", padding: 2 }}>
+          <Text style={{ fontSize: 5 }}>Kollit kolliantal</Text>
+          <Text style={{ fontSize: 10, marginTop: 5, marginLeft: 5 }}>
+            {freightUnits.reduce((acc, freightUnit) => {
+              return acc + freightUnit.quantity ?? 0;
+            }, 0)}
+          </Text>
+        </ColumnView>
+        <ColumnView style={{ width: "25%", borderRight: "1px solid #000", padding: 2 }}>
+          <Text style={{ fontSize: 5 }}>Lavametrit Flakmeter</Text>
+          <Text style={{ fontSize: 10, marginTop: 5, marginLeft: 5 }}> </Text>
+        </ColumnView>
+        <ColumnView style={{ width: "12%", borderRight: "1px solid #000", padding: 2 }}>
+          <Text style={{ fontSize: 5 }}> </Text>
+          <Text style={{ fontSize: 10, marginTop: 5, marginLeft: 5 }}> </Text>
+        </ColumnView>
+        <ColumnView style={{ width: "12%", borderRight: "1px solid #000", padding: 2 }}>
+          <Text style={{ fontSize: 5 }}>Brutto, kg</Text>
+          <Text style={{ fontSize: 10, marginTop: 5, marginLeft: 5 }}> </Text>
+        </ColumnView>
+        <ColumnView style={{ width: "12%", padding: 2 }}>
+          <Text style={{ fontSize: 5 }}>Rahdituspaino, Fraktvikt</Text>
+          <Text style={{ fontSize: 10, marginTop: 5, marginLeft: 5 }}> </Text>
+        </ColumnView>
+      </RowView>
+    ),
+    [freightUnits],
+  );
+
   return (
     <Document>
       {WAYBILL_PAGES.map((waybillPage) => (
-        <Page size="A4" style={{ paddingLeft: "2cm", paddingRight: "1cm", fontSize: 12 }}>
+        <Page size="A4" style={{ paddingLeft: "2cm", paddingRight: "1cm", paddingTop: "1cm", fontSize: 12 }}>
           {renderTopPart(waybillPage)}
           {renderSiteInfo()}
+          {renderFreightUnits()}
+          {renderFreightUnitsSummary()}
         </Page>
       ))}
     </Document>
