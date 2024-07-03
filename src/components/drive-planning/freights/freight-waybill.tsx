@@ -52,7 +52,9 @@ const ColumnView = ({ children, style }: { children?: React.ReactNode; style?: {
 const LabelText = ({ label, margin }: { label: string; margin?: boolean }) => (
   <Text style={{ margin: margin ? 2 : undefined, fontSize: 5 }}>{label}</Text>
 );
-const TextValue = ({ value }: { value?: string }) => <Text style={{ margin: 1, fontSize: 10 }}>{value}</Text>;
+const TextValue = ({ value, style }: { value?: string; style?: { [key: string]: keyof Styles } }) => (
+  <Text style={{ margin: 1, fontSize: 10, ...style }}>{value}</Text>
+);
 
 const FreightWaybill = ({ freight, sites, tasks, freightUnits }: Props) => {
   const { t } = useTranslation();
@@ -60,7 +62,7 @@ const FreightWaybill = ({ freight, sites, tasks, freightUnits }: Props) => {
   const barcodeImageDataUrl = useMemo(() => {
     if (!freight?.freightNumber) return "";
     const canvas = document.createElement("canvas");
-    JsBarcode(canvas, freight.freightNumber.toString() ?? "", { fontSize: 150, width: 25, height: 400 });
+    JsBarcode(canvas, freight.freightNumber?.toString() ?? "");
     const dataUrl = canvas.toDataURL();
 
     canvas.remove();
@@ -92,7 +94,7 @@ const FreightWaybill = ({ freight, sites, tasks, freightUnits }: Props) => {
         <RowView>
           <View style={{ width: "50%" }}>
             <Text>
-              <Text style={{ fontWeight: "bold", fontSize: 28 }}>{number}&nbsp;&nbsp;</Text>
+              <Text style={{ fontWeight: "bold", fontSize: 28 }}>{number}&nbsp;</Text>
               <Text>{t(label)}</Text>
             </Text>
           </View>
@@ -103,19 +105,19 @@ const FreightWaybill = ({ freight, sites, tasks, freightUnits }: Props) => {
         <RowView>
           <RowView style={{ width: "50%" }}>
             <ColumnView style={{ width: "70%" }}>
-              <LabelText label="Lähettäjä Avsändare" />
+              <LabelText label="Lähettäjä Avsändare" margin />
               {renderSite(freight?.senderSiteId, false)}
             </ColumnView>
             <ColumnView style={{ width: "30%" }}>
               <ColumnView>
-                <LabelText label="Asiakasnro Kundnr" />
+                <LabelText label="Asiakasnro Kundnr" margin />
                 {/* TODO: Add customer number */}
-                <TextValue value="0123" />
+                <TextValue value="" />
               </ColumnView>
               <ColumnView>
-                <LabelText label="Sopimusnro Avtalsnr" />
+                <LabelText label="Sopimusnro Avtalsnr" margin />
                 {/* TODO: Add customer number */}
-                <TextValue value="4567" />
+                <TextValue value="" />
               </ColumnView>
               <ColumnView>
                 <Text> </Text>
@@ -134,17 +136,17 @@ const FreightWaybill = ({ freight, sites, tasks, freightUnits }: Props) => {
               <ColumnView>
                 <LabelText label="Lähettäjän viite Avsändarens referens" />
                 {/* TODO: Add Customer number */}
-                <TextValue value="0123" />
+                <TextValue value="" />
               </ColumnView>
               <ColumnView>
-                <LabelText label="Lähetyspäivämäärä Avsändningsdatum" />
+                <LabelText label="Vastaanottajan viite Mottagarens referens" />
                 {/* TODO: Add Customer number */}
-                <TextValue value="4567" />
+                <TextValue value="" />
               </ColumnView>
             </ColumnView>
             <ColumnView style={{ width: "50%" }}>
               <ColumnView>
-                <LabelText label="Lähetyspäivämäärä Avsändningsdatum" />
+                <LabelText label="Numero Nummer" />
                 <Text style={{ padding: 1, fontSize: 12, fontWeight: "bold" }}>{freight?.freightNumber}</Text>
               </ColumnView>
             </ColumnView>
@@ -174,12 +176,12 @@ const FreightWaybill = ({ freight, sites, tasks, freightUnits }: Props) => {
               <ColumnView>
                 <LabelText label="Asiakasnro Kundnr" margin />
                 {/* TODO: Add Customer number */}
-                <TextValue value="0123" />
+                <TextValue value="" />
               </ColumnView>
               <ColumnView>
                 <LabelText label="Sopimusnro Avtalsnr" margin />
                 {/* TODO: Add Customer number */}
-                <TextValue value="4567" />
+                <TextValue value="" />
               </ColumnView>
             </ColumnView>
           </RowView>
@@ -216,7 +218,8 @@ const FreightWaybill = ({ freight, sites, tasks, freightUnits }: Props) => {
             <ColumnView style={{ width: "100%" }}>
               <ColumnView style={{ paddingBottom: 30, width: "100%" }}>
                 <LabelText label="Kuljetusohjeet Transportinstruktioner" margin />
-                <Text style={{ fontSize: 10 }}>+2 TOIMITUS</Text>
+                {/* TODO: Add transport instructions */}
+                <Text style={{ fontSize: 10 }}> </Text>
               </ColumnView>
               <RowView style={{ width: "100%" }}>
                 <ColumnView style={{ width: "80%" }}>
@@ -226,11 +229,13 @@ const FreightWaybill = ({ freight, sites, tasks, freightUnits }: Props) => {
                 <ColumnView style={{ width: "20%" }}>
                   <ColumnView>
                     <LabelText label="Asiakasnro Kundnr" margin />
-                    <Text style={{ fontSize: 10, margin: 1, alignSelf: "flex-end" }}>2430</Text>
+                    {/* TODO: Add Customer number */}
+                    <Text style={{ fontSize: 10, margin: 1, alignSelf: "flex-end" }}> </Text>
                   </ColumnView>
                   <ColumnView>
                     <LabelText label="Sopimusnro Avtalsnr" margin />
-                    <Text style={{ fontSize: 10, margin: 1, alignSelf: "flex-end" }}>2430</Text>
+                    {/* TODO: Add Customer number */}
+                    <Text style={{ fontSize: 10, margin: 1, alignSelf: "flex-end" }}> </Text>
                   </ColumnView>
                 </ColumnView>
               </RowView>
