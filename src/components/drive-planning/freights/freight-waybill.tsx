@@ -221,7 +221,7 @@ const FreightWaybill = ({ freight, sites, tasks, freightUnits }: Props) => {
               <RowView style={{ width: "100%" }}>
                 <ColumnView style={{ width: "80%" }}>
                   <LabelText label="Rahdinmaksaja Fraktbetalare" margin />
-                  {renderSite(freight?.senderSiteId)}
+                  {renderSite(freight?.senderSiteId, true)}
                 </ColumnView>
                 <ColumnView style={{ width: "20%" }}>
                   <ColumnView>
