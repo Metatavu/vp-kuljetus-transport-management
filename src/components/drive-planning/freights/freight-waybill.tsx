@@ -162,7 +162,6 @@ const FreightWaybill = ({ freight, sites, tasks, freightUnits }: Props) => {
           <RowView
             style={{
               width: "50%",
-              borderRight: NARROW_BORDER,
               borderBottom: NARROW_BORDER,
               paddingBottom: 20,
             }}
@@ -184,7 +183,7 @@ const FreightWaybill = ({ freight, sites, tasks, freightUnits }: Props) => {
               </ColumnView>
             </ColumnView>
           </RowView>
-          <RowView style={{ width: "50%", padding: 2, borderBottom: NARROW_BORDER }}>
+          <RowView style={{ width: "50%", padding: 2, borderBottom: NARROW_BORDER, borderLeft: NARROW_BORDER }}>
             <ColumnView>
               <LabelText label="Rahdinkuljettaja/Huolitsija Transportföretag/Speditör" margin />
               <View style={{ paddingLeft: 10 }}>
