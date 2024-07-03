@@ -6,7 +6,6 @@ import JsBarcode from "jsbarcode";
 import { useCallback, useMemo } from "react";
 import logo from "assets/vp-kuljetus-logo.jpeg";
 import TimeUtils from "src/utils/time-utils";
-import { BorderLeft } from "@mui/icons-material";
 
 type WaybillPage = {
   number: number;
@@ -196,14 +195,14 @@ const FreightWaybill = ({ freight, sites, tasks, freightUnits }: Props) => {
         </RowView>
         <RowView style={{ borderBottom: NARROW_BORDER }}>
           <ColumnView style={{ width: "50%" }}>
-            <ColumnView style={{ borderBottom: NARROW_BORDER, borderRight: NARROW_BORDER, paddingBottom: 20 }}>
+            <ColumnView style={{ borderBottom: NARROW_BORDER, paddingBottom: 20 }}>
               <LabelText
                 label="Lähtöpaikka/nouto-osoite Avsändningsort/avhämntningsadress (Lähtöas., raide Avsändningsst., spår)"
                 margin
               />
               {renderSite(freight?.pointOfDepartureSiteId, true)}
             </ColumnView>
-            <ColumnView style={{ paddingBottom: 20, borderRight: NARROW_BORDER }}>
+            <ColumnView style={{ paddingBottom: 20 }}>
               <LabelText
                 label="Määräpaikka/toimitusosoite Bestämmelseort/leveransadress (Määräas., raide Bestämmelsest., spår)"
                 margin
@@ -211,7 +210,7 @@ const FreightWaybill = ({ freight, sites, tasks, freightUnits }: Props) => {
               {renderSite(freight?.destinationSiteId, true)}
             </ColumnView>
           </ColumnView>
-          <ColumnView style={{ width: "50%" }}>
+          <ColumnView style={{ width: "50%", borderLeft: NARROW_BORDER }}>
             <ColumnView style={{ alignItems: "center", height: "2cm", borderBottom: NARROW_BORDER }}>
               <Image src={barcodeImageDataUrl} />
             </ColumnView>
