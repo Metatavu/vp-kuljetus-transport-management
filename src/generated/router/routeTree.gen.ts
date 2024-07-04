@@ -9,6 +9,7 @@ import { Route as VehicleListVehiclesImport } from "./../../routes/vehicle-list.
 import { Route as VehicleListMapViewImport } from "./../../routes/vehicle-list.map-view"
 import { Route as ManagementVehiclesImport } from "./../../routes/management.vehicles"
 import { Route as ManagementEquipmentImport } from "./../../routes/management.equipment"
+import { Route as ManagementEmployeesImport } from "./../../routes/management.employees"
 import { Route as ManagementCustomerSitesImport } from "./../../routes/management.customer-sites"
 import { Route as DrivePlanningRoutesImport } from "./../../routes/drive-planning.routes"
 import { Route as DrivePlanningFreightsImport } from "./../../routes/drive-planning.freights"
@@ -67,6 +68,11 @@ const ManagementVehiclesRoute = ManagementVehiclesImport.update({
 
 const ManagementEquipmentRoute = ManagementEquipmentImport.update({
   path: "/equipment",
+  getParentRoute: () => ManagementRoute,
+} as any)
+
+const ManagementEmployeesRoute = ManagementEmployeesImport.update({
+  path: "/employees",
   getParentRoute: () => ManagementRoute,
 } as any)
 
@@ -156,6 +162,10 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof ManagementCustomerSitesImport
       parentRoute: typeof ManagementImport
     }
+    "/management/employees": {
+      preLoaderRoute: typeof ManagementEmployeesImport
+      parentRoute: typeof ManagementImport
+    }
     "/management/equipment": {
       preLoaderRoute: typeof ManagementEquipmentImport
       parentRoute: typeof ManagementImport
@@ -220,6 +230,7 @@ export const routeTree = rootRoute.addChildren([
   ]),
   ManagementRoute.addChildren([
     ManagementCustomerSitesRoute,
+    ManagementEmployeesRoute,
     ManagementEquipmentRoute,
     ManagementVehiclesRoute,
     ManagementCustomerSitesAddCustomerSiteRoute,

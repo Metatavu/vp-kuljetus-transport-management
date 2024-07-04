@@ -140,6 +140,26 @@
       "errorMessages": {
         "licensePlateMissing": "Rekisterinumero on pakollinen"
       }
+    },
+    "employees": {
+      "title": "Työntekijät",
+      "filters": {
+        "name": {
+          "label": "Nimihaku",
+          "placeholder": "Hae nimellä"
+        }
+      },
+      "employeeNumber": "Tunnus",
+      "lastName": "Sukunimi",
+      "firstName": "Etunimi",
+      "driverCard": "Digipiirturikortti",
+      "pinCode": "PIN-koodi",
+      "type": "Tyyppi",
+      "salaryGroup": "Palkkaryhmä",
+      "office": "Toimipiste",
+      "workHours": "Säännöllinen työaika (h / 2vk)",
+      "driverCardLastEmptied": "Kuljettajakortti purettu viimeksi",
+      "lastDriven": "Viimeksi ajanut"
     }
   },
   "drivePlanning": {
