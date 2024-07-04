@@ -141,19 +141,17 @@ const FreightDialog = ({ freight, onSave, onClose }: Props) => {
                   />
                 }
               >
-                {({ loading, url }) => {
-                  if (!url) return null;
-                  return (
-                    <Button
-                      variant="contained"
-                      disabled={!form.formState.isValid || !freight?.id || loading}
-                      onClick={() => window.open(url, "_blank")}
-                      startIcon={<PrintIcon />}
-                    >
-                      {t("drivePlanning.freights.dialog.printAndSave")}
-                    </Button>
-                  );
-                }}
+                {({ loading, url }) => (
+                  <Button
+                    variant="contained"
+                    href={url || ""}
+                    target="_blank"
+                    disabled={!form.formState.isValid || !freight?.id || loading || !!url}
+                    startIcon={<PrintIcon />}
+                  >
+                    {t("drivePlanning.freights.dialog.printAndSave")}
+                  </Button>
+                )}
               </BlobProvider>
               <Button variant="contained" disabled={!form.formState.isValid} type="submit">
                 {t("drivePlanning.freights.dialog.save")}

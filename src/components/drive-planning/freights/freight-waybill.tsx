@@ -112,12 +112,12 @@ const FreightWaybill = ({ freight, sites, tasks, freightUnits }: Props) => {
               <ColumnView>
                 <LabelText label="Asiakasnro Kundnr" margin />
                 {/* TODO: Add customer number */}
-                <TextValue value="" />
+                <TextValue value=" " />
               </ColumnView>
               <ColumnView>
                 <LabelText label="Sopimusnro Avtalsnr" margin />
                 {/* TODO: Add customer number */}
-                <TextValue value="" />
+                <TextValue value=" " />
               </ColumnView>
               <ColumnView>
                 <Text> </Text>
@@ -136,12 +136,12 @@ const FreightWaybill = ({ freight, sites, tasks, freightUnits }: Props) => {
               <ColumnView>
                 <LabelText label="Lähettäjän viite Avsändarens referens" />
                 {/* TODO: Add Customer number */}
-                <TextValue value="" />
+                <TextValue value=" " />
               </ColumnView>
               <ColumnView>
                 <LabelText label="Vastaanottajan viite Mottagarens referens" />
                 {/* TODO: Add Customer number */}
-                <TextValue value="" />
+                <TextValue value=" " />
               </ColumnView>
             </ColumnView>
             <ColumnView style={{ width: "50%" }}>
@@ -176,12 +176,12 @@ const FreightWaybill = ({ freight, sites, tasks, freightUnits }: Props) => {
               <ColumnView>
                 <LabelText label="Asiakasnro Kundnr" margin />
                 {/* TODO: Add Customer number */}
-                <TextValue value="" />
+                <TextValue value=" " />
               </ColumnView>
               <ColumnView>
                 <LabelText label="Sopimusnro Avtalsnr" margin />
                 {/* TODO: Add Customer number */}
-                <TextValue value="" />
+                <TextValue value=" " />
               </ColumnView>
             </ColumnView>
           </RowView>
