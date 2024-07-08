@@ -146,7 +146,7 @@ const FreightDialog = ({ freight, onSave, onClose }: Props) => {
                     variant="contained"
                     href={url || ""}
                     target="_blank"
-                    disabled={!form.formState.isValid || !freight?.id || loading || !!url}
+                    disabled={!form.formState.isValid || !freight?.id || loading}
                     startIcon={<PrintIcon />}
                   >
                     {t("drivePlanning.freights.dialog.printAndSave")}
