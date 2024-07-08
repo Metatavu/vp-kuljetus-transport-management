@@ -9,11 +9,12 @@ import { ReactNode, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { theme } from "src/theme";
 import { LocalizedLabelKey } from "src/types";
+import { RouterContext } from "./__root";
 
 export const Route = createFileRoute("/management/employees")({
   component: ManagementEmployees,
-  beforeLoad: () => ({
-    breadcrumbs: "management.employees.title",
+  beforeLoad: (): RouterContext => ({
+    breadcrumbs: ["management.employees.title"],
   }),
 });
 

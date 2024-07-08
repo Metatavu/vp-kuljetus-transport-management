@@ -12,7 +12,7 @@ import { toast } from "react-toastify";
 export const Route = createFileRoute("/drive-planning/routes/add-route")({
   component: AddRoute,
   beforeLoad: (): RouterContext => ({
-    breadcrumbs: ["drivePlanning.routes.newRoute"],
+    breadcrumbs: ["drivePlanning.routes.title", "drivePlanning.routes.newRoute"],
   }),
   validateSearch: ({ date }: Record<string, unknown>) => ({
     date: date ? DateTime.fromISO(date as string) : DateTime.now(),

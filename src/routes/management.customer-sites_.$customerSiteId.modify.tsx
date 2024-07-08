@@ -12,7 +12,7 @@ import { toast } from "react-toastify";
 export const Route = createFileRoute("/management/customer-sites/$customerSiteId/modify")({
   component: () => <CustomerSiteModify />,
   beforeLoad: (): RouterContext => ({
-    breadcrumbs: ["management.customerSites.modify"],
+    breadcrumbs: ["management.customerSites.title", "management.customerSites.modify"],
   }),
 });
 

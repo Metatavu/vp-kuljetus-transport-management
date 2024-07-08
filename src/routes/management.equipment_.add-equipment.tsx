@@ -10,7 +10,7 @@ import { RouterContext } from "src/routes/__root";
 export const Route = createFileRoute("/management/equipment/add-equipment")({
   component: () => <EquipmentAdd />,
   beforeLoad: (): RouterContext => ({
-    breadcrumbs: ["management.equipment.new"],
+    breadcrumbs: ["management.equipment.title", "management.equipment.new"],
   }),
 });
 

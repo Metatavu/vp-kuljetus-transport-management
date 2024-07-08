@@ -14,7 +14,7 @@ import LocalizationUtils from "utils/localization-utils";
 export const Route = createFileRoute("/management/equipment")({
   component: ManagementEquipment,
   beforeLoad: (): RouterContext => ({
-    breadcrumbs: "management.equipment.title",
+    breadcrumbs: ["management.equipment.title"],
   }),
 });
 

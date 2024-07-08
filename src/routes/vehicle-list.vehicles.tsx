@@ -14,7 +14,7 @@ import clsx from "clsx";
 export const Route = createFileRoute("/vehicle-list/vehicles")({
   component: VehicleListVehicles,
   beforeLoad: (): RouterContext => ({
-    breadcrumbs: "vehicleList.title",
+    breadcrumbs: ["vehicleList.title"],
   }),
 });
 
