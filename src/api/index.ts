@@ -11,6 +11,7 @@ import {
   TasksApi,
   RoutesApi,
   DriversApi,
+  EmployeesApi,
 } from "../generated/client";
 
 type ConfigConstructor<T> = new (_params: ConfigurationParameters) => T;
@@ -37,5 +38,6 @@ export const getApiClient = (getAccessToken?: () => Promise<string>) => {
     tasksApi: new TasksApi(getConfiguration()),
     routesApi: new RoutesApi(getConfiguration()),
     driversApi: new DriversApi(getConfiguration()),
+    employeesApi: new EmployeesApi(getConfiguration()),
   };
 };

@@ -145,6 +145,7 @@
     "employees": {
       "title": "Employees",
       "new": "New employee",
+      "modify": "Modify employee",
       "filters": {
         "name": {
           "label": "Name",
@@ -161,7 +162,18 @@
       "office": "Office",
       "workHours": "Work hours (h / 2wk)",
       "driverCardLastEmptied": "Driver card last emptied",
-      "lastDriven": "Last driven"
+      "lastDriven": "Last driven",
+      "errorMessages": {
+        "firstNameMissing": "First name is required.",
+        "lastNameMissing": "Last name is required.",
+        "employeeNumberMissing": "Employee number is required.",
+        "officeMissing": "Office is required.",
+        "typeMissing": "Type is required.",
+        "salaryGroupMissing": "Salary group is required.",
+        "workHoursMissing": "Work hours is required when type is Kuljettaja."
+      },
+      "successToast": "Employee saved!",
+      "errorToast": "Failed to save employee!"
     }
   },
   "drivePlanning": {
