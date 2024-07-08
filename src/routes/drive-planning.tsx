@@ -9,7 +9,7 @@ import ViewContainer from "components/layout/view-container";
 export const Route = createFileRoute("/drive-planning")({
   component: DrivePlanningLayoutComponent,
   beforeLoad: (): RouterContext => ({
-    breadcrumb: "drivePlanning.title",
+    breadcrumbs: ["drivePlanning.title"],
   }),
 });
 

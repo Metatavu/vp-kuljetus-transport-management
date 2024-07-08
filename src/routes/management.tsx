@@ -9,7 +9,7 @@ import { NavigationItem } from "src/types";
 export const Route = createFileRoute("/management")({
   component: ManagementLayoutComponent,
   beforeLoad: (): RouterContext => ({
-    breadcrumb: "management.title",
+    breadcrumbs: "management.title",
   }),
 });
 

@@ -144,6 +144,7 @@
     },
     "employees": {
       "title": "Employees",
+      "new": "New employee",
       "filters": {
         "name": {
           "label": "Name",

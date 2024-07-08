@@ -143,6 +143,7 @@
     },
     "employees": {
       "title": "Työntekijät",
+      "new": "Uusi työntekijä",
       "filters": {
         "name": {
           "label": "Nimihaku",

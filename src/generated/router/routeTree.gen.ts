@@ -14,6 +14,7 @@ import { Route as ManagementCustomerSitesImport } from "./../../routes/managemen
 import { Route as DrivePlanningRoutesImport } from "./../../routes/drive-planning.routes"
 import { Route as DrivePlanningFreightsImport } from "./../../routes/drive-planning.freights"
 import { Route as ManagementEquipmentAddEquipmentImport } from "./../../routes/management.equipment_.add-equipment"
+import { Route as ManagementEmployeesAddEmployeeImport } from "./../../routes/management.employees_.add-employee"
 import { Route as ManagementCustomerSitesAddCustomerSiteImport } from "./../../routes/management.customer-sites_.add-customer-site_"
 import { Route as DrivePlanningRoutesAddRouteImport } from "./../../routes/drive-planning.routes.add-route"
 import { Route as DrivePlanningFreightsAddFreightImport } from "./../../routes/drive-planning.freights.add-freight"
@@ -94,6 +95,12 @@ const DrivePlanningFreightsRoute = DrivePlanningFreightsImport.update({
 const ManagementEquipmentAddEquipmentRoute =
   ManagementEquipmentAddEquipmentImport.update({
     path: "/equipment/add-equipment",
+    getParentRoute: () => ManagementRoute,
+  } as any)
+
+const ManagementEmployeesAddEmployeeRoute =
+  ManagementEmployeesAddEmployeeImport.update({
+    path: "/employees/add-employee",
     getParentRoute: () => ManagementRoute,
   } as any)
 
@@ -202,6 +209,10 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof ManagementCustomerSitesAddCustomerSiteImport
       parentRoute: typeof ManagementImport
     }
+    "/management/employees/add-employee": {
+      preLoaderRoute: typeof ManagementEmployeesAddEmployeeImport
+      parentRoute: typeof ManagementImport
+    }
     "/management/equipment/add-equipment": {
       preLoaderRoute: typeof ManagementEquipmentAddEquipmentImport
       parentRoute: typeof ManagementImport
@@ -234,6 +245,7 @@ export const routeTree = rootRoute.addChildren([
     ManagementEquipmentRoute,
     ManagementVehiclesRoute,
     ManagementCustomerSitesAddCustomerSiteRoute,
+    ManagementEmployeesAddEmployeeRoute,
     ManagementEquipmentAddEquipmentRoute,
     ManagementCustomerSitesCustomerSiteIdModifyRoute,
     ManagementEquipmentEquipmentIdModifyRoute,

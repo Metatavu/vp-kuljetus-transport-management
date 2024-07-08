@@ -7,7 +7,7 @@ import * as luxon from "luxon";
 import { LocalizedLabelKey } from "src/types";
 
 export type RouterContext = {
-  breadcrumb?: LocalizedLabelKey;
+  breadcrumbs?: LocalizedLabelKey[];
 };
 
 export const Route = createRootRouteWithContext<RouterContext>()({

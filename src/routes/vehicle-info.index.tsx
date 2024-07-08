@@ -4,7 +4,7 @@ import { RouterContext } from "./__root";
 export const Route = createFileRoute("/vehicle-info/")({
   component: VehicleInfoIndexRoute,
   beforeLoad: (): RouterContext => ({
-    breadcrumb: "vehicleInfo",
+    breadcrumbs: "vehicleInfo",
   }),
 });
 

@@ -1,7 +1,7 @@
 import { Add, Search } from "@mui/icons-material";
 import { Button, Stack, styled, TextField } from "@mui/material";
 import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import GenericDataGrid from "components/generic/generic-data-grid";
 import LoaderWrapper from "components/generic/loader-wrapper";
 import ToolbarRow from "components/generic/toolbar-row";
@@ -13,7 +13,7 @@ import { LocalizedLabelKey } from "src/types";
 export const Route = createFileRoute("/management/employees")({
   component: ManagementEmployees,
   beforeLoad: () => ({
-    breadcrumb: "management.employees.title",
+    breadcrumbs: "management.employees.title",
   }),
 });
 
@@ -29,6 +29,7 @@ const Root = styled(Stack, {
 
 function ManagementEmployees() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({ page: 0, pageSize: 25 });
 
@@ -168,7 +169,13 @@ function ManagementEmployees() {
           titleFirst
           title={t("management.employees.title")}
           toolbarButtons={
-            <Button size="small" variant="contained" sx={{ height: 26 }} startIcon={<Add />}>
+            <Button
+              size="small"
+              variant="contained"
+              sx={{ height: 26 }}
+              startIcon={<Add />}
+              onClick={() => navigate({ to: "/management/employees/add-employee" })}
+            >
               {t("addNew")}
             </Button>
           }

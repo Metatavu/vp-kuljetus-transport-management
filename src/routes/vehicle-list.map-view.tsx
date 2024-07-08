@@ -27,7 +27,7 @@ import { DateTime } from "luxon";
 export const Route = createFileRoute("/vehicle-list/map-view")({
   component: () => <VehicleListMapView />,
   beforeLoad: (): RouterContext => ({
-    breadcrumb: "management.vehicles.title",
+    breadcrumbs: "management.vehicles.title",
   }),
 });
 
