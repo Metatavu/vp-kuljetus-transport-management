@@ -1,4 +1,4 @@
-import { TaskType, TruckDriveStateEnum } from "generated/client";
+import { EmployeeType, Office, SalaryGroup, TaskType, TruckDriveStateEnum } from "generated/client";
 import { TFunction } from "i18next";
 
 namespace LocalizationUtils {

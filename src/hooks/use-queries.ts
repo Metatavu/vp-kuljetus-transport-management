@@ -19,6 +19,7 @@ export const QUERY_KEYS = {
   FREIGHT_UNITS: "freightUnits",
   FREIGHTS: "freights",
   FREIGHT_UNITS_BY_FREIGHT: "freight-units-by-freight",
+  EMPLOYEES: "employees",
 } as const;
 
 export const useSites = (requestParams: ListSitesRequest = {}, enabled = true) => {
