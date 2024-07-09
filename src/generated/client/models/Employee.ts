@@ -102,6 +102,21 @@ export interface Employee {
      */
     employeeNumber: string;
     /**
+<<<<<<< HEAD
+=======
+     * Employee's email address
+     * @type {string}
+     * @memberof Employee
+     */
+    email?: string;
+    /**
+     * Employee's phone number
+     * @type {string}
+     * @memberof Employee
+     */
+    phoneNumber?: string;
+    /**
+>>>>>>> feature-user-management-screen
      * Setting the archivedAt time marks the employee as archived. Employees marked as archived will not appear in list requests unless archived filter is set to true. Archived employee cannot be updated, unless archivedAt is first set to null.
      * 
      * @type {Date}
@@ -145,6 +160,11 @@ export function EmployeeFromJSONTyped(json: any, ignoreDiscriminator: boolean): 
         'regularWorkingHours': !exists(json, 'regularWorkingHours') ? undefined : json['regularWorkingHours'],
         'driverCardLastReadOut': !exists(json, 'driverCardLastReadOut') ? undefined : (new Date(json['driverCardLastReadOut'])),
         'employeeNumber': json['employeeNumber'],
+<<<<<<< HEAD
+=======
+        'email': !exists(json, 'email') ? undefined : json['email'],
+        'phoneNumber': !exists(json, 'phoneNumber') ? undefined : json['phoneNumber'],
+>>>>>>> feature-user-management-screen
         'archivedAt': !exists(json, 'archivedAt') ? undefined : (new Date(json['archivedAt'])),
     };
 }
@@ -167,6 +187,11 @@ export function EmployeeToJSON(value?: Employee | null): any {
         'regularWorkingHours': value.regularWorkingHours,
         'driverCardLastReadOut': value.driverCardLastReadOut === undefined ? undefined : (value.driverCardLastReadOut.toISOString()),
         'employeeNumber': value.employeeNumber,
+<<<<<<< HEAD
+=======
+        'email': value.email,
+        'phoneNumber': value.phoneNumber,
+>>>>>>> feature-user-management-screen
         'archivedAt': value.archivedAt === undefined ? undefined : (value.archivedAt.toISOString()),
     };
 }

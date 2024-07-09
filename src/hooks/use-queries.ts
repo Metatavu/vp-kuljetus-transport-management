@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import {
+  ListEmployeesRequest,
   ListFreightUnitsRequest,
   ListRoutesRequest,
   ListSitesRequest,
@@ -147,6 +148,21 @@ export const useFreight = (freightId: string, enabled = true) => {
     queryFn: () => freightsApi.findFreight({ freightId: freightId }),
   });
 };
+
+export const useEmployees = (requestParams: ListEmployeesRequest = {}, enabled = true) => {
+  const { employeesApi } = useApi();
+
+  return useQuery({
+    queryKey: [QUERY_KEYS.EMPLOYEES, requestParams],
+    enabled: enabled,
+    queryFn: async () => {
+      const [employees, headers] = await employeesApi.listEmployeesWithHeaders(requestParams);
+      const totalResults = getTotalResultsFromHeaders(headers);
+
+      return { employees, totalResults };
+    },
+  });
+}
 
 /**
  * Gets total results from headers

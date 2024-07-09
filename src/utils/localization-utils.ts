@@ -1,4 +1,4 @@
-import { EmployeeType, Office, SalaryGroup, TaskType, TruckDriveStateEnum } from "generated/client";
+import { EmployeeType, Office, SalaryGroup, EmployeeType, Office, SalaryGroup, TaskType, TruckDriveStateEnum } from "generated/client";
 import { TFunction } from "i18next";
 
 namespace LocalizationUtils {
@@ -45,10 +45,10 @@ namespace LocalizationUtils {
   })[office];
 
   export const getLocalizedSalaryGroup = (salaryGroup: SalaryGroup, t: TFunction) => ({
-    Driver: t("management.employees.salaryGroups.driver"),
-    VPLogistics: t("management.employees.salaryGroups.vpLogistics"),
-    Office: t("management.employees.salaryGroups.office"),
-    Terminal: t("management.employees.salaryGroups.terminal")
+    DRIVER: t("management.employees.salaryGroups.driver"),
+    VPLOGISTICS: t("management.employees.salaryGroups.vpLogistics"),
+    OFFICE: t("management.employees.salaryGroups.office"),
+    TERMINAL: t("management.employees.salaryGroups.terminal")
   })[salaryGroup];
 
   export const getLocalizedEmployeeType = (type: EmployeeType, t: TFunction) => ({

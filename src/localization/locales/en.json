@@ -7,6 +7,7 @@
   "archive": "Archive",
   "open": "Open",
   "noSelection": "No selection",
+  "all": "All",
   "noResults": "No results",
   "actions": "Actions",
   "menu": "Menu",
@@ -141,40 +142,40 @@
     "errorMessages": {
       "nameMissing": "Name is required",
       "licensePlateMissing": "License plate is required"
-    },
-    "employees": {
-      "title": "Employees",
-      "new": "New employee",
-      "modify": "Modify employee",
-      "filters": {
-        "name": {
-          "label": "Name",
-          "placeholder": "Search by name"
-        }
-      },
-      "employeeNumber": "Number",
-      "lastName": "Last name",
-      "firstName": "First name",
-      "driverCard": "Driver card",
-      "pinCode": "PIN code",
-      "type": "Type",
-      "salaryGroup": "Salary group",
-      "office": "Office",
-      "workHours": "Work hours (h / 2wk)",
-      "driverCardLastEmptied": "Driver card last emptied",
-      "lastDriven": "Last driven",
-      "errorMessages": {
-        "firstNameMissing": "First name is required.",
-        "lastNameMissing": "Last name is required.",
-        "employeeNumberMissing": "Employee number is required.",
-        "officeMissing": "Office is required.",
-        "typeMissing": "Type is required.",
-        "salaryGroupMissing": "Salary group is required.",
-        "workHoursMissing": "Work hours is required when type is Kuljettaja."
-      },
-      "successToast": "Employee saved!",
-      "errorToast": "Failed to save employee!"
     }
+  },
+  "employees": {
+    "title": "Employees",
+    "new": "New employee",
+    "modify": "Modify employee",
+    "filters": {
+      "name": {
+        "label": "Name",
+        "placeholder": "Search by name"
+      }
+    },
+    "employeeNumber": "Number",
+    "lastName": "Last name",
+    "firstName": "First names",
+    "driverCard": "Driver card",
+    "pinCode": "PIN code",
+    "type": "Type",
+    "salaryGroup": "Salary group",
+    "office": "Office",
+    "workHours": "Work hours (h / 2wk)",
+    "driverCardLastEmptied": "Driver card last emptied",
+    "lastDriven": "Last driven",
+    "errorMessages": {
+      "firstNameMissing": "First name is required.",
+      "lastNameMissing": "Last name is required.",
+      "employeeNumberMissing": "Employee number is required.",
+      "officeMissing": "Office is required.",
+      "typeMissing": "Type is required.",
+      "salaryGroupMissing": "Salary group is required.",
+      "workHoursMissing": "Work hours is required when type is Kuljettaja."
+    },
+    "successToast": "Employee saved!",
+    "errorToast": "Failed to save employee!"
   },
   "drivePlanning": {
     "title": "Drive planning",

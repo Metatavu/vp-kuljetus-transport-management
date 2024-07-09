@@ -24,10 +24,17 @@
  * @export
  */
 export const SalaryGroup = {
+<<<<<<< HEAD
     Driver: 'Driver',
     VpLogistics: 'VPLogistics',
     Office: 'Office',
     Terminal: 'Terminal'
+=======
+    Driver: 'DRIVER',
+    Vplogistics: 'VPLOGISTICS',
+    Office: 'OFFICE',
+    Terminal: 'TERMINAL'
+>>>>>>> feature-user-management-screen
 } as const;
 export type SalaryGroup = typeof SalaryGroup[keyof typeof SalaryGroup];
 
