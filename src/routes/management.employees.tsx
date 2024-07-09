@@ -232,14 +232,22 @@ function ManagementEmployees() {
         width: 66,
         colSpan: 2,
         renderHeader: () => null,
-        renderCell: () => (
-          <Button variant="text" color="primary" size="small">
-            {t("open")}
-          </Button>
-        ),
+        renderCell: ({ row: { id } }) => {
+          if (!id) return null;
+          return (
+            <Button
+              variant="text"
+              color="primary"
+              size="small"
+              onClick={() => navigate({ to: "/management/employees/$employeeId/modify", params: { employeeId: id } })}
+            >
+              {t("open")}
+            </Button>
+          );
+        },
       },
     ],
-    [t],
+    [t, navigate],
   );
 
   return (
@@ -262,6 +270,8 @@ function ManagementEmployees() {
         leftToolbar={renderLeftToolbar()}
       />
       <GenericDataGrid
+        fullScreen
+        toolbarHeight={80}
         loading={employeesQuery.isFetching}
         autoHeight={false}
         columns={columns}

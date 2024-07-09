@@ -20,6 +20,7 @@ import { Route as DrivePlanningRoutesAddRouteImport } from "./../../routes/drive
 import { Route as DrivePlanningFreightsAddFreightImport } from "./../../routes/drive-planning.freights.add-freight"
 import { Route as VehicleListVehiclesVehicleIdInfoImport } from "./../../routes/vehicle-list_.vehicles.$vehicleId.info"
 import { Route as ManagementEquipmentEquipmentIdModifyImport } from "./../../routes/management.equipment_.$equipmentId.modify"
+import { Route as ManagementEmployeesEmployeeIdModifyImport } from "./../../routes/management.employees_.$employeeId.modify"
 import { Route as ManagementCustomerSitesCustomerSiteIdModifyImport } from "./../../routes/management.customer-sites_.$customerSiteId.modify"
 
 const VehicleListRoute = VehicleListImport.update({
@@ -134,6 +135,12 @@ const ManagementEquipmentEquipmentIdModifyRoute =
     getParentRoute: () => ManagementRoute,
   } as any)
 
+const ManagementEmployeesEmployeeIdModifyRoute =
+  ManagementEmployeesEmployeeIdModifyImport.update({
+    path: "/employees/$employeeId/modify",
+    getParentRoute: () => ManagementRoute,
+  } as any)
+
 const ManagementCustomerSitesCustomerSiteIdModifyRoute =
   ManagementCustomerSitesCustomerSiteIdModifyImport.update({
     path: "/customer-sites/$customerSiteId/modify",
@@ -221,6 +228,10 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof ManagementCustomerSitesCustomerSiteIdModifyImport
       parentRoute: typeof ManagementImport
     }
+    "/management/employees/$employeeId/modify": {
+      preLoaderRoute: typeof ManagementEmployeesEmployeeIdModifyImport
+      parentRoute: typeof ManagementImport
+    }
     "/management/equipment/$equipmentId/modify": {
       preLoaderRoute: typeof ManagementEquipmentEquipmentIdModifyImport
       parentRoute: typeof ManagementImport
@@ -248,6 +259,7 @@ export const routeTree = rootRoute.addChildren([
     ManagementEmployeesAddEmployeeRoute,
     ManagementEquipmentAddEquipmentRoute,
     ManagementCustomerSitesCustomerSiteIdModifyRoute,
+    ManagementEmployeesEmployeeIdModifyRoute,
     ManagementEquipmentEquipmentIdModifyRoute,
   ]),
   VehicleListRoute.addChildren([

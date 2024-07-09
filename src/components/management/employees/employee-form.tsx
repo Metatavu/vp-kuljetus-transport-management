@@ -57,18 +57,18 @@ const EmployeeForm = () => {
           helperText={errors.firstName?.message}
           {...register("firstName", { required: t("management.employees.errorMessages.firstNameMissing") })}
         />
-        {/* <TextField
+        <TextField
           label={t("management.employees.phoneNumber")}
           error={!!errors.phoneNumber}
           helperText={errors.phoneNumber?.message}
-          {...register("phoneNumber", { required: t("management.employees.errorMessages.phoneNumberMissing") })}
-        /> */}
-        {/* <TextField
+          {...register("phoneNumber")}
+        />
+        <TextField
           label={t("management.employees.email")}
           error={!!errors.email}
           helperText={errors.email?.message}
-          {...register("email", { required: t("management.employees.errorMessages.emailMissing") })}
-        /> */}
+          {...register("email")}
+        />
         <TextField
           select
           label={t("management.employees.office")}
@@ -109,7 +109,7 @@ const EmployeeForm = () => {
           helperText={errors.regularWorkingHours?.message}
           {...register("regularWorkingHours", {
             validate: (value, { salaryGroup }) => {
-              if (!value && value !== 0 && salaryGroup === "Driver") {
+              if (!value && value !== 0 && salaryGroup === "DRIVER") {
                 return false;
               }
 

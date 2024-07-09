@@ -158,6 +158,8 @@
     "lastName": "Last name",
     "firstName": "First names",
     "driverCard": "Driver card",
+    "phoneNumber": "Phone number",
+    "email": "Email",
     "pinCode": "PIN code",
     "type": "Type",
     "salaryGroup": "Salary group",

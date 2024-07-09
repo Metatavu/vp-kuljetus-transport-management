@@ -156,6 +156,8 @@
       "lastName": "Sukunimi",
       "firstName": "Etunimet",
       "driverCard": "Digipiirturikortti",
+      "phoneNumber": "Puhelinnumero",
+      "email": "Sähköposti",
       "pinCode": "PIN-koodi",
       "type": "Tyyppi",
       "salaryGroup": "Palkkaryhmä",
