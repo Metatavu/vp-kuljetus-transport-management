@@ -152,7 +152,7 @@
       },
       "employeeNumber": "Tunnus",
       "lastName": "Sukunimi",
-      "firstName": "Etunimi",
+      "firstName": "Etunimet",
       "driverCard": "Digipiirturikortti",
       "pinCode": "PIN-koodi",
       "type": "Tyyppi",

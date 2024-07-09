@@ -154,7 +154,7 @@
     },
     "employeeNumber": "Number",
     "lastName": "Last name",
-    "firstName": "First name",
+    "firstName": "First names",
     "driverCard": "Driver card",
     "pinCode": "PIN code",
     "type": "Type",

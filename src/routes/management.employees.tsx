@@ -1,16 +1,16 @@
-import { Add, Search } from "@mui/icons-material";
-import { Button, MenuItem, Stack, styled, TextField } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import SearchIcon from "@mui/icons-material/Search";
+import { Button, Divider, MenuItem, Stack, styled, TextField, Typography } from "@mui/material";
 import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import { createFileRoute } from "@tanstack/react-router";
 import GenericDataGrid from "components/generic/generic-data-grid";
-import LoaderWrapper from "components/generic/loader-wrapper";
 import ToolbarRow from "components/generic/toolbar-row";
 import { Key, ReactNode, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { theme } from "src/theme";
 import { LocalizedLabelKey } from "src/types";
 import { TFunction } from "i18next";
-import { EmployeeType, Office, SalaryGroup } from "generated/client";
+import { Employee, EmployeeType, Office, SalaryGroup } from "generated/client";
 import LocalizationUtils from "src/utils/localization-utils";
 import { useForm } from "react-hook-form";
 import { useDebounce } from "hooks/use-debounce";
@@ -117,7 +117,7 @@ function ManagementEmployees() {
           label={t("management.employees.filters.name.label")}
           placeholder={t("management.employees.filters.name.placeholder")}
           InputProps={{
-            startAdornment: <Search sx={{ marginRight: theme.spacing(1) }} />,
+            startAdornment: <SearchIcon sx={{ marginRight: theme.spacing(1) }} />,
             notched: false,
             sx: { height: 32 },
           }}
@@ -142,7 +142,7 @@ function ManagementEmployees() {
     [t, renderSelectFilter, renderLocalizedMenuItems, setSearchTerm],
   );
 
-  const columns: GridColDef[] = useMemo(
+  const columns: GridColDef<Employee>[] = useMemo(
     () => [
       {
         field: "employeeNumber",
@@ -185,12 +185,14 @@ function ManagementEmployees() {
         headerName: t("management.employees.salaryGroup"),
         sortable: false,
         flex: 1,
+        renderCell: ({ row: { salaryGroup } }) => LocalizationUtils.getLocalizedSalaryGroup(salaryGroup, t),
       },
       {
         field: "office",
         headerName: t("management.employees.office"),
         sortable: false,
         flex: 2,
+        renderCell: ({ row: { office } }) => LocalizationUtils.getLocalizedOffice(office, t),
       },
       {
         field: "workHours",
@@ -209,11 +211,24 @@ function ManagementEmployees() {
         headerName: t("management.employees.lastDriven"),
         sortable: false,
         flex: 2,
+        colSpan: 1,
+        renderCell: () => (
+          <Stack direction="row" height="100%" width="100%" justifyContent="center" alignItems="center">
+            <Typography variant="body2" width="30%" textAlign="center">
+              {/* TODO: Implement this, there's no valid way of getting this yet. */}
+            </Typography>
+            <Divider orientation="vertical" flexItem />
+            <Typography variant="body2" width="70%" textAlign="center">
+              {/* TODO: Implement this. At the time of writing, there's no valid way of getting this yet. */}
+            </Typography>
+          </Stack>
+        ),
       },
       {
         field: "actions",
         type: "actions",
         width: 66,
+        colSpan: 2,
         renderHeader: () => null,
         renderCell: () => (
           <Button variant="text" color="primary" size="small">
@@ -226,33 +241,31 @@ function ManagementEmployees() {
   );
 
   return (
-    <LoaderWrapper loading={false}>
-      <Root>
-        <ToolbarRow
-          height={62}
-          titleFirst
-          title={t("management.employees.title")}
-          toolbarButtons={
-            <Button size="small" variant="contained" sx={{ height: 26 }} startIcon={<Add />}>
-              {t("addNew")}
-            </Button>
-          }
-          leftToolbar={renderLeftToolbar()}
-        />
-        <GenericDataGrid
-          fullScreen
-          autoHeight={false}
-          columns={columns}
-          columnHeaderHeight={52}
-          sx={{ "& .MuiDataGrid-columnHeaderTitle": { lineHeight: "120%", whiteSpace: "normal" } }}
-          rows={employeesQuery.data?.employees ?? []}
-          rowCount={employeesQuery.data?.totalResults ?? 0}
-          disableRowSelectionOnClick
-          paginationMode="server"
-          paginationModel={{ page, pageSize }}
-          onPaginationModelChange={setPaginationModel}
-        />
-      </Root>
-    </LoaderWrapper>
+    <Root>
+      <ToolbarRow
+        height={80}
+        titleFirst
+        title={t("management.employees.title")}
+        toolbarButtons={
+          <Button size="small" variant="contained" sx={{ height: 30 }} startIcon={<AddIcon />}>
+            {t("addNew")}
+          </Button>
+        }
+        leftToolbar={renderLeftToolbar()}
+      />
+      <GenericDataGrid
+        loading={employeesQuery.isFetching}
+        autoHeight={false}
+        columns={columns}
+        columnHeaderHeight={52}
+        sx={{ "& .MuiDataGrid-columnHeaderTitle": { lineHeight: "120%", whiteSpace: "normal" } }}
+        rows={employeesQuery.data?.employees ?? []}
+        rowCount={employeesQuery.data?.totalResults ?? 0}
+        disableRowSelectionOnClick
+        paginationMode="server"
+        paginationModel={{ page, pageSize }}
+        onPaginationModelChange={setPaginationModel}
+      />
+    </Root>
   );
 }
