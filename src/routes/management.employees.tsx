@@ -1,14 +1,20 @@
 import { Add, Search } from "@mui/icons-material";
-import { Button, Stack, styled, TextField } from "@mui/material";
+import { Button, MenuItem, Stack, styled, TextField } from "@mui/material";
 import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import { createFileRoute } from "@tanstack/react-router";
 import GenericDataGrid from "components/generic/generic-data-grid";
 import LoaderWrapper from "components/generic/loader-wrapper";
 import ToolbarRow from "components/generic/toolbar-row";
-import { ReactNode, useCallback, useMemo, useState } from "react";
+import { Key, ReactNode, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { theme } from "src/theme";
 import { LocalizedLabelKey } from "src/types";
+import { TFunction } from "i18next";
+import { EmployeeType, Office, SalaryGroup } from "generated/client";
+import LocalizationUtils from "src/utils/localization-utils";
+import { useForm } from "react-hook-form";
+import { useDebounce } from "hooks/use-debounce";
+import { useEmployees } from "hooks/use-queries";
 
 export const Route = createFileRoute("/management/employees")({
   component: ManagementEmployees,
@@ -16,6 +22,12 @@ export const Route = createFileRoute("/management/employees")({
     breadcrumb: "management.employees.title",
   }),
 });
+
+type EmployeeFilters = {
+  salaryGroup: SalaryGroup | "ALL";
+  employeeType: EmployeeType | "ALL";
+  office: Office | "ALL";
+};
 
 // Styled root component
 const Root = styled(Stack, {
@@ -30,28 +42,75 @@ const Root = styled(Stack, {
 function ManagementEmployees() {
   const { t } = useTranslation();
 
-  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({ page: 0, pageSize: 25 });
+  const [debouncedSearchTerm, _, setSearchTerm] = useDebounce("", 1000);
+
+  const { watch, register } = useForm<EmployeeFilters>({
+    mode: "onChange",
+    defaultValues: {
+      salaryGroup: "ALL",
+      employeeType: "ALL",
+      office: "ALL",
+    },
+  });
+
+  const [{ page, pageSize }, setPaginationModel] = useState<GridPaginationModel>({ page: 0, pageSize: 25 });
+
+  const officeFilter = watch("office");
+  const salaryGroupFilter = watch("salaryGroup");
+  const employeeTypeFilter = watch("employeeType");
+
+  const employeesQuery = useEmployees({
+    first: pageSize * page,
+    max: pageSize,
+    search: debouncedSearchTerm || undefined,
+    office: officeFilter === "ALL" ? undefined : officeFilter,
+    salaryGroup: salaryGroupFilter === "ALL" ? undefined : salaryGroupFilter,
+    type: employeeTypeFilter === "ALL" ? undefined : employeeTypeFilter,
+  });
+
+  const renderLocalizedMenuItem = useCallback(
+    <T extends string>(value: T, labelResolver: (value: T, t: TFunction) => string) => (
+      <MenuItem key={value as Key} value={value}>
+        {labelResolver(value, t)}
+      </MenuItem>
+    ),
+    [t],
+  );
+
+  const renderLocalizedMenuItems = useCallback(
+    <T extends string>(items: string[], labelResolver: (value: T, t: TFunction) => string) => [
+      <MenuItem value="ALL">{t("all")}</MenuItem>,
+      ...items.map((item) => renderLocalizedMenuItem(item as T, labelResolver)),
+    ],
+    [t, renderLocalizedMenuItem],
+  );
 
   const renderSelectFilter = useCallback(
-    (label: LocalizedLabelKey, renderMenuItems: () => ReactNode) => (
+    (label: LocalizedLabelKey, key: keyof EmployeeFilters, menuItems: ReactNode) => (
       <TextField
         select
         sx={{ width: 200 }}
+        defaultValue={watch(key)}
         size="small"
         variant="outlined"
         label={t(label)}
-        InputProps={{ notched: false, sx: { height: 32 } }}
+        InputProps={{
+          ...register(key),
+          notched: false,
+          sx: { height: 32 },
+        }}
       >
-        {renderMenuItems()}
+        {menuItems}
       </TextField>
     ),
-    [t],
+    [t, register, watch],
   );
 
   const renderLeftToolbar = useCallback(
     () => (
       <Stack direction="row" spacing={2}>
         <TextField
+          onChange={({ target: { value } }) => setSearchTerm(value)}
           size="small"
           sx={{ width: 200 }}
           variant="outlined"
@@ -63,18 +122,24 @@ function ManagementEmployees() {
             sx: { height: 32 },
           }}
         />
-        {renderSelectFilter("management.employees.salaryGroup", () => (
-          <></>
-        ))}
-        {renderSelectFilter("management.employees.type", () => (
-          <></>
-        ))}
-        {renderSelectFilter("management.employees.office", () => (
-          <></>
-        ))}
+        {renderSelectFilter(
+          "management.employees.salaryGroup",
+          "salaryGroup",
+          renderLocalizedMenuItems(Object.values(SalaryGroup), LocalizationUtils.getLocalizedSalaryGroup),
+        )}
+        {renderSelectFilter(
+          "management.employees.type",
+          "employeeType",
+          renderLocalizedMenuItems(Object.values(EmployeeType), LocalizationUtils.getLocalizedEmployeeType),
+        )}
+        {renderSelectFilter(
+          "management.employees.office",
+          "office",
+          renderLocalizedMenuItems(Object.values(Office), LocalizationUtils.getLocalizedOffice),
+        )}
       </Stack>
     ),
-    [t, renderSelectFilter],
+    [t, renderSelectFilter, renderLocalizedMenuItems, setSearchTerm],
   );
 
   const columns: GridColDef[] = useMemo(
@@ -178,10 +243,13 @@ function ManagementEmployees() {
           fullScreen
           autoHeight={false}
           columns={columns}
-          rows={[]}
+          columnHeaderHeight={52}
+          sx={{ "& .MuiDataGrid-columnHeaderTitle": { lineHeight: "120%", whiteSpace: "normal" } }}
+          rows={employeesQuery.data?.employees ?? []}
+          rowCount={employeesQuery.data?.totalResults ?? 0}
           disableRowSelectionOnClick
           paginationMode="server"
-          paginationModel={paginationModel}
+          paginationModel={{ page, pageSize }}
           onPaginationModelChange={setPaginationModel}
         />
       </Root>

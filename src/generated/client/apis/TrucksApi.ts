@@ -16,6 +16,9 @@
 
 import * as runtime from '../runtime';
 import {
+    SortOrder,
+    SortOrderFromJSON,
+    SortOrderToJSON,
     Truck,
     TruckFromJSON,
     TruckToJSON,
@@ -28,6 +31,9 @@ import {
     TruckLocation,
     TruckLocationFromJSON,
     TruckLocationToJSON,
+    TruckSortByField,
+    TruckSortByFieldFromJSON,
+    TruckSortByFieldToJSON,
     TruckSpeed,
     TruckSpeedFromJSON,
     TruckSpeedToJSON,
@@ -70,6 +76,8 @@ export interface ListTruckSpeedsRequest {
 export interface ListTrucksRequest {
     plateNumber?: string;
     archived?: boolean;
+    sortBy?: TruckSortByField;
+    sortDirection?: SortOrder;
     first?: number;
     max?: number;
 }
@@ -348,6 +356,12 @@ export class TrucksApi extends runtime.BaseAPI {
         }
         if (requestParameters.archived !== undefined) {
             queryParameters['archived'] = requestParameters.archived;
+        }
+        if (requestParameters.sortBy !== undefined) {
+            queryParameters['sortBy'] = requestParameters.sortBy;
+        }
+        if (requestParameters.sortDirection !== undefined) {
+            queryParameters['sortDirection'] = requestParameters.sortDirection;
         }
         if (requestParameters.first !== undefined) {
             queryParameters['first'] = requestParameters.first;
