@@ -109,11 +109,7 @@ export class EmployeesApi extends runtime.BaseAPI {
      * Deletes Employee. This should only be allowed to be used in tests. In production usage the employee should be archived instead. 
      * Delete Employee.
      */
-<<<<<<< HEAD
-    async deleteEmployeeRaw(requestParameters: DeleteEmployeeRequest): Promise<runtime.ApiResponse<Employee>> {
-=======
     async deleteEmployeeRaw(requestParameters: DeleteEmployeeRequest): Promise<runtime.ApiResponse<void>> {
->>>>>>> feature-user-management-screen
         if (requestParameters.employeeId === null || requestParameters.employeeId === undefined) {
             throw new runtime.RequiredError('employeeId','Required parameter requestParameters.employeeId was null or undefined when calling deleteEmployee.');
         }
@@ -132,39 +128,22 @@ export class EmployeesApi extends runtime.BaseAPI {
             headers: headerParameters,
             query: queryParameters,
         });
-<<<<<<< HEAD
-        return new runtime.JSONApiResponse(response, (jsonValue) => EmployeeFromJSON(jsonValue));
-=======
         return new runtime.VoidApiResponse(response);
->>>>>>> feature-user-management-screen
     }
     /**
      * Deletes Employee. This should only be allowed to be used in tests. In production usage the employee should be archived instead. 
      * Delete Employee.
      */
-<<<<<<< HEAD
-    async deleteEmployee(requestParameters: DeleteEmployeeRequest): Promise<Employee> {
-        const response = await this.deleteEmployeeRaw(requestParameters);
-        return await response.value();
-=======
     async deleteEmployee(requestParameters: DeleteEmployeeRequest): Promise<void> {
         await this.deleteEmployeeRaw(requestParameters);
->>>>>>> feature-user-management-screen
     }
     /**
      * Deletes Employee. This should only be allowed to be used in tests. In production usage the employee should be archived instead. 
      * Delete Employee.
      */
-<<<<<<< HEAD
-    async deleteEmployeeWithHeaders(requestParameters: DeleteEmployeeRequest): Promise<[ Employee, Headers ]> {
-        const response = await this.deleteEmployeeRaw(requestParameters);
-        const value = await response.value(); 
-        return [ value, response.raw.headers ];
-=======
     async deleteEmployeeWithHeaders(requestParameters: DeleteEmployeeRequest): Promise<Headers> {
         const response = await this.deleteEmployeeRaw(requestParameters);
         return response.raw.headers;
->>>>>>> feature-user-management-screen
     }
     /**
      * Finds an employee by id.
