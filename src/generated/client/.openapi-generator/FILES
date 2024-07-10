@@ -1,4 +1,5 @@
 apis/DriversApi.ts
+apis/EmployeesApi.ts
 apis/FreightUnitsApi.ts
 apis/FreightsApi.ts
 apis/RoutesApi.ts
@@ -10,11 +11,16 @@ apis/VehiclesApi.ts
 apis/index.ts
 index.ts
 models/Driver.ts
+models/Employee.ts
+models/EmployeeType.ts
 models/Freight.ts
 models/FreightUnit.ts
 models/ModelError.ts
+models/Office.ts
 models/Route.ts
+models/SalaryGroup.ts
 models/Site.ts
+models/SortOrder.ts
 models/Task.ts
 models/TaskStatus.ts
 models/TaskType.ts
@@ -23,6 +29,7 @@ models/Truck.ts
 models/TruckDriveState.ts
 models/TruckDriveStateEnum.ts
 models/TruckLocation.ts
+models/TruckSortByField.ts
 models/TruckSpeed.ts
 models/Vehicle.ts
 models/index.ts
