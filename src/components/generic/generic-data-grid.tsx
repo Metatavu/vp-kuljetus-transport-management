@@ -3,14 +3,13 @@ import { DataGrid, DataGridProps, fiFI } from "@mui/x-data-grid";
 
 type StyledDataGridProps = {
   fullScreen?: boolean;
-  toolbarHeight?: number;
 };
 
 const StyledDataGrid = styled(DataGrid, {
   label: "styled-data-grid",
-  shouldForwardProp: (prop) => prop !== "fullScreen" && prop !== "toolbarHeight",
-})(({ fullScreen, toolbarHeight }: StyledDataGridProps) => ({
-  minHeight: fullScreen ? `calc(100% - ${toolbarHeight}px)` : undefined,
+  shouldForwardProp: (prop) => prop !== "fullScreen",
+})(({ fullScreen }: StyledDataGridProps) => ({
+  minHeight: fullScreen ? "calc(100% - 42px)" : undefined,
   "& .MuiDataGrid-cell, .MuiDataGrid-row": {
     borderRight: "1px solid rgba(0, 0, 0, 0.12)",
     borderBottom: "1px solid rgba(0, 0, 0, 0.12)",
@@ -46,7 +45,6 @@ const GenericDataGrid = ({
   apiRef,
   sx,
   columnHeaderHeight = 30,
-  toolbarHeight = 42,
   onPaginationModelChange,
   getRowId,
   processRowUpdate,
@@ -58,7 +56,6 @@ const GenericDataGrid = ({
   return (
     <StyledDataGrid
       fullScreen={fullScreen}
-      toolbarHeight={toolbarHeight}
       sx={sx}
       apiRef={apiRef}
       columns={columns}
