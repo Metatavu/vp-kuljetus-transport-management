@@ -29,5 +29,5 @@ function AddEmployee() {
     onError: () => toast.error(t("management.employees.errorToast")),
   });
 
-  return <EmployeeComponent formType="ADD" onSave={createEmployee} />;
+  return <EmployeeComponent title={t("management.employees.new")} onSave={createEmployee} />;
 }

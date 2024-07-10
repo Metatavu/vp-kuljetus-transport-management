@@ -21,7 +21,7 @@ const EmployeeComponent = ({ title, employee, onSave }: Props) => {
   const navigate = useNavigate();
 
   const form = useForm<Employee>({
-    mode: "onChange",
+    mode: "onSubmit",
     defaultValues: employee,
     shouldFocusError: true,
   });
