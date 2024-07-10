@@ -1,3 +1,4 @@
+.openapi-generator-ignore
 apis/DriversApi.ts
 apis/FreightUnitsApi.ts
 apis/FreightsApi.ts
