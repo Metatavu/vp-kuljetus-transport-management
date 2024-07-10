@@ -99,24 +99,24 @@ const FreightWaybill = ({ freight, sites, tasks, freightUnits }: Props) => {
             </Text>
           </View>
           <View style={{ width: "50%", justifyContent: "flex-end" }}>
-            <Text style={{ fontWeight: "bold" }}>RAHTIKIRJA FRAKTSEDEL</Text>
+            <Text style={{ fontWeight: "bold" }}>{t("drivePlanning.freights.print.title")}</Text>
           </View>
         </RowView>
         <RowView>
           <RowView style={{ width: "50%" }}>
             <ColumnView style={{ width: "70%" }}>
-              <LabelText label="Lähettäjä Avsändare" margin />
+              <LabelText label={t("drivePlanning.freights.print.sender")} margin />
               {renderSite(freight?.senderSiteId, false)}
             </ColumnView>
             <ColumnView style={{ width: "30%" }}>
               <ColumnView>
-                <LabelText label="Asiakasnro Kundnr" margin />
+                <LabelText label={t("drivePlanning.freights.print.customerNumber")} margin />
                 {/* TODO: Add customer number */}
                 <TextValue value=" " />
               </ColumnView>
               <ColumnView>
-                <LabelText label="Sopimusnro Avtalsnr" margin />
-                {/* TODO: Add customer number */}
+                <LabelText label={t("drivePlanning.freights.print.contractNumber")} margin />
+                {/* TODO: Add contract number */}
                 <TextValue value=" " />
               </ColumnView>
               <ColumnView>
@@ -128,25 +128,25 @@ const FreightWaybill = ({ freight, sites, tasks, freightUnits }: Props) => {
           <RowView style={{ width: "50%" }}>
             <ColumnView style={{ width: "50%" }}>
               <ColumnView>
-                <LabelText label="Lähetyspäivämäärä Avsändningsdatum" />
+                <LabelText label={t("drivePlanning.freights.print.sendDate")} />
                 <TextValue
                   value={TimeUtils.displayAsDate(tasks.find((task) => task.type === TaskType.Load)?.createdAt)}
                 />
               </ColumnView>
               <ColumnView>
-                <LabelText label="Lähettäjän viite Avsändarens referens" />
+                <LabelText label={t("drivePlanning.freights.print.senderReference")} />
                 {/* TODO: Add Customer number */}
                 <TextValue value=" " />
               </ColumnView>
               <ColumnView>
-                <LabelText label="Vastaanottajan viite Mottagarens referens" />
+                <LabelText label={t("drivePlanning.freights.print.recipientReference")} />
                 {/* TODO: Add Customer number */}
                 <TextValue value=" " />
               </ColumnView>
             </ColumnView>
             <ColumnView style={{ width: "50%" }}>
               <ColumnView>
-                <LabelText label="Numero Nummer" />
+                <LabelText label={t("drivePlanning.freights.print.waybillNumber")} />
                 <Text style={{ padding: 1, fontSize: 12, fontWeight: "bold" }}>{freight?.freightNumber}</Text>
               </ColumnView>
             </ColumnView>
@@ -169,25 +169,25 @@ const FreightWaybill = ({ freight, sites, tasks, freightUnits }: Props) => {
             }}
           >
             <ColumnView style={{ width: "70%" }}>
-              <LabelText label="Vastaanottaja Mottagare" margin />
+              <LabelText label={t("drivePlanning.freights.print.recipient")} margin />
               {renderSite(freight?.recipientSiteId, true)}
             </ColumnView>
             <ColumnView style={{ width: "30%" }}>
               <ColumnView>
-                <LabelText label="Asiakasnro Kundnr" margin />
+                <LabelText label={t("drivePlanning.freights.print.customerNumber")} margin />
                 {/* TODO: Add Customer number */}
                 <TextValue value=" " />
               </ColumnView>
               <ColumnView>
-                <LabelText label="Sopimusnro Avtalsnr" margin />
-                {/* TODO: Add Customer number */}
+                <LabelText label={t("drivePlanning.freights.print.contractNumber")} margin />
+                {/* TODO: Add Contract number */}
                 <TextValue value=" " />
               </ColumnView>
             </ColumnView>
           </RowView>
           <RowView style={{ width: "50%", padding: 2, borderBottom: NARROW_BORDER, borderLeft: NARROW_BORDER }}>
             <ColumnView>
-              <LabelText label="Rahdinkuljettaja/Huolitsija Transportföretag/Speditör" margin />
+              <LabelText label={t("drivePlanning.freights.print.freightForwarder")} margin />
               <View style={{ paddingLeft: 10 }}>
                 <Image src={logo} />
               </View>
@@ -197,17 +197,11 @@ const FreightWaybill = ({ freight, sites, tasks, freightUnits }: Props) => {
         <RowView style={{ borderBottom: NARROW_BORDER }}>
           <ColumnView style={{ width: "50%" }}>
             <ColumnView style={{ borderBottom: NARROW_BORDER, paddingBottom: 20 }}>
-              <LabelText
-                label="Lähtöpaikka/nouto-osoite Avsändningsort/avhämntningsadress (Lähtöas., raide Avsändningsst., spår)"
-                margin
-              />
+              <LabelText label={t("drivePlanning.freights.print.departurePoint")} margin />
               {renderSite(freight?.pointOfDepartureSiteId, true)}
             </ColumnView>
             <ColumnView style={{ paddingBottom: 20 }}>
-              <LabelText
-                label="Määräpaikka/toimitusosoite Bestämmelseort/leveransadress (Määräas., raide Bestämmelsest., spår)"
-                margin
-              />
+              <LabelText label={t("drivePlanning.freights.print.destinationPoint")} margin />
               {renderSite(freight?.destinationSiteId, true)}
             </ColumnView>
           </ColumnView>
@@ -217,24 +211,25 @@ const FreightWaybill = ({ freight, sites, tasks, freightUnits }: Props) => {
             </ColumnView>
             <ColumnView style={{ width: "100%" }}>
               <ColumnView style={{ paddingBottom: 30, width: "100%" }}>
-                <LabelText label="Kuljetusohjeet Transportinstruktioner" margin />
+                <LabelText label={t("drivePlanning.freights.print.transportInstructions")} margin />
                 {/* TODO: Add transport instructions */}
                 <Text style={{ fontSize: 10 }}> </Text>
               </ColumnView>
               <RowView style={{ width: "100%" }}>
                 <ColumnView style={{ width: "80%" }}>
-                  <LabelText label="Rahdinmaksaja Fraktbetalare" margin />
-                  {renderSite(freight?.senderSiteId, true)}
+                  <LabelText label={t("drivePlanning.freights.print.freightPayer")} margin />
+                  {/* TODO: Add Freight payer */}
+                  <Text> </Text>
                 </ColumnView>
                 <ColumnView style={{ width: "20%" }}>
                   <ColumnView>
-                    <LabelText label="Asiakasnro Kundnr" margin />
+                    <LabelText label={t("drivePlanning.freights.print.customerNumber")} margin />
                     {/* TODO: Add Customer number */}
                     <Text style={{ fontSize: 10, margin: 1, alignSelf: "flex-end" }}> </Text>
                   </ColumnView>
                   <ColumnView>
-                    <LabelText label="Sopimusnro Avtalsnr" margin />
-                    {/* TODO: Add Customer number */}
+                    <LabelText label={t("drivePlanning.freights.print.contractNumber")} margin />
+                    {/* TODO: Add Contract number */}
                     <Text style={{ fontSize: 10, margin: 1, alignSelf: "flex-end" }}> </Text>
                   </ColumnView>
                 </ColumnView>
@@ -244,7 +239,7 @@ const FreightWaybill = ({ freight, sites, tasks, freightUnits }: Props) => {
         </RowView>
       </View>
     ),
-    [renderSite, freight, barcodeImageDataUrl],
+    [renderSite, freight, barcodeImageDataUrl, t],
   );
 
   const renderFreightUnit = useCallback(
@@ -280,45 +275,45 @@ const FreightWaybill = ({ freight, sites, tasks, freightUnits }: Props) => {
       <ColumnView style={{ borderBottom: NARROW_BORDER, height: "35%", borderLeft: WIDE_BORDER }}>
         <RowView>
           <ColumnView style={{ width: "25%", borderRight: NARROW_BORDER, padding: 2 }}>
-            <LabelText label="Merkki / nro" />
-            <LabelText label="Märke / nr" />
+            <LabelText label={t("drivePlanning.freights.print.freightUnits.make.fi")} />
+            <LabelText label={t("drivePlanning.freights.print.freightUnits.make.sv")} />
           </ColumnView>
           <ColumnView style={{ width: "12%", borderRight: NARROW_BORDER, padding: 2 }}>
-            <LabelText label="Kolliluku ja -laji" />
-            <LabelText label="Kolliantal och -slag" />
+            <LabelText label={t("drivePlanning.freights.print.freightUnits.quantity.fi")} />
+            <LabelText label={t("drivePlanning.freights.print.freightUnits.quantity.sv")} />
           </ColumnView>
           <ColumnView style={{ width: "25%", borderRight: NARROW_BORDER, padding: 2 }}>
-            <LabelText label="Sisältö, ulkomitat ja VAK-tiedot" />
-            <LabelText label="Innehål, yttermåt och ADR-information" />
+            <LabelText label={t("drivePlanning.freights.print.freightUnits.content.fi")} />
+            <LabelText label={t("drivePlanning.freights.print.freightUnits.content.sv")} />
           </ColumnView>
           <ColumnView style={{ width: "12%", borderRight: NARROW_BORDER, padding: 2 }}>
-            <LabelText label="(Koodi)" />
-            <LabelText label="(Kod)" />
+            <LabelText label={t("drivePlanning.freights.print.freightUnits.code.fi")} />
+            <LabelText label={t("drivePlanning.freights.print.freightUnits.code.sv")} />
           </ColumnView>
           <ColumnView style={{ width: "12%", borderRight: NARROW_BORDER, padding: 2 }}>
-            <LabelText label="Brutto, kg" />
+            <LabelText label={t("drivePlanning.freights.print.freightUnits.grossWeight.fi")} />
           </ColumnView>
           <ColumnView style={{ width: "12%", padding: 2 }}>
-            <LabelText label="Tilavuus, m3" />
-            <LabelText label="Volym" />
+            <LabelText label={t("drivePlanning.freights.print.freightUnits.volume.fi")} />
+            <LabelText label={t("drivePlanning.freights.print.freightUnits.volume.sv")} />
           </ColumnView>
         </RowView>
         {freightUnits.map(renderFreightUnit)}
       </ColumnView>
     ),
-    [freightUnits, renderFreightUnit],
+    [freightUnits, renderFreightUnit, t],
   );
 
   const renderFreightUnitsSummary = useCallback(
     () => (
       <RowView style={{ borderBottom: WIDE_BORDER, borderLeft: WIDE_BORDER }}>
         <ColumnView style={{ width: "25%", borderRight: NARROW_BORDER, padding: 2 }}>
-          <LabelText label="Lähetyksen tiedot yhteensä" />
-          <LabelText label="Sändningsinformation, totalt" />
+          <LabelText label={t("drivePlanning.freights.print.freightUnits.summary.total.fi")} />
+          <LabelText label={t("drivePlanning.freights.print.freightUnits.summary.total.sv")} />
           <Text style={{ fontSize: 10, marginTop: 2, marginLeft: 5 }}> </Text>
         </ColumnView>
         <ColumnView style={{ width: "12%", borderRight: NARROW_BORDER, padding: 2 }}>
-          <LabelText label="Kollit kolliantal" />
+          <LabelText label={t("drivePlanning.freights.print.freightUnits.summary.quantity")} />
           <Text style={{ fontSize: 10, marginTop: 2, marginLeft: 5 }}>
             {freightUnits.reduce((acc, freightUnit) => {
               return acc + (freightUnit.quantity ?? 0);
@@ -330,46 +325,46 @@ const FreightWaybill = ({ freight, sites, tasks, freightUnits }: Props) => {
           <Text style={{ fontSize: 10, marginTop: 2, marginLeft: 5 }}> </Text>
         </ColumnView>
         <ColumnView style={{ width: "12%", borderRight: NARROW_BORDER, padding: 2 }}>
-          <LabelText label="Lavametrit Flakmeter" />
+          <LabelText label={t("drivePlanning.freights.print.freightUnits.summary.loadingMeters")} />
           <Text style={{ fontSize: 10, marginTop: 2, marginLeft: 5 }}> </Text>
         </ColumnView>
         <ColumnView style={{ width: "12%", borderRight: NARROW_BORDER, padding: 2 }}>
-          <LabelText label="Brutto, kg" />
+          <LabelText label={t("drivePlanning.freights.print.freightUnits.summary.grossWeight")} />
           <Text style={{ fontSize: 10, marginTop: 2, marginLeft: 5 }}> </Text>
         </ColumnView>
         <ColumnView style={{ width: "12%", padding: 2 }}>
-          <LabelText label="Rahdituspaino, Fraktvikt" />
+          <LabelText label={t("drivePlanning.freights.print.freightUnits.summary.freightingWeight")} />
           <Text style={{ fontSize: 10, marginTop: 2, marginLeft: 5 }}> </Text>
         </ColumnView>
       </RowView>
     ),
-    [freightUnits],
+    [freightUnits, t],
   );
 
   const renderAdditionalInfo = useCallback(
     () => (
       <RowView style={{ borderBottom: NARROW_BORDER, borderLeft: WIDE_BORDER }}>
         <ColumnView style={{ width: "50%", height: "1.5cm", borderRight: NARROW_BORDER, padding: 2 }}>
-          <LabelText label="Lisäohjeet Tillägginstruktioner" />
+          <LabelText label={t("drivePlanning.freights.print.additionalInstructions")} />
           <Text style={{ fontSize: 10 }}> </Text>
         </ColumnView>
         <ColumnView style={{ width: "50%", height: "1.5cm", padding: 2 }}>
-          <LabelText label="Muut tiedot /toimituslauseke Tilläggsuppgifter /leveransklausul" />
+          <LabelText label={t("drivePlanning.freights.print.deliveryClause")} />
           <Text style={{ fontSize: 10 }}> </Text>
         </ColumnView>
       </RowView>
     ),
-    [],
+    [t],
   );
 
   const renderReservations = useCallback(
     () => (
       <RowView style={{ borderLeft: WIDE_BORDER, borderBottom: NARROW_BORDER, padding: 2, height: "1cm" }}>
-        <LabelText label="Varaumat, pvm, aika, paikka ja kuittaus Förbehåll, datum, tid och kvittering" />
+        <LabelText label={t("drivePlanning.freights.print.reservations")} />
         <Text style={{ fontSize: 10 }}> </Text>
       </RowView>
     ),
-    [],
+    [t],
   );
 
   const renderEmptyBoxes = useCallback(
@@ -392,23 +387,23 @@ const FreightWaybill = ({ freight, sites, tasks, freightUnits }: Props) => {
     () => (
       <RowView style={{ height: "3cm", borderLeft: WIDE_BORDER }}>
         <ColumnView style={{ width: "37.5%", borderRight: NARROW_BORDER, padding: 2 }}>
-          <LabelText label="Vastaanottaja, pvm, aika ja allekirjoitus" />
-          <LabelText label="Mottagare, datum, tid och underskrift" />
+          <LabelText label={t("drivePlanning.freights.print.signatures.recipient.fi")} />
+          <LabelText label={t("drivePlanning.freights.print.signatures.recipient.sv")} />
         </ColumnView>
         <ColumnView style={{ width: "37.5%", borderRight: NARROW_BORDER, padding: 2, justifyContent: "space-between" }}>
           <ColumnView>
-            <LabelText label="Otettu kuljetettavaksi, kuljettaja, pvm, aika ja allekirjoitus" />
-            <LabelText label="Mottaget för transport, chaufför, datum, tid och underskrift" />
+            <LabelText label={t("drivePlanning.freights.print.signatures.driver.fi")} />
+            <LabelText label={t("drivePlanning.freights.print.signatures.driver.sv")} />
           </ColumnView>
-          <Text style={{ fontSize: 6 }}>Nimenselvennykset Namnförtydliganden</Text>
+          <Text style={{ fontSize: 6 }}>{t("drivePlanning.freights.print.signatures.nameClarifications")}</Text>
         </ColumnView>
         <ColumnView style={{ width: "25%", padding: 2 }}>
-          <LabelText label="Lähettäjä, pvm, aika ja allekirjoitus" />
-          <LabelText label="Avsändare, datum, tid och underskrift" />
+          <LabelText label={t("drivePlanning.freights.print.signatures.sender.fi")} />
+          <LabelText label={t("drivePlanning.freights.print.signatures.sender.sv")} />
         </ColumnView>
       </RowView>
     ),
-    [],
+    [t],
   );
 
   return (
