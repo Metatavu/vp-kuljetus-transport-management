@@ -149,6 +149,8 @@ function ManagementEmployees() {
       {
         field: "employeeNumber",
         headerName: t("management.employees.employeeNumber"),
+        align: "center",
+        headerAlign: "center",
         sortable: false,
         flex: 1,
       },
@@ -167,24 +169,30 @@ function ManagementEmployees() {
       {
         field: "driverCardId",
         headerName: t("management.employees.driverCard"),
+        align: "center",
+        headerAlign: "center",
         sortable: false,
         flex: 2,
       },
       {
         field: "pinCode",
         headerName: t("management.employees.pinCode"),
+        align: "center",
+        headerAlign: "center",
         sortable: false,
         flex: 1,
       },
       {
         field: "type",
         headerName: t("management.employees.type"),
+        headerAlign: "center",
         sortable: false,
         flex: 1,
       },
       {
         field: "salaryGroup",
         headerName: t("management.employees.salaryGroup"),
+        headerAlign: "center",
         sortable: false,
         flex: 1,
         renderCell: ({ row: { salaryGroup } }) => LocalizationUtils.getLocalizedSalaryGroup(salaryGroup, t),
@@ -270,8 +278,7 @@ function ManagementEmployees() {
         leftToolbar={renderLeftToolbar()}
       />
       <GenericDataGrid
-        fullScreen
-        toolbarHeight={80}
+        fullScreen={false}
         loading={employeesQuery.isFetching}
         autoHeight={false}
         columns={columns}

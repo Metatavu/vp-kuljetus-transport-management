@@ -266,6 +266,73 @@
           "recipient": "Vastaanottaja",
           "driver": "Kuljettaja",
           "carrier": "Kuljetusliike"
+        },
+        "title": "RAHTIKIRJA FRAKTSEDEL",
+        "sender": "Lähettäjä Avsändare",
+        "customerNumber": "Asiakasnro Kundnr",
+        "contractNumber": "Sopimusnro Avtalsnr",
+        "sendDate": "Lähetyspvm Avsändningsdatum",
+        "senderReference": "Lähettäjän viite Avsändarens referens",
+        "recipientReference": "Vastaanottajan viite Mottagarens referens",
+        "waybillNumber": "Numero nummer",
+        "recipient": "Vastaanottaja Mottagare",
+        "freightForwarder": "Rahdinkuljettaja/Huolitsija Transportföretag/Speditör",
+        "departurePoint": "Lähtöpaikka/nouto-osoite Avsändningsort/avhämntningsadress (Lähtöas., raide Avsändningsst., spår)",
+        "destinationPoint": "Määräpaikka/toimitusosoite Bestämmelseort/leveransadress (Määräas., raide Bestämmelsest., spår)",
+        "transportInstructions": "Kuljetusohjeet Transportinstruktioner",
+        "freightPayer": "Rahtimaksaja Fraktbetalare",
+        "freightUnits": {
+          "make": {
+            "fi": "Merkki / nro",
+            "sv": "Märke / nr"
+          },
+          "quantity": {
+            "fi": "Kolliluku ja -laji",
+            "sv": "Kolliantal och -slag"
+          },
+          "content": {
+            "fi": "Sisältö, ulkomitat ja VAK-tiedot",
+            "sv": "Innehåll, yttermått och ADR-information"
+          },
+          "code": {
+            "fi": "(Koodi)",
+            "sv": "(Kod)"
+          },
+          "grossWeight": {
+            "fi": "Brutto, kg"
+          },
+          "volume": {
+            "fi": "Tilavuus, m3",
+            "sv": "Volum"
+          },
+          "summary": {
+            "total": {
+              "fi": "Lähetyksen tiedot yhteensä",
+              "sv": "Sändningsinformation, totalt"
+            },
+            "quantity": "Kollit kolliantal",
+            "loadingMeters": "Lavametrit Flakmeter",
+            "grossWeight": "Brutto, kg",
+            "freightingWeight": "Rahdituspaino, Fraktvikt"
+          }
+        },
+        "additionalInstructions": "Lisäohjeet Tillägginstruktioner",
+        "deliveryClause": "Muut tiedot /toimituslauseke Tilläggsuppgifter /leveransklausul",
+        "reservations": "Varaumat, pvm, aika, paikka ja kuittaus Förbehåll, datum, tid och kvittering",
+        "signatures": {
+          "recipient": {
+            "fi": "Vastaanottaja, pvm, aika ja allekirjoitus",
+            "sv": "Mottagare, datum, tid och underskrift"
+          },
+          "driver": {
+            "fi": "Otettu kuljetettavaksi, kuljettaja, pvm, aika ja allekirjoitus",
+            "sv": "Mottaget för transport, chaufför, datum, tid och underskrift"
+          },
+          "sender": {
+            "fi": "Lähettäjä, pvm, aika ja allekirjoitus",
+            "sv": "Avsändare, datum, tid och underskrift"
+          },
+          "nameClarifications": "Nimenselvennykset Namnförtydliganden"
         }
       },
       "errorMessages": {
