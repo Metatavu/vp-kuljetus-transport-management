@@ -250,7 +250,7 @@ export class RoutesApi extends runtime.BaseAPI {
         headerParameters['Content-Type'] = 'application/json';
         if (this.configuration && this.configuration.accessToken) {
             const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", ["driver", "manager"]);
+            const tokenString = await token("BearerAuth", ["manager"]);
             if (tokenString) {
                 headerParameters["Authorization"] = `Bearer ${tokenString}`;
             }

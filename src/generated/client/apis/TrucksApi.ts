@@ -16,27 +16,9 @@
 
 import * as runtime from '../runtime';
 import {
-    SortOrder,
-    SortOrderFromJSON,
-    SortOrderToJSON,
     Truck,
     TruckFromJSON,
     TruckToJSON,
-    TruckDriveState,
-    TruckDriveStateFromJSON,
-    TruckDriveStateToJSON,
-    TruckDriveStateEnum,
-    TruckDriveStateEnumFromJSON,
-    TruckDriveStateEnumToJSON,
-    TruckLocation,
-    TruckLocationFromJSON,
-    TruckLocationToJSON,
-    TruckSortByField,
-    TruckSortByFieldFromJSON,
-    TruckSortByFieldToJSON,
-    TruckSpeed,
-    TruckSpeedFromJSON,
-    TruckSpeedToJSON,
 } from '../models';
 
 export interface CreateTruckRequest {
@@ -47,37 +29,9 @@ export interface FindTruckRequest {
     truckId: string;
 }
 
-export interface ListDriveStatesRequest {
-    truckId: string;
-    driverId?: string;
-    state?: Array<TruckDriveStateEnum>;
-    after?: Date;
-    before?: Date;
-    first?: number;
-    max?: number;
-}
-
-export interface ListTruckLocationsRequest {
-    truckId: string;
-    after?: Date;
-    before?: Date;
-    first?: number;
-    max?: number;
-}
-
-export interface ListTruckSpeedsRequest {
-    truckId: string;
-    after?: Date;
-    before?: Date;
-    first?: number;
-    max?: number;
-}
-
 export interface ListTrucksRequest {
     plateNumber?: string;
     archived?: boolean;
-    sortBy?: TruckSortByField;
-    sortDirection?: SortOrder;
     first?: number;
     max?: number;
 }
@@ -178,174 +132,6 @@ export class TrucksApi extends runtime.BaseAPI {
         return [ value, response.raw.headers ];
     }
     /**
-     * Lists drive states for truck.
-     * List drive states.
-     */
-    async listDriveStatesRaw(requestParameters: ListDriveStatesRequest): Promise<runtime.ApiResponse<Array<TruckDriveState>>> {
-        if (requestParameters.truckId === null || requestParameters.truckId === undefined) {
-            throw new runtime.RequiredError('truckId','Required parameter requestParameters.truckId was null or undefined when calling listDriveStates.');
-        }
-        const queryParameters: any = {};
-        if (requestParameters.driverId !== undefined) {
-            queryParameters['driverId'] = requestParameters.driverId;
-        }
-        if (requestParameters.state) {
-            queryParameters['state'] = requestParameters.state;
-        }
-        if (requestParameters.after !== undefined) {
-            queryParameters['after'] = (requestParameters.after as any).toISOString();
-        }
-        if (requestParameters.before !== undefined) {
-            queryParameters['before'] = (requestParameters.before as any).toISOString();
-        }
-        if (requestParameters.first !== undefined) {
-            queryParameters['first'] = requestParameters.first;
-        }
-        if (requestParameters.max !== undefined) {
-            queryParameters['max'] = requestParameters.max;
-        }
-        const headerParameters: runtime.HTTPHeaders = {};
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", ["driver", "manager"]);
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-        const response = await this.request({
-            path: `/vehicle-management/v1/trucks/{truckId}/driveStates`.replace(`{${"truckId"}}`, encodeURIComponent(String(requestParameters.truckId))),
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        });
-        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(TruckDriveStateFromJSON));
-    }
-    /**
-     * Lists drive states for truck.
-     * List drive states.
-     */
-    async listDriveStates(requestParameters: ListDriveStatesRequest): Promise<Array<TruckDriveState>> {
-        const response = await this.listDriveStatesRaw(requestParameters);
-        return await response.value();
-    }
-    /**
-     * Lists drive states for truck.
-     * List drive states.
-     */
-    async listDriveStatesWithHeaders(requestParameters: ListDriveStatesRequest): Promise<[ Array<TruckDriveState>, Headers ]> {
-        const response = await this.listDriveStatesRaw(requestParameters);
-        const value = await response.value(); 
-        return [ value, response.raw.headers ];
-    }
-    /**
-     * Lists Truck locations.
-     * List Truck locations
-     */
-    async listTruckLocationsRaw(requestParameters: ListTruckLocationsRequest): Promise<runtime.ApiResponse<Array<TruckLocation>>> {
-        if (requestParameters.truckId === null || requestParameters.truckId === undefined) {
-            throw new runtime.RequiredError('truckId','Required parameter requestParameters.truckId was null or undefined when calling listTruckLocations.');
-        }
-        const queryParameters: any = {};
-        if (requestParameters.after !== undefined) {
-            queryParameters['after'] = (requestParameters.after as any).toISOString();
-        }
-        if (requestParameters.before !== undefined) {
-            queryParameters['before'] = (requestParameters.before as any).toISOString();
-        }
-        if (requestParameters.first !== undefined) {
-            queryParameters['first'] = requestParameters.first;
-        }
-        if (requestParameters.max !== undefined) {
-            queryParameters['max'] = requestParameters.max;
-        }
-        const headerParameters: runtime.HTTPHeaders = {};
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", ["manager"]);
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-        const response = await this.request({
-            path: `/vehicle-management/v1/trucks/{truckId}/locations`.replace(`{${"truckId"}}`, encodeURIComponent(String(requestParameters.truckId))),
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        });
-        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(TruckLocationFromJSON));
-    }
-    /**
-     * Lists Truck locations.
-     * List Truck locations
-     */
-    async listTruckLocations(requestParameters: ListTruckLocationsRequest): Promise<Array<TruckLocation>> {
-        const response = await this.listTruckLocationsRaw(requestParameters);
-        return await response.value();
-    }
-    /**
-     * Lists Truck locations.
-     * List Truck locations
-     */
-    async listTruckLocationsWithHeaders(requestParameters: ListTruckLocationsRequest): Promise<[ Array<TruckLocation>, Headers ]> {
-        const response = await this.listTruckLocationsRaw(requestParameters);
-        const value = await response.value(); 
-        return [ value, response.raw.headers ];
-    }
-    /**
-     * Lists Truck speeds.
-     * List Truck speeds
-     */
-    async listTruckSpeedsRaw(requestParameters: ListTruckSpeedsRequest): Promise<runtime.ApiResponse<Array<TruckSpeed>>> {
-        if (requestParameters.truckId === null || requestParameters.truckId === undefined) {
-            throw new runtime.RequiredError('truckId','Required parameter requestParameters.truckId was null or undefined when calling listTruckSpeeds.');
-        }
-        const queryParameters: any = {};
-        if (requestParameters.after !== undefined) {
-            queryParameters['after'] = (requestParameters.after as any).toISOString();
-        }
-        if (requestParameters.before !== undefined) {
-            queryParameters['before'] = (requestParameters.before as any).toISOString();
-        }
-        if (requestParameters.first !== undefined) {
-            queryParameters['first'] = requestParameters.first;
-        }
-        if (requestParameters.max !== undefined) {
-            queryParameters['max'] = requestParameters.max;
-        }
-        const headerParameters: runtime.HTTPHeaders = {};
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", ["manager"]);
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-        const response = await this.request({
-            path: `/vehicle-management/v1/trucks/{truckId}/speeds`.replace(`{${"truckId"}}`, encodeURIComponent(String(requestParameters.truckId))),
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        });
-        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(TruckSpeedFromJSON));
-    }
-    /**
-     * Lists Truck speeds.
-     * List Truck speeds
-     */
-    async listTruckSpeeds(requestParameters: ListTruckSpeedsRequest): Promise<Array<TruckSpeed>> {
-        const response = await this.listTruckSpeedsRaw(requestParameters);
-        return await response.value();
-    }
-    /**
-     * Lists Truck speeds.
-     * List Truck speeds
-     */
-    async listTruckSpeedsWithHeaders(requestParameters: ListTruckSpeedsRequest): Promise<[ Array<TruckSpeed>, Headers ]> {
-        const response = await this.listTruckSpeedsRaw(requestParameters);
-        const value = await response.value(); 
-        return [ value, response.raw.headers ];
-    }
-    /**
      * Lists Trucks.
      * List Trucks.
      */
@@ -356,12 +142,6 @@ export class TrucksApi extends runtime.BaseAPI {
         }
         if (requestParameters.archived !== undefined) {
             queryParameters['archived'] = requestParameters.archived;
-        }
-        if (requestParameters.sortBy !== undefined) {
-            queryParameters['sortBy'] = requestParameters.sortBy;
-        }
-        if (requestParameters.sortDirection !== undefined) {
-            queryParameters['sortDirection'] = requestParameters.sortDirection;
         }
         if (requestParameters.first !== undefined) {
             queryParameters['first'] = requestParameters.first;

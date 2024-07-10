@@ -26,7 +26,6 @@ export interface FindDriverRequest {
 }
 
 export interface ListDriversRequest {
-    driverCardId?: string;
     archived?: boolean;
     first?: number;
     max?: number;
@@ -84,9 +83,6 @@ export class DriversApi extends runtime.BaseAPI {
      */
     async listDriversRaw(requestParameters: ListDriversRequest): Promise<runtime.ApiResponse<Array<Driver>>> {
         const queryParameters: any = {};
-        if (requestParameters.driverCardId !== undefined) {
-            queryParameters['driverCardId'] = requestParameters.driverCardId;
-        }
         if (requestParameters.archived !== undefined) {
             queryParameters['archived'] = requestParameters.archived;
         }
