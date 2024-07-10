@@ -249,7 +249,7 @@ const FreightWaybill = ({ freight, sites, tasks, freightUnits }: Props) => {
 
   const renderFreightUnit = useCallback(
     (freightUnit: FreightUnit) => (
-      <RowView>
+      <RowView key={freightUnit.id}>
         <ColumnView style={{ width: "25%", padding: 2 }}>
           <Text style={{ fontSize: 10 }}> </Text>
         </ColumnView>
@@ -414,7 +414,11 @@ const FreightWaybill = ({ freight, sites, tasks, freightUnits }: Props) => {
   return (
     <Document>
       {WAYBILL_PAGES.map((waybillPage) => (
-        <Page size="A4" style={{ paddingLeft: "2cm", paddingRight: "1cm", paddingTop: "1cm", fontSize: 12 }}>
+        <Page
+          key={waybillPage.number}
+          size="A4"
+          style={{ paddingLeft: "2cm", paddingRight: "1cm", paddingTop: "1cm", fontSize: 12 }}
+        >
           {renderTopPart(waybillPage)}
           <ColumnView style={{ borderTop: WIDE_BORDER }}>
             {renderSiteInfo()}
