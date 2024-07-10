@@ -176,7 +176,12 @@
       "salaryGroupMissing": "Salary group is required.",
       "workHoursMissing": "Work hours is required when type is Kuljettaja."
     },
+    "archiveDialog": {
+      "title": "Archive employee",
+      "description": "Are you sure you want to archive employee {{name}}?"
+    },
     "successToast": "Employee saved!",
+    "archiveToast": "Employee archived!",
     "errorToast": "Failed to save employee!"
   },
   "drivePlanning": {

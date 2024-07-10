@@ -1,5 +1,5 @@
 import { Close, SaveAlt } from "@mui/icons-material";
-import { Button, Paper, Stack } from "@mui/material";
+import { Box, Button, Paper, Stack } from "@mui/material";
 import { UseMutationResult } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import LoaderWrapper from "components/generic/loader-wrapper";
@@ -11,12 +11,12 @@ import { useTranslation } from "react-i18next";
 import EmployeeForm from "./employee-form";
 
 type Props = {
-  formType: "ADD" | "MODIFY";
+  title: string;
   employee?: Employee;
   onSave: UseMutationResult<Employee, Error, Employee, unknown>;
 };
 
-const EmployeeComponent = ({ formType, employee, onSave }: Props) => {
+const EmployeeComponent = ({ title, employee, onSave }: Props) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
@@ -59,12 +59,13 @@ const EmployeeComponent = ({ formType, employee, onSave }: Props) => {
       <Paper sx={{ height: "100%" }}>
         <FormProvider {...form}>
           <ToolbarRow
-            title={formType === "ADD" ? t("management.employees.new") : t("management.employees.modify")}
+            title={title}
             navigateBack={() => navigate({ to: "/management/employees" })}
             toolbarButtons={renderToolbarButtons()}
           />
-          <Stack direction="row" height="calc(100% - 52px)">
-            <EmployeeForm />
+          <Stack direction="row" height="calc(100% - 42px)">
+            <EmployeeForm employee={employee} />
+            <Box sx={{ backgroundColor: "#f7f7f7" }} width="100%" height="100%" />
           </Stack>
         </FormProvider>
       </Paper>

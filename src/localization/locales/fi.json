@@ -199,7 +199,12 @@
         "salaryGroupMissing": "Palkkaryhmä on pakollinen.",
         "workHoursMissing": "Työaika on pakollinen tyypin ollessa Kuljettaja."
       },
+      "archiveDialog": {
+        "title": "Arkistoi työntekijä",
+        "description": "Haluatko varmasti arkistoida työntekijän {{name}}?"
+      },
       "successToast": "Työntekijä tallennettu!",
+      "archiveToast": "Työntekijä arkistoitu!",
       "errorToast": "Työntekijän tallennus epäonnistui!"
     }
   },

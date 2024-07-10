@@ -8,6 +8,7 @@ import { Employee } from "generated/client";
 import { toast } from "react-toastify";
 import LoaderWrapper from "components/generic/loader-wrapper";
 import EmployeeComponent from "components/management/employees/employee";
+import { useMemo } from "react";
 
 export const Route = createFileRoute("/management/employees/$employeeId/modify")({
   component: EmployeeModify,
@@ -33,9 +34,15 @@ function EmployeeModify() {
     onError: () => toast.error(t("management.employees.errorToast")),
   });
 
+  const employeeName = useMemo(() => {
+    const { firstName, lastName } = employeeQuery.data ?? {};
+
+    return ` ${lastName}, ${firstName}`;
+  }, [employeeQuery.data]);
+
   return (
     <LoaderWrapper loading={employeeQuery.isLoading}>
-      <EmployeeComponent formType="MODIFY" employee={employeeQuery.data} onSave={updateEmployee} />
+      <EmployeeComponent title={employeeName} employee={employeeQuery.data} onSave={updateEmployee} />
     </LoaderWrapper>
   );
 }
