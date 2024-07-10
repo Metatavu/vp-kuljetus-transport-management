@@ -205,10 +205,11 @@ function ManagementEmployees() {
         renderCell: ({ row: { office } }) => LocalizationUtils.getLocalizedOffice(office, t),
       },
       {
-        field: "workHours",
-        headerName: t("management.employees.workHours"),
+        field: "regularWorkingHours",
+        headerName: t("management.employees.regularWorkingHours"),
         sortable: false,
         flex: 2,
+        renderCell: ({ row: { regularWorkingHours } }) => regularWorkingHours?.toFixed(2),
       },
       {
         field: "driverCardLastEmptied",

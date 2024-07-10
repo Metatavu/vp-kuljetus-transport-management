@@ -162,7 +162,7 @@
       "type": "Tyyppi",
       "salaryGroup": "Palkkaryhmä",
       "office": "Toimipiste",
-      "workHours": "Säännöllinen työaika (h / 2vk)",
+      "regularWorkingHours": "Säännöllinen työaika (h / 2vk)",
       "driverCardLastEmptied": "Kuljettajakortti purettu viimeksi",
       "lastDriven": "Viimeksi ajanut",
       "offices": {
@@ -191,13 +191,12 @@
         "terminal": "Terminaali (TT)"
       },
       "errorMessages": {
+        "invalidDriverCard": "Kuljettajakortin tulee olla 16 merkkiä pitkä",
         "firstNameMissing": "Etunimi on pakollinen.",
         "lastNameMissing": "Sukunimi on pakollinen.",
-        "employeeNumberMissing": "Tunnus on pakollinen.",
         "officeMissing": "Toimipiste on pakollinen.",
         "typeMissing": "Tyyppi on pakollinen.",
-        "salaryGroupMissing": "Palkkaryhmä on pakollinen.",
-        "workHoursMissing": "Työaika on pakollinen tyypin ollessa Kuljettaja."
+        "salaryGroupMissing": "Palkkaryhmä on pakollinen."
       },
       "archiveDialog": {
         "title": "Arkistoi työntekijä",

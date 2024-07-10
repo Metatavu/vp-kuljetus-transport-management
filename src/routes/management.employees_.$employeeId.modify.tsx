@@ -36,8 +36,9 @@ function EmployeeModify() {
 
   const employeeName = useMemo(() => {
     const { firstName, lastName } = employeeQuery.data ?? {};
+    if (!firstName || !lastName) return "";
 
-    return ` ${lastName}, ${firstName}`;
+    return `${lastName}, ${firstName}`;
   }, [employeeQuery.data]);
 
   return (

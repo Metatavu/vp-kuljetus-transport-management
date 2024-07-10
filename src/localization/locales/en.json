@@ -164,17 +164,16 @@
     "type": "Type",
     "salaryGroup": "Salary group",
     "office": "Office",
-    "workHours": "Work hours (h / 2wk)",
+    "regularWorkingHours": "Work hours (h / 2wk)",
     "driverCardLastEmptied": "Driver card last emptied",
     "lastDriven": "Last driven",
     "errorMessages": {
       "firstNameMissing": "First name is required.",
       "lastNameMissing": "Last name is required.",
-      "employeeNumberMissing": "Employee number is required.",
       "officeMissing": "Office is required.",
       "typeMissing": "Type is required.",
       "salaryGroupMissing": "Salary group is required.",
-      "workHoursMissing": "Work hours is required when type is Kuljettaja."
+      "invalidDriverCard": "Driver card must be 16 characters long."
     },
     "archiveDialog": {
       "title": "Archive employee",
