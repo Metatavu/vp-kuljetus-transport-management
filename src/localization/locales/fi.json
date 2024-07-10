@@ -185,18 +185,7 @@
         "vpLogistics": "VP-Logistics",
         "office": "Toimisto (TS)",
         "terminal": "Terminaali (TT)"
-      },
-      "errorMessages": {
-        "firstNameMissing": "Etunimi on pakollinen.",
-        "lastNameMissing": "Sukunimi on pakollinen.",
-        "employeeNumberMissing": "Tunnus on pakollinen.",
-        "officeMissing": "Toimipiste on pakollinen.",
-        "typeMissing": "Tyyppi on pakollinen.",
-        "salaryGroupMissing": "Palkkaryhmä on pakollinen.",
-        "workHoursMissing": "Työaika on pakollinen tyypin ollessa Kuljettaja."
-      },
-      "successToast": "Työntekijä tallennettu!",
-      "errorToast": "Työntekijän tallennus epäonnistui!"
+      }
     }
   },
   "drivePlanning": {
