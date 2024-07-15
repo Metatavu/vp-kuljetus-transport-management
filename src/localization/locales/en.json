@@ -197,7 +197,8 @@
       "dialog": {
         "title": "Freight {{freightNumber}}",
         "save": "Save freight",
-        "printAndSave": "Print and save"
+        "printAndSave": "Print and save",
+        "copyAsNew": "Copy as new"
       },
       "print": {
         "waybill": "Waybill {{freightNumber}}",
@@ -215,7 +216,8 @@
         "destinationSiteMissing": "Destination is required"
       },
       "successToast": "Freight saved!",
-      "errorToast": "Failed to save freight!"
+      "errorToast": "Failed to save freight!",
+      "copyErrorToast": "Failed to copy freight!"
     },
     "freightUnits": {
       "type": "Type",

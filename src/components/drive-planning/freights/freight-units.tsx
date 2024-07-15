@@ -4,12 +4,13 @@ import { GridColDef } from "@mui/x-data-grid";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import GenericDataGrid from "components/generic/generic-data-grid";
 import { FreightUnit } from "generated/client";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useApi } from "hooks/use-api";
 import { useSingleClickRowEditMode } from "hooks/use-single-click-row-edit-mode";
 import { QUERY_KEYS } from "hooks/use-queries";
 import { deepEqual } from "@tanstack/react-router";
+import { useCreateFreightUnit } from "hooks/use-mutations";
 
 const FREIGHT_UNIT_TYPES = [
   "EUR",
@@ -40,16 +41,7 @@ const FreightUnits = ({ freightUnits, freightId, onEditFreightUnit }: Props) => 
 
   const { rowModesModel, handleCellClick, handleRowModelsChange } = useSingleClickRowEditMode();
 
-  const createFreightUnit = useMutation({
-    mutationFn: () =>
-      freightUnitsApi.createFreightUnit({
-        freightUnit: {
-          freightId: freightId,
-          type: FREIGHT_UNIT_TYPES[0],
-        },
-      }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.FREIGHT_UNITS, { freightId }] }),
-  });
+  const createFreightUnit = useCreateFreightUnit();
 
   const deleteFreightUnit = useMutation({
     mutationFn: (id: string) => freightUnitsApi.deleteFreightUnit({ freightUnitId: id }),
@@ -58,17 +50,25 @@ const FreightUnits = ({ freightUnits, freightId, onEditFreightUnit }: Props) => 
     },
   });
 
-  const processRowUpdate = (newRow: FreightUnit, oldRow: FreightUnit) => {
-    if (deepEqual(oldRow, newRow)) return oldRow;
-    onEditFreightUnit(newRow);
-    return newRow;
-  };
+  const onAddNewFreightUnit = useCallback(
+    () => createFreightUnit.mutate({ freightId, type: FREIGHT_UNIT_TYPES[0] }),
+    [freightId, createFreightUnit],
+  );
 
-  const parseEditCellNumberValue = (value: unknown) => {
+  const processRowUpdate = useCallback(
+    (newRow: FreightUnit, oldRow: FreightUnit) => {
+      if (deepEqual(oldRow, newRow)) return oldRow;
+      onEditFreightUnit(newRow);
+      return newRow;
+    },
+    [onEditFreightUnit],
+  );
+
+  const parseEditCellNumberValue = useCallback((value: unknown) => {
     if (value === null || value === undefined || value === "") return undefined;
 
     return parseFloat(value as string);
-  };
+  }, []);
 
   const columns: GridColDef[] = useMemo(
     () => [
@@ -137,7 +137,7 @@ const FreightUnits = ({ freightUnits, freightId, onEditFreightUnit }: Props) => 
         size="small"
         startIcon={<Add />}
         sx={{ alignSelf: "flex-end" }}
-        onClick={() => createFreightUnit.mutate()}
+        onClick={onAddNewFreightUnit}
       >
         {t("drivePlanning.freightUnits.addRow")}
       </Button>
