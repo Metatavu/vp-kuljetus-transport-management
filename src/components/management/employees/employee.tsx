@@ -63,7 +63,7 @@ const EmployeeComponent = ({ title, employee, onSave }: Props) => {
             navigateBack={() => navigate({ to: "/management/employees" })}
             toolbarButtons={renderToolbarButtons()}
           />
-          <Stack direction="row" height="calc(100% - 42px)">
+          <Stack direction="row" height="calc(100% - 42px)" overflow="scroll">
             <EmployeeForm employee={employee} />
             <Box sx={{ backgroundColor: "#f7f7f7" }} width="100%" height="100%" />
           </Stack>
