@@ -46,14 +46,14 @@ const FreightCustomerSitesForm = ({ freight, customerSites }: Props) => {
         errorMessage: "drivePlanning.freights.errorMessages.recipientSiteMissing",
       },
       {
-        key: "destinationSiteId",
-        label: "drivePlanning.freights.destination",
-        errorMessage: "drivePlanning.freights.errorMessages.destinationSiteMissing",
-      },
-      {
         key: "pointOfDepartureSiteId",
         label: "drivePlanning.freights.pointOfDeparture",
         errorMessage: "drivePlanning.freights.errorMessages.pointOfDepartureMissing",
+      },
+      {
+        key: "destinationSiteId",
+        label: "drivePlanning.freights.destination",
+        errorMessage: "drivePlanning.freights.errorMessages.destinationSiteMissing",
       },
     ],
     [],
@@ -63,7 +63,7 @@ const FreightCustomerSitesForm = ({ freight, customerSites }: Props) => {
     <Box>
       <Grid container spacing={2} padding={2} columns={2}>
         {siteFields.map(({ key, label, errorMessage }) => (
-          <Grid item xs={1}>
+          <Grid key={key} item xs={1}>
             <TextField
               select
               defaultValue={freight?.[key]}
