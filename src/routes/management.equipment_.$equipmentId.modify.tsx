@@ -3,14 +3,14 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useApi } from "hooks/use-api";
 import { RouterContext } from "src/routes/__root";
 import LoaderWrapper from "components/generic/loader-wrapper";
-import EquipmentComponent from "components/management/equipment";
+import EquipmentComponent from "components/management/equipments/equipment";
 import { Towable, TowableTypeEnum, Truck } from "generated/client";
 import { toast } from "react-toastify";
 
 export const Route = createFileRoute("/management/equipment/$equipmentId/modify")({
   component: () => <EquipmentModify />,
   beforeLoad: (): RouterContext => ({
-    breadcrumb: "management.equipment.modify",
+    breadcrumbs: ["management.equipment.title", "management.equipment.modify"],
   }),
 });
 

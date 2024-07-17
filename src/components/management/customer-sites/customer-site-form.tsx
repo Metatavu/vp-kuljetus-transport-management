@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Site } from "generated/client";
 import { SessionToken } from "@mapbox/search-js-core";
 import { useDebounce } from "hooks/use-debounce";
-import Mapbox from "../../mapbox";
+import Mapbox from "../../../mapbox";
 import { SyntheticEvent, useState } from "react";
 import { stringify } from "wellknown";
 import { useMutation, useQuery } from "@tanstack/react-query";

@@ -7,7 +7,7 @@ import { Freight } from "generated/client";
 export const Route = createFileRoute("/drive-planning/freights/add-freight")({
   component: AddFreight,
   beforeLoad: (): RouterContext => ({
-    breadcrumb: "drivePlanning.freights.new",
+    breadcrumbs: ["drivePlanning.freights.title", "drivePlanning.freights.new"],
   }),
 });
 

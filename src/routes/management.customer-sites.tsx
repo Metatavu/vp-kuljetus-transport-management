@@ -16,7 +16,7 @@ import { QUERY_KEYS, useSites } from "hooks/use-queries";
 export const Route = createFileRoute("/management/customer-sites")({
   component: ManagementCustomerSites,
   beforeLoad: (): RouterContext => ({
-    breadcrumb: "management.customerSites.title",
+    breadcrumbs: ["management.customerSites.title"],
   }),
 });
 

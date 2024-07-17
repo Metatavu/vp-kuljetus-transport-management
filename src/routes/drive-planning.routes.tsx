@@ -43,7 +43,7 @@ const Root = styled(Paper, {
 export const Route = createFileRoute("/drive-planning/routes")({
   component: DrivePlanningRoutes,
   beforeLoad: (): RouterContext => ({
-    breadcrumb: "drivePlanning.routes.title",
+    breadcrumbs: ["drivePlanning.routes.title"],
   }),
   validateSearch: ({ date }: Record<string, unknown>) => ({
     date: date ? DateTime.fromISO(date as string) : undefined,

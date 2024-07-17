@@ -17,7 +17,7 @@ import { useFreights, useSites } from "hooks/use-queries";
 export const Route = createFileRoute("/drive-planning/freights")({
   component: DrivePlanningFreights,
   beforeLoad: (): RouterContext => ({
-    breadcrumb: "drivePlanning.freights.title",
+    breadcrumbs: ["drivePlanning.freights.title"],
   }),
 });
 
@@ -69,7 +69,7 @@ function DrivePlanningFreights() {
         field: "freightNumber",
         headerName: t("drivePlanning.freights.freightNumber"),
         sortable: false,
-        width: 120
+        width: 120,
       },
       {
         field: "senderSiteId",
