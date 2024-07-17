@@ -1,25 +1,27 @@
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { IconButton, Stack, Typography, styled } from "@mui/material";
-import { ReactNode } from "react";
+import { IconButton, Stack, Theme, Typography, styled } from "@mui/material";
+import { ReactNode, useCallback } from "react";
 
 // Styled components
 const Root = styled(Stack, {
   label: "toolbar--root",
-})(({ theme }) => ({
+})(({ theme, height }: { theme?: Theme; height?: number }) => ({
   justifyContent: "space-between",
-  padding: theme.spacing(1, 2),
-  height: 42,
-  flexDirection: "row"
+  padding: theme?.spacing(1, 2),
+  height: height ?? 42,
+  flexDirection: "row",
 }));
 
 type Props = {
+  height?: number;
   title?: string;
   toolbarButtons?: ReactNode;
   leftToolbar?: ReactNode;
+  titleFirst?: boolean;
   navigateBack?: () => void;
 };
 
-const ToolbarRow = ({ title, toolbarButtons, leftToolbar, navigateBack }: Props) => {
+const ToolbarRow = ({ height, title, toolbarButtons, leftToolbar, titleFirst, navigateBack }: Props) => {
   const renderBackButton = () => {
     if (!navigateBack) return null;
 
@@ -40,20 +42,21 @@ const ToolbarRow = ({ title, toolbarButtons, leftToolbar, navigateBack }: Props)
     );
   };
 
-  const renderLeftToolbar = () => {
+  const renderLeftToolbar = useCallback(() => {
     if (!leftToolbar) return null;
-
-    return leftToolbar;
-  };
+    if (titleFirst) {
+      return [renderTitle(), leftToolbar];
+    }
+    return [leftToolbar, renderTitle()];
+  }, [leftToolbar, titleFirst, renderTitle]);
 
   return (
-    <Root>
-      <Stack direction="row" spacing={1} flex={1}>
+    <Root height={height}>
+      <Stack direction="row" spacing={1} flex={1} alignItems="center">
         {renderBackButton()}
         {renderLeftToolbar()}
-        {renderTitle()}
       </Stack>
-      <Stack direction="row" spacing={1}>
+      <Stack direction="row" spacing={1} alignItems="center">
         {toolbarButtons}
       </Stack>
     </Root>

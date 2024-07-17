@@ -7,6 +7,7 @@
   "archive": "Archive",
   "open": "Open",
   "noSelection": "No selection",
+  "all": "All",
   "noResults": "No results",
   "actions": "Actions",
   "menu": "Menu",
@@ -142,6 +143,26 @@
       "nameMissing": "Name is required",
       "licensePlateMissing": "License plate is required"
     }
+  },
+  "employees": {
+    "title": "Employees",
+    "filters": {
+      "name": {
+        "label": "Name",
+        "placeholder": "Search by name"
+      }
+    },
+    "employeeNumber": "Number",
+    "lastName": "Last name",
+    "firstName": "First names",
+    "driverCard": "Driver card",
+    "pinCode": "PIN code",
+    "type": "Type",
+    "salaryGroup": "Salary group",
+    "office": "Office",
+    "workHours": "Work hours (h / 2wk)",
+    "driverCardLastEmptied": "Driver card last emptied",
+    "lastDriven": "Last driven"
   },
   "drivePlanning": {
     "title": "Drive planning",

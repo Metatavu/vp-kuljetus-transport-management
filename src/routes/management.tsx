@@ -1,4 +1,4 @@
-import { CommuteRounded, PlaceRounded } from "@mui/icons-material";
+import { CommuteRounded, HailRounded, PlaceRounded } from "@mui/icons-material";
 import { Stack } from "@mui/material";
 import { Outlet, createFileRoute } from "@tanstack/react-router";
 import SideNavigation from "components/layout/side-navigation";
@@ -17,6 +17,7 @@ function ManagementLayoutComponent() {
   const sideNavigationItems: readonly NavigationItem[] = [
     ["/management/customer-sites", "management.customerSites.title", PlaceRounded],
     ["/management/equipment", "management.equipment.title", CommuteRounded],
+    ["/management/employees", "management.employees.title", HailRounded],
   ] as const;
 
   return (
