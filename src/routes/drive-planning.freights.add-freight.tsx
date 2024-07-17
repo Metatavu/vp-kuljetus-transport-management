@@ -11,7 +11,7 @@ import { useTranslation } from "react-i18next";
 export const Route = createFileRoute("/drive-planning/freights/add-freight")({
   component: AddFreight,
   beforeLoad: (): RouterContext => ({
-    breadcrumb: "drivePlanning.freights.new",
+    breadcrumbs: ["drivePlanning.freights.title", "drivePlanning.freights.new"],
   }),
 });
 

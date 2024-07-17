@@ -14,11 +14,13 @@ import { Route as ManagementCustomerSitesImport } from "./../../routes/managemen
 import { Route as DrivePlanningRoutesImport } from "./../../routes/drive-planning.routes"
 import { Route as DrivePlanningFreightsImport } from "./../../routes/drive-planning.freights"
 import { Route as ManagementEquipmentAddEquipmentImport } from "./../../routes/management.equipment_.add-equipment"
+import { Route as ManagementEmployeesAddEmployeeImport } from "./../../routes/management.employees_.add-employee"
 import { Route as ManagementCustomerSitesAddCustomerSiteImport } from "./../../routes/management.customer-sites_.add-customer-site_"
 import { Route as DrivePlanningRoutesAddRouteImport } from "./../../routes/drive-planning.routes.add-route"
 import { Route as DrivePlanningFreightsAddFreightImport } from "./../../routes/drive-planning.freights.add-freight"
 import { Route as VehicleListVehiclesVehicleIdInfoImport } from "./../../routes/vehicle-list_.vehicles.$vehicleId.info"
 import { Route as ManagementEquipmentEquipmentIdModifyImport } from "./../../routes/management.equipment_.$equipmentId.modify"
+import { Route as ManagementEmployeesEmployeeIdModifyImport } from "./../../routes/management.employees_.$employeeId.modify"
 import { Route as ManagementCustomerSitesCustomerSiteIdModifyImport } from "./../../routes/management.customer-sites_.$customerSiteId.modify"
 
 const VehicleListRoute = VehicleListImport.update({
@@ -97,6 +99,12 @@ const ManagementEquipmentAddEquipmentRoute =
     getParentRoute: () => ManagementRoute,
   } as any)
 
+const ManagementEmployeesAddEmployeeRoute =
+  ManagementEmployeesAddEmployeeImport.update({
+    path: "/employees/add-employee",
+    getParentRoute: () => ManagementRoute,
+  } as any)
+
 const ManagementCustomerSitesAddCustomerSiteRoute =
   ManagementCustomerSitesAddCustomerSiteImport.update({
     path: "/customer-sites/add-customer-site",
@@ -124,6 +132,12 @@ const VehicleListVehiclesVehicleIdInfoRoute =
 const ManagementEquipmentEquipmentIdModifyRoute =
   ManagementEquipmentEquipmentIdModifyImport.update({
     path: "/equipment/$equipmentId/modify",
+    getParentRoute: () => ManagementRoute,
+  } as any)
+
+const ManagementEmployeesEmployeeIdModifyRoute =
+  ManagementEmployeesEmployeeIdModifyImport.update({
+    path: "/employees/$employeeId/modify",
     getParentRoute: () => ManagementRoute,
   } as any)
 
@@ -202,12 +216,20 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof ManagementCustomerSitesAddCustomerSiteImport
       parentRoute: typeof ManagementImport
     }
+    "/management/employees/add-employee": {
+      preLoaderRoute: typeof ManagementEmployeesAddEmployeeImport
+      parentRoute: typeof ManagementImport
+    }
     "/management/equipment/add-equipment": {
       preLoaderRoute: typeof ManagementEquipmentAddEquipmentImport
       parentRoute: typeof ManagementImport
     }
     "/management/customer-sites/$customerSiteId/modify": {
       preLoaderRoute: typeof ManagementCustomerSitesCustomerSiteIdModifyImport
+      parentRoute: typeof ManagementImport
+    }
+    "/management/employees/$employeeId/modify": {
+      preLoaderRoute: typeof ManagementEmployeesEmployeeIdModifyImport
       parentRoute: typeof ManagementImport
     }
     "/management/equipment/$equipmentId/modify": {
@@ -234,8 +256,10 @@ export const routeTree = rootRoute.addChildren([
     ManagementEquipmentRoute,
     ManagementVehiclesRoute,
     ManagementCustomerSitesAddCustomerSiteRoute,
+    ManagementEmployeesAddEmployeeRoute,
     ManagementEquipmentAddEquipmentRoute,
     ManagementCustomerSitesCustomerSiteIdModifyRoute,
+    ManagementEmployeesEmployeeIdModifyRoute,
     ManagementEquipmentEquipmentIdModifyRoute,
   ]),
   VehicleListRoute.addChildren([

@@ -164,6 +164,16 @@ export const useEmployees = (requestParams: ListEmployeesRequest = {}, enabled =
   });
 }
 
+export const useEmployee = (employeeId: string, enabled = true) => {
+  const { employeesApi } = useApi();
+
+  return useQuery({
+    queryKey: [QUERY_KEYS.EMPLOYEES, employeeId],
+    enabled: enabled,
+    queryFn: async () => employeesApi.findEmployee({ employeeId }),
+  });
+};
+
 /**
  * Gets total results from headers
  *

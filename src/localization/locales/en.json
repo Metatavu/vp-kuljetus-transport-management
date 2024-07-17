@@ -146,6 +146,8 @@
   },
   "employees": {
     "title": "Employees",
+    "new": "New employee",
+    "modify": "Modify employee",
     "filters": {
       "name": {
         "label": "Name",
@@ -156,13 +158,30 @@
     "lastName": "Last name",
     "firstName": "First names",
     "driverCard": "Driver card",
+    "phoneNumber": "Phone number",
+    "email": "Email",
     "pinCode": "PIN code",
     "type": "Type",
     "salaryGroup": "Salary group",
     "office": "Office",
-    "workHours": "Work hours (h / 2wk)",
+    "regularWorkingHours": "Work hours (h / 2wk)",
     "driverCardLastEmptied": "Driver card last emptied",
-    "lastDriven": "Last driven"
+    "lastDriven": "Last driven",
+    "errorMessages": {
+      "firstNameMissing": "First name is required.",
+      "lastNameMissing": "Last name is required.",
+      "officeMissing": "Office is required.",
+      "typeMissing": "Type is required.",
+      "salaryGroupMissing": "Salary group is required.",
+      "invalidDriverCard": "Driver card must be 16 characters long."
+    },
+    "archiveDialog": {
+      "title": "Archive employee",
+      "description": "Are you sure you want to archive employee {{name}}?"
+    },
+    "successToast": "Employee saved!",
+    "archiveToast": "Employee archived!",
+    "errorToast": "Failed to save employee!"
   },
   "drivePlanning": {
     "title": "Drive planning",

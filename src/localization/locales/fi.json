@@ -144,6 +144,8 @@
     },
     "employees": {
       "title": "Työntekijät",
+      "new": "Uusi työntekijä",
+      "modify": "Muokkaa työntekijää",
       "filters": {
         "name": {
           "label": "Nimihaku",
@@ -154,11 +156,13 @@
       "lastName": "Sukunimi",
       "firstName": "Etunimet",
       "driverCard": "Digipiirturikortti",
+      "phoneNumber": "Puhelinnumero",
+      "email": "Sähköposti",
       "pinCode": "PIN-koodi",
       "type": "Tyyppi",
       "salaryGroup": "Palkkaryhmä",
       "office": "Toimipiste",
-      "workHours": "Säännöllinen työaika (h / 2vk)",
+      "regularWorkingHours": "Säännöllinen työaika (h / 2vk)",
       "driverCardLastEmptied": "Kuljettajakortti purettu viimeksi",
       "lastDriven": "Viimeksi ajanut",
       "offices": {
@@ -185,7 +189,22 @@
         "vpLogistics": "VP-Logistics",
         "office": "Toimisto (TS)",
         "terminal": "Terminaali (TT)"
-      }
+      },
+      "errorMessages": {
+        "invalidDriverCard": "Kuljettajakortin tulee olla 16 merkkiä pitkä",
+        "firstNameMissing": "Etunimi on pakollinen.",
+        "lastNameMissing": "Sukunimi on pakollinen.",
+        "officeMissing": "Toimipiste on pakollinen.",
+        "typeMissing": "Tyyppi on pakollinen.",
+        "salaryGroupMissing": "Palkkaryhmä on pakollinen."
+      },
+      "archiveDialog": {
+        "title": "Arkistoi työntekijä",
+        "description": "Haluatko varmasti arkistoida työntekijän {{name}}?"
+      },
+      "successToast": "Työntekijä tallennettu!",
+      "archiveToast": "Työntekijä arkistoitu!",
+      "errorToast": "Työntekijän tallennus epäonnistui!"
     }
   },
   "drivePlanning": {

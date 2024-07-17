@@ -1,4 +1,4 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
+import { Button, ButtonOwnProps, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 import { ReactNode, createContext, useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -7,6 +7,7 @@ type ConfirmDialogOptions = {
   description: string;
   positiveButtonText?: string;
   cancelButtonEnabled?: boolean;
+  positiveButtonColor?: ButtonOwnProps["color"];
   onPositiveClick: () => void | Promise<void>;
 };
 
@@ -37,8 +38,12 @@ const ConfirmDialogProvider = ({ children }: { children: ReactNode }) => {
         <DialogTitle>{options?.title}</DialogTitle>
         <DialogContent>{options?.description}</DialogContent>
         <DialogActions>
-          {options?.cancelButtonEnabled && <Button onClick={handleClose}>{t("cancel")}</Button>}
-          <Button variant="contained" onClick={handleSubmit}>
+          {options?.cancelButtonEnabled && (
+            <Button variant="text" onClick={handleClose}>
+              {t("cancel")}
+            </Button>
+          )}
+          <Button variant="contained" color={options?.positiveButtonColor} onClick={handleSubmit}>
             {options?.positiveButtonText || "OK"}
           </Button>
         </DialogActions>

@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import EquipmentComponent from "components/management/equipment";
+import EquipmentComponent from "components/management/equipments/equipment";
 import { Towable, TowableTypeEnum, Truck } from "generated/client";
 import { useApi } from "hooks/use-api";
 import { useTranslation } from "react-i18next";
@@ -10,7 +10,7 @@ import { RouterContext } from "src/routes/__root";
 export const Route = createFileRoute("/management/equipment/add-equipment")({
   component: () => <EquipmentAdd />,
   beforeLoad: (): RouterContext => ({
-    breadcrumb: "management.equipment.new",
+    breadcrumbs: ["management.equipment.title", "management.equipment.new"],
   }),
 });
 

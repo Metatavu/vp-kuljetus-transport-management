@@ -22,7 +22,7 @@ type Props = {
 };
 
 const ToolbarRow = ({ height, title, toolbarButtons, leftToolbar, titleFirst, navigateBack }: Props) => {
-  const renderBackButton = () => {
+  const renderBackButton = useCallback(() => {
     if (!navigateBack) return null;
 
     return (
@@ -30,9 +30,9 @@ const ToolbarRow = ({ height, title, toolbarButtons, leftToolbar, titleFirst, na
         <ArrowBackIcon />
       </IconButton>
     );
-  };
+  }, [navigateBack]);
 
-  const renderTitle = () => {
+  const renderTitle = useCallback(() => {
     if (!title) return null;
 
     return (
@@ -40,10 +40,9 @@ const ToolbarRow = ({ height, title, toolbarButtons, leftToolbar, titleFirst, na
         {title}
       </Typography>
     );
-  };
+  }, [title]);
 
   const renderLeftToolbar = useCallback(() => {
-    if (!leftToolbar) return null;
     if (titleFirst) {
       return [renderTitle(), leftToolbar];
     }

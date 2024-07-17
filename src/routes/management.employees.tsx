@@ -2,13 +2,14 @@ import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from "@mui/icons-material/Search";
 import { Button, Divider, MenuItem, Stack, styled, TextField, Typography } from "@mui/material";
 import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import GenericDataGrid from "components/generic/generic-data-grid";
 import ToolbarRow from "components/generic/toolbar-row";
 import { Key, ReactNode, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { theme } from "src/theme";
 import { LocalizedLabelKey } from "src/types";
+import { RouterContext } from "./__root";
 import { TFunction } from "i18next";
 import { Employee, EmployeeType, Office, SalaryGroup } from "generated/client";
 import LocalizationUtils from "src/utils/localization-utils";
@@ -18,8 +19,8 @@ import { useEmployees } from "hooks/use-queries";
 
 export const Route = createFileRoute("/management/employees")({
   component: ManagementEmployees,
-  beforeLoad: () => ({
-    breadcrumb: "management.employees.title",
+  beforeLoad: (): RouterContext => ({
+    breadcrumbs: ["management.employees.title"],
   }),
 });
 
@@ -41,6 +42,7 @@ const Root = styled(Stack, {
 
 function ManagementEmployees() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const [debouncedSearchTerm, _, setSearchTerm] = useDebounce("", 1000);
 
@@ -203,10 +205,11 @@ function ManagementEmployees() {
         renderCell: ({ row: { office } }) => LocalizationUtils.getLocalizedOffice(office, t),
       },
       {
-        field: "workHours",
-        headerName: t("management.employees.workHours"),
+        field: "regularWorkingHours",
+        headerName: t("management.employees.regularWorkingHours"),
         sortable: false,
         flex: 2,
+        renderCell: ({ row: { regularWorkingHours } }) => regularWorkingHours?.toFixed(2),
       },
       {
         field: "driverCardLastEmptied",
@@ -238,14 +241,22 @@ function ManagementEmployees() {
         width: 66,
         colSpan: 2,
         renderHeader: () => null,
-        renderCell: () => (
-          <Button variant="text" color="primary" size="small">
-            {t("open")}
-          </Button>
-        ),
+        renderCell: ({ row: { id } }) => {
+          if (!id) return null;
+          return (
+            <Button
+              variant="text"
+              color="primary"
+              size="small"
+              onClick={() => navigate({ to: "/management/employees/$employeeId/modify", params: { employeeId: id } })}
+            >
+              {t("open")}
+            </Button>
+          );
+        },
       },
     ],
-    [t],
+    [t, navigate],
   );
 
   return (
@@ -255,7 +266,13 @@ function ManagementEmployees() {
         titleFirst
         title={t("management.employees.title")}
         toolbarButtons={
-          <Button size="small" variant="contained" sx={{ height: 30 }} startIcon={<AddIcon />}>
+          <Button
+            size="small"
+            variant="contained"
+            sx={{ height: 30 }}
+            startIcon={<AddIcon />}
+            onClick={() => navigate({ to: "/management/employees/add-employee" })}
+          >
             {t("addNew")}
           </Button>
         }

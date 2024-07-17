@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import CustomerSiteComponent from "components/management/customer-site";
+import CustomerSiteComponent from "components/management/customer-sites/customer-site";
 import { useApi } from "hooks/use-api";
 import { RouterContext } from "src/routes/__root";
 import LoaderWrapper from "components/generic/loader-wrapper";
@@ -12,7 +12,7 @@ import { toast } from "react-toastify";
 export const Route = createFileRoute("/management/customer-sites/$customerSiteId/modify")({
   component: () => <CustomerSiteModify />,
   beforeLoad: (): RouterContext => ({
-    breadcrumb: "management.customerSites.modify",
+    breadcrumbs: ["management.customerSites.title", "management.customerSites.modify"],
   }),
 });
 

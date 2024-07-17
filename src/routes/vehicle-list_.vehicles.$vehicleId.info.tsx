@@ -25,7 +25,7 @@ type DriveStatesTableRow = {
 export const Route = createFileRoute("/vehicle-list/vehicles/$vehicleId/info")({
   component: () => <VehicleInfo />,
   beforeLoad: (): RouterContext => ({
-    breadcrumb: "vehicleList.info.title",
+    breadcrumbs: ["vehicleList.info.title"],
   }),
   validateSearch: ({ date }: Record<string, unknown>) => ({
     date: DateTime.fromISO(date as string).isValid ? DateTime.fromISO(date as string) : DateTime.now(),
