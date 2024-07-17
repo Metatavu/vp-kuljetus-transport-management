@@ -14,10 +14,13 @@ import { QUERY_KEYS, useFreightUnits, useSites, useTasks } from "hooks/use-queri
 import { BlobProvider } from "@react-pdf/renderer";
 import FreightWaybill from "./freight-waybill";
 import PrintIcon from "@mui/icons-material/Print";
+import { useCreateFreight, useCreateFreightUnit } from "hooks/use-mutations";
+import { useNavigate } from "@tanstack/react-router";
+import { toast } from "react-toastify";
 
 type Props = {
   freight?: Freight;
-  onSave?: UseMutationResult<void, Error, Freight, unknown>;
+  onSave?: UseMutationResult<Freight | undefined, Error, Freight, unknown>;
   onClose: () => void;
 };
 
@@ -25,6 +28,7 @@ const FreightDialog = ({ freight, onSave, onClose }: Props) => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { freightUnitsApi, tasksApi } = useApi();
+  const navigate = useNavigate();
 
   const customerSitesQuery = useSites();
   const tasksQuery = useTasks({ freightId: freight?.id }, !!freight);
@@ -34,6 +38,9 @@ const FreightDialog = ({ freight, onSave, onClose }: Props) => {
   const [pendingTasks, setPendingTasks] = useState<Task[]>([]);
 
   const form = useForm<Freight>({ mode: "onChange", defaultValues: freight });
+
+  const createFreight = useCreateFreight();
+  const createFreightUnit = useCreateFreightUnit();
 
   const saveFreightUnits = useMutation({
     mutationFn: () =>
@@ -66,6 +73,21 @@ const FreightDialog = ({ freight, onSave, onClose }: Props) => {
       setPendingTasks([]);
     },
   });
+
+  const copyFreight = async () => {
+    if (!freight?.id) return;
+
+    try {
+      const createdFreight = await createFreight.mutateAsync({ ...freight, id: undefined });
+      if (!createdFreight?.id) return;
+      for (const freightUnit of freightUnitsQuery.data?.freightUnits ?? []) {
+        await createFreightUnit.mutateAsync({ ...freightUnit, id: undefined, freightId: createdFreight.id });
+      }
+      navigate({ to: "/drive-planning/freights", search: { freightId: createdFreight.id } });
+    } catch (error) {
+      toast.error(t("drivePlanning.freights.copyErrorToast"));
+    }
+  };
 
   const onEditFreightUnit = (updatedFreightUnit: FreightUnit) => {
     const filteredTempFreightUnits = pendingFreightUnits.filter(
@@ -130,6 +152,9 @@ const FreightDialog = ({ freight, onSave, onClose }: Props) => {
             <DialogActions>
               <Button variant="text" onClick={onClose}>
                 {t("cancel")}
+              </Button>
+              <Button variant="contained" onClick={copyFreight} disabled={!freight?.id}>
+                {t("drivePlanning.freights.dialog.copyAsNew")}
               </Button>
               <BlobProvider
                 document={
