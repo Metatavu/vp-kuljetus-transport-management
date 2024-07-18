@@ -44,6 +44,7 @@ const GenericDataGrid = ({
   editMode,
   apiRef,
   sx,
+  columnHeaderHeight = 30,
   onPaginationModelChange,
   getRowId,
   processRowUpdate,
@@ -60,7 +61,7 @@ const GenericDataGrid = ({
       columns={columns}
       rows={rows}
       loading={loading}
-      columnHeaderHeight={30}
+      columnHeaderHeight={columnHeaderHeight}
       rowHeight={38}
       disableColumnMenu
       hideFooter={hideFooter}

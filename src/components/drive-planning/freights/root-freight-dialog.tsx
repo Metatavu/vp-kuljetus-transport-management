@@ -22,14 +22,14 @@ const RootFreightDialog = () => {
     mutationFn: async (freight: Freight) => {
       if (!freightId) return Promise.reject();
       const initialFreight = freightQuery.data;
-      if (deepEqual(initialFreight, freight)) return Promise.resolve();
-      await freightsApi.updateFreight({ freightId, freight });
-      onClose();
+      if (deepEqual(initialFreight, freight)) return undefined;
+      return await freightsApi.updateFreight({ freightId, freight });
     },
     onSuccess: () => {
       toast.success(t("drivePlanning.freights.successToast"));
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.FREIGHTS, { freightId }] });
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.FREIGHT_UNITS_BY_FREIGHT, { freightId }] });
+      onClose();
     },
     onError: () => toast.error(t("drivePlanning.freights.errorToast")),
   });

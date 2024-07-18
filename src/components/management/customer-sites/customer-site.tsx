@@ -11,7 +11,7 @@ import { useEffect, useRef } from "react";
 import { Map as LeafletMap, latLng } from "leaflet";
 import { UseMutationResult } from "@tanstack/react-query";
 import LoaderWrapper from "components/generic/loader-wrapper";
-import config from "../../app/config";
+import config from "../../../app/config";
 import LocationUtils from "utils/location-utils";
 
 type Props = {

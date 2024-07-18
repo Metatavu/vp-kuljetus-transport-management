@@ -7,6 +7,7 @@
   "archive": "Arkistoi",
   "open": "Avaa",
   "noSelection": "Ei valintaa",
+  "all": "Kaikki",
   "noResults": "Ei tuloksia",
   "actions": "Toiminnot",
   "menu": "Valikko",
@@ -140,6 +141,70 @@
       "errorMessages": {
         "licensePlateMissing": "Rekisterinumero on pakollinen"
       }
+    },
+    "employees": {
+      "title": "Työntekijät",
+      "new": "Uusi työntekijä",
+      "modify": "Muokkaa työntekijää",
+      "filters": {
+        "name": {
+          "label": "Nimihaku",
+          "placeholder": "Hae nimellä"
+        }
+      },
+      "employeeNumber": "Tunnus",
+      "lastName": "Sukunimi",
+      "firstName": "Etunimet",
+      "driverCard": "Digipiirturikortti",
+      "phoneNumber": "Puhelinnumero",
+      "email": "Sähköposti",
+      "pinCode": "PIN-koodi",
+      "type": "Tyyppi",
+      "salaryGroup": "Palkkaryhmä",
+      "office": "Toimipiste",
+      "regularWorkingHours": "Säännöllinen työaika (h / 2vk)",
+      "driverCardLastEmptied": "Kuljettajakortti purettu viimeksi",
+      "lastDriven": "Viimeksi ajanut",
+      "offices": {
+        "kotka": "Kotka",
+        "kouvola": "Kouvola",
+        "rauha": "Rauha"
+      },
+      "types": {
+        "pa": "Pakettiautonkuljettaja",
+        "ka": "Kuorma-auton kuljettaja",
+        "ah": "Alihankkija",
+        "vk": "Vuokratyöntekijä",
+        "th": "Työharjoittelija",
+        "tp": "Tilapäistyöntekijä",
+        "aj": "Ajojärjestelijä",
+        "jh": "Esimies",
+        "ap": "Aikatuntipalkka",
+        "kk": "Kuukausipalkka",
+        "pois": "Ei-aktiivinen",
+        "tpk": "Täysperäkuljettaja"
+      },
+      "salaryGroups": {
+        "driver": "Kuljettaja",
+        "vpLogistics": "VP-Logistics",
+        "office": "Toimisto (TS)",
+        "terminal": "Terminaali (TT)"
+      },
+      "errorMessages": {
+        "invalidDriverCard": "Kuljettajakortin tulee olla 16 merkkiä pitkä",
+        "firstNameMissing": "Etunimi on pakollinen.",
+        "lastNameMissing": "Sukunimi on pakollinen.",
+        "officeMissing": "Toimipiste on pakollinen.",
+        "typeMissing": "Tyyppi on pakollinen.",
+        "salaryGroupMissing": "Palkkaryhmä on pakollinen."
+      },
+      "archiveDialog": {
+        "title": "Arkistoi työntekijä",
+        "description": "Haluatko varmasti arkistoida työntekijän {{name}}?"
+      },
+      "successToast": "Työntekijä tallennettu!",
+      "archiveToast": "Työntekijä arkistoitu!",
+      "errorToast": "Työntekijän tallennus epäonnistui!"
     }
   },
   "drivePlanning": {
@@ -196,7 +261,8 @@
       "dialog": {
         "title": "Rahtikirja {{freightNumber}}",
         "save": "Tallenna rahtikirja",
-        "printAndSave": "Tulosta ja tallenna"
+        "printAndSave": "Tulosta ja tallenna",
+        "copyAsNew": "Kopioi uudeksi"
       },
       "print": {
         "waybill": "Rahtikirja  {{freightNumber}}",
@@ -281,7 +347,8 @@
         "destinationSiteMissing": "Määräpaikka on pakollinen"
       },
       "successToast": "Rahti tallennettu!",
-      "errorToast": "Rahdin tallennus epäonnistui!"
+      "errorToast": "Rahdin tallennus epäonnistui!",
+      "copyErrorToast": "Rahdin kopioiminen epäonnistui!"
     },
     "freightUnits": {
       "type": "Tyyppi",

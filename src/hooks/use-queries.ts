@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import {
+  ListEmployeesRequest,
   ListFreightUnitsRequest,
   ListRoutesRequest,
   ListSitesRequest,
@@ -18,6 +19,7 @@ export const QUERY_KEYS = {
   FREIGHT_UNITS: "freightUnits",
   FREIGHTS: "freights",
   FREIGHT_UNITS_BY_FREIGHT: "freight-units-by-freight",
+  EMPLOYEES: "employees",
 } as const;
 
 export const useSites = (requestParams: ListSitesRequest = {}, enabled = true) => {
@@ -144,6 +146,31 @@ export const useFreight = (freightId: string, enabled = true) => {
     queryKey: [QUERY_KEYS.FREIGHTS, freightId],
     enabled: enabled,
     queryFn: () => freightsApi.findFreight({ freightId: freightId }),
+  });
+};
+
+export const useEmployees = (requestParams: ListEmployeesRequest = {}, enabled = true) => {
+  const { employeesApi } = useApi();
+
+  return useQuery({
+    queryKey: [QUERY_KEYS.EMPLOYEES, requestParams],
+    enabled: enabled,
+    queryFn: async () => {
+      const [employees, headers] = await employeesApi.listEmployeesWithHeaders(requestParams);
+      const totalResults = getTotalResultsFromHeaders(headers);
+
+      return { employees, totalResults };
+    },
+  });
+}
+
+export const useEmployee = (employeeId: string, enabled = true) => {
+  const { employeesApi } = useApi();
+
+  return useQuery({
+    queryKey: [QUERY_KEYS.EMPLOYEES, employeeId],
+    enabled: enabled,
+    queryFn: async () => employeesApi.findEmployee({ employeeId }),
   });
 };
 

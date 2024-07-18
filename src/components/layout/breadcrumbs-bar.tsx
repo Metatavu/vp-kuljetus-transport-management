@@ -15,7 +15,7 @@ const BreadcrumbsBar = () => {
   const { t } = useTranslation();
   const router = useRouter();
   const breadcrumbs = router.state.matches
-    .map(({ routeContext }) => (routeContext as RouterContext).breadcrumb)
+    .flatMap(({ routeContext }) => (routeContext as RouterContext).breadcrumbs)
     .filter(DataValidation.validateValueIsNotUndefinedNorNull);
 
   return (

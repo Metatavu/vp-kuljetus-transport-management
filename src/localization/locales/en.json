@@ -7,6 +7,7 @@
   "archive": "Archive",
   "open": "Open",
   "noSelection": "No selection",
+  "all": "All",
   "noResults": "No results",
   "actions": "Actions",
   "menu": "Menu",
@@ -143,6 +144,45 @@
       "licensePlateMissing": "License plate is required"
     }
   },
+  "employees": {
+    "title": "Employees",
+    "new": "New employee",
+    "modify": "Modify employee",
+    "filters": {
+      "name": {
+        "label": "Name",
+        "placeholder": "Search by name"
+      }
+    },
+    "employeeNumber": "Number",
+    "lastName": "Last name",
+    "firstName": "First names",
+    "driverCard": "Driver card",
+    "phoneNumber": "Phone number",
+    "email": "Email",
+    "pinCode": "PIN code",
+    "type": "Type",
+    "salaryGroup": "Salary group",
+    "office": "Office",
+    "regularWorkingHours": "Work hours (h / 2wk)",
+    "driverCardLastEmptied": "Driver card last emptied",
+    "lastDriven": "Last driven",
+    "errorMessages": {
+      "firstNameMissing": "First name is required.",
+      "lastNameMissing": "Last name is required.",
+      "officeMissing": "Office is required.",
+      "typeMissing": "Type is required.",
+      "salaryGroupMissing": "Salary group is required.",
+      "invalidDriverCard": "Driver card must be 16 characters long."
+    },
+    "archiveDialog": {
+      "title": "Archive employee",
+      "description": "Are you sure you want to archive employee {{name}}?"
+    },
+    "successToast": "Employee saved!",
+    "archiveToast": "Employee archived!",
+    "errorToast": "Failed to save employee!"
+  },
   "drivePlanning": {
     "title": "Drive planning",
     "routes": {
@@ -197,7 +237,8 @@
       "dialog": {
         "title": "Freight {{freightNumber}}",
         "save": "Save freight",
-        "printAndSave": "Print and save"
+        "printAndSave": "Print and save",
+        "copyAsNew": "Copy as new"
       },
       "print": {
         "waybill": "Waybill {{freightNumber}}",
@@ -215,7 +256,8 @@
         "destinationSiteMissing": "Destination is required"
       },
       "successToast": "Freight saved!",
-      "errorToast": "Failed to save freight!"
+      "errorToast": "Failed to save freight!",
+      "copyErrorToast": "Failed to copy freight!"
     },
     "freightUnits": {
       "type": "Type",

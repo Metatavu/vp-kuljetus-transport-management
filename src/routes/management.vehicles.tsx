@@ -10,7 +10,7 @@ import GenericDataGrid from "components/generic/generic-data-grid";
 export const Route = createFileRoute("/management/vehicles")({
   component: ManagementVehicles,
   beforeLoad: (): RouterContext => ({
-    breadcrumb: "management.vehicles.title",
+    breadcrumbs: ["management.vehicles.title"],
   }),
 });
 
