@@ -3,7 +3,7 @@ import { RouterContext } from "./__root";
 import { useApi } from "hooks/use-api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { QUERY_KEYS, useEmployee } from "hooks/use-queries";
+import { QUERY_KEYS, useEmployee, useTimeEntries } from "hooks/use-queries";
 import { Employee } from "generated/client";
 import { toast } from "react-toastify";
 import LoaderWrapper from "components/generic/loader-wrapper";
@@ -24,7 +24,7 @@ function EmployeeModify() {
   const { t } = useTranslation();
 
   const employeeQuery = useEmployee(employeeId);
-
+  console.log("employeeQuery", JSON.stringify(employeeQuery.data, null, 2));
   const updateEmployee = useMutation({
     mutationFn: (employee: Employee) => employeesApi.updateEmployee({ employeeId, employee }),
     onSuccess: () => {
@@ -33,6 +33,18 @@ function EmployeeModify() {
     },
     onError: () => toast.error(t("management.employees.errorToast")),
   });
+
+  const timeEntryQuery = useTimeEntries(
+    {
+      employeeId /* 
+    start: DateTime.now().minus(1).toJSDate(),
+    end: DateTime.now().toJSDate(), */,
+    },
+    employeeQuery.data?.salaryGroup ?? "",
+  );
+
+  // Testing the timeEntryQuery
+  console.log("timeEntryQuery", JSON.stringify(timeEntryQuery.data, null, 2));
 
   const employeeName = useMemo(() => {
     const { firstName, lastName } = employeeQuery.data ?? {};

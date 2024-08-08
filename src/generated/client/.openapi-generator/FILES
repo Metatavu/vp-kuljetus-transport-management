@@ -5,9 +5,11 @@ apis/FreightsApi.ts
 apis/RoutesApi.ts
 apis/SitesApi.ts
 apis/TasksApi.ts
+apis/TimeEntriesApi.ts
 apis/TowablesApi.ts
 apis/TrucksApi.ts
 apis/VehiclesApi.ts
+apis/WorkTypesApi.ts
 apis/index.ts
 index.ts
 models/Driver.ts
@@ -24,6 +26,7 @@ models/SortOrder.ts
 models/Task.ts
 models/TaskStatus.ts
 models/TaskType.ts
+models/TimeEntry.ts
 models/Towable.ts
 models/Truck.ts
 models/TruckDriveState.ts
@@ -32,5 +35,7 @@ models/TruckLocation.ts
 models/TruckSortByField.ts
 models/TruckSpeed.ts
 models/Vehicle.ts
+models/WorkType.ts
+models/WorkTypeCategory.ts
 models/index.ts
 runtime.ts
