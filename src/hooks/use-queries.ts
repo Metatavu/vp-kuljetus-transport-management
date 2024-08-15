@@ -230,9 +230,10 @@ const getOfficeOrTerminalPeriod = (selectedDateTime: DateTime) => {
     const end = selectedDateTime.set({ day: 15 }).endOf("day").toJSDate();
     return { start, end };
   }
-    const start = selectedDateTime.set({ day: 16 }).startOf("day").toJSDate();
-    const end = selectedDateTime.endOf("month").endOf("day").toJSDate();
-    return { start, end };
+
+  const start = selectedDateTime.set({ day: 16 }).startOf("day").toJSDate();
+  const end = selectedDateTime.endOf("month").endOf("day").toJSDate();
+  return { start, end };
 };
 
 const getNonOfficePeriod = (selectedDateTime: DateTime) => {
