@@ -212,10 +212,10 @@ export const useTimeEntries = (requestParams: ListEmployeeTimeEntriesRequest, sa
 export const getWorkingPeriodDates = (salaryGroup: string, selectedDate: Date) => {
   const selectedDateTime = DateTime.fromJSDate(selectedDate);
 
-  if (isOfficeOrTerminalGroup(salaryGroup)) {
-    return getOfficeOrTerminalPeriod(selectedDateTime);
+  return isOfficeOrTerminalGroup(salaryGroup) 
+    ? getOfficeOrTerminalPeriod(selectedDateTime)
+    : getNonOfficePeriod(selectedDateTime);
   }
-    return getNonOfficePeriod(selectedDateTime);
 };
 
 const isOfficeOrTerminalGroup = (salaryGroup: string) => {
