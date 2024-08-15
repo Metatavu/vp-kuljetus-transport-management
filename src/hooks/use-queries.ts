@@ -238,12 +238,8 @@ const getOfficeOrTerminalPeriod = (selectedDateTime: DateTime) => {
 
 const getNonOfficePeriod = (selectedDateTime: DateTime) => {
   const fullWeeksFromStartDate = calculateFullWeeksFromStartDate(selectedDateTime);
-  const isEvenWeek = fullWeeksFromStartDate % 2 === 0;
-
-  if (isEvenWeek) {
-    return calculatePeriod(fullWeeksFromStartDate);
-  }
-    return calculatePeriod(fullWeeksFromStartDate - 1);
+  const remainderRoundedUp = Math.ceil(fullWeeksFromStartDate % 2);
+  return calculatePeriod(fullWeeksFromStartDate - remainderRoundedUp);
 };
 
 const calculateFullWeeksFromStartDate = (selectedDateTime: DateTime) => {
