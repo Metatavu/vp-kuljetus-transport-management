@@ -180,15 +180,16 @@ export const useEmployee = (employeeId: string, enabled = true) => {
   });
 };
 
-export const useTimeEntries = (requestParams: ListEmployeeTimeEntriesRequest, salaryGroup: string, enabled = true) => {
+export const useTimeEntries = (requestParams: ListEmployeeTimeEntriesRequest, useWorkingPeriod: boolean, salaryGroup: string, selectedDate?: Date, enabled = true) => {
   const { timeEntriesApi } = useApi();
 
-  if (!salaryGroup) {
-    requestParams.start = DateTime.now().startOf("month").toJSDate();
+  if (useWorkingPeriod && selectedDate) {
+    const workingPeriodDates = getWorkingPeriodDates(salaryGroup, selectedDate);
+    requestParams.start = workingPeriodDates.start;
+    requestParams.end = workingPeriodDates.end;
   }
 
-  // Testing the getWorkingPeriodDates function
-  console.log("WORKING PERIOD DATES", getWorkingPeriodDates(SalaryGroup.Office, DateTime.now().set({month: 3, day: 17}).toJSDate()));
+
 
   return useQuery({
     queryKey: [QUERY_KEYS.TIME_ENTRIES, requestParams],
@@ -214,8 +215,7 @@ export const getWorkingPeriodDates = (salaryGroup: string, selectedDate: Date) =
 
   return isOfficeOrTerminalGroup(salaryGroup) 
     ? getOfficeOrTerminalPeriod(selectedDateTime)
-    : getNonOfficePeriod(selectedDateTime);
-  }
+    : getDriverPeriod(selectedDateTime);
 };
 
 const isOfficeOrTerminalGroup = (salaryGroup: string) => {
@@ -236,7 +236,7 @@ const getOfficeOrTerminalPeriod = (selectedDateTime: DateTime) => {
   return { start, end };
 };
 
-const getNonOfficePeriod = (selectedDateTime: DateTime) => {
+const getDriverPeriod = (selectedDateTime: DateTime) => {
   const fullWeeksFromStartDate = calculateFullWeeksFromStartDate(selectedDateTime);
   const remainderRoundedUp = Math.ceil(fullWeeksFromStartDate % 2);
   return calculatePeriod(fullWeeksFromStartDate - remainderRoundedUp);
