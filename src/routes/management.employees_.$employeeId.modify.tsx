@@ -40,7 +40,7 @@ function EmployeeModify() {
     },
     true,
     employeeQuery.data?.salaryGroup ?? SalaryGroup.Terminal,
-    DateTime.now().set({ month: 3, day: 11 }).toJSDate(),
+    new Date(),
     employeeQuery.isSuccess,
   );
 
