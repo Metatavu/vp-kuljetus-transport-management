@@ -1,13 +1,18 @@
 import { useQuery } from "@tanstack/react-query";
 import {
   ListEmployeesRequest,
+  ListEmployeeTimeEntriesRequest,
   ListFreightUnitsRequest,
   ListRoutesRequest,
   ListSitesRequest,
   ListTasksRequest,
   ListTrucksRequest,
+  SalaryGroup,
 } from "generated/client";
 import { useApi } from "./use-api";
+import { DateTime } from "luxon";
+
+const WORKING_TIME_PERIOD_START_DATE = DateTime.now().set({day: 7, month: 1, year: 2024});
 
 export const QUERY_KEYS = {
   SITES: "sites",
@@ -20,6 +25,7 @@ export const QUERY_KEYS = {
   FREIGHTS: "freights",
   FREIGHT_UNITS_BY_FREIGHT: "freight-units-by-freight",
   EMPLOYEES: "employees",
+  TIME_ENTRIES: "time-entries"
 } as const;
 
 export const useSites = (requestParams: ListSitesRequest = {}, enabled = true) => {
@@ -172,6 +178,78 @@ export const useEmployee = (employeeId: string, enabled = true) => {
     enabled: enabled,
     queryFn: async () => employeesApi.findEmployee({ employeeId }),
   });
+};
+
+export const useTimeEntries = (requestParams: ListEmployeeTimeEntriesRequest, useWorkingPeriod: boolean, salaryGroup: string, selectedDate?: Date, enabled = true) => {
+  const { timeEntriesApi } = useApi();
+
+  if (useWorkingPeriod && selectedDate) {
+    const workingPeriodDates = getWorkingPeriodDates(salaryGroup, selectedDate);
+    requestParams.start = workingPeriodDates.start;
+    requestParams.end = workingPeriodDates.end;
+  }
+
+
+
+  return useQuery({
+    queryKey: [QUERY_KEYS.TIME_ENTRIES, requestParams],
+    enabled: enabled,
+    queryFn: async () => {
+      const [timeEntries, headers] = await timeEntriesApi.listEmployeeTimeEntriesWithHeaders(requestParams);
+      const totalResults = getTotalResultsFromHeaders(headers);
+
+      return { timeEntries, totalResults };
+    },
+  });
+}
+
+/**
+ * Gets working period start and end datetime according to salary group and selected date
+ * 
+ * @param salaryGroup Salary group of the employee
+ * @param selectedDate Selected date
+ * @returns Start and end date of the working period
+ */
+export const getWorkingPeriodDates = (salaryGroup: string, selectedDate: Date) => {
+  const selectedDateTime = DateTime.fromJSDate(selectedDate);
+
+  return isOfficeOrTerminalGroup(salaryGroup) 
+    ? getOfficeOrTerminalPeriod(selectedDateTime)
+    : getDriverPeriod(selectedDateTime);
+};
+
+const isOfficeOrTerminalGroup = (salaryGroup: string) => {
+  return salaryGroup === SalaryGroup.Office || salaryGroup === SalaryGroup.Terminal;
+};
+
+const getOfficeOrTerminalPeriod = (selectedDateTime: DateTime) => {
+  const midMonth = 16;
+
+  if (selectedDateTime.day < midMonth) {
+    const start = selectedDateTime.startOf("month").toJSDate();
+    const end = selectedDateTime.set({ day: 15 }).endOf("day").toJSDate();
+    return { start, end };
+  }
+
+  const start = selectedDateTime.set({ day: 16 }).startOf("day").toJSDate();
+  const end = selectedDateTime.endOf("month").endOf("day").toJSDate();
+  return { start, end };
+};
+
+const getDriverPeriod = (selectedDateTime: DateTime) => {
+  const fullWeeksFromStartDate = calculateFullWeeksFromStartDate(selectedDateTime);
+  const remainderRoundedUp = Math.ceil(fullWeeksFromStartDate % 2);
+  return calculatePeriod(fullWeeksFromStartDate - remainderRoundedUp);
+};
+
+const calculateFullWeeksFromStartDate = (selectedDateTime: DateTime) => {
+  return Math.floor(selectedDateTime.diff(WORKING_TIME_PERIOD_START_DATE, "weeks").weeks);
+};
+
+const calculatePeriod = (startWeekOffset: number) => {
+  const start = WORKING_TIME_PERIOD_START_DATE.plus({ weeks: startWeekOffset }).set({ weekday: 7 }).startOf("day").toJSDate();
+  const end = WORKING_TIME_PERIOD_START_DATE.plus({ weeks: startWeekOffset + 2 }).set({ weekday: 6 }).endOf("day").toJSDate();
+  return { start, end };
 };
 
 /**
