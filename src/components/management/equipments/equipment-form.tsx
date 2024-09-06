@@ -109,7 +109,6 @@ const EquipmentForm = ({ errors, register, equipment, watch }: Props) => {
               showConfirmDialog({
                 title: t("management.equipment.archiveDialog.title"),
                 description: t("management.equipment.archiveDialog.description", { name: equipment?.name }),
-                cancelButtonEnabled: true,
                 onPositiveClick: () => onArchiveEquipment(equipment),
               })
             }

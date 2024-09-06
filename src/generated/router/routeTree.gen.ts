@@ -8,11 +8,13 @@ import { Route as VehicleInfoIndexImport } from "./../../routes/vehicle-info.ind
 import { Route as VehicleListVehiclesImport } from "./../../routes/vehicle-list.vehicles"
 import { Route as VehicleListMapViewImport } from "./../../routes/vehicle-list.map-view"
 import { Route as ManagementVehiclesImport } from "./../../routes/management.vehicles"
+import { Route as ManagementHolidaysImport } from "./../../routes/management.holidays"
 import { Route as ManagementEquipmentImport } from "./../../routes/management.equipment"
 import { Route as ManagementEmployeesImport } from "./../../routes/management.employees"
 import { Route as ManagementCustomerSitesImport } from "./../../routes/management.customer-sites"
 import { Route as DrivePlanningRoutesImport } from "./../../routes/drive-planning.routes"
 import { Route as DrivePlanningFreightsImport } from "./../../routes/drive-planning.freights"
+import { Route as ManagementHolidaysAddHolidayImport } from "./../../routes/management.holidays.add-holiday"
 import { Route as ManagementEquipmentAddEquipmentImport } from "./../../routes/management.equipment_.add-equipment"
 import { Route as ManagementEmployeesAddEmployeeImport } from "./../../routes/management.employees_.add-employee"
 import { Route as ManagementCustomerSitesAddCustomerSiteImport } from "./../../routes/management.customer-sites_.add-customer-site_"
@@ -68,6 +70,11 @@ const ManagementVehiclesRoute = ManagementVehiclesImport.update({
   getParentRoute: () => ManagementRoute,
 } as any)
 
+const ManagementHolidaysRoute = ManagementHolidaysImport.update({
+  path: "/holidays",
+  getParentRoute: () => ManagementRoute,
+} as any)
+
 const ManagementEquipmentRoute = ManagementEquipmentImport.update({
   path: "/equipment",
   getParentRoute: () => ManagementRoute,
@@ -92,6 +99,12 @@ const DrivePlanningFreightsRoute = DrivePlanningFreightsImport.update({
   path: "/freights",
   getParentRoute: () => DrivePlanningRoute,
 } as any)
+
+const ManagementHolidaysAddHolidayRoute =
+  ManagementHolidaysAddHolidayImport.update({
+    path: "/add-holiday",
+    getParentRoute: () => ManagementHolidaysRoute,
+  } as any)
 
 const ManagementEquipmentAddEquipmentRoute =
   ManagementEquipmentAddEquipmentImport.update({
@@ -184,6 +197,10 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof ManagementEquipmentImport
       parentRoute: typeof ManagementImport
     }
+    "/management/holidays": {
+      preLoaderRoute: typeof ManagementHolidaysImport
+      parentRoute: typeof ManagementImport
+    }
     "/management/vehicles": {
       preLoaderRoute: typeof ManagementVehiclesImport
       parentRoute: typeof ManagementImport
@@ -224,6 +241,10 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof ManagementEquipmentAddEquipmentImport
       parentRoute: typeof ManagementImport
     }
+    "/management/holidays/add-holiday": {
+      preLoaderRoute: typeof ManagementHolidaysAddHolidayImport
+      parentRoute: typeof ManagementHolidaysImport
+    }
     "/management/customer-sites/$customerSiteId/modify": {
       preLoaderRoute: typeof ManagementCustomerSitesCustomerSiteIdModifyImport
       parentRoute: typeof ManagementImport
@@ -254,6 +275,7 @@ export const routeTree = rootRoute.addChildren([
     ManagementCustomerSitesRoute,
     ManagementEmployeesRoute,
     ManagementEquipmentRoute,
+    ManagementHolidaysRoute.addChildren([ManagementHolidaysAddHolidayRoute]),
     ManagementVehiclesRoute,
     ManagementCustomerSitesAddCustomerSiteRoute,
     ManagementEmployeesAddEmployeeRoute,

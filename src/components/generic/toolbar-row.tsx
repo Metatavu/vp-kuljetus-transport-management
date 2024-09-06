@@ -26,7 +26,7 @@ const ToolbarRow = ({ height, title, toolbarButtons, leftToolbar, titleFirst, na
     if (!navigateBack) return null;
 
     return (
-      <IconButton sx={{ padding: "5px" }} onClick={navigateBack}>
+      <IconButton key="back-button" sx={{ padding: "5px" }} onClick={navigateBack}>
         <ArrowBackIcon />
       </IconButton>
     );
@@ -36,7 +36,7 @@ const ToolbarRow = ({ height, title, toolbarButtons, leftToolbar, titleFirst, na
     if (!title) return null;
 
     return (
-      <Typography variant="h6" sx={{ opacity: 0.87 }} alignSelf="center">
+      <Typography key="title" variant="h6" sx={{ opacity: 0.87 }} alignSelf="center">
         {title}
       </Typography>
     );

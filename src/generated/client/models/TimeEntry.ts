@@ -14,6 +14,13 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { WorkEventType } from './WorkEventType';
+import {
+    WorkEventTypeFromJSON,
+    WorkEventTypeFromJSONTyped,
+    WorkEventTypeToJSON,
+} from './WorkEventType';
+
 /**
  * Represents single time entry
  * @export
@@ -49,11 +56,11 @@ export interface TimeEntry {
      */
     endTime?: Date;
     /**
-     * Work type id
-     * @type {string}
+     * 
+     * @type {WorkEventType}
      * @memberof TimeEntry
      */
-    workTypeId: string;
+    workEventType: WorkEventType;
 }
 
 /**
@@ -63,7 +70,7 @@ export function instanceOfTimeEntry(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "employeeId" in value;
     isInstance = isInstance && "startTime" in value;
-    isInstance = isInstance && "workTypeId" in value;
+    isInstance = isInstance && "workEventType" in value;
 
     return isInstance;
 }
@@ -82,7 +89,7 @@ export function TimeEntryFromJSONTyped(json: any, ignoreDiscriminator: boolean):
         'employeeId': json['employeeId'],
         'startTime': (new Date(json['startTime'])),
         'endTime': !exists(json, 'endTime') ? undefined : (new Date(json['endTime'])),
-        'workTypeId': json['workTypeId'],
+        'workEventType': WorkEventTypeFromJSON(json['workEventType']),
     };
 }
 
@@ -98,7 +105,7 @@ export function TimeEntryToJSON(value?: TimeEntry | null): any {
         'employeeId': value.employeeId,
         'startTime': (value.startTime.toISOString()),
         'endTime': value.endTime === undefined ? undefined : (value.endTime.toISOString()),
-        'workTypeId': value.workTypeId,
+        'workEventType': WorkEventTypeToJSON(value.workEventType),
     };
 }
 

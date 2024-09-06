@@ -3,6 +3,7 @@ import {
   ListEmployeesRequest,
   ListEmployeeTimeEntriesRequest,
   ListFreightUnitsRequest,
+  ListHolidaysRequest,
   ListRoutesRequest,
   ListSitesRequest,
   ListTasksRequest,
@@ -12,7 +13,7 @@ import {
 import { useApi } from "./use-api";
 import { DateTime } from "luxon";
 
-const WORKING_TIME_PERIOD_START_DATE = DateTime.now().set({day: 7, month: 1, year: 2024});
+const WORKING_TIME_PERIOD_START_DATE = DateTime.now().set({ day: 7, month: 1, year: 2024 });
 
 export const QUERY_KEYS = {
   SITES: "sites",
@@ -25,7 +26,8 @@ export const QUERY_KEYS = {
   FREIGHTS: "freights",
   FREIGHT_UNITS_BY_FREIGHT: "freight-units-by-freight",
   EMPLOYEES: "employees",
-  TIME_ENTRIES: "time-entries"
+  TIME_ENTRIES: "time-entries",
+  HOLIDAYS: "holidays",
 } as const;
 
 export const useSites = (requestParams: ListSitesRequest = {}, enabled = true) => {
@@ -53,7 +55,12 @@ export const useSite = (siteId: string, enabled = true) => {
   });
 };
 
-export const useRoutes = (requestParams: ListRoutesRequest = {}, enabled = true, refetchInterval?: number, onSuccess?: () => void) => {
+export const useRoutes = (
+  requestParams: ListRoutesRequest = {},
+  enabled = true,
+  refetchInterval?: number,
+  onSuccess?: () => void,
+) => {
   const { routesApi } = useApi();
 
   return useQuery({
@@ -168,7 +175,7 @@ export const useEmployees = (requestParams: ListEmployeesRequest = {}, enabled =
       return { employees, totalResults };
     },
   });
-}
+};
 
 export const useEmployee = (employeeId: string, enabled = true) => {
   const { employeesApi } = useApi();
@@ -180,7 +187,13 @@ export const useEmployee = (employeeId: string, enabled = true) => {
   });
 };
 
-export const useTimeEntries = (requestParams: ListEmployeeTimeEntriesRequest, useWorkingPeriod: boolean, salaryGroup: string, selectedDate?: Date, enabled = true) => {
+export const useTimeEntries = (
+  requestParams: ListEmployeeTimeEntriesRequest,
+  useWorkingPeriod: boolean,
+  salaryGroup: string,
+  selectedDate?: Date,
+  enabled = true,
+) => {
   const { timeEntriesApi } = useApi();
 
   if (useWorkingPeriod && selectedDate) {
@@ -188,8 +201,6 @@ export const useTimeEntries = (requestParams: ListEmployeeTimeEntriesRequest, us
     requestParams.start = workingPeriodDates.start;
     requestParams.end = workingPeriodDates.end;
   }
-
-
 
   return useQuery({
     queryKey: [QUERY_KEYS.TIME_ENTRIES, requestParams],
@@ -201,11 +212,36 @@ export const useTimeEntries = (requestParams: ListEmployeeTimeEntriesRequest, us
       return { timeEntries, totalResults };
     },
   });
-}
+};
+
+export const useHolidays = (requestParams: ListHolidaysRequest = {}, enabled = true) => {
+  const { holidaysApi } = useApi();
+
+  return useQuery({
+    queryKey: [QUERY_KEYS.HOLIDAYS, requestParams],
+    enabled: enabled,
+    queryFn: async () => {
+      const [holidays, headers] = await holidaysApi.listHolidaysWithHeaders(requestParams);
+      const totalResults = getTotalResultsFromHeaders(headers);
+      holidays.sort((a, b) => b.date.getTime() - a.date.getTime());
+      return { holidays, totalResults };
+    },
+  });
+};
+
+export const useHoliday = (holidayId: string, enabled = true) => {
+  const { holidaysApi } = useApi();
+
+  return useQuery({
+    queryKey: [QUERY_KEYS.HOLIDAYS, holidayId],
+    enabled: enabled,
+    queryFn: async () => holidaysApi.findHoliday({ holidayId }),
+  });
+};
 
 /**
  * Gets working period start and end datetime according to salary group and selected date
- * 
+ *
  * @param salaryGroup Salary group of the employee
  * @param selectedDate Selected date
  * @returns Start and end date of the working period
@@ -213,7 +249,7 @@ export const useTimeEntries = (requestParams: ListEmployeeTimeEntriesRequest, us
 export const getWorkingPeriodDates = (salaryGroup: string, selectedDate: Date) => {
   const selectedDateTime = DateTime.fromJSDate(selectedDate);
 
-  return isOfficeOrTerminalGroup(salaryGroup) 
+  return isOfficeOrTerminalGroup(salaryGroup)
     ? getOfficeOrTerminalPeriod(selectedDateTime)
     : getDriverPeriod(selectedDateTime);
 };
@@ -247,8 +283,14 @@ const calculateFullWeeksFromStartDate = (selectedDateTime: DateTime) => {
 };
 
 const calculatePeriod = (startWeekOffset: number) => {
-  const start = WORKING_TIME_PERIOD_START_DATE.plus({ weeks: startWeekOffset }).set({ weekday: 7 }).startOf("day").toJSDate();
-  const end = WORKING_TIME_PERIOD_START_DATE.plus({ weeks: startWeekOffset + 2 }).set({ weekday: 6 }).endOf("day").toJSDate();
+  const start = WORKING_TIME_PERIOD_START_DATE.plus({ weeks: startWeekOffset })
+    .set({ weekday: 7 })
+    .startOf("day")
+    .toJSDate();
+  const end = WORKING_TIME_PERIOD_START_DATE.plus({ weeks: startWeekOffset + 2 })
+    .set({ weekday: 6 })
+    .endOf("day")
+    .toJSDate();
   return { start, end };
 };
 

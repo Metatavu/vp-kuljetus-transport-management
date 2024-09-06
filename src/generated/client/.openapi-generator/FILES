@@ -1,7 +1,9 @@
+apis/DailyTimeEntriesApi.ts
 apis/DriversApi.ts
 apis/EmployeesApi.ts
 apis/FreightUnitsApi.ts
 apis/FreightsApi.ts
+apis/HolidaysApi.ts
 apis/RoutesApi.ts
 apis/SitesApi.ts
 apis/TasksApi.ts
@@ -9,14 +11,16 @@ apis/TimeEntriesApi.ts
 apis/TowablesApi.ts
 apis/TrucksApi.ts
 apis/VehiclesApi.ts
-apis/WorkTypesApi.ts
 apis/index.ts
 index.ts
+models/CompensationType.ts
+models/DailyTimeEntry.ts
 models/Driver.ts
 models/Employee.ts
 models/EmployeeType.ts
 models/Freight.ts
 models/FreightUnit.ts
+models/Holiday.ts
 models/ModelError.ts
 models/Office.ts
 models/Route.ts
@@ -35,7 +39,6 @@ models/TruckLocation.ts
 models/TruckSortByField.ts
 models/TruckSpeed.ts
 models/Vehicle.ts
-models/WorkType.ts
-models/WorkTypeCategory.ts
+models/WorkEventType.ts
 models/index.ts
 runtime.ts
