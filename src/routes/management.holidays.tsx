@@ -1,6 +1,6 @@
-import { Add, Download } from "@mui/icons-material";
+import { Add, ArrowDropDown, Download } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, MenuItem, Stack, TextField, styled } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, MenuItem, Stack, TextField, Typography, styled } from "@mui/material";
 import { GridColDef, GridPaginationModel, GridRenderEditCellParams } from "@mui/x-data-grid";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Outlet, createFileRoute, deepEqual, useNavigate } from "@tanstack/react-router";
@@ -156,7 +156,14 @@ function ManagementHolidays() {
         valueOptions: [CompensationType.DayOffWorkAllowance, CompensationType.PublicHolidayAllowance],
         getOptionLabel: value => LocalizationUtils.getLocalizedCompensationType(value as CompensationType, t),
         getOptionValue: value => value,
-        renderCell: ({ value }) => LocalizationUtils.getLocalizedCompensationType(value, t),
+        renderCell: ({ value }) => (
+          <Stack direction="row" justifyContent="space-between" alignItems="center" width="100%">
+            <Typography>
+              {LocalizationUtils.getLocalizedCompensationType(value, t)}
+            </Typography>
+            <ArrowDropDown color="primary" fontSize="small" />
+          </Stack>
+        ),
         renderEditCell: renderCompensationTypeSingleSelectCell
       },
       {
