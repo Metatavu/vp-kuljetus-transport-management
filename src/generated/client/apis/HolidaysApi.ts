@@ -133,7 +133,7 @@ export class HolidaysApi extends runtime.BaseAPI {
         return response.raw.headers;
     }
     /**
-     * Finds an Holiday by id.
+     * Finds an Holiday by ID.
      * Find an Holiday.
      */
     async findHolidayRaw(requestParameters: FindHolidayRequest): Promise<runtime.ApiResponse<Holiday>> {
@@ -158,7 +158,7 @@ export class HolidaysApi extends runtime.BaseAPI {
         return new runtime.JSONApiResponse(response, (jsonValue) => HolidayFromJSON(jsonValue));
     }
     /**
-     * Finds an Holiday by id.
+     * Finds an Holiday by ID.
      * Find an Holiday.
      */
     async findHoliday(requestParameters: FindHolidayRequest): Promise<Holiday> {
@@ -166,7 +166,7 @@ export class HolidaysApi extends runtime.BaseAPI {
         return await response.value();
     }
     /**
-     * Finds an Holiday by id.
+     * Finds an Holiday by ID.
      * Find an Holiday.
      */
     async findHolidayWithHeaders(requestParameters: FindHolidayRequest): Promise<[ Holiday, Headers ]> {

@@ -52,13 +52,13 @@ export interface Holiday {
      */
     compensationType: CompensationType;
     /**
-     * Creator's id
+     * Creator's ID
      * @type {string}
      * @memberof Holiday
      */
     creatorId?: string;
     /**
-     * Last modifier's id
+     * Last modifier's ID
      * @type {string}
      * @memberof Holiday
      */

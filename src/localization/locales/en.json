@@ -203,6 +203,8 @@
     "successToast_other": "Holidays added!",
     "errorToast_one": "Failed to add holiday!",
     "errorToast_other": "Failed to add holidays!",
+    "editErrorToast": "Failed to edit holiday!",
+    "editSuccessToast": "Holiday modification saved!",
     "deleteHoliday": "Delete holiday",
     "deleteConfirmationDescription": "Are you sure you want to delete holiday {{name}} {{date}}?"
   },

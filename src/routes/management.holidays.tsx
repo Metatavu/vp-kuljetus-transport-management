@@ -1,9 +1,9 @@
 import { Add, Download } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, Stack, TextField, styled } from "@mui/material";
-import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, MenuItem, Stack, TextField, styled } from "@mui/material";
+import { GridColDef, GridPaginationModel, GridRenderEditCellParams } from "@mui/x-data-grid";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Outlet, createFileRoute, deepEqual, useNavigate } from "@tanstack/react-router";
 import DialogHeader from "components/generic/dialog-header";
 import GenericDataGrid from "components/generic/generic-data-grid";
 import LoaderWrapper from "components/generic/loader-wrapper";
@@ -13,6 +13,7 @@ import Holidays, { HolidaysTypes } from "date-holidays";
 import { CompensationType, Holiday } from "generated/client";
 import { useApi } from "hooks/use-api";
 import { QUERY_KEYS, useHolidays } from "hooks/use-queries";
+import { useSingleClickCellEditMode } from "hooks/use-single-click-cell-edit-mode";
 import { DateTime } from "luxon";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -47,8 +48,10 @@ function ManagementHolidays() {
   const [isYearDialogOpen, setIsYearDialogOpen] = useState(false);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
   const [holidaysToCreate, setHolidaysToCreate] = useState<HolidaysTypes.Holiday[]>([]);
-  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({ page: 0, pageSize: 25 });
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({ page: 0, pageSize: 50 });
   const showConfirmDialog = useConfirmDialog();
+
+  const { cellModesModel, handleCellClick, handleCellModelsChange } = useSingleClickCellEditMode();
 
   const holidaysQuery = useHolidays({
     first: paginationModel.pageSize * paginationModel.page,
@@ -76,6 +79,25 @@ function ManagementHolidays() {
     onError: () => toast.error(t("management.holidays.errorToast", { count: holidaysToCreate.length })),
   });
 
+  const updateHoliday = useMutation({
+    mutationFn: (holiday: Holiday) => {
+      if (!holiday.id) return Promise.reject();
+      return holidaysApi.updateHoliday({ holidayId: holiday.id, holiday: holiday });
+    },
+    onSuccess: () => {
+      toast.success(t("management.holidays.editSuccessToast"));
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.HOLIDAYS] })
+    },
+    onError: () => toast.error(t("management.holidays.editErrorToast")),
+  });
+
+  const processRowUpdate = async (newRow: Holiday, oldRow: Holiday) => {
+    console.log(newRow, oldRow);
+    if (deepEqual(oldRow, newRow)) return oldRow;
+
+    return await updateHoliday.mutateAsync(newRow);
+  };
+
   const deleteHoliday = useMutation({
     mutationFn: (holiday: Holiday) => {
       if (!holiday.id) return Promise.reject();
@@ -83,6 +105,27 @@ function ManagementHolidays() {
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.HOLIDAYS] }),
   });
+
+  const renderCompensationTypeSingleSelectCell =
+    ({ api, id, field, value }: GridRenderEditCellParams) => {
+      const { setEditCellValue } = api;
+
+      return (
+        <TextField
+          select
+          SelectProps={{ defaultOpen: true }}
+          defaultValue={value}
+          onChange={({ target: { value } }) => setEditCellValue({ id: id, field: field, value: value })}
+        >
+          {[CompensationType.DayOffWorkAllowance, CompensationType.PublicHolidayAllowance].map((compensationType) => (
+            <MenuItem key={compensationType} value={compensationType}>
+              {LocalizationUtils.getLocalizedCompensationType(compensationType, t)}
+            </MenuItem>
+          ))
+          }
+        </TextField>
+      );
+    };
 
   const columns: GridColDef<Holiday>[] = useMemo(
     () => [
@@ -93,6 +136,7 @@ function ManagementHolidays() {
         sortable: false,
         flex: 1,
         valueFormatter: ({ value }) => DateTime.fromJSDate(value).toLocaleString(DateTime.DATE_SHORT),
+
       },
       {
         field: "name",
@@ -103,11 +147,17 @@ function ManagementHolidays() {
       },
       {
         field: "compensationType",
-        headerAlign: "left",
         headerName: t("management.holidays.compensationType.title"),
-        sortable: false,
+        headerAlign: "left",
         flex: 1,
-        valueFormatter: ({ value }) => LocalizationUtils.getLocalizedCompensationType(value, t),
+        editable: true,
+        sortable: false,
+        type: "singleSelect",
+        valueOptions: [CompensationType.DayOffWorkAllowance, CompensationType.PublicHolidayAllowance],
+        getOptionLabel: value => LocalizationUtils.getLocalizedCompensationType(value as CompensationType, t),
+        getOptionValue: value => value,
+        renderCell: ({ value }) => LocalizationUtils.getLocalizedCompensationType(value, t),
+        renderEditCell: renderCompensationTypeSingleSelectCell
       },
       {
         field: "actions",
@@ -137,7 +187,7 @@ function ManagementHolidays() {
         ),
       },
     ],
-    [t, deleteHoliday, showConfirmDialog],
+    [t, deleteHoliday, showConfirmDialog, renderCompensationTypeSingleSelectCell],
   );
 
   const getHolidays = (year: number) => {
@@ -201,15 +251,24 @@ function ManagementHolidays() {
         />
         <Stack flex={1} sx={{ height: "100%", overflowY: "auto" }}>
           <GenericDataGrid
+            editMode="cell"
+            onCellClick={handleCellClick}
+            cellModesModel={cellModesModel}
+            onCellModesModelChange={handleCellModelsChange}
             fullScreen
             autoHeight={false}
             rows={holidaysQuery.data?.holidays ?? []}
             columns={columns}
             rowCount={holidaysQuery.data?.totalResults}
             disableRowSelectionOnClick
-            paginationMode="server"
             paginationModel={paginationModel}
             onPaginationModelChange={setPaginationModel}
+            processRowUpdate={processRowUpdate}
+            initialState={{
+              sorting: {
+                sortModel: [{ field: "date", sort: 'desc' }],
+              },
+            }}
           />
         </Stack>
       </Root>

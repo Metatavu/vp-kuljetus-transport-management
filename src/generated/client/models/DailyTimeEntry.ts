@@ -39,7 +39,7 @@ export interface DailyTimeEntry {
      */
     readonly id?: string;
     /**
-     * Employee's id
+     * Employee's ID
      * @type {string}
      * @memberof DailyTimeEntry
      */

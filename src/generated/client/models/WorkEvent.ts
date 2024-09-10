@@ -22,64 +22,54 @@ import {
 } from './WorkEventType';
 
 /**
- * Represents single time entry
+ * Represents single work event
  * @export
- * @interface TimeEntry
+ * @interface WorkEvent
  */
-export interface TimeEntry {
+export interface WorkEvent {
     /**
      * 
      * @type {string}
-     * @memberof TimeEntry
+     * @memberof WorkEvent
      */
     readonly id?: string;
     /**
-     * Employee's id
+     * Employee's ID
      * @type {string}
-     * @memberof TimeEntry
+     * @memberof WorkEvent
      */
     employeeId: string;
     /**
-     * Time entry start time
+     * Work event time
      * @type {Date}
-     * @memberof TimeEntry
+     * @memberof WorkEvent
      */
-    startTime: Date;
-    /**
-     * Time entry end time. End time is not required for time entries that are still running.
-     * If an employee has an existing time entry without an end time and the new entry is missing end time,
-     * the new time entry should not be created and instead a bad request is to be returned.
-     * When a new entry is created with both start and end times, the existing entry is ignored.
-     * 
-     * @type {Date}
-     * @memberof TimeEntry
-     */
-    endTime?: Date;
+    time: Date;
     /**
      * 
      * @type {WorkEventType}
-     * @memberof TimeEntry
+     * @memberof WorkEvent
      */
     workEventType: WorkEventType;
 }
 
 /**
- * Check if a given object implements the TimeEntry interface.
+ * Check if a given object implements the WorkEvent interface.
  */
-export function instanceOfTimeEntry(value: object): boolean {
+export function instanceOfWorkEvent(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "employeeId" in value;
-    isInstance = isInstance && "startTime" in value;
+    isInstance = isInstance && "time" in value;
     isInstance = isInstance && "workEventType" in value;
 
     return isInstance;
 }
 
-export function TimeEntryFromJSON(json: any): TimeEntry {
-    return TimeEntryFromJSONTyped(json, false);
+export function WorkEventFromJSON(json: any): WorkEvent {
+    return WorkEventFromJSONTyped(json, false);
 }
 
-export function TimeEntryFromJSONTyped(json: any, ignoreDiscriminator: boolean): TimeEntry {
+export function WorkEventFromJSONTyped(json: any, ignoreDiscriminator: boolean): WorkEvent {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -87,13 +77,12 @@ export function TimeEntryFromJSONTyped(json: any, ignoreDiscriminator: boolean):
         
         'id': !exists(json, 'id') ? undefined : json['id'],
         'employeeId': json['employeeId'],
-        'startTime': (new Date(json['startTime'])),
-        'endTime': !exists(json, 'endTime') ? undefined : (new Date(json['endTime'])),
+        'time': (new Date(json['time'])),
         'workEventType': WorkEventTypeFromJSON(json['workEventType']),
     };
 }
 
-export function TimeEntryToJSON(value?: TimeEntry | null): any {
+export function WorkEventToJSON(value?: WorkEvent | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -103,8 +92,7 @@ export function TimeEntryToJSON(value?: TimeEntry | null): any {
     return {
         
         'employeeId': value.employeeId,
-        'startTime': (value.startTime.toISOString()),
-        'endTime': value.endTime === undefined ? undefined : (value.endTime.toISOString()),
+        'time': (value.time.toISOString()),
         'workEventType': WorkEventTypeToJSON(value.workEventType),
     };
 }

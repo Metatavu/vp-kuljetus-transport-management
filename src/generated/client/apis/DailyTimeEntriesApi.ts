@@ -19,9 +19,9 @@ import {
     DailyTimeEntry,
     DailyTimeEntryFromJSON,
     DailyTimeEntryToJSON,
-    TimeEntry,
-    TimeEntryFromJSON,
-    TimeEntryToJSON,
+    WorkEvent,
+    WorkEventFromJSON,
+    WorkEventToJSON,
     WorkEventType,
     WorkEventTypeFromJSON,
     WorkEventTypeToJSON,
@@ -65,7 +65,7 @@ export class DailyTimeEntriesApi extends runtime.BaseAPI {
      * Creates Employees Daily Time Entry.  Attempt to create new daily time entry should fail if a daily entry with the same date and work type already exists. 
      * Create Employees Daily Time Entry.
      */
-    async createEmployeeDailyTimeEntryRaw(requestParameters: CreateEmployeeDailyTimeEntryRequest): Promise<runtime.ApiResponse<TimeEntry>> {
+    async createEmployeeDailyTimeEntryRaw(requestParameters: CreateEmployeeDailyTimeEntryRequest): Promise<runtime.ApiResponse<WorkEvent>> {
         if (requestParameters.dailyTimeEntry === null || requestParameters.dailyTimeEntry === undefined) {
             throw new runtime.RequiredError('dailyTimeEntry','Required parameter requestParameters.dailyTimeEntry was null or undefined when calling createEmployeeDailyTimeEntry.');
         }
@@ -89,13 +89,13 @@ export class DailyTimeEntriesApi extends runtime.BaseAPI {
             query: queryParameters,
             body: DailyTimeEntryToJSON(requestParameters.dailyTimeEntry),
         });
-        return new runtime.JSONApiResponse(response, (jsonValue) => TimeEntryFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => WorkEventFromJSON(jsonValue));
     }
     /**
      * Creates Employees Daily Time Entry.  Attempt to create new daily time entry should fail if a daily entry with the same date and work type already exists. 
      * Create Employees Daily Time Entry.
      */
-    async createEmployeeDailyTimeEntry(requestParameters: CreateEmployeeDailyTimeEntryRequest): Promise<TimeEntry> {
+    async createEmployeeDailyTimeEntry(requestParameters: CreateEmployeeDailyTimeEntryRequest): Promise<WorkEvent> {
         const response = await this.createEmployeeDailyTimeEntryRaw(requestParameters);
         return await response.value();
     }
@@ -103,7 +103,7 @@ export class DailyTimeEntriesApi extends runtime.BaseAPI {
      * Creates Employees Daily Time Entry.  Attempt to create new daily time entry should fail if a daily entry with the same date and work type already exists. 
      * Create Employees Daily Time Entry.
      */
-    async createEmployeeDailyTimeEntryWithHeaders(requestParameters: CreateEmployeeDailyTimeEntryRequest): Promise<[ TimeEntry, Headers ]> {
+    async createEmployeeDailyTimeEntryWithHeaders(requestParameters: CreateEmployeeDailyTimeEntryRequest): Promise<[ WorkEvent, Headers ]> {
         const response = await this.createEmployeeDailyTimeEntryRaw(requestParameters);
         const value = await response.value(); 
         return [ value, response.raw.headers ];
@@ -152,7 +152,7 @@ export class DailyTimeEntriesApi extends runtime.BaseAPI {
         return response.raw.headers;
     }
     /**
-     * Finds an employee\'s daily time entry by id.
+     * Finds an employee\'s daily time entry by ID.
      * Find an employee\'s daily time entry.
      */
     async findEmployeeDailyTimeEntryRaw(requestParameters: FindEmployeeDailyTimeEntryRequest): Promise<runtime.ApiResponse<DailyTimeEntry>> {
@@ -180,7 +180,7 @@ export class DailyTimeEntriesApi extends runtime.BaseAPI {
         return new runtime.JSONApiResponse(response, (jsonValue) => DailyTimeEntryFromJSON(jsonValue));
     }
     /**
-     * Finds an employee\'s daily time entry by id.
+     * Finds an employee\'s daily time entry by ID.
      * Find an employee\'s daily time entry.
      */
     async findEmployeeDailyTimeEntry(requestParameters: FindEmployeeDailyTimeEntryRequest): Promise<DailyTimeEntry> {
@@ -188,7 +188,7 @@ export class DailyTimeEntriesApi extends runtime.BaseAPI {
         return await response.value();
     }
     /**
-     * Finds an employee\'s daily time entry by id.
+     * Finds an employee\'s daily time entry by ID.
      * Find an employee\'s daily time entry.
      */
     async findEmployeeDailyTimeEntryWithHeaders(requestParameters: FindEmployeeDailyTimeEntryRequest): Promise<[ DailyTimeEntry, Headers ]> {

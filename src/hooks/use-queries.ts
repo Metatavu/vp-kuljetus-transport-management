@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import {
   ListEmployeesRequest,
-  ListEmployeeTimeEntriesRequest,
+  ListEmployeeDailyTimeEntriesRequest,
   ListFreightUnitsRequest,
   ListHolidaysRequest,
   ListRoutesRequest,
@@ -188,13 +188,13 @@ export const useEmployee = (employeeId: string, enabled = true) => {
 };
 
 export const useTimeEntries = (
-  requestParams: ListEmployeeTimeEntriesRequest,
+  requestParams: ListEmployeeDailyTimeEntriesRequest,
   useWorkingPeriod: boolean,
   salaryGroup: string,
   selectedDate?: Date,
   enabled = true,
 ) => {
-  const { timeEntriesApi } = useApi();
+  const { dailyTimeEntriesApi } = useApi();
 
   if (useWorkingPeriod && selectedDate) {
     const workingPeriodDates = getWorkingPeriodDates(salaryGroup, selectedDate);
@@ -206,7 +206,7 @@ export const useTimeEntries = (
     queryKey: [QUERY_KEYS.TIME_ENTRIES, requestParams],
     enabled: enabled,
     queryFn: async () => {
-      const [timeEntries, headers] = await timeEntriesApi.listEmployeeTimeEntriesWithHeaders(requestParams);
+      const [timeEntries, headers] = await dailyTimeEntriesApi.listEmployeeDailyTimeEntriesWithHeaders(requestParams);
       const totalResults = getTotalResultsFromHeaders(headers);
 
       return { timeEntries, totalResults };

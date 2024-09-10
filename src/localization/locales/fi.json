@@ -226,6 +226,8 @@
       "successToast_other": "Arkipyhät lisätty!",
       "errorToast_one": "Arkipyhän lisäys epäonnistui!",
       "errorToast_other": "Arkipyhien lisäys epäonnistui!",
+      "editSuccessToast": "Arkipyhän muutos tallennettu!",
+      "editErrorToast": "Arkipyhän muutos epäonnistui!",
       "deleteHoliday": "Poista arkipyhä",
       "deleteConfirmationDescription": "Haluatko varmasti poistaa arkipyhän {{name}} {{date}}?"
     }

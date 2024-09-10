@@ -34,6 +34,7 @@
  * - BREAK (Tauko)
  * - SHIFT_START
  * - SHIFT_END
+ * - UNKNOWN
  * 
  * *Driver work types*
  * - DRIVE
@@ -60,6 +61,7 @@ export const WorkEventType = {
     Break: 'BREAK',
     ShiftStart: 'SHIFT_START',
     ShiftEnd: 'SHIFT_END',
+    Unknown: 'UNKNOWN',
     Drive: 'DRIVE',
     Loading: 'LOADING',
     Unloading: 'UNLOADING',

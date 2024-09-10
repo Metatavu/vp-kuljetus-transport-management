@@ -9,7 +9,7 @@ export * from './HolidaysApi';
 export * from './RoutesApi';
 export * from './SitesApi';
 export * from './TasksApi';
-export * from './TimeEntriesApi';
 export * from './TowablesApi';
 export * from './TrucksApi';
 export * from './VehiclesApi';
+export * from './WorkEventsApi';
