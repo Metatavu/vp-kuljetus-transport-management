@@ -92,7 +92,6 @@ function ManagementHolidays() {
   });
 
   const processRowUpdate = async (newRow: Holiday, oldRow: Holiday) => {
-    console.log(newRow, oldRow);
     if (deepEqual(oldRow, newRow)) return oldRow;
 
     return await updateHoliday.mutateAsync(newRow);
