@@ -12,7 +12,8 @@ import {
   RoutesApi,
   DriversApi,
   EmployeesApi,
-  TimeEntriesApi,
+  HolidaysApi,
+  DailyTimeEntriesApi,
 } from "../generated/client";
 
 type ConfigConstructor<T> = new (_params: ConfigurationParameters) => T;
@@ -40,6 +41,7 @@ export const getApiClient = (getAccessToken?: () => Promise<string>) => {
     routesApi: new RoutesApi(getConfiguration()),
     driversApi: new DriversApi(getConfiguration()),
     employeesApi: new EmployeesApi(getConfiguration()),
-    timeEntriesApi: new TimeEntriesApi(getConfiguration())
+    dailyTimeEntriesApi: new DailyTimeEntriesApi(getConfiguration()),
+    holidaysApi: new HolidaysApi(getConfiguration()),
   };
 };

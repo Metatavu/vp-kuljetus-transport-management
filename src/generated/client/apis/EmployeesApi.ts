@@ -146,7 +146,7 @@ export class EmployeesApi extends runtime.BaseAPI {
         return response.raw.headers;
     }
     /**
-     * Finds an employee by id.
+     * Finds an employee by ID.
      * Find an employee.
      */
     async findEmployeeRaw(requestParameters: FindEmployeeRequest): Promise<runtime.ApiResponse<Employee>> {
@@ -171,7 +171,7 @@ export class EmployeesApi extends runtime.BaseAPI {
         return new runtime.JSONApiResponse(response, (jsonValue) => EmployeeFromJSON(jsonValue));
     }
     /**
-     * Finds an employee by id.
+     * Finds an employee by ID.
      * Find an employee.
      */
     async findEmployee(requestParameters: FindEmployeeRequest): Promise<Employee> {
@@ -179,7 +179,7 @@ export class EmployeesApi extends runtime.BaseAPI {
         return await response.value();
     }
     /**
-     * Finds an employee by id.
+     * Finds an employee by ID.
      * Find an employee.
      */
     async findEmployeeWithHeaders(requestParameters: FindEmployeeRequest): Promise<[ Employee, Headers ]> {

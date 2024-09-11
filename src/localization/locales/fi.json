@@ -6,6 +6,7 @@
   "delete": "Poista",
   "archive": "Arkistoi",
   "open": "Avaa",
+  "yes": "Kyllä",
   "noSelection": "Ei valintaa",
   "all": "Kaikki",
   "noResults": "Ei tuloksia",
@@ -205,6 +206,30 @@
       "successToast": "Työntekijä tallennettu!",
       "archiveToast": "Työntekijä arkistoitu!",
       "errorToast": "Työntekijän tallennus epäonnistui!"
+    },
+    "holidays": {
+      "title": "Arkipyhät",
+      "date": "Päivämäärä",
+      "name": "Nimi",
+      "addHoliday": "Lisää arkipyhä",
+      "addHolidays": "Lisää arkipyhät",
+      "getHolidays": "Hae arkipyhät",
+      "getHolidaysFromTheYear": "Hae arkipyhät vuodelta:",
+      "year": "Vuosi",
+      "compensationType": {
+        "title": "Lisän tyyppi",
+        "publicHolidayAllowance": "Pyhälisä",
+        "dayOffWorkAllowance": "Vapaapäivätyönlisä"
+      },
+      "confirmationMessage": "Vuodelle {{year}} löytyi {{holidayCount}} arkipyhää. Haluatko lisätä ne?",
+      "successToast_one": "Arkipyhä lisätty!",
+      "successToast_other": "Arkipyhät lisätty!",
+      "errorToast_one": "Arkipyhän lisäys epäonnistui!",
+      "errorToast_other": "Arkipyhien lisäys epäonnistui!",
+      "editSuccessToast": "Arkipyhän muutos tallennettu!",
+      "editErrorToast": "Arkipyhän muutos epäonnistui!",
+      "deleteHoliday": "Poista arkipyhä",
+      "deleteConfirmationDescription": "Haluatko varmasti poistaa arkipyhän {{name}} {{date}}?"
     }
   },
   "drivePlanning": {

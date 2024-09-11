@@ -1,10 +1,13 @@
 /* tslint:disable */
 /* eslint-disable */
+export * from './CompensationType';
+export * from './DailyTimeEntry';
 export * from './Driver';
 export * from './Employee';
 export * from './EmployeeType';
 export * from './Freight';
 export * from './FreightUnit';
+export * from './Holiday';
 export * from './ModelError';
 export * from './Office';
 export * from './Route';
@@ -14,7 +17,6 @@ export * from './SortOrder';
 export * from './Task';
 export * from './TaskStatus';
 export * from './TaskType';
-export * from './TimeEntry';
 export * from './Towable';
 export * from './Truck';
 export * from './TruckDriveState';
@@ -23,5 +25,5 @@ export * from './TruckLocation';
 export * from './TruckSortByField';
 export * from './TruckSpeed';
 export * from './Vehicle';
-export * from './WorkType';
-export * from './WorkTypeCategory';
+export * from './WorkEvent';
+export * from './WorkEventType';
