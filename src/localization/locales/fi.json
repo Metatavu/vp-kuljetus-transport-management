@@ -13,7 +13,6 @@
   "actions": "Toiminnot",
   "menu": "Valikko",
   "vehicleInfo": "Ajoneuvon tiedot",
-  "workingTime": "Työaika",
   "addNew": "Lisää uusi",
   "previousDay": "Edellinen päivä",
   "nextDay": "Seuraava päivä",
@@ -408,6 +407,39 @@
         "trailer": "Kalusto",
         "driver": "Kuljettaja"
       }
+    }
+  },
+  "workingHours": {
+    "title": "Työaika",
+    "workingHourBalances": {
+      "title": "Työaikasaldot",
+      "salaryGroup": "Palkkaryhmä",
+      "payPeriod": "Palkkajakso",
+      "workLocation": "Toimipiste",
+      "nameSearch": "Nimihaku",
+      "searchByName": "Hae nimellä",
+      "uncheckedCount": "Tarkastamattomia: {{ count }}",
+      "person": "Henkilö",
+      "number": "Numero",
+      "totalWorkTime": "Kokonaistyöaika",
+      "breaks": "Tauot",
+      "waitingTime": "Odotus",
+      "overtime": "Ylityöt",
+      "eveningWork": "Iltatyö 15%",
+      "nightWork": "Yötyö 20%",
+      "taskSpecificBonus": "Työkohtaisuuslisä",
+      "freezerBonus": "Pakastelisä",
+      "holidayBonus": "Pyhälisä",
+      "dayOffBonus": "Vapaapäivätyön lisä",
+      "sickLeaveOrAbsent": "Sairas / poissa",
+      "pekkanens": "Pekkaset",
+      "vacation": "Loma",
+      "fillHours": "Täyttötunnit",
+      "halfDayAllowance": "Osapäiväraha",
+      "fullDayAllowance": "Kokopäiväraha"
+    },
+    "workingDays": {
+      "title": "Työpäivät"
     }
   }
 }

@@ -13,7 +13,6 @@
   "actions": "Actions",
   "menu": "Menu",
   "vehicleInfo": "Vehicle information",
-  "workingTime": "Working time",
   "addNew": "Add new",
   "previousDay": "Next day",
   "nextDay": "Previous day",
@@ -317,6 +316,39 @@
         "trailer": "Trailer",
         "driver": "Driver"
       }
+    }
+  },
+  "workingHours": {
+    "title": "Working hours",
+    "workingHourBalances": {
+      "title": "Working hour balances",
+      "salaryGroup": "Salary Group",
+      "payPeriod": "Pay Period",
+      "workLocation": "Work Location",
+      "nameSearch": "Name Search",
+      "searchByName": "Search by Name",
+      "uncheckedCount": "Unchecked: {{ count }}",
+      "person": "Person",
+      "number": "Number",
+      "totalWorkTime": "Total Work Time",
+      "breaks": "Breaks",
+      "waitingTime": "Waiting Time",
+      "overtime": "Overtime",
+      "eveningWork": "Evening Work 15%",
+      "nightWork": "Night Work 20%",
+      "taskSpecificBonus": "Task-Specific Bonus",
+      "freezerBonus": "Freezer Bonus",
+      "holidayBonus": "Holiday Bonus",
+      "dayOffBonus": "Day Off Bonus",
+      "sickLeaveOrAbsent": "Sick Leave / Absent",
+      "pekkanens": "Pekkanens",
+      "vacation": "Vacation",
+      "fillHours": "Fill Hours",
+      "halfDayAllowance": "Half-Day Allowance",
+      "fullDayAllowance": "Full-Day Allowance"
+    },
+    "workingDays": {
+      "title": "Working days"
     }
   }
 }

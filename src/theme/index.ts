@@ -202,11 +202,52 @@ const theme = createTheme(
       MuiInput: {
         styleOverrides: {
           input: {
-            padding: "8px",
+            padding: "4px 8px",
             margin: 0,
             boxSizing: "border-box",
             height: "auto",
-            backgroundColor: "rgba(0, 0, 0, 0.06)",
+            backgroundColor: "#ffffff",
+          },
+        },
+      },
+      MuiSelect: {
+        styleOverrides: {
+          standard: {
+            padding: "4px 8px",
+            margin: 0,
+            boxSizing: "border-box",
+            height: "auto",
+            backgroundColor: "#ffffff",
+          },
+        },
+      },
+      MuiInputBase: {
+        styleOverrides: {
+          root: {
+            height: "auto",
+            margin: 0,
+            marginTop: 0,
+            display: "inline-flex",
+            minWidth: 0,
+            width: "100%",
+            padding: 0,
+            borderRadius: "4px",
+          },
+          input: {
+            backgroundColor: "#ffffff",
+            padding: "4px 8px",
+            margin: 0,
+            boxSizing: "border-box",
+            height: "auto",
+          },
+        },
+      },
+      MuiFormControl: {
+        styleOverrides: {
+          root: {
+            "& label + .MuiInputBase-root": {
+              marginTop: 0, // Remove the default margin-top when label is followed by an input
+            },
           },
         },
       },
