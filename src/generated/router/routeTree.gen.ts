@@ -14,6 +14,7 @@ import { Route as ManagementEmployeesImport } from "./../../routes/management.em
 import { Route as ManagementCustomerSitesImport } from "./../../routes/management.customer-sites"
 import { Route as DrivePlanningRoutesImport } from "./../../routes/drive-planning.routes"
 import { Route as DrivePlanningFreightsImport } from "./../../routes/drive-planning.freights"
+import { Route as WorkingHoursEmployeeIdWorkingDaysImport } from "./../../routes/working-hours_.$employeeId.working-days"
 import { Route as ManagementHolidaysAddHolidayImport } from "./../../routes/management.holidays.add-holiday"
 import { Route as ManagementEquipmentAddEquipmentImport } from "./../../routes/management.equipment_.add-equipment"
 import { Route as ManagementEmployeesAddEmployeeImport } from "./../../routes/management.employees_.add-employee"
@@ -99,6 +100,12 @@ const DrivePlanningFreightsRoute = DrivePlanningFreightsImport.update({
   path: "/freights",
   getParentRoute: () => DrivePlanningRoute,
 } as any)
+
+const WorkingHoursEmployeeIdWorkingDaysRoute =
+  WorkingHoursEmployeeIdWorkingDaysImport.update({
+    path: "/working-hours/$employeeId/working-days",
+    getParentRoute: () => rootRoute,
+  } as any)
 
 const ManagementHolidaysAddHolidayRoute =
   ManagementHolidaysAddHolidayImport.update({
@@ -245,6 +252,10 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof ManagementHolidaysAddHolidayImport
       parentRoute: typeof ManagementHolidaysImport
     }
+    "/working-hours/$employeeId/working-days": {
+      preLoaderRoute: typeof WorkingHoursEmployeeIdWorkingDaysImport
+      parentRoute: typeof rootRoute
+    }
     "/management/customer-sites/$customerSiteId/modify": {
       preLoaderRoute: typeof ManagementCustomerSitesCustomerSiteIdModifyImport
       parentRoute: typeof ManagementImport
@@ -290,5 +301,6 @@ export const routeTree = rootRoute.addChildren([
   ]),
   VehicleInfoIndexRoute,
   WorkingHoursIndexRoute,
+  WorkingHoursEmployeeIdWorkingDaysRoute,
   VehicleListVehiclesVehicleIdInfoRoute,
 ])

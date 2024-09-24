@@ -30,7 +30,8 @@
     "showDetails": "Näytä tiedot",
     "openCalendar": "Avaa kalenteri",
     "closeDialog": "Sulje ikkuna",
-    "backToVehicles": "Takaisin ajoneuvolistaukseen"
+    "backToVehicles": "Takaisin ajoneuvolistaukseen",
+    "backToWorkingHours": "Takaisin työaikasaldoihin"
   },
   "vehicleList": {
     "title": "Ajoneuvot",
@@ -415,12 +416,12 @@
       "title": "Työaikasaldot",
       "salaryGroup": "Palkkaryhmä",
       "payPeriod": "Palkkajakso",
-      "workLocation": "Toimipiste",
+      "office": "Toimipiste",
       "nameSearch": "Nimihaku",
       "searchByName": "Hae nimellä",
       "uncheckedCount": "Tarkastamattomia: {{ count }}",
       "person": "Henkilö",
-      "number": "Numero",
+      "number": "Nro",
       "totalWorkTime": "Kokonaistyöaika",
       "breaks": "Tauot",
       "waitingTime": "Odotus",
@@ -436,10 +437,65 @@
       "vacation": "Loma",
       "fillHours": "Täyttötunnit",
       "halfDayAllowance": "Osapäiväraha",
-      "fullDayAllowance": "Kokopäiväraha"
+      "fullDayAllowance": "Kokopäiväraha",
+      "toWorkHourDetails": "Näytä erittely"
     },
     "workingDays": {
-      "title": "Työpäivät"
+      "title": "Työpäivät",
+      "employee": "Työntekijä",
+      "print": "Tulosta",
+      "sendToPayroll": "Lähetä palkanlaskentaan",
+      "table": {
+        "date": "Pvm.",
+        "shiftStarts": "Vuoro alkaa",
+        "workStarted": "Työ alkoi",
+        "workEnded": "Työ päättyi",
+        "workingHours": "Työaika",
+        "unpaidBreak": "Palkaton tauko",
+        "payableWorkingHours": "Maksettava työaika",
+        "waitingTime": "Odotus",
+        "eveningWork": "Iltatyö",
+        "nightWork": "Yötyö",
+        "holidayBonus": "Pyhälisä",
+        "taskSpecificBonus": "Työkohtaisuuslisä",
+        "freezerBonus": "Pakastelisä",
+        "absence": "Poissaolo",
+        "vehicle": "Auto",
+        "dailyAllowance": "Päiväraha",
+        "inspected": "Tarkastettu",
+        "remarks": "Huomautuksia"
+      },
+      "aggregationsTable": {
+        "workingHours": "Työtunnit",
+        "eveningWork": "Iltatyö 15%",
+        "nightWork": "Yötyö 20%",
+        "vacation": "Loma",
+        "pekkanens": "Pekkaset",
+        "workTime": "Säännöllinen työaika",
+        "unpaid": "Palkaton",
+        "sickHours": "Sairastunnit",
+        "partialDailyAllowance": "Osapäiväraha",
+        "fullDayAllowance": "Kokopäiväraha",
+        "overtimeHalf": "Ylityö 50%",
+        "overtimeFull": "Ylityö 100%",
+        "holiday": "Pyhä",
+        "responsibilities": "Luottamustoimet",
+        "increasedDailyAllowance": "Korotettu kokopäiväraha",
+        "dayOffBonus": "Vapaapäivätyön lisä",
+        "trainingDuringWorkTime": "Koulutus työajalla",
+        "abroadAllowance": "Ulkomaan päiväraha",
+        "waitingTime": "Odotus",
+        "fillingHours": "Täyttötunnit",
+        "absenceHours": "Poissaolotunnit"
+      },
+      "changeLog": {
+        "title": "Muutosloki",
+        "time": "Aika",
+        "user": "Käyttäjä",
+        "reviewed": "Tarkastanut",
+        "affectedDates": "Muutetut päivämäärät",
+        "explanation": "Selite"
+      }
     }
   }
 }

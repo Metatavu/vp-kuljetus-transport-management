@@ -7,7 +7,6 @@ import GenericDataGrid from "components/generic/generic-data-grid";
 import ToolbarRow from "components/generic/toolbar-row";
 import { Key, ReactNode, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { theme } from "src/theme";
 import { LocalizedLabelKey } from "src/types";
 import { RouterContext } from "./__root";
 import { TFunction } from "i18next";
@@ -91,7 +90,6 @@ function ManagementEmployees() {
     (label: LocalizedLabelKey, key: keyof EmployeeFilters, menuItems: ReactNode) => (
       <TextField
         select
-        sx={{ width: 200 }}
         defaultValue={watch(key)}
         size="small"
         variant="outlined"
@@ -110,16 +108,15 @@ function ManagementEmployees() {
 
   const renderLeftToolbar = useCallback(
     () => (
-      <Stack direction="row" spacing={2}>
+      <Stack direction="row" gap={2} flex={1} pr={2}>
         <TextField
           onChange={({ target: { value } }) => setSearchTerm(value)}
           size="small"
-          sx={{ width: 200 }}
           variant="outlined"
           label={t("management.employees.filters.name.label")}
           placeholder={t("management.employees.filters.name.placeholder")}
           InputProps={{
-            startAdornment: <SearchIcon sx={{ marginRight: theme.spacing(1) }} />,
+            startAdornment: <SearchIcon sx={{ mr: 1 }} />,
             notched: false,
             sx: { height: 32 },
           }}
@@ -266,15 +263,16 @@ function ManagementEmployees() {
         titleFirst
         title={t("management.employees.title")}
         toolbarButtons={
-          <Button
-            size="small"
-            variant="contained"
-            sx={{ height: 30 }}
-            startIcon={<AddIcon />}
-            onClick={() => navigate({ to: "/management/employees/add-employee" })}
-          >
-            {t("addNew")}
-          </Button>
+          <Stack justifyContent="flex-end" pb={1}>
+            <Button
+              size="small"
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={() => navigate({ to: "/management/employees/add-employee" })}
+            >
+              {t("addNew")}
+            </Button>
+          </Stack>
         }
         leftToolbar={renderLeftToolbar()}
       />

@@ -190,7 +190,7 @@ export const useEmployee = (employeeId: string, enabled = true) => {
 export const useTimeEntries = (
   requestParams: ListEmployeeDailyTimeEntriesRequest,
   useWorkingPeriod: boolean,
-  salaryGroup: string,
+  salaryGroup: SalaryGroup,
   selectedDate?: Date,
   enabled = true,
 ) => {
@@ -246,7 +246,7 @@ export const useHoliday = (holidayId: string, enabled = true) => {
  * @param selectedDate Selected date
  * @returns Start and end date of the working period
  */
-export const getWorkingPeriodDates = (salaryGroup: string, selectedDate: Date) => {
+export const getWorkingPeriodDates = (salaryGroup: SalaryGroup, selectedDate: Date) => {
   const selectedDateTime = DateTime.fromJSDate(selectedDate);
 
   return isOfficeOrTerminalGroup(salaryGroup)

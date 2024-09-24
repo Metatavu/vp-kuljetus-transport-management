@@ -19,6 +19,7 @@ const BreadcrumbsBar = () => {
     .filter(DataValidation.validateValueIsNotUndefinedNorNull);
 
   return (
+    // TODO: Make breadcrums work as links to previous pages according to MUI documentation
     <BreadCrumbBar>
       <Breadcrumbs sx={{ color: "#ffffff" }}>
         {breadcrumbs.map((breadcrumb, index) => (

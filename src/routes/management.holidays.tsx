@@ -230,7 +230,7 @@ function ManagementHolidays() {
         <ToolbarRow
           title={t("management.holidays.title")}
           toolbarButtons={
-            <>
+            <Stack direction="row" gap={1}>
               <Button
                 size="small"
                 variant="outlined"
@@ -252,7 +252,7 @@ function ManagementHolidays() {
               >
                 {t("management.holidays.addHoliday")}
               </Button>
-            </>
+            </Stack>
           }
         />
         <Stack flex={1} sx={{ height: "100%", overflowY: "auto" }}>
