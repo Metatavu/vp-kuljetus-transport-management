@@ -19,7 +19,7 @@ const TopNavigation = () => {
   const routeLinks: readonly NavigationItem[] = [
     ["/vehicle-list/vehicles", "vehicleList.title", undefined],
     ["/drive-planning/routes", "drivePlanning.title", undefined],
-    ["/working-time", "workingTime", undefined],
+    ["/working-hours", "workingHours.title", undefined],
     ["/management/customer-sites", "management.title", undefined],
   ] as const;
 

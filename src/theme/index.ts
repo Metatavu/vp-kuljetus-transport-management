@@ -45,8 +45,8 @@ const theme = createTheme(
         fontWeight: 700,
       },
       h6: {
-        fontSize: "1rem",
-        fontWeight: 500,
+        fontSize: "0.875rem",
+        fontWeight: 700,
       },
       body1: {
         fontSize: "1rem",
@@ -151,7 +151,8 @@ const theme = createTheme(
             minWidth: "inherit",
             width: "fit-content",
             whiteSpace: "nowrap",
-            borderRadius: "3px",
+            borderRadius: 3,
+            padding: "3px 9px",
           },
         },
       },
@@ -202,11 +203,54 @@ const theme = createTheme(
       MuiInput: {
         styleOverrides: {
           input: {
-            padding: "8px",
+            padding: "4px 8px",
             margin: 0,
             boxSizing: "border-box",
             height: "auto",
-            backgroundColor: "rgba(0, 0, 0, 0.06)",
+            backgroundColor: "#ffffff",
+            "&::focus": {
+              outline: "1px solid #00414F",
+            },
+          },
+        },
+      },
+      MuiSelect: {
+        styleOverrides: {
+          standard: {
+            padding: "4px 8px",
+            margin: 0,
+            boxSizing: "border-box",
+            height: "auto",
+            backgroundColor: "#ffffff",
+          },
+        },
+      },
+      MuiInputBase: {
+        styleOverrides: {
+          root: {
+            height: "auto",
+            margin: 0,
+            marginTop: 0,
+            display: "inline-flex",
+            minWidth: 0,
+            padding: 0,
+            borderRadius: "4px",
+            backgroundColor: "#ffffff",
+          },
+          input: {
+            padding: "4px 8px",
+            margin: 0,
+            boxSizing: "border-box",
+            height: "auto",
+          },
+        },
+      },
+      MuiFormControl: {
+        styleOverrides: {
+          root: {
+            "& label + .MuiInputBase-root": {
+              marginTop: 0, // Remove the default margin-top when label is followed by an input
+            },
           },
         },
       },
@@ -217,7 +261,6 @@ const theme = createTheme(
             margin: 0,
             display: "inline-flex",
             minWidth: 0,
-            width: "100%",
             padding: 0,
             backgroundColor: "rgba(0, 0, 0, 0.06)",
             borderRadius: "4px",
@@ -237,6 +280,29 @@ const theme = createTheme(
           fullWidth: true,
           InputProps: { disableUnderline: true },
           InputLabelProps: { shrink: true },
+        },
+        styleOverrides: {
+          root: {
+            "&.cell-input input": {
+              padding: 4,
+              textAlign: "center",
+            },
+            "&.cell-input .MuiSelect-select": {
+              padding: 4,
+            },
+            "&.cell-input .MuiOutlinedInput-root": {
+              padding: 0,
+            },
+          },
+        },
+      },
+      MuiCheckbox: {
+        styleOverrides: {
+          root: {
+            "&.cell-checkbox": {
+              padding: 4,
+            },
+          },
         },
       },
       MuiDatePicker: {
@@ -262,14 +328,14 @@ const theme = createTheme(
         styleOverrides: {
           root: {
             backgroundColor: "#EDF3F5",
-            padding: "0px 10px",
+            padding: "0px 16px",
           },
         },
       },
       MuiTableCell: {
         styleOverrides: {
           root: {
-            padding: "0px 10px",
+            padding: "0px 16px",
             height: "30px",
             borderRight: "1px solid rgba(0, 0, 0, 0.12)",
             borderBottom: "1px solid rgba(0, 0, 0, 0.12)",

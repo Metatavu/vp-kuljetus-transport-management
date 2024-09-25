@@ -8,8 +8,9 @@ const Root = styled(Stack, {
 })(({ theme, height }: { theme?: Theme; height?: number }) => ({
   justifyContent: "space-between",
   padding: theme?.spacing(1, 2),
-  height: height ?? 42,
+  height: height ?? 46,
   flexDirection: "row",
+  backgroundColor: theme?.palette.background.default,
 }));
 
 type Props = {
@@ -26,7 +27,7 @@ const ToolbarRow = ({ height, title, toolbarButtons, leftToolbar, titleFirst, na
     if (!navigateBack) return null;
 
     return (
-      <IconButton key="back-button" sx={{ padding: "5px" }} onClick={navigateBack}>
+      <IconButton key="back-button" sx={{ p: 1 }} onClick={navigateBack}>
         <ArrowBackIcon />
       </IconButton>
     );
@@ -36,7 +37,7 @@ const ToolbarRow = ({ height, title, toolbarButtons, leftToolbar, titleFirst, na
     if (!title) return null;
 
     return (
-      <Typography key="title" variant="h6" sx={{ opacity: 0.87 }} alignSelf="center">
+      <Typography key="title" variant="subtitle1" alignSelf="center">
         {title}
       </Typography>
     );
@@ -51,13 +52,11 @@ const ToolbarRow = ({ height, title, toolbarButtons, leftToolbar, titleFirst, na
 
   return (
     <Root height={height}>
-      <Stack direction="row" spacing={1} flex={1} alignItems="center">
+      <Stack direction="row" spacing={2} flex={1} alignItems="center">
         {renderBackButton()}
         {renderLeftToolbar()}
       </Stack>
-      <Stack direction="row" spacing={1} alignItems="center">
-        {toolbarButtons}
-      </Stack>
+      {toolbarButtons}
     </Root>
   );
 };

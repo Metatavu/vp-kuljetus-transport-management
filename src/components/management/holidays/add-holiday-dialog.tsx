@@ -45,6 +45,7 @@ const AddHolidayFormDialog = ({ holiday, onSave, onClose }: Props) => {
     if (!onSave) return;
     await onSave.mutateAsync(holiday);
   };
+
   const renderLocalizedMenuItem = useCallback(
     <T extends string>(value: T, labelResolver: (value: T, t: TFunction) => string) => (
       <MenuItem key={value as Key} value={value}>

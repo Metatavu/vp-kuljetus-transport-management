@@ -3,7 +3,7 @@ import { Route as VehicleListImport } from "./../../routes/vehicle-list"
 import { Route as ManagementImport } from "./../../routes/management"
 import { Route as DrivePlanningImport } from "./../../routes/drive-planning"
 import { Route as IndexImport } from "./../../routes/index"
-import { Route as WorkingTimeIndexImport } from "./../../routes/working-time.index"
+import { Route as WorkingHoursIndexImport } from "./../../routes/working-hours.index"
 import { Route as VehicleInfoIndexImport } from "./../../routes/vehicle-info.index"
 import { Route as VehicleListVehiclesImport } from "./../../routes/vehicle-list.vehicles"
 import { Route as VehicleListMapViewImport } from "./../../routes/vehicle-list.map-view"
@@ -14,6 +14,7 @@ import { Route as ManagementEmployeesImport } from "./../../routes/management.em
 import { Route as ManagementCustomerSitesImport } from "./../../routes/management.customer-sites"
 import { Route as DrivePlanningRoutesImport } from "./../../routes/drive-planning.routes"
 import { Route as DrivePlanningFreightsImport } from "./../../routes/drive-planning.freights"
+import { Route as WorkingHoursEmployeeIdWorkingDaysImport } from "./../../routes/working-hours_.$employeeId.working-days"
 import { Route as ManagementHolidaysAddHolidayImport } from "./../../routes/management.holidays.add-holiday"
 import { Route as ManagementEquipmentAddEquipmentImport } from "./../../routes/management.equipment_.add-equipment"
 import { Route as ManagementEmployeesAddEmployeeImport } from "./../../routes/management.employees_.add-employee"
@@ -45,8 +46,8 @@ const IndexRoute = IndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const WorkingTimeIndexRoute = WorkingTimeIndexImport.update({
-  path: "/working-time/",
+const WorkingHoursIndexRoute = WorkingHoursIndexImport.update({
+  path: "/working-hours/",
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -99,6 +100,12 @@ const DrivePlanningFreightsRoute = DrivePlanningFreightsImport.update({
   path: "/freights",
   getParentRoute: () => DrivePlanningRoute,
 } as any)
+
+const WorkingHoursEmployeeIdWorkingDaysRoute =
+  WorkingHoursEmployeeIdWorkingDaysImport.update({
+    path: "/working-hours/$employeeId/working-days",
+    getParentRoute: () => rootRoute,
+  } as any)
 
 const ManagementHolidaysAddHolidayRoute =
   ManagementHolidaysAddHolidayImport.update({
@@ -217,8 +224,8 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof VehicleInfoIndexImport
       parentRoute: typeof rootRoute
     }
-    "/working-time/": {
-      preLoaderRoute: typeof WorkingTimeIndexImport
+    "/working-hours/": {
+      preLoaderRoute: typeof WorkingHoursIndexImport
       parentRoute: typeof rootRoute
     }
     "/drive-planning/freights/add-freight": {
@@ -244,6 +251,10 @@ declare module "@tanstack/react-router" {
     "/management/holidays/add-holiday": {
       preLoaderRoute: typeof ManagementHolidaysAddHolidayImport
       parentRoute: typeof ManagementHolidaysImport
+    }
+    "/working-hours/$employeeId/working-days": {
+      preLoaderRoute: typeof WorkingHoursEmployeeIdWorkingDaysImport
+      parentRoute: typeof rootRoute
     }
     "/management/customer-sites/$customerSiteId/modify": {
       preLoaderRoute: typeof ManagementCustomerSitesCustomerSiteIdModifyImport
@@ -289,6 +300,7 @@ export const routeTree = rootRoute.addChildren([
     VehicleListVehiclesRoute,
   ]),
   VehicleInfoIndexRoute,
-  WorkingTimeIndexRoute,
+  WorkingHoursIndexRoute,
+  WorkingHoursEmployeeIdWorkingDaysRoute,
   VehicleListVehiclesVehicleIdInfoRoute,
 ])

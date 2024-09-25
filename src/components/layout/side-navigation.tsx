@@ -27,7 +27,7 @@ const SideNavigation = ({ navigationItems }: Props) => {
   const selectedRouteIndex = navigationItems.findIndex(([route]) => location.pathname.startsWith(route));
 
   return (
-    <SideDrawer sx={{ width: collapsed ? "46px" : "248px" }}>
+    <SideDrawer sx={{ width: collapsed ? 46 : 248 }}>
       <Tabs
         TabScrollButtonProps={{ sx: { display: "none" } }}
         orientation="vertical"
@@ -46,7 +46,7 @@ const SideNavigation = ({ navigationItems }: Props) => {
           onClick={() => setCollapsed(!collapsed)}
           sx={{
             justifyContent: "space-between",
-            minHeight: "42px",
+            minHeight: 46,
           }}
         />
         {navigationItems.map(([path, title, Icon], index) => (
@@ -59,7 +59,7 @@ const SideNavigation = ({ navigationItems }: Props) => {
             iconPosition="start"
             sx={{
               justifyContent: "flex-start",
-              minHeight: "42px",
+              minHeight: 42,
               backgroundColor: selectedRouteIndex === index ? "rgba(0, 65, 79, 0.1)" : "transparent",
             }}
           />

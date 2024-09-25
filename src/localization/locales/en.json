@@ -13,7 +13,6 @@
   "actions": "Actions",
   "menu": "Menu",
   "vehicleInfo": "Vehicle information",
-  "workingTime": "Working time",
   "addNew": "Add new",
   "previousDay": "Next day",
   "nextDay": "Previous day",
@@ -31,7 +30,8 @@
     "showDetails": "Show details",
     "openCalendar": "Open calendar",
     "closeDialog": "Close dialog",
-    "backToVehicles": "Back to vehicles"
+    "backToVehicles": "Back to vehicles",
+    "backToWorkingHours": "Back to working hours"
   },
   "vehicleList": {
     "title": "Vehicle list",
@@ -316,6 +316,94 @@
         "maintenance": "Maintenance",
         "trailer": "Trailer",
         "driver": "Driver"
+      }
+    }
+  },
+  "workingHours": {
+    "title": "Working hours",
+    "workingHourBalances": {
+      "title": "Working hour balances",
+      "salaryGroup": "Salary Group",
+      "payPeriod": "Pay Period",
+      "office": "Work Location",
+      "nameSearch": "Name Search",
+      "searchByName": "Search by Name",
+      "uncheckedCount": "Unchecked: {{ count }}",
+      "person": "Person",
+      "number": "Number",
+      "totalWorkTime": "Total Work Time",
+      "breaks": "Breaks",
+      "waitingTime": "Waiting Time",
+      "overtime": "Overtime",
+      "eveningWork": "Evening Work 15%",
+      "nightWork": "Night Work 20%",
+      "taskSpecificBonus": "Task-Specific Bonus",
+      "freezerBonus": "Freezer Bonus",
+      "holidayBonus": "Holiday Bonus",
+      "dayOffBonus": "Day Off Bonus",
+      "sickLeaveOrAbsent": "Sick Leave / Absent",
+      "pekkanens": "Pekkanens",
+      "vacation": "Vacation",
+      "fillHours": "Fill Hours",
+      "halfDayAllowance": "Half-Day Allowance",
+      "fullDayAllowance": "Full-Day Allowance",
+      "toWorkHourDetails": "To Work hour details"
+    },
+    "workingDays": {
+      "title": "Working days",
+      "employee": "Employee",
+      "print": "Print",
+      "sendToPayroll": "Send to payroll",
+      "table": {
+        "date": "Date",
+        "shiftStarts": "Shift Starts",
+        "workStarted": "Work Started",
+        "workEnded": "Work Ended",
+        "workingHours": "Working Hours",
+        "unpaidBreak": "Unpaid Break",
+        "payableWorkingHours": "Payable Working Hours",
+        "waitingTime": "Waiting Time",
+        "eveningWork": "Evening Work",
+        "nightWork": "Night Work",
+        "holidayBonus": "Holiday Bonus",
+        "taskSpecificBonus": "Task-Specific Bonus",
+        "freezerBonus": "Freezer Bonus",
+        "absence": "Absence",
+        "vehicle": "Vehicle",
+        "dailyAllowance": "Daily Allowance",
+        "inspected": "Inspected",
+        "remarks": "Remarks"
+      },
+      "aggregationsTable": {
+        "workingHours": "Working Hours",
+        "eveningWork": "Evening Work 15%",
+        "nightWork": "Night Work 20%",
+        "vacation": "Vacation",
+        "pekkanens": "Compensatory Leave",
+        "workTime": "Regular Working Hours",
+        "unpaid": "Unpaid",
+        "sickHours": "Sick Hours",
+        "partialDailyAllowance": "Partial Daily Allowance",
+        "fullDayAllowance": "Full Day Allowance",
+        "overtimeHalf": "Overtime 50%",
+        "overtimeFull": "Overtime 100%",
+        "holiday": "Holiday",
+        "responsibilities": "Responsibility duties",
+        "increasedDailyAllowance": "Increased Full Day Allowance",
+        "dayOffBonus": "Day Off Bonus",
+        "trainingDuringWorkTime": "Training During Work Time",
+        "abroadAllowance": "Abroad Allowance",
+        "waitingTime": "Waiting Time",
+        "fillingHours": "Filling Hours",
+        "absenceHours": "Absence Hours"
+      },
+      "changeLog": {
+        "title": "Change log",
+        "time": "Time",
+        "user": "User",
+        "reviewed": "Reviewed",
+        "affectedDates": "Affected dates",
+        "explanation": "Explanation"
       }
     }
   }
