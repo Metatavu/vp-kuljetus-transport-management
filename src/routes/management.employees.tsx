@@ -14,7 +14,7 @@ import { Employee, EmployeeType, Office, SalaryGroup } from "generated/client";
 import LocalizationUtils from "src/utils/localization-utils";
 import { useForm } from "react-hook-form";
 import { useDebounce } from "hooks/use-debounce";
-import { useEmployees } from "hooks/use-queries";
+import { useListEmployees } from "hooks/use-queries";
 
 export const Route = createFileRoute("/management/employees")({
   component: ManagementEmployees,
@@ -60,7 +60,7 @@ function ManagementEmployees() {
   const salaryGroupFilter = watch("salaryGroup");
   const employeeTypeFilter = watch("employeeType");
 
-  const employeesQuery = useEmployees({
+  const employeesQuery = useListEmployees({
     first: pageSize * page,
     max: pageSize,
     search: debouncedSearchTerm || undefined,

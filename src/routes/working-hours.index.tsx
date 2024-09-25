@@ -5,7 +5,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import GenericDataGrid from "components/generic/generic-data-grid";
 import { EmployeeType, Office, SalaryGroup } from "generated/client";
 import { useDebounce } from "hooks/use-debounce";
-import { useEmployees } from "hooks/use-queries";
+import { useListEmployees } from "hooks/use-queries";
 import { TFunction } from "i18next";
 import { Key, ReactNode, useCallback, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -79,7 +79,7 @@ function WorkingHours() {
   const salaryGroupFilter = watch("salaryGroup");
   const employeeTypeFilter = watch("employeeType");
 
-  const employeesQuery = useEmployees({
+  const employeesQuery = useListEmployees({
     first: pageSize * page,
     max: pageSize,
     search: debouncedSearchTerm || undefined,

@@ -1,7 +1,14 @@
-import { Table, TableRow, TableCell, Typography, Stack } from "@mui/material";
+import { Table, TableRow, TableCell, Typography, Stack, styled } from "@mui/material";
 import { TimePicker } from "@mui/x-date-pickers";
 import { useTranslation } from "react-i18next";
-import { theme } from "src/theme";
+
+// Styled empty cell component
+const EmptyCell = styled(TableCell, {
+  label: "empty-cell",
+})(({ theme }) => ({
+  background: theme.palette.background.default,
+  border: 0
+}));
 
 function AggregationsTable() {
   const { t } = useTranslation();
@@ -44,14 +51,14 @@ function AggregationsTable() {
         <TableCell>{t("workingHours.workingDays.aggregationsTable.nightWork")}</TableCell>
         <TableCell align="right"><Typography variant="h6">25.37 h</Typography></TableCell>
         <TableCell>{t("workingHours.workingDays.aggregationsTable.unpaid")}</TableCell>
-        <TableCell sx={{ bgcolor: theme.palette.background.default, border: 0 }}>
+        <EmptyCell>
           <Stack direction="row" gap={1} alignItems="center" p={0.25}>
             {renderTimeInput(
               t("workingHours.workingDays.aggregationsTable.unpaid")
             )}
             <Typography variant="h6">h</Typography>
           </Stack>
-        </TableCell>
+        </EmptyCell>
         <TableCell>{t("workingHours.workingDays.aggregationsTable.sickHours")}</TableCell>
         <TableCell align="right"><Typography variant="h6">0.00 h</Typography></TableCell>
         <TableCell>{t("workingHours.workingDays.aggregationsTable.fullDayAllowance")}</TableCell>
@@ -62,8 +69,8 @@ function AggregationsTable() {
         <TableCell align="right"><Typography variant="h6">0.00 h</Typography></TableCell>
         <TableCell>{t("workingHours.workingDays.aggregationsTable.holiday")}</TableCell>
         <TableCell align="right"><Typography variant="h6">23.15 h</Typography></TableCell>
-        <TableCell sx={{ bgcolor: theme.palette.background.default, border: 0 }} />
-        <TableCell sx={{ bgcolor: theme.palette.background.default, border: 0 }} />
+        <EmptyCell />
+        <EmptyCell />
         <TableCell>{t("workingHours.workingDays.aggregationsTable.responsibilities")}</TableCell>
         <TableCell align="right"><Typography variant="h6">0.00 h</Typography></TableCell>
         <TableCell>{t("workingHours.workingDays.aggregationsTable.increasedDailyAllowance")}</TableCell>
@@ -74,8 +81,8 @@ function AggregationsTable() {
         <TableCell align="right"><Typography variant="h6">0.00 h</Typography></TableCell>
         <TableCell>{t("workingHours.workingDays.aggregationsTable.dayOffBonus")}</TableCell>
         <TableCell align="right"><Typography variant="h6">0.00 h</Typography></TableCell>
-        <TableCell sx={{ bgcolor: theme.palette.background.default, border: 0 }} />
-        <TableCell sx={{ bgcolor: theme.palette.background.default, border: 0 }} />
+        <EmptyCell />
+        <EmptyCell />
         <TableCell>{t("workingHours.workingDays.aggregationsTable.trainingDuringWorkTime")}</TableCell>
         <TableCell align="right"><Typography variant="h6">0.00 h</Typography></TableCell>
         <TableCell>{t("workingHours.workingDays.aggregationsTable.abroadAllowance")}</TableCell>
@@ -84,10 +91,10 @@ function AggregationsTable() {
       <TableRow>
         <TableCell>{t("workingHours.workingDays.aggregationsTable.waitingTime")}</TableCell>
         <TableCell align="right"><Typography variant="h6">0.00 h</Typography></TableCell>
-        <TableCell sx={{ bgcolor: theme.palette.background.default, border: 0 }} />
-        <TableCell sx={{ bgcolor: theme.palette.background.default, border: 0 }} />
-        <TableCell sx={{ bgcolor: theme.palette.background.default, border: 0 }} />
-        <TableCell sx={{ bgcolor: theme.palette.background.default, border: 0 }} />
+        <EmptyCell />
+        <EmptyCell />
+        <EmptyCell />
+        <EmptyCell />
         <TableCell>{t("workingHours.workingDays.aggregationsTable.absenceHours")}</TableCell>
         <TableCell align="right"><Typography variant="h6">0.00 h</Typography></TableCell>
         <TableCell>{t("workingHours.workingDays.aggregationsTable.fillingHours")}</TableCell>

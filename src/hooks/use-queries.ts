@@ -162,7 +162,7 @@ export const useFreight = (freightId: string, enabled = true) => {
   });
 };
 
-export const useEmployees = (requestParams: ListEmployeesRequest = {}, enabled = true) => {
+export const useListEmployees = (requestParams: ListEmployeesRequest = {}, enabled = true) => {
   const { employeesApi } = useApi();
 
   return useQuery({
