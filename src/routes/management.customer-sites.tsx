@@ -1,23 +1,20 @@
 import { Add } from "@mui/icons-material";
 import { Button, Stack, styled } from "@mui/material";
 import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import GenericDataGrid from "components/generic/generic-data-grid";
-import ToolbarRow from "components/generic/toolbar-row";
-import { useTranslation } from "react-i18next";
-import { RouterContext } from "./__root";
-import { useMemo, useState } from "react";
-import { useApi } from "hooks/use-api";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import LoaderWrapper from "components/generic/loader-wrapper";
+import ToolbarRow from "components/generic/toolbar-row";
 import { Site } from "generated/client";
+import { useApi } from "hooks/use-api";
 import { QUERY_KEYS, useSites } from "hooks/use-queries";
+import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/management/customer-sites")({
   component: ManagementCustomerSites,
-  beforeLoad: (): RouterContext => ({
-    breadcrumbs: ["management.customerSites.title"],
-  }),
+  staticData: { breadcrumbs: ["management.customerSites.title"] },
 });
 
 // Styled root component

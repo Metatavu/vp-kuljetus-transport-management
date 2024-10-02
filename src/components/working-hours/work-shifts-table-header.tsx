@@ -18,7 +18,7 @@ const HeaderCell = styled(Box, {
   userSelect: "none",
 }));
 
-function WorkDayTableHeader() {
+function WorkShiftsTableHeader() {
   const { t } = useTranslation();
 
   return (
@@ -62,13 +62,13 @@ function WorkDayTableHeader() {
       <HeaderCell flex={1}>
         {t("workingHours.workingDays.table.freezerBonus")}
       </HeaderCell>
-      <HeaderCell minWidth={125} flex={1}>
+      <HeaderCell minWidth={115} flex={1}>
         {t("workingHours.workingDays.table.absence")}
       </HeaderCell>
-      {/* <HeaderCell width={100}>
+      <HeaderCell width={90}>
         {t("workingHours.workingDays.table.vehicle")}
-      </HeaderCell> */}
-      <HeaderCell flex={1}>
+      </HeaderCell>
+      <HeaderCell width={90}>
         {t("workingHours.workingDays.table.dailyAllowance")}
       </HeaderCell>
       <HeaderCell width={90}>
@@ -82,4 +82,4 @@ function WorkDayTableHeader() {
   );
 };
 
-export default WorkDayTableHeader;
+export default WorkShiftsTableHeader;

@@ -5,13 +5,10 @@ import { Towable, TowableTypeEnum, Truck } from "generated/client";
 import { useApi } from "hooks/use-api";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { RouterContext } from "src/routes/__root";
 
 export const Route = createFileRoute("/management/equipment/add-equipment")({
   component: () => <EquipmentAdd />,
-  beforeLoad: (): RouterContext => ({
-    breadcrumbs: ["management.equipment.title", "management.equipment.new"],
-  }),
+  staticData: { breadcrumbs: ["management.equipment.title", "management.equipment.new"] },
 });
 
 const EquipmentAdd = () => {

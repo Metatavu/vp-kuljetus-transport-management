@@ -1,26 +1,23 @@
 import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from "@mui/icons-material/Search";
-import { Button, Divider, MenuItem, Stack, styled, TextField, Typography } from "@mui/material";
+import { Button, Divider, MenuItem, Stack, TextField, Typography, styled } from "@mui/material";
 import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import GenericDataGrid from "components/generic/generic-data-grid";
 import ToolbarRow from "components/generic/toolbar-row";
-import { Key, ReactNode, useCallback, useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { LocalizedLabelKey } from "src/types";
-import { RouterContext } from "./__root";
-import { TFunction } from "i18next";
 import { Employee, EmployeeType, Office, SalaryGroup } from "generated/client";
-import LocalizationUtils from "src/utils/localization-utils";
-import { useForm } from "react-hook-form";
 import { useDebounce } from "hooks/use-debounce";
 import { useListEmployees } from "hooks/use-queries";
+import { TFunction } from "i18next";
+import { Key, ReactNode, useCallback, useMemo, useState } from "react";
+import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import { LocalizedLabelKey } from "src/types";
+import LocalizationUtils from "src/utils/localization-utils";
 
 export const Route = createFileRoute("/management/employees")({
   component: ManagementEmployees,
-  beforeLoad: (): RouterContext => ({
-    breadcrumbs: ["management.employees.title"],
-  }),
+  staticData: { breadcrumbs: ["management.employees.title"] },
 });
 
 type EmployeeFilters = {
@@ -260,7 +257,6 @@ function ManagementEmployees() {
     <Root>
       <ToolbarRow
         height={80}
-        titleFirst
         title={t("management.employees.title")}
         toolbarButtons={
           <Stack justifyContent="flex-end" pb={1}>

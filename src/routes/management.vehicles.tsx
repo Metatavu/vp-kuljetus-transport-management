@@ -1,17 +1,14 @@
 import { Button, Stack } from "@mui/material";
-import { createFileRoute } from "@tanstack/react-router";
-import ToolbarRow from "components/generic/toolbar-row";
-import { RouterContext } from "./__root";
-import { useTranslation } from "react-i18next";
 import { GridColDef } from "@mui/x-data-grid";
-import { useMemo } from "react";
+import { createFileRoute } from "@tanstack/react-router";
 import GenericDataGrid from "components/generic/generic-data-grid";
+import ToolbarRow from "components/generic/toolbar-row";
+import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/management/vehicles")({
   component: ManagementVehicles,
-  beforeLoad: (): RouterContext => ({
-    breadcrumbs: ["management.vehicles.title"],
-  }),
+  staticData: { breadcrumbs: ["management.vehicles.title"] },
 });
 
 function ManagementVehicles() {

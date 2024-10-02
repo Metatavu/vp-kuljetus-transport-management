@@ -6,13 +6,10 @@ import { useApi } from "hooks/use-api";
 import { QUERY_KEYS } from "hooks/use-queries";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { RouterContext } from "src/routes/__root";
 
 export const Route = createFileRoute("/management/customer-sites/add-customer-site")({
   component: () => <CustomerSiteAdd />,
-  beforeLoad: (): RouterContext => ({
-    breadcrumbs: ["management.customerSites.title", "management.customerSites.new"],
-  }),
+  staticData: { breadcrumbs: ["management.customerSites.title", "management.customerSites.new"] },
 });
 
 const CustomerSiteAdd = () => {

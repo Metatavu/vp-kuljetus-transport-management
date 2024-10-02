@@ -16,19 +16,16 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { VehicleInfoBar } from "components/vehicles/vehicle-info-bar";
 import { TruckLocation } from "generated/client";
 import { Map as LeafletMap, divIcon, latLng } from "leaflet";
+import { DateTime } from "luxon";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { MapContainer, Marker, TileLayer, Tooltip } from "react-leaflet";
-import { RouterContext } from "src/routes/__root";
 import config from "../app/config";
 import { useApi } from "../hooks/use-api";
-import { DateTime } from "luxon";
 
 export const Route = createFileRoute("/vehicle-list/map-view")({
   component: () => <VehicleListMapView />,
-  beforeLoad: (): RouterContext => ({
-    breadcrumbs: ["management.vehicles.title"],
-  }),
+  staticData: { breadcrumbs: ["management.vehicles.title"] },
 });
 
 const DEFAULT_MAP_CENTER = latLng(61.1621924, 28.65865865);

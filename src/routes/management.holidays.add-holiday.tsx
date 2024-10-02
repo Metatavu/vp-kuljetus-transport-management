@@ -1,19 +1,15 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { RouterContext } from "./__root";
-import { useApi } from "hooks/use-api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import AddHolidayDialog from "components/management/holidays/add-holiday-dialog";
 import { Holiday as THoliday } from "generated/client";
-import { DateTime } from "luxon";
+import { useApi } from "hooks/use-api";
 import { QUERY_KEYS } from "hooks/use-queries";
+import { DateTime } from "luxon";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import AddHolidayDialog from "components/management/holidays/add-holiday-dialog";
 
 export const Route = createFileRoute("/management/holidays/add-holiday")({
   component: AddHoliday,
-  beforeLoad: (): RouterContext => ({
-    breadcrumbs: ["management.holidays.addHoliday"],
-  }),
   validateSearch: ({ date }: Record<string, unknown>) => ({
     date: date ? DateTime.fromISO(date as string) : DateTime.now(),
   }),
@@ -45,5 +41,5 @@ function AddHoliday() {
     onError: () => toast.error(t("management.holidays.errorToast", { count: 1 })),
   });
 
-  return <AddHolidayDialog onSave={createHoliday} onClose={() => navigate({ to: "/management/holidays" })} />;
+  return <AddHolidayDialog onSave={createHoliday} onClose={() => navigate({ to: ".." })} />;
 }

@@ -1,20 +1,11 @@
 import { Box } from "@mui/material";
-import { Outlet, createRootRouteWithContext } from "@tanstack/react-router";
-import RootFreightDialog from "components/drive-planning/freights/root-freight-dialog";
+import { Outlet, createRootRoute } from "@tanstack/react-router";
 import BreadcrumbsBar from "components/layout/breadcrumbs-bar";
 import TopNavigation from "components/layout/top-navigation";
 import * as luxon from "luxon";
-import { LocalizedLabelKey } from "src/types";
 
-export type RouterContext = {
-  breadcrumbs?: LocalizedLabelKey[];
-};
-
-export const Route = createRootRouteWithContext<RouterContext>()({
+export const Route = createRootRoute({
   component: RootLayout,
-  validateSearch: ({ freightId }: Record<string, unknown>) => ({
-    freightId: freightId ? String(freightId) : undefined,
-  }),
 });
 
 function RootLayout() {
@@ -22,7 +13,6 @@ function RootLayout() {
 
   return (
     <Box sx={{ width: "100vw", height: "100vh", overflow: "hidden", display: "flex", flexDirection: "column" }}>
-      <RootFreightDialog />
       <TopNavigation />
       <BreadcrumbsBar />
       <Box component="main" sx={{ display: "flex", flex: 1, overflow: "hidden", width: "100%" }}>

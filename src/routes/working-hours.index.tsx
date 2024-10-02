@@ -1,5 +1,5 @@
 import SearchIcon from "@mui/icons-material/Search";
-import { Link, MenuItem, Paper, Stack, TextField, Tooltip, Typography, styled } from "@mui/material";
+import { Link, MenuItem, Paper, Stack, TextField, Typography, styled } from "@mui/material";
 import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import GenericDataGrid from "components/generic/generic-data-grid";
@@ -12,13 +12,10 @@ import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { LocalizedLabelKey } from "src/types";
 import LocalizationUtils from "src/utils/localization-utils";
-import { RouterContext } from "./__root";
 
 export const Route = createFileRoute("/working-hours/")({
   component: WorkingHours,
-  beforeLoad: (): RouterContext => ({
-    breadcrumbs: ["workingHours.title"],
-  }),
+  staticData: { breadcrumbs: ["workingHours.title"] },
 });
 
 type EmployeeFilters = {
@@ -56,7 +53,7 @@ const FilterContainer = styled(Stack, {
   padding: theme.spacing(2),
   // Apply padding for larger screens using breakpoints
   [theme.breakpoints.up(1800)]: {
-    padding: theme.spacing(0)
+    padding: theme.spacing(0),
   },
 }));
 
@@ -108,18 +105,17 @@ function WorkingHours() {
         align: "left",
         renderCell: (params) => (
           <Stack direction="row" spacing={1}>
-            <Tooltip title={t("workingHours.workingHourBalances.toWorkHourDetails")}>
-              <Link
-                onClick={() =>
-                  navigate({
-                    to: "/working-hours/$employeeId/working-days",
-                    params: { employeeId: params.row.id as string },
-                  })
-                }
-              >
-                {params.row.firstName} {params.row.lastName}
-              </Link>
-            </Tooltip>
+            <Link
+              title={t("workingHours.workingHourBalances.toWorkHourDetails")}
+              onClick={() =>
+                navigate({
+                  to: "/working-hours/$employeeId/work-shifts",
+                  params: { employeeId: params.row.id as string },
+                })
+              }
+            >
+              {params.row.firstName} {params.row.lastName}
+            </Link>
           </Stack>
         ),
       },
@@ -129,7 +125,7 @@ function WorkingHours() {
         headerName: t("workingHours.workingHourBalances.totalWorkTime"),
         sortable: false,
         flex: 1,
-        align: "center"
+        align: "center",
       },
       {
         field: "breaks",
@@ -137,7 +133,7 @@ function WorkingHours() {
         headerName: t("workingHours.workingHourBalances.breaks"),
         sortable: false,
         flex: 1,
-        align: "center"
+        align: "center",
       },
       {
         field: "waitingTime",
@@ -145,7 +141,7 @@ function WorkingHours() {
         headerName: t("workingHours.workingHourBalances.waitingTime"),
         sortable: false,
         flex: 1,
-        align: "center"
+        align: "center",
       },
       {
         field: "overtime",
@@ -153,7 +149,7 @@ function WorkingHours() {
         headerName: t("workingHours.workingHourBalances.overtime"),
         sortable: false,
         flex: 1,
-        align: "center"
+        align: "center",
       },
       {
         field: "eveningWork",
@@ -161,7 +157,7 @@ function WorkingHours() {
         headerName: t("workingHours.workingHourBalances.eveningWork"),
         sortable: false,
         flex: 1,
-        align: "center"
+        align: "center",
       },
       {
         field: "nightWork",
@@ -169,7 +165,7 @@ function WorkingHours() {
         headerName: t("workingHours.workingHourBalances.nightWork"),
         sortable: false,
         flex: 1,
-        align: "center"
+        align: "center",
       },
       {
         field: "taskSpecificBonus",
@@ -177,7 +173,7 @@ function WorkingHours() {
         headerName: t("workingHours.workingHourBalances.taskSpecificBonus"),
         sortable: false,
         flex: 1,
-        align: "center"
+        align: "center",
       },
       {
         field: "freezerBonus",
@@ -185,7 +181,7 @@ function WorkingHours() {
         headerName: t("workingHours.workingHourBalances.freezerBonus"),
         sortable: false,
         flex: 1,
-        align: "center"
+        align: "center",
       },
       {
         field: "holidayBonus",
@@ -193,7 +189,7 @@ function WorkingHours() {
         headerName: t("workingHours.workingHourBalances.holidayBonus"),
         sortable: false,
         flex: 1,
-        align: "center"
+        align: "center",
       },
       {
         field: "dayOffBonus",
@@ -201,7 +197,7 @@ function WorkingHours() {
         headerName: t("workingHours.workingHourBalances.dayOffBonus"),
         sortable: false,
         flex: 1,
-        align: "center"
+        align: "center",
       },
       {
         field: "sickLeaveOrAbsent",
@@ -209,7 +205,7 @@ function WorkingHours() {
         headerName: t("workingHours.workingHourBalances.sickLeaveOrAbsent"),
         sortable: false,
         flex: 1,
-        align: "center"
+        align: "center",
       },
       {
         field: "pekkanens",
@@ -217,7 +213,7 @@ function WorkingHours() {
         headerName: t("workingHours.workingHourBalances.pekkanens"),
         sortable: false,
         flex: 1,
-        align: "center"
+        align: "center",
       },
       {
         field: "vacation",
@@ -225,7 +221,7 @@ function WorkingHours() {
         headerName: t("workingHours.workingHourBalances.vacation"),
         sortable: false,
         flex: 1,
-        align: "center"
+        align: "center",
       },
       {
         field: "fillHours",
@@ -233,7 +229,7 @@ function WorkingHours() {
         headerName: t("workingHours.workingHourBalances.fillHours"),
         sortable: false,
         flex: 1,
-        align: "center"
+        align: "center",
       },
       {
         field: "halfDayAllowance",
@@ -241,7 +237,7 @@ function WorkingHours() {
         headerName: t("workingHours.workingHourBalances.halfDayAllowance"),
         sortable: false,
         flex: 1,
-        align: "center"
+        align: "center",
       },
       {
         field: "fullDayAllowance",
@@ -249,8 +245,8 @@ function WorkingHours() {
         headerName: t("workingHours.workingHourBalances.fullDayAllowance"),
         sortable: false,
         flex: 1,
-        align: "center"
-      }
+        align: "center",
+      },
     ],
     [t, navigate],
   );
@@ -281,6 +277,7 @@ function WorkingHours() {
   const renderSelectFilter = useCallback(
     (label: LocalizedLabelKey, key: keyof EmployeeFilters, menuItems: ReactNode) => (
       <TextField
+        key={key}
         select
         defaultValue={watch(key)}
         variant="standard"
@@ -304,11 +301,7 @@ function WorkingHours() {
           renderLocalizedSalaryGroupOptions(Object.values(SalaryGroup), LocalizationUtils.getLocalizedSalaryGroup),
         )}
         {/* TODO: implement this */}
-        <TextField
-          select
-          variant="standard"
-          label={t("workingHours.workingHourBalances.payPeriod")}
-        />
+        <TextField variant="standard" label={t("workingHours.workingHourBalances.payPeriod")} />
         {renderSelectFilter(
           "management.employees.type",
           "employeeType",
@@ -339,7 +332,9 @@ function WorkingHours() {
       <Paper sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
         <Stack flexDirection="row" alignItems="center" gap={4} p={(theme) => theme.spacing(1, 2)}>
           <Typography variant="h6">{"Su 28.4. 00:00 - La 11.5. 24:00"}</Typography>
-          <Typography variant="subtitle2">{t("workingHours.workingHourBalances.uncheckedCount", { count: 2 })}</Typography>
+          <Typography variant="subtitle2">
+            {t("workingHours.workingHourBalances.uncheckedCount", { count: 2 })}
+          </Typography>
         </Stack>
         <Stack flex={1} sx={{ flex: 1, overflowY: "auto" }}>
           <GenericDataGrid
@@ -353,7 +348,6 @@ function WorkingHours() {
             loading={employeesQuery.isFetching}
             rows={employeesQuery.data?.employees ?? []}
             rowCount={employeesQuery.data?.totalResults ?? 0}
-            paginationMode="server"
             paginationModel={{ page, pageSize }}
             onPaginationModelChange={setPaginationModel}
           />

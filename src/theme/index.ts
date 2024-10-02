@@ -1,7 +1,7 @@
 import { createTheme } from "@mui/material";
-import type {} from "@mui/x-date-pickers/themeAugmentation";
 import type {} from "@mui/x-data-grid/themeAugmentation";
 import { fiFI } from "@mui/x-date-pickers";
+import type {} from "@mui/x-date-pickers/themeAugmentation";
 
 /**
  * Extend theme with custom variables in here
@@ -278,17 +278,21 @@ const theme = createTheme(
         defaultProps: {
           variant: "filled",
           fullWidth: true,
-          InputProps: { disableUnderline: true },
           InputLabelProps: { shrink: true },
         },
         styleOverrides: {
           root: {
             "&.cell-input input": {
-              padding: 4,
+              padding: "4px 8px",
               textAlign: "center",
+              fontSize: 14,
+            },
+            "&.align-left input": {
+              textAlign: "left",
             },
             "&.cell-input .MuiSelect-select": {
               padding: 4,
+              fontSize: 14,
             },
             "&.cell-input .MuiOutlinedInput-root": {
               padding: 0,
@@ -328,14 +332,14 @@ const theme = createTheme(
         styleOverrides: {
           root: {
             backgroundColor: "#EDF3F5",
-            padding: "0px 16px",
+            padding: "0px 14px",
           },
         },
       },
       MuiTableCell: {
         styleOverrides: {
           root: {
-            padding: "0px 16px",
+            padding: "0px 14px",
             height: "30px",
             borderRight: "1px solid rgba(0, 0, 0, 0.12)",
             borderBottom: "1px solid rgba(0, 0, 0, 0.12)",

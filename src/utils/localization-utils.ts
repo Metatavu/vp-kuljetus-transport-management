@@ -1,4 +1,12 @@
-import { CompensationType, EmployeeType, Office, SalaryGroup, TaskType, TruckDriveStateEnum } from "generated/client";
+import {
+  CompensationType,
+  EmployeeType,
+  Office,
+  SalaryGroup,
+  TaskType,
+  TruckDriveStateEnum,
+  WorkEventType,
+} from "generated/client";
 import { TFunction } from "i18next";
 
 namespace LocalizationUtils {
@@ -79,6 +87,31 @@ namespace LocalizationUtils {
       PUBLIC_HOLIDAY_ALLOWANCE: t("management.holidays.compensationType.publicHolidayAllowance"),
       DAY_OFF_WORK_ALLOWANCE: t("management.holidays.compensationType.dayOffWorkAllowance"),
     })[compensationType];
+
+  export const getLocalizedWorkEventType = (workEventType: WorkEventType, t: TFunction) =>
+    ({
+      SHIFT_START: t("workingHours.workingDays.workShiftDialog.eventTypes.shiftStart"),
+      SHIFT_END: t("workingHours.workingDays.workShiftDialog.eventTypes.shiftEnd"),
+      AVAILABILITY: t("workingHours.workingDays.workShiftDialog.eventTypes.availability"),
+      BREAK: t("workingHours.workingDays.workShiftDialog.eventTypes.break"),
+      BREWERY: t("workingHours.workingDays.workShiftDialog.eventTypes.brewery"),
+      DRIVE: t("workingHours.workingDays.workShiftDialog.eventTypes.drive"),
+      DRIVER_CARD_INSERTED: t("workingHours.workingDays.workShiftDialog.eventTypes.driverCardInserted"),
+      DRIVER_CARD_REMOVED: t("workingHours.workingDays.workShiftDialog.eventTypes.driverCardRemoved"),
+      DRY: t("workingHours.workingDays.workShiftDialog.eventTypes.dry"),
+      FROZEN: t("workingHours.workingDays.workShiftDialog.eventTypes.frozen"),
+      GREASE: t("workingHours.workingDays.workShiftDialog.eventTypes.grease"),
+      LOADING: t("workingHours.workingDays.workShiftDialog.eventTypes.loading"),
+      LOGIN: t("workingHours.workingDays.workShiftDialog.eventTypes.login"),
+      LOGOUT: t("workingHours.workingDays.workShiftDialog.eventTypes.logout"),
+      MEAT_CELLAR: t("workingHours.workingDays.workShiftDialog.eventTypes.meatCellar"),
+      MEIRA: t("workingHours.workingDays.workShiftDialog.eventTypes.meira"),
+      OTHER_WORK: t("workingHours.workingDays.workShiftDialog.eventTypes.otherWork"),
+      PALTE: t("workingHours.workingDays.workShiftDialog.eventTypes.palte"),
+      UNKNOWN: t("workingHours.workingDays.workShiftDialog.eventTypes.unknown"),
+      UNLOADING: t("workingHours.workingDays.workShiftDialog.eventTypes.unloading"),
+      VEGETABLE: t("workingHours.workingDays.workShiftDialog.eventTypes.vegetable"),
+    })[workEventType];
 }
 
 export default LocalizationUtils;

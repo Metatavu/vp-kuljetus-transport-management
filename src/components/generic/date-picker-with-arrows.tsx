@@ -5,10 +5,10 @@ import { DateTime } from "luxon";
 import { useTranslation } from "react-i18next";
 
 type Props = {
-  date: DateTime;
+  date: DateTime<true>;
   labelVisible?: boolean;
   buttonsWithText?: boolean;
-  setDate: (date: DateTime) => void;
+  setDate: (date: DateTime<true>) => void;
 };
 
 const DatePickerWithArrows = ({ date, labelVisible, buttonsWithText, setDate }: Props) => {

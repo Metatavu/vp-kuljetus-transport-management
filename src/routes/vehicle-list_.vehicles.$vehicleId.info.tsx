@@ -2,17 +2,18 @@ import { Paper, Stack } from "@mui/material";
 import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import clsx from "clsx";
+import DatePickerWithArrows from "components/generic/date-picker-with-arrows";
 import GenericDataGrid from "components/generic/generic-data-grid";
 import { VehicleInfoBar } from "components/vehicles/vehicle-info-bar";
+import { Driver, Site, Task, TaskType, TruckDriveState, TruckDriveStateEnum } from "generated/client";
+import { DateTime, Interval } from "luxon";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import DataValidation from "src/utils/data-validation-utils";
+import { z } from "zod";
 import { useApi } from "../hooks/use-api";
-import { RouterContext } from "./__root";
 import LocalizationUtils from "../utils/localization-utils";
-import { DateTime, Interval } from "luxon";
-import DatePickerWithArrows from "components/generic/date-picker-with-arrows";
-import { Driver, Site, Task, TaskType, TruckDriveState, TruckDriveStateEnum } from "generated/client";
-import clsx from "clsx";
 
 type DriveStatesTableRow = {
   interval: Interval<true>;
@@ -22,14 +23,14 @@ type DriveStatesTableRow = {
   driverId?: string;
 };
 
+export const vehicleInfoRouteSearchSchema = z.object({
+  date: z.string().datetime({ offset: true }).transform(DataValidation.parseValidDateTime).optional(),
+});
+
 export const Route = createFileRoute("/vehicle-list/vehicles/$vehicleId/info")({
   component: () => <VehicleInfo />,
-  beforeLoad: (): RouterContext => ({
-    breadcrumbs: ["vehicleList.info.title"],
-  }),
-  validateSearch: ({ date }: Record<string, unknown>) => ({
-    date: DateTime.fromISO(date as string).isValid ? DateTime.fromISO(date as string) : DateTime.now(),
-  }),
+  staticData: { breadcrumbs: ["vehicleList.title", "vehicleList.info.title"] },
+  validateSearch: vehicleInfoRouteSearchSchema,
 });
 
 const VehicleInfo = () => {
@@ -37,7 +38,7 @@ const VehicleInfo = () => {
   const { t } = useTranslation();
   const { vehicleId } = Route.useParams();
   const navigate = useNavigate({ from: Route.parentRoute.fullPath });
-  const { date: selectedDate } = Route.useSearch();
+  const selectedDate = Route.useSearch({ select: (search) => search.date ?? DateTime.now() });
 
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({ page: 0, pageSize: 25 });
 
@@ -78,8 +79,8 @@ const VehicleInfo = () => {
 
   const routesQueryParams = {
     truckId: vehicleId,
-    departureAfter: selectedDate?.startOf("day").toJSDate(),
-    departureBefore: selectedDate?.endOf("day").toJSDate(),
+    departureAfter: selectedDate.startOf("day").toJSDate(),
+    departureBefore: selectedDate.endOf("day").toJSDate(),
   };
 
   const routes = useQuery({
@@ -123,8 +124,8 @@ const VehicleInfo = () => {
 
   const driveStatesQueryParams = {
     truckId: vehicleId,
-    after: selectedDate?.startOf("day").toJSDate(),
-    before: selectedDate?.endOf("day").toJSDate(),
+    after: selectedDate.startOf("day").toJSDate(),
+    before: selectedDate.endOf("day").toJSDate(),
   };
 
   const driveStates = useQuery({
@@ -351,7 +352,7 @@ const VehicleInfo = () => {
       <Stack flex={1} borderTop="1px solid rgba(0, 0, 0, 0.1)" padding={1}>
         <Stack width="30%" marginLeft={1}>
           <DatePickerWithArrows
-            date={selectedDate ?? DateTime.now()}
+            date={selectedDate}
             buttonsWithText
             setDate={(date) => navigate({ search: (search) => ({ ...search, date: date.toISODate() }) })}
           />

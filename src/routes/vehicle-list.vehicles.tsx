@@ -1,21 +1,18 @@
 import { Button, Paper, Stack } from "@mui/material";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { RouterContext } from "./__root";
-import { useTranslation } from "react-i18next";
 import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
-import { useEffect, useMemo, useState } from "react";
-import GenericDataGrid from "components/generic/generic-data-grid";
-import { useApi } from "../hooks/use-api";
 import { useQueries, useQuery } from "@tanstack/react-query";
-import { DateTime } from "luxon";
-import LocalizationUtils from "../utils/localization-utils";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import clsx from "clsx";
+import GenericDataGrid from "components/generic/generic-data-grid";
+import { DateTime } from "luxon";
+import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useApi } from "../hooks/use-api";
+import LocalizationUtils from "../utils/localization-utils";
 
 export const Route = createFileRoute("/vehicle-list/vehicles")({
   component: VehicleListVehicles,
-  beforeLoad: (): RouterContext => ({
-    breadcrumbs: ["vehicleList.title"],
-  }),
+  staticData: { breadcrumbs: ["vehicleList.title"] },
 });
 
 function VehicleListVehicles() {

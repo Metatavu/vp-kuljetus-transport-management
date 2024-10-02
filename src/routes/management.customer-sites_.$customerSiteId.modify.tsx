@@ -1,19 +1,16 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import CustomerSiteComponent from "components/management/customer-sites/customer-site";
-import { useApi } from "hooks/use-api";
-import { RouterContext } from "src/routes/__root";
 import LoaderWrapper from "components/generic/loader-wrapper";
+import CustomerSiteComponent from "components/management/customer-sites/customer-site";
 import { Site } from "generated/client";
+import { useApi } from "hooks/use-api";
 import { QUERY_KEYS, useSite } from "hooks/use-queries";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
 export const Route = createFileRoute("/management/customer-sites/$customerSiteId/modify")({
   component: () => <CustomerSiteModify />,
-  beforeLoad: (): RouterContext => ({
-    breadcrumbs: ["management.customerSites.title", "management.customerSites.modify"],
-  }),
+  staticData: { breadcrumbs: ["management.customerSites.title", "management.customerSites.modify"] },
 });
 
 const CustomerSiteModify = () => {

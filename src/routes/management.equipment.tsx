@@ -1,21 +1,18 @@
-import { Button, Stack, styled } from "@mui/material";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import ToolbarRow from "components/generic/toolbar-row";
-import { RouterContext } from "./__root";
-import { useTranslation } from "react-i18next";
-import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
-import { useMemo, useState } from "react";
-import GenericDataGrid from "components/generic/generic-data-grid";
 import { Add } from "@mui/icons-material";
-import { useApi } from "hooks/use-api";
+import { Button, Stack, styled } from "@mui/material";
+import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import { useQuery } from "@tanstack/react-query";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import GenericDataGrid from "components/generic/generic-data-grid";
+import ToolbarRow from "components/generic/toolbar-row";
+import { useApi } from "hooks/use-api";
+import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import LocalizationUtils from "utils/localization-utils";
 
 export const Route = createFileRoute("/management/equipment")({
   component: ManagementEquipment,
-  beforeLoad: (): RouterContext => ({
-    breadcrumbs: ["management.equipment.title"],
-  }),
+  staticData: { breadcrumbs: ["management.equipment.title"] },
 });
 
 // Styled root component

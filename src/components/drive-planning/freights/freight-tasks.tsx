@@ -59,22 +59,25 @@ const FreightTasks = ({ tasks, customerSites, onEditTask }: Props) => {
   );
 
   const renderRouteCell = useCallback(
-    ({ row }: GridRenderCellParams<Task>) => (
-      <Stack direction="row" width="100%" alignItems="center" justifyContent="space-between">
-        <AsyncDataGridCell
-          promise={queryClient.fetchQuery({
-            queryKey: [QUERY_KEYS.ROUTES, row.routeId],
-            queryFn: () => (row.routeId ? routesApi.findRoute({ routeId: row.routeId }) : undefined),
-          })}
-          valueGetter={(route) => route?.name ?? t("noSelection")}
-        />
-        {row.routeId && (
-          <IconButton onClick={(e) => onClearRoute(e, row)}>
-            <ClearIcon />
-          </IconButton>
-        )}
-      </Stack>
-    ),
+    ({ row }: GridRenderCellParams<Task>) => {
+      const { routeId } = row;
+      return (
+        <Stack direction="row" width="100%" alignItems="center" justifyContent="space-between">
+          <AsyncDataGridCell
+            promise={routeId ? queryClient.fetchQuery({
+              queryKey: [QUERY_KEYS.ROUTES, routeId],
+              queryFn: () => routesApi.findRoute({ routeId: routeId }),
+            }) : Promise.resolve(undefined)}
+            valueGetter={(route) => route?.name ?? t("noSelection")}
+          />
+          {routeId && (
+            <IconButton onClick={(e) => onClearRoute(e, row)}>
+              <ClearIcon />
+            </IconButton>
+          )}
+        </Stack>
+      );
+    },
     [t, queryClient, routesApi, onClearRoute],
   );
 
@@ -139,10 +142,10 @@ const FreightTasks = ({ tasks, customerSites, onEditTask }: Props) => {
         sortable: false,
         renderCell: ({ row: { routeId } }) => (
           <AsyncDataGridCell
-            promise={queryClient.fetchQuery({
+            promise={routeId ? queryClient.fetchQuery({
               queryKey: [QUERY_KEYS.ROUTES, routeId],
               queryFn: () => (routeId ? routesApi.findRoute({ routeId: routeId }) : undefined),
-            })}
+            }) : Promise.resolve(undefined)}
             valueGetter={(route) =>
               route?.departureTime ? DateTime.fromJSDate(route?.departureTime).toFormat("dd-MM-yyyy") : ""
             }
