@@ -1,14 +1,10 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { RouterContext } from "./__root";
 import FreightDialog from "components/drive-planning/freights/freight-dialog";
-import { useCreateFreight } from "hooks/use-mutations";
 import { Freight } from "generated/client";
+import { useCreateFreight } from "hooks/use-mutations";
 
 export const Route = createFileRoute("/drive-planning/freights/add-freight")({
   component: AddFreight,
-  beforeLoad: (): RouterContext => ({
-    breadcrumbs: ["drivePlanning.freights.title", "drivePlanning.freights.new"],
-  }),
 });
 
 function AddFreight() {

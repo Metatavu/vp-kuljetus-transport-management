@@ -1,8 +1,6 @@
 import { Box, Breadcrumbs, Typography, styled } from "@mui/material";
-import { useRouter } from "@tanstack/react-router";
+import { useMatches } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { RouterContext } from "src/routes/__root";
-import DataValidation from "utils/data-validation-utils";
 
 const BreadCrumbBar = styled(Box, {
   label: "styled-breadcrumb-bar",
@@ -13,10 +11,8 @@ const BreadCrumbBar = styled(Box, {
 
 const BreadcrumbsBar = () => {
   const { t } = useTranslation();
-  const router = useRouter();
-  const breadcrumbs = router.state.matches
-    .flatMap(({ routeContext }) => (routeContext as RouterContext).breadcrumbs)
-    .filter(DataValidation.validateValueIsNotUndefinedNorNull);
+  const matches = useMatches();
+  const breadcrumbs = matches.flatMap((match) => match.staticData?.breadcrumbs ?? []);
 
   return (
     // TODO: Make breadcrums work as links to previous pages according to MUI documentation

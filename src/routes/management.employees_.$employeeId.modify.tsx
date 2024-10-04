@@ -1,20 +1,17 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { RouterContext } from "./__root";
-import { useApi } from "hooks/use-api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useTranslation } from "react-i18next";
-import { QUERY_KEYS, useEmployee, useTimeEntries } from "hooks/use-queries";
-import { Employee, SalaryGroup } from "generated/client";
-import { toast } from "react-toastify";
+import { createFileRoute } from "@tanstack/react-router";
 import LoaderWrapper from "components/generic/loader-wrapper";
 import EmployeeComponent from "components/management/employees/employee";
+import { Employee, SalaryGroup } from "generated/client";
+import { useApi } from "hooks/use-api";
+import { QUERY_KEYS, useEmployee, useTimeEntries } from "hooks/use-queries";
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
 export const Route = createFileRoute("/management/employees/$employeeId/modify")({
   component: EmployeeModify,
-  beforeLoad: (): RouterContext => ({
-    breadcrumbs: ["management.employees.title", "management.employees.modify"],
-  }),
+  staticData: { breadcrumbs: ["management.employees.title", "management.employees.modify"] },
 });
 
 function EmployeeModify() {

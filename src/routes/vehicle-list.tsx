@@ -1,8 +1,8 @@
-import { Outlet, createFileRoute, useMatches, useNavigate } from "@tanstack/react-router";
 import { Stack, Tab, Tabs, styled } from "@mui/material";
-import { NavigationItem } from "src/types";
+import { Outlet, createFileRoute, useMatches, useNavigate } from "@tanstack/react-router";
 import ViewContainer from "components/layout/view-container";
 import { useTranslation } from "react-i18next";
+import { NavigationItem } from "src/types";
 
 export const Route = createFileRoute("/vehicle-list")({
   component: VehicleListLayoutComponent,
@@ -17,7 +17,7 @@ const ViewNavigationLayout = styled(Stack, {
   label: "styled-view-navigation-layout",
 })(() => ({
   position: "sticky",
-  width: "100%"
+  width: "100%",
 }));
 
 function VehicleListLayoutComponent() {
@@ -30,10 +30,7 @@ function VehicleListLayoutComponent() {
   return (
     <Stack direction="column" flex={1} padding={2}>
       <ViewNavigationLayout>
-        <Tabs
-          orientation="horizontal"
-          value={selectedRouteIndex}
-        >
+        <Tabs orientation="horizontal" value={selectedRouteIndex}>
           {navigationItems.map(([path, title], index) => (
             <Tab
               key={path}

@@ -1,6 +1,17 @@
 import { Add, ArrowDropDown, Download } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, MenuItem, Stack, TextField, Typography, styled } from "@mui/material";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  MenuItem,
+  Stack,
+  TextField,
+  Typography,
+  styled,
+} from "@mui/material";
 import { GridColDef, GridPaginationModel, GridRenderEditCellParams } from "@mui/x-data-grid";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Outlet, createFileRoute, deepEqual, useNavigate } from "@tanstack/react-router";
@@ -19,7 +30,6 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import LocalizationUtils from "src/utils/localization-utils";
-import { RouterContext } from "./__root";
 
 // Styled root component
 const Root = styled(Stack, {
@@ -33,9 +43,7 @@ const Root = styled(Stack, {
 
 export const Route = createFileRoute("/management/holidays")({
   component: ManagementHolidays,
-  beforeLoad: (): RouterContext => ({
-    breadcrumbs: ["management.holidays.title"],
-  }),
+  staticData: { breadcrumbs: ["management.holidays.title"] },
 });
 
 function ManagementHolidays() {
@@ -60,15 +68,17 @@ function ManagementHolidays() {
 
   const createHolidaysForEntireYear = useMutation({
     mutationFn: async (holidays: HolidaysTypes.Holiday[]) => {
-      await Promise.all(holidays.map(async (holiday) =>
-        holidaysApi.createHoliday({
-          holiday: {
-            date: DateTime.fromJSDate(holiday.start).set({ hour: 12 }).toJSDate(),
-            name: holiday.name,
-            compensationType: CompensationType.PublicHolidayAllowance,
-          },
-        })
-      ));
+      await Promise.all(
+        holidays.map(async (holiday) =>
+          holidaysApi.createHoliday({
+            holiday: {
+              date: DateTime.fromJSDate(holiday.start).set({ hour: 12 }).toJSDate(),
+              name: holiday.name,
+              compensationType: CompensationType.PublicHolidayAllowance,
+            },
+          }),
+        ),
+      );
       navigate({ to: "/management/holidays" });
     },
     onSuccess: () => {
@@ -86,7 +96,7 @@ function ManagementHolidays() {
     },
     onSuccess: () => {
       toast.success(t("management.holidays.editSuccessToast"));
-      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.HOLIDAYS] })
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.HOLIDAYS] });
     },
     onError: () => toast.error(t("management.holidays.editErrorToast")),
   });
@@ -105,26 +115,24 @@ function ManagementHolidays() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.HOLIDAYS] }),
   });
 
-  const renderCompensationTypeSingleSelectCell =
-    ({ api, id, field, value }: GridRenderEditCellParams) => {
-      const { setEditCellValue } = api;
+  const renderCompensationTypeSingleSelectCell = ({ api, id, field, value }: GridRenderEditCellParams) => {
+    const { setEditCellValue } = api;
 
-      return (
-        <TextField
-          select
-          SelectProps={{ defaultOpen: true }}
-          defaultValue={value}
-          onChange={({ target: { value } }) => setEditCellValue({ id: id, field: field, value: value })}
-        >
-          {[CompensationType.DayOffWorkAllowance, CompensationType.PublicHolidayAllowance].map((compensationType) => (
-            <MenuItem key={compensationType} value={compensationType}>
-              {LocalizationUtils.getLocalizedCompensationType(compensationType, t)}
-            </MenuItem>
-          ))
-          }
-        </TextField>
-      );
-    };
+    return (
+      <TextField
+        select
+        SelectProps={{ defaultOpen: true }}
+        defaultValue={value}
+        onChange={({ target: { value } }) => setEditCellValue({ id: id, field: field, value: value })}
+      >
+        {[CompensationType.DayOffWorkAllowance, CompensationType.PublicHolidayAllowance].map((compensationType) => (
+          <MenuItem key={compensationType} value={compensationType}>
+            {LocalizationUtils.getLocalizedCompensationType(compensationType, t)}
+          </MenuItem>
+        ))}
+      </TextField>
+    );
+  };
 
   const columns: GridColDef<Holiday>[] = useMemo(
     () => [
@@ -135,7 +143,6 @@ function ManagementHolidays() {
         sortable: false,
         flex: 1,
         valueFormatter: ({ value }) => DateTime.fromJSDate(value).toLocaleString(DateTime.DATE_SHORT),
-
       },
       {
         field: "name",
@@ -153,17 +160,15 @@ function ManagementHolidays() {
         sortable: false,
         type: "singleSelect",
         valueOptions: [CompensationType.DayOffWorkAllowance, CompensationType.PublicHolidayAllowance],
-        getOptionLabel: value => LocalizationUtils.getLocalizedCompensationType(value as CompensationType, t),
-        getOptionValue: value => value,
+        getOptionLabel: (value) => LocalizationUtils.getLocalizedCompensationType(value as CompensationType, t),
+        getOptionValue: (value) => value,
         renderCell: ({ value }) => (
           <Stack direction="row" justifyContent="space-between" alignItems="center" width="100%">
-            <Typography>
-              {LocalizationUtils.getLocalizedCompensationType(value, t)}
-            </Typography>
+            <Typography>{LocalizationUtils.getLocalizedCompensationType(value, t)}</Typography>
             <ArrowDropDown color="primary" fontSize="small" />
           </Stack>
         ),
-        renderEditCell: renderCompensationTypeSingleSelectCell
+        renderEditCell: renderCompensationTypeSingleSelectCell,
       },
       {
         field: "actions",
@@ -180,7 +185,10 @@ function ManagementHolidays() {
               onClick={() =>
                 showConfirmDialog({
                   title: t("management.holidays.deleteHoliday"),
-                  description: t("management.holidays.deleteConfirmationDescription", { name: row.name, date: DateTime.fromJSDate(row.date).toLocaleString(DateTime.DATE_SHORT) }),
+                  description: t("management.holidays.deleteConfirmationDescription", {
+                    name: row.name,
+                    date: DateTime.fromJSDate(row.date).toLocaleString(DateTime.DATE_SHORT),
+                  }),
                   positiveButtonColor: "error",
                   positiveButtonText: t("delete"),
                   onPositiveClick: () => deleteHoliday.mutate(row),
@@ -198,7 +206,7 @@ function ManagementHolidays() {
 
   const getHolidays = (year: number) => {
     setHolidaysToCreate(new Holidays("FI").getHolidays(year));
-  }
+  };
 
   // Open the dialog to enter the year when the button is clicked
   const handleOpenYearDialog = () => {
@@ -231,12 +239,7 @@ function ManagementHolidays() {
           title={t("management.holidays.title")}
           toolbarButtons={
             <Stack direction="row" gap={1}>
-              <Button
-                size="small"
-                variant="outlined"
-                startIcon={<Download />}
-                onClick={handleOpenYearDialog}
-              >
+              <Button size="small" variant="outlined" startIcon={<Download />} onClick={handleOpenYearDialog}>
                 {t("management.holidays.getHolidays")}
               </Button>
               <Button
@@ -272,7 +275,7 @@ function ManagementHolidays() {
             processRowUpdate={processRowUpdate}
             initialState={{
               sorting: {
-                sortModel: [{ field: "date", sort: 'desc' }],
+                sortModel: [{ field: "date", sort: "desc" }],
               },
             }}
           />
@@ -280,7 +283,11 @@ function ManagementHolidays() {
       </Root>
 
       {/* Dialog to enter the year */}
-      <Dialog open={isYearDialogOpen} onClose={handleCancel} PaperProps={{ sx: { minWidth: "360px", margin: 0, borderRadius: 0 } }}>
+      <Dialog
+        open={isYearDialogOpen}
+        onClose={handleCancel}
+        PaperProps={{ sx: { minWidth: "360px", margin: 0, borderRadius: 0 } }}
+      >
         <DialogHeader
           closeTooltip={t("tooltips.closeDialog")}
           title={t("management.holidays.getHolidaysFromTheYear")}
@@ -314,19 +321,24 @@ function ManagementHolidays() {
         />
         <DialogContent>
           <DialogContentText>
-            {t('management.holidays.confirmationMessage', { year, holidayCount: holidaysToCreate.length })}
+            {t("management.holidays.confirmationMessage", { year, holidayCount: holidaysToCreate.length })}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button variant="outlined" onClick={handleCancel}>
             {t("cancel")}
           </Button>
-          <LoadingButton variant="contained" onClick={handleConfirm} autoFocus loading={createHolidaysForEntireYear.isPending}>
+          <LoadingButton
+            variant="contained"
+            onClick={handleConfirm}
+            autoFocus
+            loading={createHolidaysForEntireYear.isPending}
+          >
             {t("yes")}
           </LoadingButton>
         </DialogActions>
       </Dialog>
       <Outlet />
     </LoaderWrapper>
-  )
+  );
 }

@@ -16,7 +16,7 @@ const RootFreightDialog = () => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
 
-  const onClose = () => navigate({ params: {}, search: { ...searchParams, freightId: undefined } });
+  const onClose = () => navigate({ to: ".", search: { ...searchParams, freightId: undefined } });
 
   const updateFreight = useMutation({
     mutationFn: async (freight: Freight) => {

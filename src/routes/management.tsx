@@ -4,13 +4,10 @@ import { Outlet, createFileRoute } from "@tanstack/react-router";
 import SideNavigation from "components/layout/side-navigation";
 import ViewContainer from "components/layout/view-container";
 import { NavigationItem } from "src/types";
-import { RouterContext } from "./__root";
 
 export const Route = createFileRoute("/management")({
   component: ManagementLayoutComponent,
-  beforeLoad: (): RouterContext => ({
-    breadcrumbs: ["management.title"],
-  }),
+  staticData: { breadcrumbs: ["management.title"] },
 });
 
 function ManagementLayoutComponent() {

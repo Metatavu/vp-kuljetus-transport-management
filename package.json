@@ -6,7 +6,7 @@
   "scripts": {
     "build-prod": "node infisical.js >> .env.production && npm run build",
     "start": "infisical run --path /transport-management -- npm run dev",
-    "dev": "tsc --noEmit --skipLibCheck && vite --open",
+    "dev": "tsc && vite --open",
     "build": "tsc && vite build",
     "build-client": "openapi-generator-cli generate -i vp-kuljetus-transport-management-specs/specs/management.yaml -o src/generated/client -c generator-config.json -g typescript-fetch",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
@@ -28,8 +28,7 @@
     "@mui/x-date-pickers": "6.19.5",
     "@react-pdf/renderer": "3.4.4",
     "@tanstack/react-query": "5.22.2",
-    "@tanstack/react-router": "1.15.13",
-    "@tanstack/router-vite-plugin": "1.4.6",
+    "@tanstack/react-router": "1.58.9",
     "date-holidays": "3.23.12",
     "envalid": "8.0.0",
     "i18next": "23.7.16",
@@ -46,11 +45,13 @@
     "react-i18next": "14.0.0",
     "react-leaflet": "4.2.1",
     "react-toastify": "10.0.5",
-    "wellknown": "0.5.0"
+    "wellknown": "0.5.0",
+    "zod": "3.23.8"
   },
   "devDependencies": {
     "@biomejs/biome": "1.5.2",
     "@openapitools/openapi-generator-cli": "2.9.0",
+    "@tanstack/router-plugin": "1.58.12",
     "@types/leaflet": "1.9.8",
     "@types/luxon": "3.4.2",
     "@types/react": "18.2.43",

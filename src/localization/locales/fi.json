@@ -1,6 +1,10 @@
 {
+  "refresh": "Päivitä",
   "save": "Tallenna",
+  "saveChanges": "Tallenna muutokset",
+  "undoChanges": "Peru muutokset",
   "cancel": "Peruuta",
+  "close": "Sulje",
   "logout": "Kirjaudu ulos",
   "edit": "Muokkaa",
   "delete": "Poista",
@@ -251,7 +255,7 @@
         "saveNewRoute": "Lisää reitti",
         "saveExistingRoute": "Tallenna reitti"
       },
-      "lastRefreshedAt": "Tiedot päivitetty {{lastRefreshedAt}}",
+      "lastRefreshedAt": "Viimeksi päivitetty: {{lastRefreshedAt}}",
       "refresh": "Päivitä tiedot",
       "tasksTable": {
         "task": "Tehtävä",
@@ -495,6 +499,37 @@
         "reviewed": "Tarkastanut",
         "affectedDates": "Muutetut päivämäärät",
         "explanation": "Selite"
+      },
+      "workShiftDialog": {
+        "title": "Työajan erittely",
+        "time": "Aika",
+        "vehicle": "Auto",
+        "event": "Tapahtuma",
+        "duration": "Kesto",
+        "distance": "Matka",
+        "eventTypes": {
+          "vegetable": "Vihannes",
+          "dry": "Kuiva",
+          "meatCellar": "Lihavarasto",
+          "meira": "Meira",
+          "frozen": "Pakaste",
+          "palte": "Palte",
+          "brewery": "Panimo",
+          "grease": "Rasva",
+          "login": "Sisäänkirjautuminen",
+          "logout": "Uloskirjautuminen",
+          "otherWork": "Muu työ",
+          "break": "Tauko",
+          "shiftStart": "Vuoron aloitus",
+          "shiftEnd": "Vuoron lopetus",
+          "unknown": "Väliaika",
+          "drive": "Ajo",
+          "loading": "Lastaus",
+          "unloading": "Purku",
+          "availability": "Saatavuus",
+          "driverCardInserted": "Sisäänkirjautuminen",
+          "driverCardRemoved": "Uloskirjautuminen"
+        }
       }
     }
   }

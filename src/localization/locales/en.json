@@ -1,6 +1,10 @@
 {
+  "refresh": "Refresh",
   "save": "Save",
+  "saveChanges": "Save changes",
+  "undoChanges": "Undo changes",
   "cancel": "Cancel",
+  "close": "Close",
   "logout": "Logout",
   "edit": "Edit",
   "delete": "Delete",
@@ -404,6 +408,37 @@
         "reviewed": "Reviewed",
         "affectedDates": "Affected dates",
         "explanation": "Explanation"
+      },
+      "workShiftDialog": {
+        "title": "Work shift events",
+        "time": "Time",
+        "vehicle": "Vehicle",
+        "event": "Event",
+        "duration": "Duration",
+        "distance": "Distance",
+        "eventTypes": {
+          "vegetable": "Vegetable",
+          "dry": "Dry",
+          "meatCellar": "Meat cellar",
+          "meira": "Meira",
+          "frozen": "Frozen",
+          "palte": "Palte",
+          "brewery": "Brewery",
+          "grease": "Grease",
+          "login": "Login",
+          "logout": "Logout",
+          "otherWork": "Other work",
+          "break": "Break",
+          "shiftStart": "Shift start",
+          "shiftEnd": "Shift end",
+          "unknown": "Unknown",
+          "drive": "Drive",
+          "loading": "Loading",
+          "unloading": "Unloading",
+          "availability": "Availability",
+          "driverCardInserted": "Driver card inserted",
+          "driverCardRemoved": "Driver card removed"
+        }
       }
     }
   }

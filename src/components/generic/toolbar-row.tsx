@@ -18,11 +18,10 @@ type Props = {
   title?: string;
   toolbarButtons?: ReactNode;
   leftToolbar?: ReactNode;
-  titleFirst?: boolean;
   navigateBack?: () => void;
 };
 
-const ToolbarRow = ({ height, title, toolbarButtons, leftToolbar, titleFirst, navigateBack }: Props) => {
+const ToolbarRow = ({ height, title, toolbarButtons, leftToolbar, navigateBack }: Props) => {
   const renderBackButton = useCallback(() => {
     if (!navigateBack) return null;
 
@@ -43,18 +42,12 @@ const ToolbarRow = ({ height, title, toolbarButtons, leftToolbar, titleFirst, na
     );
   }, [title]);
 
-  const renderLeftToolbar = useCallback(() => {
-    if (titleFirst) {
-      return [renderTitle(), leftToolbar];
-    }
-    return [leftToolbar, renderTitle()];
-  }, [leftToolbar, titleFirst, renderTitle]);
-
   return (
     <Root height={height}>
       <Stack direction="row" spacing={2} flex={1} alignItems="center">
         {renderBackButton()}
-        {renderLeftToolbar()}
+        {renderTitle()}
+        {leftToolbar}
       </Stack>
       {toolbarButtons}
     </Root>

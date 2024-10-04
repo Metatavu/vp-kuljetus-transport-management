@@ -1,17 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { useApi } from "hooks/use-api";
-import { RouterContext } from "src/routes/__root";
 import LoaderWrapper from "components/generic/loader-wrapper";
 import EquipmentComponent from "components/management/equipments/equipment";
 import { Towable, TowableTypeEnum, Truck } from "generated/client";
+import { useApi } from "hooks/use-api";
 import { toast } from "react-toastify";
 
 export const Route = createFileRoute("/management/equipment/$equipmentId/modify")({
   component: () => <EquipmentModify />,
-  beforeLoad: (): RouterContext => ({
-    breadcrumbs: ["management.equipment.title", "management.equipment.modify"],
-  }),
+  staticData: { breadcrumbs: ["management.equipment.title", "management.equipment.modify"] },
 });
 
 const EquipmentModify = () => {

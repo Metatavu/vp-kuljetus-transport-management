@@ -2,18 +2,22 @@ import { Button, Checkbox, Link, MenuItem, Stack, styled, TextField, Typography 
 import { TimePicker } from "@mui/x-date-pickers";
 import { useTranslation } from "react-i18next";
 
-// Styled work day row
-const WorkingDayRow = styled(Stack, {
-  label: "working-day-row",
+type Props = {
+  onClick: () => void;
+};
+
+// Styled work shift row
+const Row = styled(Stack, {
+  label: "work-shift-row",
 })(({ theme }) => ({
   flexDirection: "row",
   backgroundColor: theme.palette.background.paper,
   borderBottom: `1px solid ${theme.palette.divider}`,
 }));
 
-// Styled work day cell
+// Styled work shift cell
 const Cell = styled(Stack, {
-  label: "working-day-cell",
+  label: "work-shift-cell",
 })(({ theme }) => ({
   borderRight: `1px solid ${theme.palette.divider}`,
   backgroundColor: "rgba(0, 65, 79, 0.1)",
@@ -30,7 +34,7 @@ const Cell = styled(Stack, {
   },
 }));
 
-function WorkDay() {
+function WorkShiftRow({ onClick }: Props) {
   const { t } = useTranslation();
 
   const renderTimeInput = (title: string) => {
@@ -72,9 +76,15 @@ function WorkDay() {
   }
 
   return (
-    <WorkingDayRow>
+    <Row>
       <Cell width={90}>
-        <Link variant="body2">{"Su 28.4."}</Link>
+        <Link
+          variant="body2"
+          title={t("workingHours.workingHourBalances.toWorkHourDetails")}
+          onClick={onClick}
+        >
+          {"Su 28.4."}
+        </Link>
       </Cell>
       <Cell flex={1}>
         {renderTimeInput(
@@ -128,7 +138,7 @@ function WorkDay() {
           t("workingHours.workingDays.table.freezerBonus")
         )}
       </Cell>
-      <Cell minWidth={125} flex={1}>
+      <Cell minWidth={115} flex={1}>
         <Stack gap={0.5} direction="row" width="100%">
           <Checkbox
             size="small"
@@ -136,21 +146,21 @@ function WorkDay() {
             title={t("workingHours.workingHourBalances.dayOffBonus")}
             aria-label={t("workingHours.workingHourBalances.dayOffBonus")}
           />
-          {renderSelectInput(t("workingHours.workingDays.table.absence"), [])}
+          {renderSelectInput(t("workingHours.workingDays.table.absence"), ["SL", "PK"])}
         </Stack>
       </Cell>
-      {/* <Cell width={100}>
-        {renderSelectInput(t("workingHours.workingDays.table.vehicle"), [])}
-      </Cell> */}
-      <Cell flex={1}>
-        {renderSelectInput(t("workingHours.workingDays.table.dailyAllowance"), [])}
+      <Cell width={90}>
+        {renderSelectInput(t("workingHours.workingDays.table.vehicle"), ["21", "222"])}
+      </Cell>
+      <Cell width={90}>
+        {renderSelectInput(t("workingHours.workingDays.table.dailyAllowance"), ["Osa", "Koko"])}
       </Cell>
       <Cell width={90}>
         <Checkbox size="small" title="Tarkastettu" aria-label="checked" />
       </Cell>
       <Cell minWidth={275} flex={1}>
         <TextField
-          className="cell-input"
+          className="cell-input align-left"
           size="small"
           aria-label={t("workingHours.workingDays.table.remarks")}
           fullWidth
@@ -161,12 +171,14 @@ function WorkDay() {
         <Button
           variant="text"
           color="primary"
+          title={t("workingHours.workingHourBalances.toWorkHourDetails")}
+          onClick={onClick}
         >
           {t("open")}
         </Button>
       </Cell>
-    </WorkingDayRow>
+    </Row>
   );
 };
 
-export default WorkDay;
+export default WorkShiftRow;

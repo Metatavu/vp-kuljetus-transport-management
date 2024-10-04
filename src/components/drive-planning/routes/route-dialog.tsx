@@ -20,7 +20,7 @@ type RouteForm = {
 };
 
 type Props = {
-  initialDate: DateTime;
+  initialDate: DateTime<true>;
   routeId?: string;
   onSave?: UseMutationResult<void, Error, Route, unknown>;
 };
@@ -84,7 +84,7 @@ const RouteDialog = ({ initialDate, routeId, onSave }: Props) => {
       departureTime: form.departureTime,
     });
 
-  const handleClose = () => navigate({ to: "/drive-planning/routes", search: { date: initialDate } });
+  const handleClose = () => navigate({ to: "..", search: { date: initialDate } });
 
   const renderTruck = (truck: Truck) => (
     <MenuItem key={truck.id} value={truck.id}>
@@ -125,7 +125,7 @@ const RouteDialog = ({ initialDate, routeId, onSave }: Props) => {
           onClose={handleClose}
         />
         <form onSubmit={handleSubmit(onSaveClick)}>
-          <DialogContent sx={{ padding: "16px" }}>
+          <DialogContent sx={{ p: 2 }}>
             <Stack spacing={2}>
               <TimePicker
                 label={t("drivePlanning.routes.departureTime")}
