@@ -1,11 +1,11 @@
 import { AccountCircle as AccountCircleIcon } from "@mui/icons-material";
-import { AppBar, Toolbar, Typography, IconButton, Menu, MenuItem, Stack, Tabs, Tab } from "@mui/material";
+import { AppBar, IconButton, Menu, MenuItem, Stack, Tab, Tabs, Toolbar, Typography } from "@mui/material";
 import { useMatches, useNavigate } from "@tanstack/react-router";
 import logo from "assets/vp-kuljetus-logo.jpeg";
+import { authAtom } from "atoms/auth";
 import { useAtomValue } from "jotai";
 import { bindMenu, bindTrigger, usePopupState } from "material-ui-popup-state/hooks";
 import { useTranslation } from "react-i18next";
-import { authAtom } from "../../atoms/auth";
 import { NavigationItem } from "src/types";
 
 const TopNavigation = () => {
@@ -28,11 +28,11 @@ const TopNavigation = () => {
   );
 
   return (
-    <AppBar position="static" sx={{ height: "54px" }}>
-      <Toolbar variant="dense">
+    <AppBar position="static" sx={{ height: "54px", pl: 2 }}>
+      <Toolbar variant="dense" disableGutters>
         <img src={logo} alt="VP-Kuljetus logo" height={42} />
 
-        <Stack direction="row" gap={3} sx={{ ml: 3, flexGrow: 1 }}>
+        <Stack direction="row" gap={3} sx={{ ml: 8, flexGrow: 1 }}>
           <Tabs value={selectedRouteIndex}>
             {routeLinks.map(([route, label], routeIndex) => (
               <Tab

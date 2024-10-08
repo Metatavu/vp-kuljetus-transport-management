@@ -1,12 +1,16 @@
-import { Box, Breadcrumbs, Typography, styled } from "@mui/material";
-import { useMatches } from "@tanstack/react-router";
+import { Breadcrumbs, Typography, styled } from "@mui/material";
+import { Stack } from "@mui/system";
+import { Link, useMatches } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 
-const BreadCrumbBar = styled(Box, {
+const BreadCrumbBar = styled(Stack, {
   label: "styled-breadcrumb-bar",
 })(({ theme }) => ({
   backgroundColor: theme.palette.primary.light,
-  padding: theme.spacing(0.5, 3),
+  paddingLeft: theme.spacing(2),
+  height: 32,
+  flexDirection: "row",
+  alignItems: "center",
 }));
 
 const BreadcrumbsBar = () => {
@@ -15,18 +19,26 @@ const BreadcrumbsBar = () => {
   const breadcrumbs = matches.flatMap((match) => match.staticData?.breadcrumbs ?? []);
 
   return (
-    // TODO: Make breadcrums work as links to previous pages according to MUI documentation
     <BreadCrumbBar>
-      <Breadcrumbs sx={{ color: "#ffffff" }}>
-        {breadcrumbs.map((breadcrumb, index) => (
-          <Typography
-            key={`breadcrumb-${index}`}
-            color="#ffffff"
-            sx={{ fontWeight: index === breadcrumbs.length - 1 ? "bold" : undefined }}
-          >
-            {t(breadcrumb)}
-          </Typography>
-        ))}
+      <Breadcrumbs aria-label="breadcrumb" sx={{ color: "#ffffff" }}>
+        {breadcrumbs.map((breadcrumb, index) => {
+          const first = index === 0;
+          const last = index === breadcrumbs.length - 1;
+          return first || last ? (
+            <Typography
+              key={`breadcrumb-${index}`}
+              color="#ffffff"
+              variant={first ? "body2" : "h6"}
+              sx={{ userSelect: "none" }}
+            >
+              {t(breadcrumb)}
+            </Typography>
+          ) : (
+            <Link href="../" key={`breadcrumb-${index}`}>
+              {t(breadcrumb)}
+            </Link>
+          );
+        })}
       </Breadcrumbs>
     </BreadCrumbBar>
   );

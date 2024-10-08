@@ -43,7 +43,6 @@ const EquipmentModify = () => {
     onSuccess: () => {
       toast.success("management.equipment.successToast");
       queryClient.invalidateQueries({ queryKey: ["trucks"] });
-      queryClient.invalidateQueries({ queryKey: ["trucks", id] });
     },
     onError: () => toast.error("management.equipment.errorToast"),
   });
