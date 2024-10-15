@@ -21,6 +21,7 @@
  * | name                   | finnish name         |
  * | ---------------------- | -------------------- |
  * | PAID_WORK              | Palkallinen työ      |
+ * | BREAK                  | Tauko                |
  * | STANDBY                | Odotus               |
  * | EVENING_ALLOWANCE      | Iltatyö              |
  * | NIGHT_ALLOWANCE        | Yötyö                |
@@ -32,6 +33,7 @@
  */
 export const WorkType = {
     PaidWork: 'PAID_WORK',
+    Break: 'BREAK',
     Standby: 'STANDBY',
     EveningAllowance: 'EVENING_ALLOWANCE',
     NightAllowance: 'NIGHT_ALLOWANCE',

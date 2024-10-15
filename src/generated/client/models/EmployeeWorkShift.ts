@@ -39,9 +39,15 @@ import {
  * When created, the work shift is not approved. It needs to be approved by a supervisor before the
  * work shift hours can be sent to payroll.
  * 
- * Employee work shift always relates to a single date. This is important for calculating the total
- * working hours for employee salaries for a single work period. The date is derived by the start
- * date of the shift, which is the time of the first work event of the shift.
+ * Employee work shift always relates to a single date. When work shift is created during the creation of
+ * a work event, the date is derived from the work event. When created manually, the date should also be
+ * set manually.
+ * 
+ * EndedAt and startedAt are derived from the work events in the shift. StartedAt is based on SHIFT_START event
+ * and endedAt is based on SHIFT_END event. When the corresponding event is not found, the time is null.
+ * 
+ * When calculating salaries for a work period, all work shifts started within the period will be included
+ * in their entirety, even if the events of the shifts would time-wise be outside the period.
  * 
  * @export
  * @interface EmployeeWorkShift
@@ -59,6 +65,18 @@ export interface EmployeeWorkShift {
      * @memberof EmployeeWorkShift
      */
     date: Date;
+    /**
+     * Work shift start time
+     * @type {Date}
+     * @memberof EmployeeWorkShift
+     */
+    readonly startedAt?: Date;
+    /**
+     * Work shift end time
+     * @type {Date}
+     * @memberof EmployeeWorkShift
+     */
+    readonly endedAt?: Date;
     /**
      * Employee's ID
      * @type {string}
@@ -91,6 +109,12 @@ export interface EmployeeWorkShift {
      * @memberof EmployeeWorkShift
      */
     approved: boolean;
+    /**
+     * Additional notes for the work shift. For example, if the employee was sick during the shift.
+     * @type {string}
+     * @memberof EmployeeWorkShift
+     */
+    notes?: string;
 }
 
 /**
@@ -117,11 +141,14 @@ export function EmployeeWorkShiftFromJSONTyped(json: any, ignoreDiscriminator: b
         
         'id': !exists(json, 'id') ? undefined : json['id'],
         'date': (new Date(json['date'])),
+        'startedAt': !exists(json, 'startedAt') ? undefined : (new Date(json['startedAt'])),
+        'endedAt': !exists(json, 'endedAt') ? undefined : (new Date(json['endedAt'])),
         'employeeId': json['employeeId'],
         'truckIds': !exists(json, 'truckIds') ? undefined : json['truckIds'],
         'absence': !exists(json, 'absence') ? undefined : AbsenceTypeFromJSON(json['absence']),
         'perDiemAllowance': !exists(json, 'PerDiemAllowance') ? undefined : PerDiemAllowanceTypeFromJSON(json['PerDiemAllowance']),
         'approved': json['approved'],
+        'notes': !exists(json, 'notes') ? undefined : json['notes'],
     };
 }
 
@@ -138,6 +165,7 @@ export function EmployeeWorkShiftToJSON(value?: EmployeeWorkShift | null): any {
         'absence': AbsenceTypeToJSON(value.absence),
         'PerDiemAllowance': PerDiemAllowanceTypeToJSON(value.perDiemAllowance),
         'approved': value.approved,
+        'notes': value.notes,
     };
 }
 
