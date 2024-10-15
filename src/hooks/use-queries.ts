@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import {
+  ListEmployeeWorkShiftsRequest,
   ListEmployeesRequest,
-  ListEmployeeDailyTimeEntriesRequest,
   ListFreightUnitsRequest,
   ListHolidaysRequest,
   ListRoutesRequest,
@@ -10,8 +10,8 @@ import {
   ListTrucksRequest,
   SalaryGroup,
 } from "generated/client";
-import { useApi } from "./use-api";
 import { DateTime } from "luxon";
+import { useApi } from "./use-api";
 
 const WORKING_TIME_PERIOD_START_DATE = DateTime.now().set({ day: 7, month: 1, year: 2024 });
 
@@ -188,28 +188,29 @@ export const useEmployee = (employeeId: string, enabled = true) => {
 };
 
 export const useTimeEntries = (
-  requestParams: ListEmployeeDailyTimeEntriesRequest,
+  requestParams: ListEmployeeWorkShiftsRequest,
   useWorkingPeriod: boolean,
   salaryGroup: SalaryGroup,
   selectedDate?: Date,
   enabled = true,
 ) => {
-  const { dailyTimeEntriesApi } = useApi();
+  const { employeeWorkShiftsApi } = useApi();
 
   if (useWorkingPeriod && selectedDate) {
     const workingPeriodDates = getWorkingPeriodDates(salaryGroup, selectedDate);
-    requestParams.start = workingPeriodDates.start;
-    requestParams.end = workingPeriodDates.end;
+    requestParams.startedAfter = workingPeriodDates.start;
+    requestParams.startedBefore = workingPeriodDates.end;
   }
 
   return useQuery({
     queryKey: [QUERY_KEYS.TIME_ENTRIES, requestParams],
     enabled: enabled,
     queryFn: async () => {
-      const [timeEntries, headers] = await dailyTimeEntriesApi.listEmployeeDailyTimeEntriesWithHeaders(requestParams);
+      const [employeeWorkShifts, headers] =
+        await employeeWorkShiftsApi.listEmployeeWorkShiftsWithHeaders(requestParams);
       const totalResults = getTotalResultsFromHeaders(headers);
 
-      return { timeEntries, totalResults };
+      return { employeeWorkShifts, totalResults };
     },
   });
 };

@@ -40,11 +40,23 @@ export interface WorkEvent {
      */
     employeeId: string;
     /**
+     * employee work shift ID
+     * @type {string}
+     * @memberof WorkEvent
+     */
+    readonly employeeWorkShiftId?: string;
+    /**
      * Work event time
      * @type {Date}
      * @memberof WorkEvent
      */
     time: Date;
+    /**
+     * The ID of truck used during the work event
+     * @type {string}
+     * @memberof WorkEvent
+     */
+    truckId?: string;
     /**
      * 
      * @type {WorkEventType}
@@ -77,7 +89,9 @@ export function WorkEventFromJSONTyped(json: any, ignoreDiscriminator: boolean):
         
         'id': !exists(json, 'id') ? undefined : json['id'],
         'employeeId': json['employeeId'],
+        'employeeWorkShiftId': !exists(json, 'employeeWorkShiftId') ? undefined : json['employeeWorkShiftId'],
         'time': (new Date(json['time'])),
+        'truckId': !exists(json, 'truckId') ? undefined : json['truckId'],
         'workEventType': WorkEventTypeFromJSON(json['workEventType']),
     };
 }
@@ -93,6 +107,7 @@ export function WorkEventToJSON(value?: WorkEvent | null): any {
         
         'employeeId': value.employeeId,
         'time': (value.time.toISOString()),
+        'truckId': value.truckId,
         'workEventType': WorkEventTypeToJSON(value.workEventType),
     };
 }

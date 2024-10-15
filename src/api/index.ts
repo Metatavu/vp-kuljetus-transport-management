@@ -2,18 +2,20 @@ import config from "../app/config";
 import {
   Configuration,
   ConfigurationParameters,
-  VehiclesApi,
-  TrucksApi,
-  TowablesApi,
-  SitesApi,
-  FreightsApi,
-  FreightUnitsApi,
-  TasksApi,
-  RoutesApi,
   DriversApi,
+  EmployeeWorkShiftsApi,
   EmployeesApi,
+  FreightUnitsApi,
+  FreightsApi,
   HolidaysApi,
-  DailyTimeEntriesApi,
+  RoutesApi,
+  SitesApi,
+  TasksApi,
+  TowablesApi,
+  TrucksApi,
+  VehiclesApi,
+  WorkEventsApi,
+  WorkShiftHoursApi,
 } from "../generated/client";
 
 type ConfigConstructor<T> = new (_params: ConfigurationParameters) => T;
@@ -41,7 +43,9 @@ export const getApiClient = (getAccessToken?: () => Promise<string>) => {
     routesApi: new RoutesApi(getConfiguration()),
     driversApi: new DriversApi(getConfiguration()),
     employeesApi: new EmployeesApi(getConfiguration()),
-    dailyTimeEntriesApi: new DailyTimeEntriesApi(getConfiguration()),
+    employeeWorkShiftsApi: new EmployeeWorkShiftsApi(getConfiguration()),
     holidaysApi: new HolidaysApi(getConfiguration()),
+    workShiftHoursApi: new WorkShiftHoursApi(getConfiguration()),
+    workEventsApi: new WorkEventsApi(getConfiguration()),
   };
 };
