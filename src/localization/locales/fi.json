@@ -136,6 +136,15 @@
       "successToast": "Kalusto tallennettu!",
       "errorToast": "Kaluston tallennus epäonnistui!"
     },
+    "devices": {
+      "title": "Päätelaitteet",
+      "archiveDialog": {
+        "title": "Arkistoi laite",
+        "description": "Oletko varma että haluat arkistoida laitteen {{name}}?"
+      },
+      "successToast": "Laitteen tiedot tallennettu!",
+      "errorToast": "Virhe tallennettaessa laitteen tietoja!"
+    },
     "vehicles": {
       "title": "Ajoneuvot",
       "new": "Uusi ajoneuvo",

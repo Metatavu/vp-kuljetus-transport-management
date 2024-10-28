@@ -135,82 +135,91 @@
       },
       "successToast": "Equipment saved!",
       "errorToast": "Failed to save equipment!"
-    }
-  },
-  "vehicles": {
-    "title": "Vehicles",
-    "new": "New vehicle",
-    "modify": "Modify vehicle",
-    "type": "Type",
-    "name": "Name",
-    "licensePlate": "License plate",
-    "errorMessages": {
-      "nameMissing": "Name is required",
-      "licensePlateMissing": "License plate is required"
-    }
-  },
-  "employees": {
-    "title": "Employees",
-    "new": "New employee",
-    "modify": "Modify employee",
-    "filters": {
-      "name": {
-        "label": "Name",
-        "placeholder": "Search by name"
+    },
+    "devices": {
+      "title": "Devices",
+      "archiveDialog": {
+        "title": "Archive device",
+        "description": "Are you sure you want to archive device {{name}}?"
+      },
+      "successToast": "Device information saved!",
+      "errorToast": "Failed to save device information!"
+    },
+    "vehicles": {
+      "title": "Vehicles",
+      "new": "New vehicle",
+      "modify": "Modify vehicle",
+      "type": "Type",
+      "name": "Name",
+      "licensePlate": "License plate",
+      "errorMessages": {
+        "nameMissing": "Name is required",
+        "licensePlateMissing": "License plate is required"
       }
     },
-    "employeeNumber": "Number",
-    "lastName": "Last name",
-    "firstName": "First names",
-    "driverCard": "Driver card",
-    "phoneNumber": "Phone number",
-    "email": "Email",
-    "pinCode": "PIN code",
-    "type": "Type",
-    "salaryGroup": "Salary group",
-    "office": "Office",
-    "regularWorkingHours": "Work hours (h / 2wk)",
-    "driverCardLastEmptied": "Driver card last emptied",
-    "lastDriven": "Last driven",
-    "errorMessages": {
-      "firstNameMissing": "First name is required.",
-      "lastNameMissing": "Last name is required.",
-      "officeMissing": "Office is required.",
-      "typeMissing": "Type is required.",
-      "salaryGroupMissing": "Salary group is required.",
-      "invalidDriverCard": "Driver card must be 16 characters long."
+    "employees": {
+      "title": "Employees",
+      "new": "New employee",
+      "modify": "Modify employee",
+      "filters": {
+        "name": {
+          "label": "Name",
+          "placeholder": "Search by name"
+        }
+      },
+      "employeeNumber": "Number",
+      "lastName": "Last name",
+      "firstName": "First names",
+      "driverCard": "Driver card",
+      "phoneNumber": "Phone number",
+      "email": "Email",
+      "pinCode": "PIN code",
+      "type": "Type",
+      "salaryGroup": "Salary group",
+      "office": "Office",
+      "regularWorkingHours": "Work hours (h / 2wk)",
+      "driverCardLastEmptied": "Driver card last emptied",
+      "lastDriven": "Last driven",
+      "errorMessages": {
+        "firstNameMissing": "First name is required.",
+        "lastNameMissing": "Last name is required.",
+        "officeMissing": "Office is required.",
+        "typeMissing": "Type is required.",
+        "salaryGroupMissing": "Salary group is required.",
+        "invalidDriverCard": "Driver card must be 16 characters long."
+      },
+      "archiveDialog": {
+        "title": "Archive employee",
+        "description": "Are you sure you want to archive employee {{name}}?"
+      },
+      "successToast": "Employee saved!",
+      "archiveToast": "Employee archived!",
+      "errorToast": "Failed to save employee!"
     },
-    "archiveDialog": {
-      "title": "Archive employee",
-      "description": "Are you sure you want to archive employee {{name}}?"
-    },
-    "successToast": "Employee saved!",
-    "archiveToast": "Employee archived!",
-    "errorToast": "Failed to save employee!"
-  },
-  "holidays": {
-    "title": "Midweek holidays",
-    "date": "Date",
-    "name": "Name",
-    "addHoliday": "Add holiday",
-    "addHolidays": "Add holidays",
-    "getHolidays": "Get holidays",
-    "getHolidaysFromTheYear": "Get holidays from the year:",
-    "year": "Year",
-    "compensationType": {
-      "title": "Compensation type",
-      "publicHolidayAllowance": "Public holiday allowance",
-      "dayOffWorkAllowance": "Day off work allowance"
-    },
-    "confirmationMessage": "For the year {{year}} there are total of {{holidayCount}} midweek holidays. Do you want to add them?",
-    "successToast_one": "Holiday added!",
-    "successToast_other": "Holidays added!",
-    "errorToast_one": "Failed to add holiday!",
-    "errorToast_other": "Failed to add holidays!",
-    "editErrorToast": "Failed to edit holiday!",
-    "editSuccessToast": "Holiday modification saved!",
-    "deleteHoliday": "Delete holiday",
-    "deleteConfirmationDescription": "Are you sure you want to delete holiday {{name}} {{date}}?"
+    "holidays": {
+      "title": "Midweek holidays",
+      "date": "Date",
+      "name": "Name",
+      "addHoliday": "Add holiday",
+      "addHolidays": "Add holidays",
+      "getHolidays": "Get holidays",
+      "getHolidaysFromTheYear": "Get holidays from the year:",
+      "year": "Year",
+      "compensationType": {
+        "title": "Compensation type",
+        "publicHolidayAllowance": "Public holiday allowance",
+        "dayOffWorkAllowance": "Day off work allowance"
+      },
+      "confirmationMessage": "For the year {{year}} there are total of {{holidayCount}} midweek holidays. Do you want to add them?",
+      "successToast_one": "Holiday added!",
+      "successToast_other": "Holidays added!",
+      "errorToast_one": "Failed to add holiday!",
+      "errorToast_other": "Failed to add holidays!",
+      "editErrorToast": "Failed to edit holiday!",
+      "editSuccessToast": "Holiday modification saved!",
+      "deleteHoliday": "Delete holiday",
+      "deleteConfirmationDescription": "Are you sure you want to delete holiday {{name}} {{date}}?"
+    }
   },
   "drivePlanning": {
     "title": "Drive planning",
