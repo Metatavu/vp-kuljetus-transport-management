@@ -62,13 +62,6 @@ export class ClientAppsApi extends runtime.BaseAPI {
         const queryParameters: any = {};
         const headerParameters: runtime.HTTPHeaders = {};
         headerParameters['Content-Type'] = 'application/json';
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", ["driver", "manager"]);
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
         const response = await this.request({
             path: `/user-management/v1/clientApps`,
             method: 'POST',

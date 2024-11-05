@@ -442,7 +442,8 @@
       "fillHours": "Täyttötunnit",
       "halfDayAllowance": "Osapäiväraha",
       "fullDayAllowance": "Kokopäiväraha",
-      "toWorkHourDetails": "Näytä erittely"
+      "toWorkHourDetails": "Näytä erittely",
+      "approved": "Tarkastettu"
     },
     "workingDays": {
       "title": "Työpäivät",
@@ -490,7 +491,18 @@
         "abroadAllowance": "Ulkomaan päiväraha",
         "waitingTime": "Odotus",
         "fillingHours": "Täyttötunnit",
-        "absenceHours": "Poissaolotunnit"
+        "absenceHours": "Poissaolotunnit",
+        "absenceTypes": {
+          "training": "Koulutus työajalla",
+          "vacation": "Loma",
+          "officialDuties": "Luottamustoimet",
+          "compensatoryLeave": "Pekkanen",
+          "sickLeave": "Sairausloma"
+        },
+        "perDiemAllowanceTypes": {
+          "partial": "Osapäiväraha",
+          "full": "Kokopäiväraha"
+        }
       },
       "changeLog": {
         "title": "Muutosloki",

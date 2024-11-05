@@ -37,6 +37,51 @@ import {
  * 
  * Work shift hours cannot be updated if the related employee work shift is approved.
  * 
+ * #### Work shift hours calculation
+ * 
+ * Following work event types are only used to track the life cycle of the employee work shift. Hence, these types
+ * are not used in calculations at all.
+ * - SHIFT_START
+ * - SHIFT_END
+ * - LOGIN
+ * - LOGOUT
+ * - DRIVER_CARD_INSERTED
+ * - DRIVER_CARD_REMOVED
+ * - UNKNOWN
+ * 
+ * ##### Work shift hours for all of the work types are calculated as follows
+ * 
+ * ###### PAID_WORK
+ * Everything else apart from work event type BREAK.
+ * 
+ * ###### BREAK
+ * Only work event type BREAK.
+ * 
+ * ###### STANDBY
+ * Not calculated at all. It can only be added manually from the management.
+ * 
+ * ###### EVENING_ALLOWANCE
+ * All hours from the PAID_WORK that are recorded between 18.00 and 20.00.
+ * 
+ * ###### NIGHT_ALLOWANCE
+ * All hours from the PAID_WORK that are recorded between 20.00 and 06.00.
+ * 
+ * ###### HOLIDAY_ALLOWANCE
+ * All hours from the PAID_WORK that are recorded during one of the following
+ * - Sunday
+ * - Public holiday
+ *   - a corresponding date is found from holidays table with type PUBLIC_HOLIDAY_ALLOWANCE
+ * - Day off work
+ *   - either
+ *     - a corresponding date is found from holidays table with type DAY_OFF_WORK_ALLOWANCE, or
+ *     - any of the shifts, which started during the day, is marked as dayOffWorkAllowance
+ * 
+ * ###### JOB_SPECIFIC_ALLOWANCE
+ * Not calculated at all. It can only be added manually from the management.
+ * 
+ * ###### FROZEN_ALLOWANCE
+ * All hours from the PAID_WORK that are recorded from the frozen section.
+ * 
  * @export
  * @interface WorkShiftHours
  */

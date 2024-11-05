@@ -1,7 +1,9 @@
 import {
+  AbsenceType,
   CompensationType,
   EmployeeType,
   Office,
+  PerDiemAllowanceType,
   SalaryGroup,
   TaskType,
   TruckDriveStateEnum,
@@ -112,6 +114,21 @@ namespace LocalizationUtils {
       UNLOADING: t("workingHours.workingDays.workShiftDialog.eventTypes.unloading"),
       VEGETABLE: t("workingHours.workingDays.workShiftDialog.eventTypes.vegetable"),
     })[workEventType];
+
+  export const getLocalizedAbsenceType = (absenceType: AbsenceType, t: TFunction) =>
+    ({
+      TRAINING: t("workingHours.workingDays.aggregationsTable.absenceTypes.training"),
+      VACATION: t("workingHours.workingDays.aggregationsTable.absenceTypes.vacation"),
+      OFFICIAL_DUTIES: t("workingHours.workingDays.aggregationsTable.absenceTypes.officialDuties"),
+      COMPENSATORY_LEAVE: t("workingHours.workingDays.aggregationsTable.absenceTypes.compensatoryLeave"),
+      SICK_LEAVE: t("workingHours.workingDays.aggregationsTable.absenceTypes.sickLeave"),
+    })[absenceType];
+
+  export const getPerDiemAllowanceType = (perDiemAllowanceType: PerDiemAllowanceType, t: TFunction) =>
+    ({
+      PARTIAL: t("workingHours.workingDays.aggregationsTable.perDiemAllowanceTypes.partial"),
+      FULL: t("workingHours.workingDays.aggregationsTable.perDiemAllowanceTypes.full"),
+    })[perDiemAllowanceType];
 }
 
 export default LocalizationUtils;

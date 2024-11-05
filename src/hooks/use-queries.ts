@@ -26,7 +26,7 @@ export const QUERY_KEYS = {
   FREIGHTS: "freights",
   FREIGHT_UNITS_BY_FREIGHT: "freight-units-by-freight",
   EMPLOYEES: "employees",
-  TIME_ENTRIES: "time-entries",
+  WORK_SHIFTS: "work-shifts",
   HOLIDAYS: "holidays",
 } as const;
 
@@ -103,6 +103,22 @@ export const useDrivers = (requestParams: ListTrucksRequest = {}, enabled = true
       const totalResults = getTotalResultsFromHeaders(headers);
 
       return { drivers, totalResults };
+    },
+  });
+};
+
+export const useEmployeeWorkShifts = (requestParams: ListEmployeeWorkShiftsRequest, enabled = true) => {
+  const { employeeWorkShiftsApi } = useApi();
+
+  return useQuery({
+    queryKey: [QUERY_KEYS.WORK_SHIFTS, requestParams],
+    enabled: enabled,
+    queryFn: async () => {
+      const [employeeWorkShifts, headers] =
+        await employeeWorkShiftsApi.listEmployeeWorkShiftsWithHeaders(requestParams);
+      const totalResults = getTotalResultsFromHeaders(headers);
+
+      return { employeeWorkShifts, totalResults };
     },
   });
 };
@@ -203,7 +219,7 @@ export const useTimeEntries = (
   }
 
   return useQuery({
-    queryKey: [QUERY_KEYS.TIME_ENTRIES, requestParams],
+    queryKey: [QUERY_KEYS.WORK_SHIFTS, requestParams],
     enabled: enabled,
     queryFn: async () => {
       const [employeeWorkShifts, headers] =

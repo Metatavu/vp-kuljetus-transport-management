@@ -30,12 +30,6 @@ import {
 /**
  * Represents single employee work shift. A work event must always relate to an employee work shift.
  * 
- * A new employee work shift is automatically created, when employee starts a new shift. A new
- * shift is started when the last recorded WorkEvent from the employee either
- * - is of type SHIFT_END or
- * - is of type BREAK or UNKNOWN and has been going on longer than 3 hours.
- * A new shift is also created if there is no previous work events for the employee.
- * 
  * When created, the work shift is not approved. It needs to be approved by a supervisor before the
  * work shift hours can be sent to payroll.
  * 
@@ -89,6 +83,15 @@ export interface EmployeeWorkShift {
      * @memberof EmployeeWorkShift
      */
     readonly truckIds?: Array<string>;
+    /**
+     * Day off work allowance is used to mark the day when the work shift started as a day off for the employee.
+     * This means that all the work hours done during that day will be also added to the HOLIDAY_ALLOWANCE work
+     * type during work shift hours calculation.
+     * 
+     * @type {boolean}
+     * @memberof EmployeeWorkShift
+     */
+    dayOffWorkAllowance?: boolean;
     /**
      * 
      * @type {AbsenceType}
@@ -145,6 +148,7 @@ export function EmployeeWorkShiftFromJSONTyped(json: any, ignoreDiscriminator: b
         'endedAt': !exists(json, 'endedAt') ? undefined : (new Date(json['endedAt'])),
         'employeeId': json['employeeId'],
         'truckIds': !exists(json, 'truckIds') ? undefined : json['truckIds'],
+        'dayOffWorkAllowance': !exists(json, 'dayOffWorkAllowance') ? undefined : json['dayOffWorkAllowance'],
         'absence': !exists(json, 'absence') ? undefined : AbsenceTypeFromJSON(json['absence']),
         'perDiemAllowance': !exists(json, 'PerDiemAllowance') ? undefined : PerDiemAllowanceTypeFromJSON(json['PerDiemAllowance']),
         'approved': json['approved'],
@@ -162,6 +166,7 @@ export function EmployeeWorkShiftToJSON(value?: EmployeeWorkShift | null): any {
     return {
         
         'date': (value.date.toISOString().substring(0,10)),
+        'dayOffWorkAllowance': value.dayOffWorkAllowance,
         'absence': AbsenceTypeToJSON(value.absence),
         'PerDiemAllowance': PerDiemAllowanceTypeToJSON(value.perDiemAllowance),
         'approved': value.approved,
