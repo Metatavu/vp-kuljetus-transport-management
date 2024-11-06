@@ -7,14 +7,17 @@ import {
   IconButton,
   MenuItem,
   Paper,
+  Skeleton,
   Stack,
   TextField,
   Typography,
   styled,
 } from "@mui/material";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deepEqual } from "@tanstack/react-router";
 import { Outlet, createFileRoute } from "@tanstack/react-router";
+import DatePickerWithArrows from "components/generic/date-picker-with-arrows";
 import AggregationsTable from "components/working-hours/aggregations-table";
 import ChangeLog from "components/working-hours/change-log";
 import WorkShiftRow from "components/working-hours/work-shift-row";
@@ -29,9 +32,11 @@ import {
   useTrucks,
 } from "hooks/use-queries";
 import { DateTime } from "luxon";
+import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import { EmployeeWorkHoursForm, EmployeeWorkHoursFormRow } from "src/types";
 
 export const Route = createFileRoute("/working-hours/$employeeId/work-shifts")({
   component: WorkShifts,
@@ -116,26 +121,34 @@ function WorkShifts() {
   const { employeeId } = Route.useParams();
   const { employeeWorkShiftsApi } = useApi();
   const queryClient = useQueryClient();
-  const methods = useForm<EmployeeWorkShift[]>({
-    defaultValues: [
-      {
-        perDiemAllowance: undefined,
-        startedAt: DateTime.now().toJSDate(),
-        absence: undefined,
-        approved: false,
-        notes: undefined,
+  const [date, setDate] = useState(DateTime.now());
+  const workShifts = useEmployeeWorkShifts({ employeeId }).data?.employeeWorkShifts;
+
+  const methods = useForm<EmployeeWorkHoursForm>({
+    defaultValues: [],
+    values: workShifts?.map<EmployeeWorkHoursFormRow>((workShift) => ({
+      workShift: {
+        id: workShift.id,
+        date: workShift.date,
+        dayOffWorkAllowance: workShift.dayOffWorkAllowance ?? false,
+        absence: workShift.absence ?? "",
+        perDiemAllowance: workShift.perDiemAllowance ?? "",
+        approved: workShift.approved,
+        notes: workShift.notes ?? "",
       },
-    ],
+    })),
     mode: "onChange",
   });
+
+  const { handleSubmit } = methods;
 
   // const { watch } = methods;
   // const perDiem = watch("0.startedAt");
   // console.log("startedAt", perDiem);
 
-  const workShifts = useEmployeeWorkShifts({ employeeId }).data?.employeeWorkShifts;
   const trucks = useTrucks().data;
   const employees = useListEmployees().data?.employees;
+
   const getWorkingPeriodsForEmployee = () => {
     const employeeSalaryGroup = employees?.find((employee) => employee.id === employeeId)?.salaryGroup;
     if (!employeeSalaryGroup) return;
@@ -151,26 +164,43 @@ function WorkShifts() {
         // biome-ignore lint/style/noNonNullAssertion: Workshift id is always defined
         workShiftId: employeeWorkShift.id!,
       }),
-    onSuccess: () => {
-      toast.success(t("management.employees.successToast"));
-      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.WORK_SHIFTS] });
-    },
     onError: () => toast.error(t("management.employees.errorToast")),
   });
 
-  const onSaveClick = (updatedWorkShifts: EmployeeWorkShift[]) => {
-    if (!workShifts) return;
-    Object.values(updatedWorkShifts).map((workShift) => {
-      const originalWorkShift: EmployeeWorkShift = workShifts.find((ws) => ws.id === workShift.id) ?? workShift;
-      // Merge original workshift with updated workshift without undefined values
-      const newWorkShift = { ...originalWorkShift, ...workShift };
-      console.log("Original Workshift", JSON.stringify(originalWorkShift));
-      console.log("New Workshift", JSON.stringify(newWorkShift));
-      if (!deepEqual(originalWorkShift, newWorkShift)) {
-        //updateWorkShift.mutateAsync(workShift);
-        console.log("Updated Workshift found", newWorkShift);
+  const onChangeDate = (newDate: DateTime | null) => setDate(newDate ?? DateTime.now());
+
+  const onSaveClick = async (formValues: EmployeeWorkHoursForm) => {
+    const workShiftsToUpdate = formValues.reduce<EmployeeWorkShift[]>((list, workHoursFormRow, index) => {
+      const existingWorkShift = workShifts?.find((workShift) => workShift.id === workHoursFormRow.workShift.id);
+      const formFieldNames = Object.keys(workHoursFormRow.workShift) as (keyof EmployeeWorkHoursFormRow["workShift"])[];
+
+      const isDirty = formFieldNames.some(
+        (fieldName) => methods.getFieldState(`${index}.workShift.${fieldName}`)?.isDirty,
+      );
+
+      if (isDirty) {
+        list.push({
+          ...existingWorkShift,
+          date: existingWorkShift?.date ?? new Date(),
+          employeeId: employeeId,
+          dayOffWorkAllowance: workHoursFormRow.workShift.dayOffWorkAllowance,
+          absence: workHoursFormRow.workShift.absence || undefined,
+          perDiemAllowance: workHoursFormRow.workShift.perDiemAllowance || "PARTIAL",
+          approved: workHoursFormRow.workShift.approved,
+          notes: workHoursFormRow.workShift.notes || undefined,
+        });
       }
-    });
+
+      return list;
+    }, []);
+
+    for (const updatedWorkShift of workShiftsToUpdate) {
+      await updateWorkShift.mutateAsync(updatedWorkShift);
+    }
+
+    toast.success(t("management.employees.successToast"));
+
+    queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.WORK_SHIFTS] });
   };
 
   const renderEmployeeMenuItems = () => {
@@ -190,22 +220,6 @@ function WorkShifts() {
     ));
   };
 
-  //TODO: Render correct pay periods for selected employee
-  const renderPayPeriodMenuItems = () => {
-    const workingPeriodsS = getWorkingPeriodsForEmployee();
-    if (!workingPeriodsS) return;
-    const payPeriods = Array.from({ length: 5 }, (_) => {
-      const start = DateTime.fromJSDate(workingPeriodsS.start).minus({ weeks: 2 }).toFormat("dd.MM");
-      const end = DateTime.fromJSDate(workingPeriodsS.end).minus({ weeks: 2 }).toFormat("dd.MM");
-      return { start, end };
-    });
-    return payPeriods.map((workingPeriods) => (
-      <MenuItem key={workingPeriods.start}>
-        {workingPeriods.start} - {workingPeriods.end}
-      </MenuItem>
-    ));
-  };
-
   const renderToolbar = () => {
     return (
       <Stack direction="row" justifyContent="space-between">
@@ -213,24 +227,32 @@ function WorkShifts() {
           <IconButton onClick={() => navigate({ to: "../.." })} title={t("tooltips.backToWorkingHours")}>
             <ArrowBack />
           </IconButton>
-          <TextField
-            sx={{ maxWidth: 300 }}
-            select
-            variant="standard"
-            defaultValue={employees?.find((employee) => employee.id === employeeId)?.id}
-            label={t("workingHours.workingDays.employee")}
-          >
-            {renderEmployeeMenuItems()}
-          </TextField>
-          <TextField
-            sx={{ maxWidth: 300 }}
-            select
-            defaultValue=""
-            variant="standard"
-            label={t("workingHours.workingHourBalances.payPeriod")}
-          >
-            {renderPayPeriodMenuItems()}
-          </TextField>
+          {employees?.length ? (
+            <TextField
+              sx={{ maxWidth: 300 }}
+              select
+              variant="standard"
+              defaultValue={employees?.find((employee) => employee.id === employeeId)?.id}
+              label={t("workingHours.workingDays.employee")}
+            >
+              {renderEmployeeMenuItems()}
+            </TextField>
+          ) : (
+            <Skeleton variant="rectangular" width={300} height={30} style={{ marginTop: 16 }} />
+          )}
+          <Stack>
+            <DatePicker
+              // TODO: set formatted text for date
+              label={t("workingHours.workingHourBalances.payPeriod")}
+              value={date}
+              slotProps={{
+                openPickerButton: { size: "small", title: t("openCalendar") },
+                textField: { size: "small", InputProps: { sx: { width: 300 } } },
+              }}
+              onChange={onChangeDate}
+              sx={{ width: 300 }}
+            />
+          </Stack>
         </ToolbarContainer>
         <Stack direction="row" alignItems="end" gap={2} p={2}>
           <Button size="small" variant="outlined" endIcon={<Print />}>
@@ -244,8 +266,7 @@ function WorkShifts() {
             variant="contained"
             endIcon={<Save />}
             type="submit"
-
-            //disabled={!!Object.keys(errors).length}
+            disabled={!methods.formState.isDirty}
           >
             {t("save")}
           </Button>
@@ -254,16 +275,31 @@ function WorkShifts() {
     );
   };
 
+  const renderWorkingPeriodText = () => {
+    const workingPeriods = getWorkingPeriodsForEmployee();
+    if (!workingPeriods) return;
+    const start = DateTime.fromJSDate(workingPeriods.start)
+      .setLocale("fi") // Set locale to Finnish
+      .toFormat("EEE dd.MM"); // `cc` gives the first two letters of the day in Finnish
+
+    const end = DateTime.fromJSDate(workingPeriods.end).setLocale("fi").toFormat("EEE dd.MM");
+    return (
+      <Typography variant="subtitle1">
+        {start} - {end}
+      </Typography>
+    );
+  };
+
   return (
     <>
       <Root>
         <FormProvider {...methods}>
-          <form onSubmit={methods.handleSubmit(onSaveClick)}>
+          <form onSubmit={handleSubmit(onSaveClick)}>
             {renderToolbar()}
             <Paper elevation={0}>
               <Stack>
                 <TableHeader>
-                  <Typography variant="subtitle1">{"Su 28.4. 00.00 - La 11.5. 24:00"}</Typography>
+                  {renderWorkingPeriodText()}
                   <Stack spacing={4} direction="row" alignItems="center">
                     <FormControlLabel
                       control={<Checkbox title="Merkitse kaikki tarkistetuiksi" />}

@@ -4,6 +4,7 @@ import { AbsenceType, EmployeeWorkShift, PerDiemAllowanceType, Truck } from "gen
 import { DateTime } from "luxon";
 import { Controller, useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
+import { EmployeeWorkHoursForm } from "src/types";
 import LocalizationUtils from "src/utils/localization-utils";
 
 type Props = {
@@ -43,7 +44,7 @@ const Cell = styled(Stack, {
 
 function WorkShiftRow({ onClick, workShiftData, trucks, index }: Props) {
   const { t } = useTranslation();
-  const { register, control } = useFormContext<EmployeeWorkShift[]>();
+  const { register, control } = useFormContext<EmployeeWorkHoursForm>();
 
   const getTruckById = (truckId: string) => {
     return truckId ? trucks.find((truck) => truck.id === truckId)?.name : undefined;
@@ -71,44 +72,61 @@ function WorkShiftRow({ onClick, workShiftData, trucks, index }: Props) {
     );
   };
 
-  const renderPerDiemAllowanceSelectInput = (title: string, options: string[]) => {
+  const renderPerDiemAllowanceSelectInput = () => {
+    const label = t("workingHours.workingDays.table.dailyAllowance");
     return (
-      <TextField
-        select
-        className="cell-input"
-        size="small"
-        aria-label={title}
-        title={title}
-        fullWidth
-        variant="outlined"
-        InputProps={register(`${index}.perDiemAllowance`)}
-        defaultValue={workShiftData.perDiemAllowance ?? ""}
-      >
-        {options.map((option) => (
-          <MenuItem style={{ minHeight: 30 }} key={option} value={option}>
-            {option}
-          </MenuItem>
-        ))}
-      </TextField>
+      <Controller
+        control={control}
+        name={`${index}.workShift.perDiemAllowance`}
+        render={({ field: { value, onChange, ...rest } }) => (
+          <TextField
+            select
+            className="cell-input"
+            size="small"
+            aria-label={label}
+            title={label}
+            fullWidth
+            variant="outlined"
+            value={value ?? ""}
+            onChange={(event) => {
+              console.log("töttöröö", event.target.value);
+              onChange(event.target.value);
+            }}
+            {...rest}
+          >
+            <MenuItem style={{ minHeight: 30 }} key="EMPTY" value="">
+              {""}
+            </MenuItem>
+            {Object.values(PerDiemAllowanceType).map((option) => (
+              <MenuItem style={{ minHeight: 30 }} key={option} value={option}>
+                {LocalizationUtils.getPerDiemAllowanceType(option, t)}
+              </MenuItem>
+            ))}
+          </TextField>
+        )}
+      />
     );
   };
 
-  const renderAbsenceTypeSelectInput = (title: string, options: string[]) => {
+  const renderAbsenceTypeSelectInput = () => {
+    const label = t("workingHours.workingDays.table.absence");
     return (
       <TextField
         select
         className="cell-input"
         size="small"
-        aria-label={title}
-        title={title}
+        aria-label={label}
+        title={label}
         fullWidth
         variant="outlined"
-        InputProps={register(`${index}.absence`)}
-        defaultValue={workShiftData.absence ?? ""}
+        InputProps={register(`${index}.workShift.absence`)}
       >
-        {options.map((option) => (
+        <MenuItem style={{ minHeight: 30 }} key="EMPTY" value="">
+          {""}
+        </MenuItem>
+        {Object.values(AbsenceType).map((option) => (
           <MenuItem style={{ minHeight: 30 }} key={option} value={option}>
-            {option}
+            {LocalizationUtils.getLocalizedAbsenceType(option, t)}
           </MenuItem>
         ))}
       </TextField>
@@ -117,36 +135,10 @@ function WorkShiftRow({ onClick, workShiftData, trucks, index }: Props) {
 
   return (
     <Row>
-      <input type="hidden" {...register(`${index}.id`)} defaultValue={workShiftData.id} />
       <Cell width={90}>
         <Link variant="body2" title={t("workingHours.workingHourBalances.toWorkHourDetails")} onClick={onClick}>
           {workShiftData.date && DateTime.fromJSDate(workShiftData.date).toFormat("dd.MM")}
         </Link>
-      </Cell>
-      <Cell flex={1}>
-        {/* <Controller
-          name={`${index}.startedAt`}
-          control={control}
-          //defaultValue={workShiftData.startedAt ? workShiftData.startedAt : new Date()}
-          render={({ field }) => (
-            <TimePicker
-              {...field}
-              // value=
-              // onChange={(newValue) => field.onChange(newValue?.toISODate())}
-              disableOpenPicker
-              slotProps={{
-                textField: {
-                  "aria-label": t("workingHours.workingDays.table.shiftStarts"),
-                  variant: "outlined",
-                  className: "cell-input",
-                  size: "small",
-                  title: t("workingHours.workingDays.table.shiftStarts"),
-                  fullWidth: true,
-                },
-              }}
-            />
-          )}
-        /> */}
       </Cell>
       <Cell minWidth={75} flex={1}>
         <Typography variant="body2">
@@ -174,7 +166,7 @@ function WorkShiftRow({ onClick, workShiftData, trucks, index }: Props) {
       <Cell minWidth={115} flex={1}>
         <Stack gap={0.5} direction="row" width="100%">
           <Controller
-            name={`${index}.dayOffWorkAllowance`}
+            name={`${index}.workShift.dayOffWorkAllowance`}
             control={control}
             defaultValue={workShiftData.dayOffWorkAllowance || false}
             render={({ field }) => (
@@ -188,10 +180,7 @@ function WorkShiftRow({ onClick, workShiftData, trucks, index }: Props) {
               />
             )}
           />
-          {renderAbsenceTypeSelectInput(
-            t("workingHours.workingDays.table.absence"),
-            [""].concat(Object.values(AbsenceType).map((type) => LocalizationUtils.getLocalizedAbsenceType(type, t))),
-          )}
+          {renderAbsenceTypeSelectInput()}
         </Stack>
       </Cell>
       <Cell width={90}>
@@ -199,17 +188,10 @@ function WorkShiftRow({ onClick, workShiftData, trucks, index }: Props) {
           {workShiftData.truckIds?.map((truckId) => getTruckById(truckId)).join(", ")}
         </Typography>
       </Cell>
-      <Cell width={90}>
-        {renderPerDiemAllowanceSelectInput(
-          t("workingHours.workingDays.table.dailyAllowance"),
-          [" "].concat(
-            Object.values(PerDiemAllowanceType).map((type) => LocalizationUtils.getPerDiemAllowanceType(type, t)),
-          ),
-        )}
-      </Cell>
+      <Cell width={90}>{renderPerDiemAllowanceSelectInput()}</Cell>
       <Cell width={90}>
         <Controller
-          name={`${index}.approved`}
+          name={`${index}.workShift.approved`}
           control={control}
           defaultValue={workShiftData.approved || false}
           render={({ field }) => (
@@ -232,7 +214,7 @@ function WorkShiftRow({ onClick, workShiftData, trucks, index }: Props) {
           fullWidth
           variant="outlined"
           value={workShiftData.notes}
-          InputProps={register(`${index}.notes`)}
+          InputProps={register(`${index}.workShift.notes`)}
         />
       </Cell>
       <Cell width={75}>
