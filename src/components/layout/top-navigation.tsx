@@ -17,14 +17,14 @@ const TopNavigation = () => {
   const accountMenuState = usePopupState({ variant: "popover", popupId: "accountMenu" });
 
   const routeLinks: readonly NavigationItem[] = [
-    ["/vehicle-list/vehicles", "vehicleList.title", undefined],
-    ["/drive-planning/routes", "drivePlanning.title", undefined],
-    ["/working-hours", "workingHours.title", undefined],
-    ["/management/customer-sites", "management.title", undefined],
-  ] as const;
+    { route: "/vehicles/list", label: "vehicles.title" },
+    { route: "/drive-planning/routes", label: "drivePlanning.title" },
+    { route: "/working-hours", label: "workingHours.title" },
+    { route: "/management/customer-sites", label: "management.title" },
+  ];
 
-  const selectedRouteIndex = routeLinks.findIndex(([route]) =>
-    route.split("/")[1].startsWith(location.pathname.split("/")[1]),
+  const selectedRouteIndex = routeLinks.findIndex(({ route }) =>
+    route?.split("/")[1].startsWith(location.pathname.split("/")[1]),
   );
 
   return (
@@ -34,12 +34,12 @@ const TopNavigation = () => {
 
         <Stack direction="row" gap={3} sx={{ ml: 8, flexGrow: 1 }}>
           <Tabs value={selectedRouteIndex}>
-            {routeLinks.map(([route, label], routeIndex) => (
+            {routeLinks.map(({ route: path, label }, routeIndex) => (
               <Tab
-                key={route}
+                key={path}
                 label={t(label)}
                 value={routeIndex}
-                onClick={() => navigate({ to: route, params: {}, search: {} })}
+                onClick={() => navigate({ to: path, params: {}, search: {} })}
               />
             ))}
           </Tabs>

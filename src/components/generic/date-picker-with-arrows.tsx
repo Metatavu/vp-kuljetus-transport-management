@@ -57,7 +57,7 @@ const DatePickerWithArrows = ({ date, labelVisible, buttonsWithText, setDate }: 
   };
 
   return (
-    <Stack direction="row" justifyContent="center" alignItems="center" gap={1}>
+    <Stack display="inline-flex" direction="row" justifyContent="center" alignItems="center" gap={1}>
       {renderPreviousDayButton()}
       <DatePicker
         label={labelVisible && t("drivePlanning.routes.date")}

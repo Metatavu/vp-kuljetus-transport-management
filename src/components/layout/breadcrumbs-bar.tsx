@@ -1,7 +1,6 @@
 import { Breadcrumbs, Typography, styled } from "@mui/material";
 import { Stack } from "@mui/system";
-import { Link, useMatches } from "@tanstack/react-router";
-import { useTranslation } from "react-i18next";
+import { Link, useLoaderData, useMatches } from "@tanstack/react-router";
 
 const BreadCrumbBar = styled(Stack, {
   label: "styled-breadcrumb-bar",
@@ -14,29 +13,31 @@ const BreadCrumbBar = styled(Stack, {
 }));
 
 const BreadcrumbsBar = () => {
-  const { t } = useTranslation();
-  const matches = useMatches();
-  const breadcrumbs = matches.flatMap((match) => match.staticData?.breadcrumbs ?? []);
+  const deepestRouteId = useMatches({ select: (matches) => matches.at(-1)?.routeId });
+  if (!deepestRouteId) throw new Error("No match found");
+
+  const loaderData = useLoaderData({ from: deepestRouteId });
+  const breadcrumbs = loaderData && "breadcrumbs" in loaderData ? loaderData.breadcrumbs : [];
 
   return (
     <BreadCrumbBar>
       <Breadcrumbs aria-label="breadcrumb" sx={{ color: "#ffffff" }}>
-        {breadcrumbs.map((breadcrumb, index) => {
-          const first = index === 0;
-          const last = index === breadcrumbs.length - 1;
-          return first || last ? (
+        {breadcrumbs.map(({ label, route }, index) => {
+          return route ? (
+            <Link href={route} key={`breadcrumb-${index}`} style={{ color: "#fff" }}>
+              <Typography variant="h6" sx={{ userSelect: "none" }}>
+                {label}
+              </Typography>
+            </Link>
+          ) : (
             <Typography
               key={`breadcrumb-${index}`}
               color="#ffffff"
-              variant={first ? "body2" : "h6"}
+              variant={index === 0 ? "body2" : "h6"}
               sx={{ userSelect: "none" }}
             >
-              {t(breadcrumb)}
+              {label}
             </Typography>
-          ) : (
-            <Link href="../" key={`breadcrumb-${index}`}>
-              {t(breadcrumb)}
-            </Link>
           );
         })}
       </Breadcrumbs>

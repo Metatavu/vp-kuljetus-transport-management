@@ -1,16 +1,17 @@
+import { SaveAlt } from "@mui/icons-material";
 import { Box, Button, Paper, Stack } from "@mui/material";
 import { useNavigate } from "@tanstack/react-router";
 import ToolbarRow from "components/generic/toolbar-row";
+import { Towable, Truck } from "generated/client";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { SaveAlt } from "@mui/icons-material";
+import { getEquipmentDisplayName } from "src/utils/format-utils";
 import EquipmentForm from "./equipment-form";
-import { Towable, Truck } from "generated/client";
 
 type Props = {
   formType: "ADD" | "MODIFY";
   initialData?: Truck | Towable;
-  onSave: (equipment: Truck | Towable) => Promise<void>;
+  onSave: (equipment: Truck | Towable) => unknown;
 };
 
 function EquipmentComponent({ formType, initialData, onSave }: Props) {
@@ -29,18 +30,9 @@ function EquipmentComponent({ formType, initialData, onSave }: Props) {
     shouldFocusError: true,
   });
 
-  const onEquipmentSave = async (equipment: Truck | Towable) => {
-    await onSave(equipment);
-    navigate({ to: "/management/equipment" });
-  };
-
   const renderToolbarButtons = () => (
     <Stack direction="row" spacing={1}>
-      <Button
-        variant="contained"
-        startIcon={<SaveAlt />}
-        onClick={handleSubmit(onEquipmentSave)}
-      >
+      <Button variant="contained" startIcon={<SaveAlt />} onClick={handleSubmit(onSave)}>
         {t("save")}
       </Button>
     </Stack>
@@ -49,7 +41,11 @@ function EquipmentComponent({ formType, initialData, onSave }: Props) {
   return (
     <Paper sx={{ height: "100%", width: "100%" }}>
       <ToolbarRow
-        title={formType === "ADD" ? t("management.equipment.new") : t("management.equipment.modify")}
+        title={
+          formType === "MODIFY" && initialData
+            ? t("management.equipment.modify", { equipmentName: getEquipmentDisplayName(initialData) })
+            : t("management.equipment.new")
+        }
         navigateBack={() => navigate({ to: "/management/equipment" })}
         toolbarButtons={renderToolbarButtons()}
       />

@@ -1,7 +1,8 @@
 /* tslint:disable */
 /* eslint-disable */
-export * from './DailyTimeEntriesApi';
+export * from './ClientAppsApi';
 export * from './DriversApi';
+export * from './EmployeeWorkShiftsApi';
 export * from './EmployeesApi';
 export * from './FreightUnitsApi';
 export * from './FreightsApi';
@@ -13,3 +14,4 @@ export * from './TowablesApi';
 export * from './TrucksApi';
 export * from './VehiclesApi';
 export * from './WorkEventsApi';
+export * from './WorkShiftHoursApi';

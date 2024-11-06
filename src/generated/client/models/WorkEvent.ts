@@ -22,7 +22,20 @@ import {
 } from './WorkEventType';
 
 /**
- * Represents single work event
+ * Represents single work event.
+ * 
+ * Whenever employee tracks a new work event, it is determined, whether a new work shift should be created for
+ * the event, or if the event should be added to the shift of the last work event recorded.
+ * 
+ * A new work shift should be created, if either
+ * - There are no previous work events for the employee, or
+ * - The last work event is of type SHIFT_END, or
+ * - The last work event is of type BREAK or UNKNOWN and has been going on longer than 3 hours
+ * 
+ * A work shift might already exist for the current day with _no_ events. This can happen, if a shift has been
+ * created manually by the manager in advance. In this case, whenever a new shift would be created, the event
+ * should be added to this existing work shift instead.
+ * 
  * @export
  * @interface WorkEvent
  */
@@ -40,11 +53,23 @@ export interface WorkEvent {
      */
     employeeId: string;
     /**
+     * employee work shift ID
+     * @type {string}
+     * @memberof WorkEvent
+     */
+    readonly employeeWorkShiftId?: string;
+    /**
      * Work event time
      * @type {Date}
      * @memberof WorkEvent
      */
     time: Date;
+    /**
+     * The ID of truck used during the work event
+     * @type {string}
+     * @memberof WorkEvent
+     */
+    truckId?: string;
     /**
      * 
      * @type {WorkEventType}
@@ -77,7 +102,9 @@ export function WorkEventFromJSONTyped(json: any, ignoreDiscriminator: boolean):
         
         'id': !exists(json, 'id') ? undefined : json['id'],
         'employeeId': json['employeeId'],
+        'employeeWorkShiftId': !exists(json, 'employeeWorkShiftId') ? undefined : json['employeeWorkShiftId'],
         'time': (new Date(json['time'])),
+        'truckId': !exists(json, 'truckId') ? undefined : json['truckId'],
         'workEventType': WorkEventTypeFromJSON(json['workEventType']),
     };
 }
@@ -93,6 +120,7 @@ export function WorkEventToJSON(value?: WorkEvent | null): any {
         
         'employeeId': value.employeeId,
         'time': (value.time.toISOString()),
+        'truckId': value.truckId,
         'workEventType': WorkEventTypeToJSON(value.workEventType),
     };
 }

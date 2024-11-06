@@ -1,9 +1,9 @@
 import { MenuItem, Stack, TextField } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
+import { api } from "api/index";
 import ArchiveButton from "components/generic/archive-button";
 import { Employee, EmployeeType, Office, SalaryGroup } from "generated/client";
-import { useApi } from "hooks/use-api";
 import { TFunction } from "i18next";
 import { Key, useCallback, useMemo } from "react";
 import { useFormContext } from "react-hook-form";
@@ -18,7 +18,6 @@ type Props = {
 const EmployeeForm = ({ employee }: Props) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { employeesApi } = useApi();
 
   const {
     watch,
@@ -29,7 +28,7 @@ const EmployeeForm = ({ employee }: Props) => {
   const archiveEmployee = useMutation({
     mutationFn: (employee?: Employee) => {
       if (!employee?.id) return Promise.reject();
-      return employeesApi.updateEmployee({
+      return api.employees.updateEmployee({
         employeeId: employee.id,
         employee: { ...employee, archivedAt: new Date() },
       });

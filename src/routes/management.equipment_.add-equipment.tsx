@@ -1,18 +1,26 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { api } from "api/index";
 import EquipmentComponent from "components/management/equipments/equipment";
 import { Towable, TowableTypeEnum, Truck } from "generated/client";
-import { useApi } from "hooks/use-api";
+import { t } from "i18next";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import { Breadcrumb } from "src/types";
 
-export const Route = createFileRoute("/management/equipment/add-equipment")({
+export const Route = createFileRoute("/management/equipment_/add-equipment")({
   component: () => <EquipmentAdd />,
-  staticData: { breadcrumbs: ["management.equipment.title", "management.equipment.new"] },
+  loader: () => {
+    const breadcrumbs: Breadcrumb[] = [
+      { label: t("management.title") },
+      { label: t("management.equipment.title"), route: "/management/equipment" },
+      { label: t("management.equipment.new") },
+    ];
+    return { breadcrumbs };
+  },
 });
 
 const EquipmentAdd = () => {
-  const { trucksApi, towablesApi } = useApi();
   const queryClient = useQueryClient();
   const { t } = useTranslation();
 
@@ -25,7 +33,7 @@ const EquipmentAdd = () => {
   };
 
   const createTruckEquipment = useMutation({
-    mutationFn: async (truck: Truck) => trucksApi.createTruck({ truck }),
+    mutationFn: async (truck: Truck) => api.trucks.createTruck({ truck }),
     onSuccess: () => {
       toast.success(t("management.equipment.successToast"));
       queryClient.invalidateQueries({ queryKey: ["trucks"] });
@@ -34,7 +42,7 @@ const EquipmentAdd = () => {
   });
 
   const createTowableEquipment = useMutation({
-    mutationFn: async (towable: Towable) => towablesApi.createTowable({ towable }),
+    mutationFn: async (towable: Towable) => api.towables.createTowable({ towable }),
     onSuccess: () => {
       toast.success(t("management.equipment.successToast"));
       queryClient.invalidateQueries({ queryKey: ["towables"] });

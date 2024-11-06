@@ -13,8 +13,9 @@ import {
   styled,
 } from "@mui/material";
 import { GridColDef, GridPaginationModel, GridRenderEditCellParams } from "@mui/x-data-grid";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Outlet, createFileRoute, deepEqual, useNavigate } from "@tanstack/react-router";
+import { api } from "api/index";
 import DialogHeader from "components/generic/dialog-header";
 import GenericDataGrid from "components/generic/generic-data-grid";
 import LoaderWrapper from "components/generic/loader-wrapper";
@@ -22,13 +23,14 @@ import ToolbarRow from "components/generic/toolbar-row";
 import { useConfirmDialog } from "components/providers/confirm-dialog-provider";
 import Holidays, { HolidaysTypes } from "date-holidays";
 import { CompensationType, Holiday } from "generated/client";
-import { useApi } from "hooks/use-api";
-import { QUERY_KEYS, useHolidays } from "hooks/use-queries";
+import { QUERY_KEYS, getListHolidaysQueryOptions } from "hooks/use-queries";
 import { useSingleClickCellEditMode } from "hooks/use-single-click-cell-edit-mode";
+import { t } from "i18next";
 import { DateTime } from "luxon";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import { Breadcrumb } from "src/types";
 import LocalizationUtils from "src/utils/localization-utils";
 
 // Styled root component
@@ -43,11 +45,13 @@ const Root = styled(Stack, {
 
 export const Route = createFileRoute("/management/holidays")({
   component: ManagementHolidays,
-  staticData: { breadcrumbs: ["management.holidays.title"] },
+  loader: () => {
+    const breadcrumbs: Breadcrumb[] = [{ label: t("management.title") }, { label: t("management.holidays.title") }];
+    return { breadcrumbs };
+  },
 });
 
 function ManagementHolidays() {
-  const { holidaysApi } = useApi();
   const { t } = useTranslation();
   const navigate = useNavigate({ from: Route.fullPath });
   const queryClient = useQueryClient();
@@ -61,16 +65,18 @@ function ManagementHolidays() {
 
   const { cellModesModel, handleCellClick, handleCellModelsChange } = useSingleClickCellEditMode();
 
-  const holidaysQuery = useHolidays({
-    first: paginationModel.pageSize * paginationModel.page,
-    max: paginationModel.pageSize * paginationModel.page + paginationModel.pageSize,
-  });
+  const holidaysQuery = useQuery(
+    getListHolidaysQueryOptions({
+      first: paginationModel.pageSize * paginationModel.page,
+      max: paginationModel.pageSize * paginationModel.page + paginationModel.pageSize,
+    }),
+  );
 
   const createHolidaysForEntireYear = useMutation({
     mutationFn: async (holidays: HolidaysTypes.Holiday[]) => {
       await Promise.all(
         holidays.map(async (holiday) =>
-          holidaysApi.createHoliday({
+          api.holidays.createHoliday({
             holiday: {
               date: DateTime.fromJSDate(holiday.start).set({ hour: 12 }).toJSDate(),
               name: holiday.name,
@@ -92,7 +98,7 @@ function ManagementHolidays() {
   const updateHoliday = useMutation({
     mutationFn: (holiday: Holiday) => {
       if (!holiday.id) return Promise.reject();
-      return holidaysApi.updateHoliday({ holidayId: holiday.id, holiday: holiday });
+      return api.holidays.updateHoliday({ holidayId: holiday.id, holiday: holiday });
     },
     onSuccess: () => {
       toast.success(t("management.holidays.editSuccessToast"));
@@ -110,7 +116,7 @@ function ManagementHolidays() {
   const deleteHoliday = useMutation({
     mutationFn: (holiday: Holiday) => {
       if (!holiday.id) return Promise.reject();
-      return holidaysApi.deleteHoliday({ holidayId: holiday.id });
+      return api.holidays.deleteHoliday({ holidayId: holiday.id });
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.HOLIDAYS] }),
   });
