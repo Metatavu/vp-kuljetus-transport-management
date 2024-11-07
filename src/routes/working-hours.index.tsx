@@ -1,21 +1,25 @@
 import SearchIcon from "@mui/icons-material/Search";
 import { Link, MenuItem, Paper, Stack, TextField, Typography, styled } from "@mui/material";
 import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import GenericDataGrid from "components/generic/generic-data-grid";
 import { EmployeeType, Office, SalaryGroup } from "generated/client";
 import { useDebounce } from "hooks/use-debounce";
-import { useListEmployees } from "hooks/use-queries";
-import { TFunction } from "i18next";
+import { getListEmployeesQueryOptions } from "hooks/use-queries";
+import { TFunction, t } from "i18next";
 import { Key, ReactNode, useCallback, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { LocalizedLabelKey } from "src/types";
+import { Breadcrumb, LocalizedLabelKey } from "src/types";
 import LocalizationUtils from "src/utils/localization-utils";
 
 export const Route = createFileRoute("/working-hours/")({
   component: WorkingHours,
-  staticData: { breadcrumbs: ["workingHours.title"] },
+  loader: () => {
+    const breadcrumbs: Breadcrumb[] = [{ label: t("workingHours.title") }];
+    return { breadcrumbs };
+  },
 });
 
 type EmployeeFilters = {
@@ -76,14 +80,16 @@ function WorkingHours() {
   const salaryGroupFilter = watch("salaryGroup");
   const employeeTypeFilter = watch("employeeType");
 
-  const employeesQuery = useListEmployees({
-    first: pageSize * page,
-    max: pageSize,
-    search: debouncedSearchTerm || undefined,
-    office: officeFilter === "ALL" ? undefined : officeFilter,
-    salaryGroup: salaryGroupFilter ? undefined : salaryGroupFilter,
-    type: employeeTypeFilter === "ALL" ? undefined : employeeTypeFilter,
-  });
+  const employeesQuery = useQuery(
+    getListEmployeesQueryOptions({
+      first: pageSize * page,
+      max: pageSize,
+      search: debouncedSearchTerm || undefined,
+      office: officeFilter === "ALL" ? undefined : officeFilter,
+      salaryGroup: salaryGroupFilter ? undefined : salaryGroupFilter,
+      type: employeeTypeFilter === "ALL" ? undefined : employeeTypeFilter,
+    }),
+  );
 
   const columns: GridColDef[] = useMemo<GridColDef[]>(
     () => [

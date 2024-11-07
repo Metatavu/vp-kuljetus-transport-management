@@ -5,18 +5,15 @@ import SideNavigation from "components/layout/side-navigation";
 import ViewContainer from "components/layout/view-container";
 import { NavigationItem } from "src/types";
 
-export const Route = createFileRoute("/management")({
-  component: ManagementLayoutComponent,
-  staticData: { breadcrumbs: ["management.title"] },
-});
+export const Route = createFileRoute("/management")({ component: ManagementLayoutComponent });
 
 function ManagementLayoutComponent() {
-  const sideNavigationItems: readonly NavigationItem[] = [
-    ["/management/customer-sites", "management.customerSites.title", PlaceRounded],
-    ["/management/equipment", "management.equipment.title", CommuteRounded],
-    ["/management/employees", "management.employees.title", HailRounded],
-    ["/management/holidays", "management.holidays.title", TodayRounded],
-  ] as const;
+  const sideNavigationItems: NavigationItem[] = [
+    { route: "/management/customer-sites", label: "management.customerSites.title", Icon: PlaceRounded },
+    { route: "/management/equipment", label: "management.equipment.title", Icon: CommuteRounded },
+    { route: "/management/employees", label: "management.employees.title", Icon: HailRounded },
+    { route: "/management/holidays", label: "management.holidays.title", Icon: TodayRounded },
+  ];
 
   return (
     <Stack direction="row" height="100%" width="100%">

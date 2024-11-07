@@ -4,14 +4,12 @@ import ViewContainer from "components/layout/view-container";
 import { useTranslation } from "react-i18next";
 import { NavigationItem } from "src/types";
 
-export const Route = createFileRoute("/vehicle-list")({
-  component: VehicleListLayoutComponent,
-});
+export const Route = createFileRoute("/vehicles")({ component: VehicleListLayoutComponent });
 
-const navigationItems: readonly NavigationItem[] = [
-  ["/vehicle-list/vehicles", "vehicleList.title", undefined],
-  ["/vehicle-list/map-view", "vehicleList.mapView.title", undefined],
-] as const;
+const navigationItems: NavigationItem[] = [
+  { route: "/vehicles/list", label: "vehicles.list.title" },
+  { route: "/vehicles/map", label: "vehicles.map.title" },
+];
 
 const ViewNavigationLayout = styled(Stack, {
   label: "styled-view-navigation-layout",
@@ -25,18 +23,18 @@ function VehicleListLayoutComponent() {
   const navigate = useNavigate();
   useMatches();
 
-  const selectedRouteIndex = navigationItems.findIndex(([route]) => location.pathname.startsWith(route));
+  const selectedRouteIndex = navigationItems.findIndex(({ route }) => route && location.pathname.startsWith(route));
 
   return (
     <Stack direction="column" flex={1} padding={2}>
       <ViewNavigationLayout>
         <Tabs orientation="horizontal" value={selectedRouteIndex}>
-          {navigationItems.map(([path, title], index) => (
+          {navigationItems.map(({ route, label }, index) => (
             <Tab
-              key={path}
-              label={t(title)}
+              key={route}
+              label={t(label)}
               value={index}
-              onClick={() => navigate({ to: path, params: {}, search: {} })}
+              onClick={() => navigate({ to: route, params: {}, search: {} })}
             />
           ))}
         </Tabs>

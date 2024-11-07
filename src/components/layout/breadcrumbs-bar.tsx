@@ -1,32 +1,45 @@
-import { Box, Breadcrumbs, Typography, styled } from "@mui/material";
-import { useMatches } from "@tanstack/react-router";
-import { useTranslation } from "react-i18next";
+import { Breadcrumbs, Typography, styled } from "@mui/material";
+import { Stack } from "@mui/system";
+import { Link, useLoaderData, useMatches } from "@tanstack/react-router";
 
-const BreadCrumbBar = styled(Box, {
+const BreadCrumbBar = styled(Stack, {
   label: "styled-breadcrumb-bar",
 })(({ theme }) => ({
   backgroundColor: theme.palette.primary.light,
-  padding: theme.spacing(0.5, 3),
+  paddingLeft: theme.spacing(2),
+  height: 32,
+  flexDirection: "row",
+  alignItems: "center",
 }));
 
 const BreadcrumbsBar = () => {
-  const { t } = useTranslation();
-  const matches = useMatches();
-  const breadcrumbs = matches.flatMap((match) => match.staticData?.breadcrumbs ?? []);
+  const deepestRouteId = useMatches({ select: (matches) => matches.at(-1)?.routeId });
+  if (!deepestRouteId) throw new Error("No match found");
+
+  const loaderData = useLoaderData({ from: deepestRouteId });
+  const breadcrumbs = loaderData && "breadcrumbs" in loaderData ? loaderData.breadcrumbs : [];
 
   return (
-    // TODO: Make breadcrums work as links to previous pages according to MUI documentation
     <BreadCrumbBar>
-      <Breadcrumbs sx={{ color: "#ffffff" }}>
-        {breadcrumbs.map((breadcrumb, index) => (
-          <Typography
-            key={`breadcrumb-${index}`}
-            color="#ffffff"
-            sx={{ fontWeight: index === breadcrumbs.length - 1 ? "bold" : undefined }}
-          >
-            {t(breadcrumb)}
-          </Typography>
-        ))}
+      <Breadcrumbs aria-label="breadcrumb" sx={{ color: "#ffffff" }}>
+        {breadcrumbs.map(({ label, route }, index) => {
+          return route ? (
+            <Link href={route} key={`breadcrumb-${index}`} style={{ color: "#fff" }}>
+              <Typography variant="h6" sx={{ userSelect: "none" }}>
+                {label}
+              </Typography>
+            </Link>
+          ) : (
+            <Typography
+              key={`breadcrumb-${index}`}
+              color="#ffffff"
+              variant={index === 0 ? "body2" : "h6"}
+              sx={{ userSelect: "none" }}
+            >
+              {label}
+            </Typography>
+          );
+        })}
       </Breadcrumbs>
     </BreadCrumbBar>
   );

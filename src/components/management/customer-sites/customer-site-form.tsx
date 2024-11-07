@@ -1,16 +1,16 @@
+import { SessionToken } from "@mapbox/search-js-core";
 import { Autocomplete, Button, ListItem, ListItemText, Stack, TextField, styled } from "@mui/material";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
+import { api } from "api/index";
+import { useConfirmDialog } from "components/providers/confirm-dialog-provider";
+import { Site } from "generated/client";
+import { useDebounce } from "hooks/use-debounce";
+import Mapbox from "mapbox/index";
+import { SyntheticEvent, useState } from "react";
 import { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { Site } from "generated/client";
-import { SessionToken } from "@mapbox/search-js-core";
-import { useDebounce } from "hooks/use-debounce";
-import Mapbox from "../../../mapbox";
-import { SyntheticEvent, useState } from "react";
 import { stringify } from "wellknown";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { useConfirmDialog } from "components/providers/confirm-dialog-provider";
-import { useApi } from "hooks/use-api";
-import { useNavigate } from "@tanstack/react-router";
 
 // Styled components
 const FlexTextArea = styled(TextField, {
@@ -43,7 +43,6 @@ const CustomerSiteForm = ({ errors, customerSite, register, setFormValue, watch 
   const [debouncedSearchTerm, _, setSearchTerm] = useDebounce("", 500);
   const [autocompleteValue, setAutocompleteValue] = useState<AutocompleteLocationOption>({ title: watch("address") });
   const showConfirmDialog = useConfirmDialog();
-  const { sitesApi } = useApi();
   const navigate = useNavigate();
 
   const validatePostalCode = (value: string) => {
@@ -72,7 +71,7 @@ const CustomerSiteForm = ({ errors, customerSite, register, setFormValue, watch 
     mutationKey: ["archiveSite", watch("id")],
     mutationFn: (site?: Site) => {
       if (!site?.id) return Promise.reject();
-      return sitesApi.updateSite({ siteId: site.id, site: { ...site, archivedAt: new Date() } });
+      return api.sites.updateSite({ siteId: site.id, site: { ...site, archivedAt: new Date() } });
     },
     onSuccess: () => navigate({ to: "/management/customer-sites" }),
   });
