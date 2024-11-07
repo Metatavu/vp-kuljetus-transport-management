@@ -2,30 +2,37 @@ import { Button, Paper, Stack } from "@mui/material";
 import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { api } from "api/index";
 import clsx from "clsx";
 import GenericDataGrid from "components/generic/generic-data-grid";
+import { t } from "i18next";
 import { DateTime } from "luxon";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useApi } from "../hooks/use-api";
+import { Breadcrumb } from "src/types";
 import LocalizationUtils from "../utils/localization-utils";
 
-export const Route = createFileRoute("/vehicle-list/vehicles")({
+export const Route = createFileRoute("/vehicles/list")({
   component: VehicleListVehicles,
-  staticData: { breadcrumbs: ["vehicleList.title"] },
+  loader: () => {
+    const breadcrumbs: Breadcrumb[] = [{ label: t("vehicles.title") }];
+    return { breadcrumbs };
+  },
 });
 
 function VehicleListVehicles() {
-  const { trucksApi } = useApi();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [totalTruckResults, setTotalTruckResults] = useState(0);
-  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({ page: 0, pageSize: 25 });
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
+    page: 0,
+    pageSize: 25,
+  });
 
   const trucks = useQuery({
     queryKey: ["trucks", paginationModel],
     queryFn: async () => {
-      const [trucks, headers] = await trucksApi.listTrucksWithHeaders({
+      const [trucks, headers] = await api.trucks.listTrucksWithHeaders({
         first: paginationModel.pageSize * paginationModel.page,
         max: paginationModel.pageSize * paginationModel.page + paginationModel.pageSize,
       });
@@ -42,8 +49,14 @@ function VehicleListVehicles() {
       queryFn: async () => ({
         // biome-ignore lint/style/noNonNullAssertion: id must exist in trucks from API
         truckId: truck.id!,
-        // biome-ignore lint/style/noNonNullAssertion: id must exist in trucks from API
-        driveState: (await trucksApi.listDriveStates({ truckId: truck.id!, max: 1, first: 0 })).at(0),
+        driveState: (
+          await api.trucks.listDriveStates({
+            // biome-ignore lint/style/noNonNullAssertion: id must exist in trucks from API
+            truckId: truck.id!,
+            max: 1,
+            first: 0,
+          })
+        ).at(0),
       }),
       refetchInterval: 10_000,
       enabled: trucks.isSuccess,
@@ -85,7 +98,7 @@ function VehicleListVehicles() {
       {
         field: "plateNumber",
         headerAlign: "center",
-        headerName: t("vehicleList.vehicle.plateNumber"),
+        headerName: t("vehicles.list.plateNumber"),
         sortable: false,
         width: 150,
         align: "center",
@@ -97,8 +110,8 @@ function VehicleListVehicles() {
               size="small"
               onClick={() =>
                 navigate({
-                  to: "/vehicle-list/vehicles/$vehicleId/info",
-                  params: { vehicleId: params.row.id as string },
+                  to: "/vehicles/$truckId/details",
+                  params: { truckId: params.row.id as string },
                   search: { date: DateTime.now() },
                 })
               }
@@ -111,7 +124,7 @@ function VehicleListVehicles() {
       {
         field: "name",
         headerAlign: "center",
-        headerName: t("vehicleList.vehicle.number"),
+        headerName: t("vehicles.list.number"),
         sortable: false,
         width: 200,
         align: "center",
@@ -119,21 +132,21 @@ function VehicleListVehicles() {
       {
         field: "address",
         headerAlign: "left",
-        headerName: t("vehicleList.vehicle.address"),
+        headerName: t("vehicles.list.address"),
         sortable: false,
         width: 400,
       },
       {
         field: "location",
         headerAlign: "left",
-        headerName: t("vehicleList.vehicle.location"),
+        headerName: t("vehicles.list.location"),
         sortable: false,
         flex: 1,
       },
       {
         field: "status",
         headerAlign: "left",
-        headerName: t("vehicleList.vehicle.status"),
+        headerName: t("vehicles.list.status"),
         sortable: false,
         flex: 1,
         cellClassName: (params) => {
@@ -158,14 +171,14 @@ function VehicleListVehicles() {
       {
         field: "trailer",
         headerAlign: "left",
-        headerName: t("vehicleList.vehicle.trailer"),
+        headerName: t("vehicles.list.trailer"),
         sortable: false,
         flex: 1,
       },
       {
         field: "driver",
         headerAlign: "left",
-        headerName: t("vehicleList.vehicle.driver"),
+        headerName: t("vehicles.list.driver"),
         sortable: false,
         flex: 1,
       },

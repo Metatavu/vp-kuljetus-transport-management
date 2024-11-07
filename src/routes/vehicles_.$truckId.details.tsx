@@ -1,18 +1,23 @@
-import { Paper, Stack } from "@mui/material";
+import { Box, Stack } from "@mui/material";
 import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { api } from "api/index";
 import clsx from "clsx";
 import DatePickerWithArrows from "components/generic/date-picker-with-arrows";
 import GenericDataGrid from "components/generic/generic-data-grid";
 import { VehicleInfoBar } from "components/vehicles/vehicle-info-bar";
 import { Driver, Site, Task, TaskType, TruckDriveState, TruckDriveStateEnum } from "generated/client";
+import { getFindTruckQueryOptions } from "hooks/use-queries";
+import { t } from "i18next";
 import { DateTime, Interval } from "luxon";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { queryClient } from "src/main";
+import { Breadcrumb } from "src/types";
 import DataValidation from "src/utils/data-validation-utils";
+import { getEquipmentDisplayName } from "src/utils/format-utils";
 import { z } from "zod";
-import { useApi } from "../hooks/use-api";
 import LocalizationUtils from "../utils/localization-utils";
 
 type DriveStatesTableRow = {
@@ -27,25 +32,37 @@ export const vehicleInfoRouteSearchSchema = z.object({
   date: z.string().datetime({ offset: true }).transform(DataValidation.parseValidDateTime).optional(),
 });
 
-export const Route = createFileRoute("/vehicle-list/vehicles/$vehicleId/info")({
-  component: () => <VehicleInfo />,
-  staticData: { breadcrumbs: ["vehicleList.title", "vehicleList.info.title"] },
+export const Route = createFileRoute("/vehicles_/$truckId/details")({
+  component: VehicleInfo,
   validateSearch: vehicleInfoRouteSearchSchema,
+  loader: async ({ params: { truckId } }) => {
+    const truck = await queryClient.ensureQueryData(getFindTruckQueryOptions({ truckId }));
+    const breadcrumbs: Breadcrumb[] = [{ label: t("vehicles.title") }, { label: getEquipmentDisplayName(truck) }];
+    return { breadcrumbs, truck };
+  },
 });
 
-const VehicleInfo = () => {
-  const { trucksApi, routesApi, tasksApi, sitesApi, driversApi } = useApi();
+function VehicleInfo() {
   const { t } = useTranslation();
-  const { vehicleId } = Route.useParams();
+  const { truckId } = Route.useParams();
   const navigate = useNavigate({ from: Route.parentRoute.fullPath });
-  const selectedDate = Route.useSearch({ select: (search) => search.date ?? DateTime.now() });
+  const selectedDate = Route.useSearch({
+    select: (search) => search.date ?? DateTime.now(),
+  });
 
-  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({ page: 0, pageSize: 25 });
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
+    page: 0,
+    pageSize: 25,
+  });
 
   const truckSpeed = useQuery({
     queryKey: ["truckSpeed"],
     queryFn: async () => {
-      const truckSpeed = await trucksApi.listTruckSpeeds({ truckId: vehicleId, max: 1, first: 0 });
+      const truckSpeed = await api.trucks.listTruckSpeeds({
+        truckId: truckId,
+        max: 1,
+        first: 0,
+      });
 
       return truckSpeed[0] ?? {};
     },
@@ -54,7 +71,7 @@ const VehicleInfo = () => {
 
   const customerSitesMap = useQuery({
     queryKey: ["customerSites"],
-    queryFn: () => sitesApi.listSites({}),
+    queryFn: () => api.sites.listSites({}),
     select: (data) =>
       data.reduce((map, site) => {
         if (site.id) map.set(site.id, site);
@@ -64,13 +81,17 @@ const VehicleInfo = () => {
 
   const truck = useQuery({
     queryKey: ["truck"],
-    queryFn: () => trucksApi.findTruck({ truckId: vehicleId }),
+    queryFn: () => api.trucks.findTruck({ truckId: truckId }),
   });
 
   const truckLocation = useQuery({
     queryKey: ["truckLocation"],
     queryFn: async () => {
-      const truckLocation = await trucksApi.listTruckLocations({ truckId: vehicleId, max: 1, first: 0 });
+      const truckLocation = await api.trucks.listTruckLocations({
+        truckId: truckId,
+        max: 1,
+        first: 0,
+      });
 
       return truckLocation[0] ?? {};
     },
@@ -78,21 +99,21 @@ const VehicleInfo = () => {
   });
 
   const routesQueryParams = {
-    truckId: vehicleId,
+    truckId: truckId,
     departureAfter: selectedDate.startOf("day").toJSDate(),
     departureBefore: selectedDate.endOf("day").toJSDate(),
   };
 
   const routes = useQuery({
     queryKey: ["routes", routesQueryParams],
-    queryFn: async () => await routesApi.listRoutes(routesQueryParams),
+    queryFn: async () => await api.routes.listRoutes(routesQueryParams),
   });
 
   const uniqueTasks = useQueries({
     queries:
       routes.data?.map((route) => ({
         queryKey: ["tasks", { routeId: route.id }],
-        queryFn: () => tasksApi.listTasks({ routeId: route.id }),
+        queryFn: () => api.tasks.listTasks({ routeId: route.id }),
       })) ?? [],
     combine: (results) => {
       const tasks = results
@@ -114,7 +135,7 @@ const VehicleInfo = () => {
 
   const driversDataMap = useQuery({
     queryKey: ["drivers"],
-    queryFn: () => driversApi.listDrivers({}),
+    queryFn: () => api.drivers.listDrivers({}),
     select: (data) =>
       data.reduce((map, driver) => {
         if (driver.id) map.set(driver.id, driver);
@@ -123,14 +144,14 @@ const VehicleInfo = () => {
   });
 
   const driveStatesQueryParams = {
-    truckId: vehicleId,
+    truckId: truckId,
     after: selectedDate.startOf("day").toJSDate(),
     before: selectedDate.endOf("day").toJSDate(),
   };
 
   const driveStates = useQuery({
     queryKey: ["driveStates", driveStatesQueryParams],
-    queryFn: () => trucksApi.listDriveStates(driveStatesQueryParams),
+    queryFn: () => api.trucks.listDriveStates(driveStatesQueryParams),
     select: (data) => data.sort((a, b) => a.timestamp - b.timestamp),
   });
 
@@ -272,7 +293,7 @@ const VehicleInfo = () => {
       {
         field: "start",
         headerAlign: "left",
-        headerName: t("vehicleList.info.timeStamp"),
+        headerName: t("vehicles.details.timeStamp"),
         sortable: false,
         width: 250,
         align: "left",
@@ -281,7 +302,7 @@ const VehicleInfo = () => {
       {
         field: "state",
         headerAlign: "center",
-        headerName: t("vehicleList.info.event"),
+        headerName: t("vehicles.details.event"),
         sortable: false,
         width: 250,
         align: "center",
@@ -306,7 +327,7 @@ const VehicleInfo = () => {
       {
         field: "duration",
         headerAlign: "left",
-        headerName: t("vehicleList.info.duration"),
+        headerName: t("vehicles.details.duration"),
         sortable: false,
         width: 400,
         renderCell: ({ row }) => <Stack>{row.interval.toDuration().toFormat("hh:mm:ss")}</Stack>,
@@ -314,7 +335,7 @@ const VehicleInfo = () => {
       {
         field: "location",
         headerAlign: "left",
-        headerName: t("vehicleList.info.location"),
+        headerName: t("vehicles.details.location"),
         sortable: false,
         flex: 1,
         valueGetter: ({ row }) => customerSitesMap.data?.get(row.siteId ?? "")?.name ?? "",
@@ -322,7 +343,7 @@ const VehicleInfo = () => {
       {
         field: "driver",
         headerAlign: "left",
-        headerName: t("vehicleList.info.driver"),
+        headerName: t("vehicles.details.driver"),
         sortable: false,
         flex: 1,
         valueGetter: ({ row }) => driversDataMap.data?.get(row.siteId ?? "")?.displayName ?? "",
@@ -332,11 +353,10 @@ const VehicleInfo = () => {
   );
 
   return (
-    <Paper
+    <Stack
       sx={{
-        height: "100%",
         width: "100%",
-        overflowY: "auto",
+        bgcolor: "background.paper",
         "& .driveState.drive": {
           backgroundColor: "rgba(157, 255, 118, 0.49)",
         },
@@ -347,31 +367,32 @@ const VehicleInfo = () => {
         truckSpeed={truckSpeed.data}
         selectedTruckLocation={truckLocation.data}
         title={false}
-        navigateBack={() => navigate({ to: "/vehicle-list/vehicles" })}
+        navigateBack={() => navigate({ to: "/vehicles/list" })}
       />
-      <Stack flex={1} borderTop="1px solid rgba(0, 0, 0, 0.1)" padding={1}>
-        <Stack width="30%" marginLeft={1}>
-          <DatePickerWithArrows
-            date={selectedDate}
-            buttonsWithText
-            setDate={(date) => navigate({ search: (search) => ({ ...search, date: date.toISODate() }) })}
-          />
-        </Stack>
+      <Box borderTop="1px solid rgba(0, 0, 0, 0.1)" p={1} pl={2}>
+        <DatePickerWithArrows
+          date={selectedDate}
+          buttonsWithText
+          setDate={(date) => navigate({ search: (search) => ({ ...search, date: date.toISODate() }) })}
+        />
+      </Box>
+      <Stack flex={1} overflow="hidden">
+        <GenericDataGrid
+          autoHeight={false}
+          rows={driveStateRows ?? []}
+          columns={columns ?? []}
+          showCellVerticalBorder
+          showColumnVerticalBorder
+          disableColumnSelector
+          loading={false}
+          getRowId={(row: DriveStatesTableRow) => row.interval.start.toSeconds()}
+          paginationMode="client"
+          pageSizeOptions={[25, 50, 100]}
+          rowCount={driveStateRows.length ?? 0}
+          paginationModel={paginationModel}
+          onPaginationModelChange={setPaginationModel}
+        />
       </Stack>
-      <GenericDataGrid
-        rows={driveStateRows ?? []}
-        columns={columns ?? []}
-        showCellVerticalBorder
-        showColumnVerticalBorder
-        disableColumnSelector
-        loading={false}
-        getRowId={(row: DriveStatesTableRow) => row.interval.start.toSeconds()}
-        paginationMode="client"
-        pageSizeOptions={[25, 50, 100]}
-        rowCount={driveStateRows.length ?? 0}
-        paginationModel={paginationModel}
-        onPaginationModelChange={setPaginationModel}
-      />
-    </Paper>
+    </Stack>
   );
-};
+}

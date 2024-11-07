@@ -14,31 +14,39 @@ import {
   styled,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Outlet, createFileRoute } from "@tanstack/react-router";
+import { api } from "api/index";
 import AggregationsTable from "components/working-hours/aggregations-table";
 import ChangeLog from "components/working-hours/change-log";
 import WorkShiftRow from "components/working-hours/work-shift-row";
 import WorkShiftsTableHeader from "components/working-hours/work-shifts-table-header";
 import { EmployeeWorkShift } from "generated/client";
-import { useApi } from "hooks/use-api";
 import {
   QUERY_KEYS,
+  getEmployeeWorkShiftsQueryOptions,
+  getListEmployeesQueryOptions,
+  getListTrucksQueryOptions,
   getWorkingPeriodDates,
-  useEmployeeWorkShifts,
-  useListEmployees,
-  useTrucks,
 } from "hooks/use-queries";
+import { t } from "i18next";
 import { DateTime } from "luxon";
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { EmployeeWorkHoursForm, EmployeeWorkHoursFormRow } from "src/types";
+import { Breadcrumb } from "src/types";
 
 export const Route = createFileRoute("/working-hours/$employeeId/work-shifts")({
   component: WorkShifts,
-  staticData: { breadcrumbs: ["workingHours.title", "workingHours.workingDays.title"] },
+  loader: () => {
+    const breadcrumbs: Breadcrumb[] = [
+      { label: t("workingHours.title") },
+      { label: t("workingHours.workingDays.title") },
+    ];
+    return { breadcrumbs };
+  },
 });
 
 // Styled root component
@@ -117,14 +125,19 @@ function WorkShifts() {
   const { t } = useTranslation();
   const navigate = Route.useNavigate();
   const { employeeId } = Route.useParams();
-  const { employeeWorkShiftsApi } = useApi();
   const queryClient = useQueryClient();
   const [date, setDate] = useState(DateTime.now());
-  const workShifts = useEmployeeWorkShifts({ employeeId }).data?.employeeWorkShifts;
+
+  const workShifts =
+    useQuery(
+      getEmployeeWorkShiftsQueryOptions({
+        employeeId,
+      }),
+    ).data?.employeeWorkShifts ?? [];
 
   const methods = useForm<EmployeeWorkHoursForm>({
     defaultValues: [],
-    values: workShifts?.map<EmployeeWorkHoursFormRow>((workShift) => ({
+    values: workShifts.map<EmployeeWorkHoursFormRow>((workShift) => ({
       workShift: {
         id: workShift.id,
         date: workShift.date,
@@ -144,8 +157,8 @@ function WorkShifts() {
   // const perDiem = watch("0.startedAt");
   // console.log("startedAt", perDiem);
 
-  const trucks = useTrucks().data;
-  const employees = useListEmployees().data?.employees;
+  const trucks = useQuery(getListTrucksQueryOptions({})).data?.trucks;
+  const employees = useQuery(getListEmployeesQueryOptions({})).data?.employees;
 
   const getWorkingPeriodsForEmployee = () => {
     const employeeSalaryGroup = employees?.find((employee) => employee.id === employeeId)?.salaryGroup;
@@ -156,7 +169,7 @@ function WorkShifts() {
 
   const updateWorkShift = useMutation({
     mutationFn: (employeeWorkShift: EmployeeWorkShift) =>
-      employeeWorkShiftsApi.updateEmployeeWorkShift({
+      api.employeeWorkShifts.updateEmployeeWorkShift({
         employeeId,
         employeeWorkShift,
         // biome-ignore lint/style/noNonNullAssertion: Workshift id is always defined
@@ -245,7 +258,10 @@ function WorkShifts() {
               value={date}
               slotProps={{
                 openPickerButton: { size: "small", title: t("openCalendar") },
-                textField: { size: "small", InputProps: { sx: { width: 300 } } },
+                textField: {
+                  size: "small",
+                  InputProps: { sx: { width: 300 } },
+                },
               }}
               onChange={onChangeDate}
               sx={{ width: 300 }}
@@ -317,7 +333,7 @@ function WorkShifts() {
                         key={`${index}_${employeeWorkShift.id}`}
                         onClick={() => navigate({ to: "work-shift-details" })}
                         workShiftData={employeeWorkShift}
-                        trucks={trucks?.trucks ?? []}
+                        trucks={trucks ?? []}
                         index={index}
                       />
                     ))

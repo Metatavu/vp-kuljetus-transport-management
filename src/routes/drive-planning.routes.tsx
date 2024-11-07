@@ -11,8 +11,9 @@ import { Add, Refresh } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import { Button, Paper, Stack, Typography, styled } from "@mui/material";
 import { GridPaginationModel } from "@mui/x-data-grid";
-import { useMutation, useQueries, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Outlet, createFileRoute } from "@tanstack/react-router";
+import { api } from "api/index";
 import RootFreightDialog from "components/drive-planning/freights/root-freight-dialog";
 import DraggedTaskOverlay from "components/drive-planning/routes/dragged-task-overlay";
 import RoutesTable from "components/drive-planning/routes/routes-table";
@@ -20,8 +21,8 @@ import UnallocatedTasksDrawer from "components/drive-planning/routes/unallocated
 import DatePickerWithArrows from "components/generic/date-picker-with-arrows";
 import ToolbarRow from "components/generic/toolbar-row";
 import { Route as TRoute, Task } from "generated/client";
-import { useApi } from "hooks/use-api";
-import { QUERY_KEYS, useRoutes, useSites } from "hooks/use-queries";
+import { QUERY_KEYS, getListRoutesQueryOptions, getListSitesQueryOptions } from "hooks/use-queries";
+import { t } from "i18next";
 import { DateTime } from "luxon";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -29,7 +30,7 @@ import { toast } from "react-toastify";
 import DragAndDropUtils, { TRouteTasks } from "src/utils/drag-and-drop-utils";
 import DataValidation from "utils/data-validation-utils";
 import { z } from "zod";
-import { DraggableType, DraggedTaskData, DroppableType } from "../types";
+import { Breadcrumb, DraggableType, DraggedTaskData, DroppableType } from "../types";
 
 // Styled components
 const Root = styled(Paper, {
@@ -48,17 +49,19 @@ export const drivePlanningRoutesSearchSchema = z.object({
 
 export const Route = createFileRoute("/drive-planning/routes")({
   component: DrivePlanningRoutes,
-  staticData: { breadcrumbs: ["drivePlanning.routes.title"] },
+  loader: () => {
+    const breadcrumbs: Breadcrumb[] = [{ label: t("drivePlanning.title") }, { label: t("drivePlanning.routes.title") }];
+    return { breadcrumbs };
+  },
   validateSearch: drivePlanningRoutesSearchSchema,
 });
 
 function DrivePlanningRoutes() {
-  const { routesApi, tasksApi } = useApi();
   const { t } = useTranslation();
   const navigate = Route.useNavigate();
   const queryClient = useQueryClient();
 
-  const sitesQuery = useSites();
+  const sitesQuery = useQuery(getListSitesQueryOptions());
 
   const [unallocatedDrawerOpen, setUnallocatedDrawerOpen] = useState(true);
   const [activeDraggable, setActiveDraggable] = useState<Active | null>(null);
@@ -73,22 +76,24 @@ function DrivePlanningRoutes() {
 
   const selectedDate = Route.useSearch({ select: (search) => search.date ?? DateTime.now() });
 
-  const routesQuery = useRoutes(
-    {
-      departureAfter: selectedDate.startOf("day").toJSDate(),
-      departureBefore: selectedDate.endOf("day").toJSDate(),
-      first: paginationModel.pageSize * paginationModel.page,
-      max: paginationModel.pageSize * paginationModel.page + paginationModel.pageSize,
-    },
-    !!selectedDate && activeDraggable === null,
-    10_000,
-    () => setLastRefreshedAt(DateTime.now()),
+  const routesQuery = useQuery(
+    getListRoutesQueryOptions(
+      {
+        departureAfter: selectedDate.startOf("day").toJSDate(),
+        departureBefore: selectedDate.endOf("day").toJSDate(),
+        first: paginationModel.pageSize * paginationModel.page,
+        max: paginationModel.pageSize * paginationModel.page + paginationModel.pageSize,
+      },
+      !!selectedDate && activeDraggable === null,
+      10_000,
+      () => setLastRefreshedAt(DateTime.now()),
+    ),
   );
 
   const routeTasks = useQueries({
     queries: (routesQuery.data?.routes ?? []).map((route) => ({
       queryKey: [QUERY_KEYS.TASKS_BY_ROUTE, route.id],
-      queryFn: () => tasksApi.listTasks({ routeId: route.id }),
+      queryFn: () => api.tasks.listTasks({ routeId: route.id }),
     })),
     combine: (results) => ({
       data: results.flatMap((result) => result.data).filter(DataValidation.validateValueIsNotUndefinedNorNull),
@@ -109,7 +114,7 @@ function DrivePlanningRoutes() {
   const updateRoute = useMutation({
     mutationFn: (route: TRoute) => {
       if (!route.id) return Promise.reject();
-      return routesApi.updateRoute({ routeId: route.id, route });
+      return api.routes.updateRoute({ routeId: route.id, route });
     },
     onSuccess: (route) => {
       toast.success(t("drivePlanning.routes.successToast"));
@@ -130,7 +135,7 @@ function DrivePlanningRoutes() {
   const updateTask = useMutation({
     mutationFn: (task: Task) => {
       if (!task.id) return Promise.reject();
-      return tasksApi.updateTask({ taskId: task.id, task });
+      return api.tasks.updateTask({ taskId: task.id, task });
     },
     onSuccess: () => {
       toast.success(t("drivePlanning.routes.taskMovedToast"));

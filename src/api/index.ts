@@ -1,7 +1,7 @@
-import config from "../app/config";
+import config from "app/config";
+import { authAtom } from "atoms/auth";
 import {
   Configuration,
-  ConfigurationParameters,
   DriversApi,
   EmployeeWorkShiftsApi,
   EmployeesApi,
@@ -14,38 +14,30 @@ import {
   TowablesApi,
   TrucksApi,
   VehiclesApi,
-  WorkEventsApi,
   WorkShiftHoursApi,
-} from "../generated/client";
+} from "generated/client";
+import { getDefaultStore } from "jotai";
 
-type ConfigConstructor<T> = new (_params: ConfigurationParameters) => T;
+const configuration = new Configuration({
+  basePath: config.api.baseUrl,
+  accessToken: () => {
+    const accessToken = getDefaultStore().get(authAtom)?.tokenRaw;
+    return accessToken ? Promise.resolve(accessToken) : Promise.reject("Not authenticated");
+  },
+});
 
-const getConfigurationFactory =
-  <T>(ConfigConstructor: ConfigConstructor<T>, basePath: string, getAccessToken?: () => Promise<string>) =>
-  () => {
-    return new ConfigConstructor({
-      basePath: basePath,
-      accessToken: getAccessToken,
-    });
-  };
-
-export const getApiClient = (getAccessToken?: () => Promise<string>) => {
-  const getConfiguration = getConfigurationFactory(Configuration, config.api.baseUrl, getAccessToken);
-
-  return {
-    vehiclesApi: new VehiclesApi(getConfiguration()),
-    trucksApi: new TrucksApi(getConfiguration()),
-    towablesApi: new TowablesApi(getConfiguration()),
-    sitesApi: new SitesApi(getConfiguration()),
-    freightsApi: new FreightsApi(getConfiguration()),
-    freightUnitsApi: new FreightUnitsApi(getConfiguration()),
-    tasksApi: new TasksApi(getConfiguration()),
-    routesApi: new RoutesApi(getConfiguration()),
-    driversApi: new DriversApi(getConfiguration()),
-    employeesApi: new EmployeesApi(getConfiguration()),
-    employeeWorkShiftsApi: new EmployeeWorkShiftsApi(getConfiguration()),
-    holidaysApi: new HolidaysApi(getConfiguration()),
-    workShiftHoursApi: new WorkShiftHoursApi(getConfiguration()),
-    workEventsApi: new WorkEventsApi(getConfiguration()),
-  };
+export const api = {
+  vehicles: new VehiclesApi(configuration),
+  trucks: new TrucksApi(configuration),
+  towables: new TowablesApi(configuration),
+  sites: new SitesApi(configuration),
+  freights: new FreightsApi(configuration),
+  freightUnits: new FreightUnitsApi(configuration),
+  tasks: new TasksApi(configuration),
+  routes: new RoutesApi(configuration),
+  drivers: new DriversApi(configuration),
+  employees: new EmployeesApi(configuration),
+  workShiftHours: new WorkShiftHoursApi(configuration),
+  holidays: new HolidaysApi(configuration),
+  employeeWorkShifts: new EmployeeWorkShiftsApi(configuration),
 };

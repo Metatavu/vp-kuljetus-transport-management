@@ -37,9 +37,10 @@
     "backToVehicles": "Takaisin ajoneuvolistaukseen",
     "backToWorkingHours": "Takaisin työaikasaldoihin"
   },
-  "vehicleList": {
+  "vehicles": {
     "title": "Ajoneuvot",
-    "vehicle": {
+    "list": {
+      "title": "Ajoneuvolista",
       "type": "Tyyppi",
       "plateNumber": "Auto",
       "number": "Tunnus",
@@ -51,17 +52,16 @@
       "trailer": "Kalusto",
       "driver": "Kuljettaja"
     },
-    "mapView": {
+    "map": {
       "title": "Kartta",
       "speed": "Nopeus: ",
       "gps": "GPS",
       "heading": "Suunta: ",
       "lastUpdated": "Viimeksi päivitetty: ",
       "connection": "Tietoliikenneyhteys",
-      "showVehicleInfo": "Siirry ajoneuvon tietoihin"
+      "showVehicleDetails": "Siirry ajoneuvon tietoihin"
     },
-    "info": {
-      "title": "Ajoneuvon tiedot",
+    "details": {
       "timeStamp": "Aika",
       "event": "Tapahtuma",
       "duration": "Kesto",
@@ -91,7 +91,7 @@
     "customerSites": {
       "title": "Asiakaspaikat",
       "new": "Uusi asiakaspaikka",
-      "modify": "Muokkaa asiakaspaikkaa",
+      "modify": "Muokkaa asiakaspaikkaa {{siteName}}",
       "type": "Tyyppi",
       "name": "Nimi",
       "address": "Osoite",
@@ -117,7 +117,7 @@
       "title": "Kalustoluettelo",
       "new": "Uusi kalusto",
       "open": "Avaa",
-      "modify": "Muokkaa kalustoa",
+      "modify": "Muokkaa kalustoa {{equipmentName}}",
       "type": "Tyyppi",
       "name": "Nimi",
       "licensePlate": "Rekisterinumero",
@@ -150,7 +150,7 @@
     "employees": {
       "title": "Työntekijät",
       "new": "Uusi työntekijä",
-      "modify": "Muokkaa työntekijää",
+      "modify": "Muokkaa työntekijää {{employeeName}}",
       "filters": {
         "name": {
           "label": "Nimihaku",
@@ -397,22 +397,6 @@
   },
   "errorHandling": {
     "vehicleListing": "Ajoneuvolistauksessa tapahtui virhe"
-  },
-  "vehicleListScreen": {
-    "vehicleList": {
-      "headings": {
-        "type": "Tyyppi",
-        "name": "Auto",
-        "number": "Tunnus",
-        "temperature": "Lämpötila",
-        "address": "Osoite",
-        "location": "Sijainti",
-        "status": "Tila",
-        "maintenance": "Huolto",
-        "trailer": "Kalusto",
-        "driver": "Kuljettaja"
-      }
-    }
   },
   "workingHours": {
     "title": "Työaika",

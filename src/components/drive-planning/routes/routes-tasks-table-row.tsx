@@ -10,14 +10,14 @@ import {
   TableRow,
   styled,
 } from "@mui/material";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useNavigate, useSearch } from "@tanstack/react-router";
+import { api } from "api/index";
 import { Site, Task, TaskType } from "generated/client";
+import { QUERY_KEYS, getListFreightsQueryOptions } from "hooks/use-queries";
 import { ForwardedRef, forwardRef, useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useApi } from "hooks/use-api";
 import LocalizationUtils from "utils/localization-utils";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { QUERY_KEYS, useFreights } from "hooks/use-queries";
-import { useNavigate, useSearch } from "@tanstack/react-router";
 
 const HandleCell = styled(TableCell, {
   label: "styled-empty-cell",
@@ -52,11 +52,10 @@ const RoutesTasksTableRow = forwardRef(
     }: Props,
     ref: ForwardedRef<HTMLTableRowElement>,
   ) => {
-    const { tasksApi } = useApi();
     const { t } = useTranslation();
     const queryClient = useQueryClient();
     const navigate = useNavigate({ from: "/drive-planning/routes" });
-    const freightsQuery = useFreights();
+    const freightsQuery = useQuery(getListFreightsQueryOptions());
 
     const { date: currentDate } = useSearch({ from: "/drive-planning/routes" });
 
@@ -105,7 +104,7 @@ const RoutesTasksTableRow = forwardRef(
     );
 
     const saveTask = useMutation({
-      mutationFn: (task: Task) => (task.id ? tasksApi.updateTask({ taskId: task.id, task: task }) : Promise.reject()),
+      mutationFn: (task: Task) => (task.id ? api.tasks.updateTask({ taskId: task.id, task: task }) : Promise.reject()),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.TASKS_BY_ROUTE, tasks[0].routeId] });
         queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ROUTES] });
@@ -123,7 +122,14 @@ const RoutesTasksTableRow = forwardRef(
       <>
         <TableRow ref={ref} sx={{ ...style }} onClick={handleTableRowClick}>
           <HandleCell>
-            <IconButton color="primary" ref={setActivatorNodeRef} sx={{ cursor: "grab" }} {...rest} size="small" title={t("drivePlanning.routes.unallocatedTasksTable.taskRowTooltip")} >
+            <IconButton
+              color="primary"
+              ref={setActivatorNodeRef}
+              sx={{ cursor: "grab" }}
+              {...rest}
+              size="small"
+              title={t("drivePlanning.routes.unallocatedTasksTable.taskRowTooltip")}
+            >
               <DragHandle />
             </IconButton>
           </HandleCell>
@@ -135,7 +141,12 @@ const RoutesTasksTableRow = forwardRef(
           </TableCell>
           <TableCell>{tasks.length}</TableCell>
           <TableCell align="center">
-            <IconButton title={t("drivePlanning.routes.tasksTable.removeTask")} size="small" disabled={isOverlay || isDragging} onClick={unAllocateTasks}>
+            <IconButton
+              title={t("drivePlanning.routes.tasksTable.removeTask")}
+              size="small"
+              disabled={isOverlay || isDragging}
+              onClick={unAllocateTasks}
+            >
               <Remove color="error" />
             </IconButton>
           </TableCell>

@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { api } from "api/index";
 import RouteDialog from "components/drive-planning/routes/route-dialog";
 import { Route as TRoute } from "generated/client";
-import { useApi } from "hooks/use-api";
 import { QUERY_KEYS } from "hooks/use-queries";
 import { DateTime } from "luxon";
 import { useTranslation } from "react-i18next";
@@ -14,7 +14,6 @@ export const Route = createFileRoute("/drive-planning/routes/add-route")({
 });
 
 function AddRoute() {
-  const { routesApi } = useApi();
   const queryClient = useQueryClient();
   const { t } = useTranslation();
   const initialDate = Route.useSearch({ select: ({ date }) => date ?? DateTime.now() });
@@ -23,7 +22,7 @@ function AddRoute() {
   const createRoute = useMutation({
     mutationFn: async (route: TRoute) => {
       const { departureTime, truckId, driverId } = route;
-      await routesApi.createRoute({
+      await api.routes.createRoute({
         route: {
           ...route,
           truckId: truckId === "EMPTY" ? undefined : truckId,

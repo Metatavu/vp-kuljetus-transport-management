@@ -29,28 +29,28 @@ namespace LocalizationUtils {
 
   export const getLocalizedTruckDriveState = (status: TruckDriveStateEnum, t: TFunction) =>
     ({
-      REST: t("vehicleList.truckDriveState.rest"),
-      DRIVER_AVAILABLE: t("vehicleList.truckDriveState.driverAvailable"),
-      WORK: t("vehicleList.truckDriveState.work"),
-      DRIVE: t("vehicleList.truckDriveState.drive"),
-      ERROR: t("vehicleList.truckDriveState.error"),
-      NOT_AVAILABLE: t("vehicleList.truckDriveState.notAvailable"),
+      REST: t("vehicles.truckDriveState.rest"),
+      DRIVER_AVAILABLE: t("vehicles.truckDriveState.driverAvailable"),
+      WORK: t("vehicles.truckDriveState.work"),
+      DRIVE: t("vehicles.truckDriveState.drive"),
+      ERROR: t("vehicles.truckDriveState.error"),
+      NOT_AVAILABLE: t("vehicles.truckDriveState.notAvailable"),
     })[status];
 
   export const getLocalizedDriveStateStatus = (status: TruckDriveStateEnum, t: TFunction) =>
     ({
-      REST: t("vehicleList.truckDriveStateStatus.working"),
-      DRIVER_AVAILABLE: t("vehicleList.truckDriveStateStatus.working"),
-      WORK: t("vehicleList.truckDriveStateStatus.working"),
-      DRIVE: t("vehicleList.truckDriveStateStatus.driving"),
-      ERROR: t("vehicleList.truckDriveStateStatus.stopped"),
-      NOT_AVAILABLE: t("vehicleList.truckDriveStateStatus.stopped"),
+      REST: t("vehicles.truckDriveStateStatus.working"),
+      DRIVER_AVAILABLE: t("vehicles.truckDriveStateStatus.working"),
+      WORK: t("vehicles.truckDriveStateStatus.working"),
+      DRIVE: t("vehicles.truckDriveStateStatus.driving"),
+      ERROR: t("vehicles.truckDriveStateStatus.stopped"),
+      NOT_AVAILABLE: t("vehicles.truckDriveStateStatus.stopped"),
     })[status];
 
   export const getLocalizedTruckEvent = (taskType: TaskType, t: TFunction) =>
     ({
-      LOAD: t("vehicleList.truckEventType.load"),
-      UNLOAD: t("vehicleList.truckEventType.unload"),
+      LOAD: t("vehicles.truckEventType.load"),
+      UNLOAD: t("vehicles.truckEventType.unload"),
     })[taskType];
 
   export const getLocalizedOffice = (office: Office, t: TFunction) =>

@@ -7,17 +7,17 @@ import {
   GridRenderEditCellParams,
   GridRowProps,
 } from "@mui/x-data-grid";
+import { TimePicker } from "@mui/x-date-pickers";
+import { useQuery } from "@tanstack/react-query";
+import { deepEqual } from "@tanstack/react-router";
 import GenericDataGrid from "components/generic/generic-data-grid";
 import { Driver, Route, Task, Truck } from "generated/client";
+import { getListDriversQueryOptions, getListSitesQueryOptions, getListTrucksQueryOptions } from "hooks/use-queries";
+import { useSingleClickCellEditMode } from "hooks/use-single-click-cell-edit-mode";
+import { DateTime } from "luxon";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import ExpandableRoutesTableRow from "./expandable-routes-table-row";
-import { useDrivers, useSites, useTrucks } from "hooks/use-queries";
-import { deepEqual } from "@tanstack/react-router";
-import { useApi } from "hooks/use-api";
-import { useSingleClickCellEditMode } from "hooks/use-single-click-cell-edit-mode";
-import { TimePicker } from "@mui/x-date-pickers";
-import { DateTime } from "luxon";
 
 type Props = {
   paginationModel: GridPaginationModel;
@@ -37,7 +37,6 @@ const RoutesTable = ({
   onUpdateRoute,
 }: Props) => {
   const { t } = useTranslation();
-  const { tasksApi } = useApi();
 
   const onTasksCellClick = useCallback(({ field, row }: GridCellParams) => {
     if (field !== "tasks" || !row.id) return;
@@ -51,9 +50,9 @@ const RoutesTable = ({
   const { cellModesModel, handleCellClick, handleCellModelsChange } = useSingleClickCellEditMode(onTasksCellClick);
   const [expandedRows, setExpandedRows] = useState<string[]>([]);
 
-  const trucksQuery = useTrucks();
-  const driversQuery = useDrivers();
-  const sitesQuery = useSites();
+  const trucksQuery = useQuery(getListTrucksQueryOptions());
+  const driversQuery = useQuery(getListDriversQueryOptions());
+  const sitesQuery = useQuery(getListSitesQueryOptions());
 
   const processRowUpdate = async (newRow: Route, oldRow: Route) => {
     if (deepEqual(oldRow, newRow)) return oldRow;
@@ -146,14 +145,21 @@ const RoutesTable = ({
           if (!id) return null;
           return (
             <Stack direction="row" alignItems="center" flex={1}>
-              <Typography sx={{ flex: 1 }} variant="subtitle2">{tasksByRoute[id ?? ""]?.length ?? 0}</Typography>
-              <Tooltip title={expandedRows.includes(id) ? t("drivePlanning.routes.collapseTasks") : t("drivePlanning.routes.expandTasks")} placement="right-start">
-                <IconButton size="small">
-                  {expandedRows.includes(id) ? <ExpandLess /> : <ExpandMore />}
-                </IconButton>
+              <Typography sx={{ flex: 1 }} variant="subtitle2">
+                {tasksByRoute[id ?? ""]?.length ?? 0}
+              </Typography>
+              <Tooltip
+                title={
+                  expandedRows.includes(id)
+                    ? t("drivePlanning.routes.collapseTasks")
+                    : t("drivePlanning.routes.expandTasks")
+                }
+                placement="right-start"
+              >
+                <IconButton size="small">{expandedRows.includes(id) ? <ExpandLess /> : <ExpandMore />}</IconButton>
               </Tooltip>
             </Stack>
-          )
+          );
         },
       },
       {
@@ -193,7 +199,11 @@ const RoutesTable = ({
           return (
             <IconButton
               size="small"
-              title={expandedRows.includes(id) ? t("drivePlanning.routes.collapseTasks") : t("drivePlanning.routes.expandTasks")}
+              title={
+                expandedRows.includes(id)
+                  ? t("drivePlanning.routes.collapseTasks")
+                  : t("drivePlanning.routes.expandTasks")
+              }
               onClick={() =>
                 setExpandedRows(
                   expandedRows.includes(id) ? expandedRows.filter((rowId) => rowId !== id) : [...expandedRows, id],
@@ -202,7 +212,7 @@ const RoutesTable = ({
             >
               {expandedRows.includes(id) ? <UnfoldLess /> : <UnfoldMore />}
             </IconButton>
-          )
+          );
         },
       },
     ],
@@ -212,7 +222,6 @@ const RoutesTable = ({
       driversQuery.data?.drivers,
       renderTruckSingleSelectCell,
       renderDriverSingleSelectCell,
-      tasksApi,
       expandedRows,
     ],
   );

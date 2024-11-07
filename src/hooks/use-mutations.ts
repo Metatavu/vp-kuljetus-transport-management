@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useApi } from "./use-api"
+import { api } from "api/index";
 import { Freight, FreightUnit } from "generated/client";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
@@ -8,17 +8,16 @@ import { QUERY_KEYS } from "./use-queries";
 type OnMutationSuccess<T> = (data?: T) => void;
 
 export const useCreateFreight = (onSuccess?: OnMutationSuccess<Freight>) => {
-  const { freightsApi, tasksApi } = useApi();
   const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (freight: Freight) => {
-      const createdFreight = await freightsApi.createFreight({ freight });
+      const createdFreight = await api.freights.createFreight({ freight });
 
       if (!createdFreight.id) return;
 
-      await tasksApi.createTask({
+      await api.tasks.createTask({
         task: {
           freightId: createdFreight.id,
           type: "LOAD",
@@ -27,7 +26,7 @@ export const useCreateFreight = (onSuccess?: OnMutationSuccess<Freight>) => {
           status: "TODO",
         },
       });
-      await tasksApi.createTask({
+      await api.tasks.createTask({
         task: {
           freightId: createdFreight.id,
           type: "UNLOAD",
@@ -46,17 +45,16 @@ export const useCreateFreight = (onSuccess?: OnMutationSuccess<Freight>) => {
     },
     onError: () => toast.error(t("drivePlanning.freights.errorToast")),
   });
-}
+};
 
 export const useCreateFreightUnit = (onSuccess?: OnMutationSuccess<FreightUnit>) => {
-  const { freightUnitsApi } = useApi();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (freightUnit: FreightUnit) => freightUnitsApi.createFreightUnit({ freightUnit }),
+    mutationFn: (freightUnit: FreightUnit) => api.freightUnits.createFreightUnit({ freightUnit }),
     onSuccess: (freightUnit) => {
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.FREIGHT_UNITS, { freightId: freightUnit.freightId }] });
       onSuccess?.(freightUnit);
     },
   });
-}
+};

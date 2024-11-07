@@ -5,16 +5,13 @@ import SideNavigation from "components/layout/side-navigation";
 import ViewContainer from "components/layout/view-container";
 import { NavigationItem } from "src/types";
 
-export const Route = createFileRoute("/drive-planning")({
-  component: DrivePlanningLayoutComponent,
-  staticData: { breadcrumbs: ["drivePlanning.title"] },
-});
+export const Route = createFileRoute("/drive-planning")({ component: DrivePlanningLayoutComponent });
 
 function DrivePlanningLayoutComponent() {
-  const sideNavigationItems: readonly NavigationItem[] = [
-    ["/drive-planning/routes", "drivePlanning.routes.title", LocalShipping],
-    ["/drive-planning/freights", "drivePlanning.freights.title", LibraryBooksRounded],
-  ] as const;
+  const sideNavigationItems: NavigationItem[] = [
+    { route: "/drive-planning/routes", label: "drivePlanning.routes.title", Icon: LocalShipping },
+    { route: "/drive-planning/freights", label: "drivePlanning.freights.title", Icon: LibraryBooksRounded },
+  ];
 
   return (
     <Stack direction="row" height="100%" width="100%">

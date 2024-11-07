@@ -1,18 +1,18 @@
+import { Close, SaveAlt } from "@mui/icons-material";
 import { Box, Button, Paper, Stack } from "@mui/material";
+import { UseMutationResult } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
+import config from "app/config";
+import LoaderWrapper from "components/generic/loader-wrapper";
 import ToolbarRow from "components/generic/toolbar-row";
+import { Site } from "generated/client";
+import { Map as LeafletMap, latLng } from "leaflet";
+import { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import CustomerSiteForm from "./customer-site-form";
-import { Close, SaveAlt } from "@mui/icons-material";
-import { Site } from "generated/client";
 import { MapContainer, Marker, TileLayer } from "react-leaflet";
-import { useEffect, useRef } from "react";
-import { Map as LeafletMap, latLng } from "leaflet";
-import { UseMutationResult } from "@tanstack/react-query";
-import LoaderWrapper from "components/generic/loader-wrapper";
-import config from "../../../app/config";
 import LocationUtils from "utils/location-utils";
+import CustomerSiteForm from "./customer-site-form";
 
 type Props = {
   formType: "ADD" | "MODIFY";
@@ -81,7 +81,11 @@ function CustomerSiteComponent({ formType, site, onSave }: Props) {
     <LoaderWrapper loading={onSave.isPending}>
       <Paper sx={{ height: "100%" }}>
         <ToolbarRow
-          title={formType === "ADD" ? t("management.customerSites.new") : t("management.customerSites.modify")}
+          title={
+            formType === "ADD"
+              ? t("management.customerSites.new")
+              : t("management.customerSites.modify", { siteName: site?.name })
+          }
           navigateBack={() => navigate({ to: "/management/customer-sites" })}
           toolbarButtons={renderToolbarButtons()}
         />

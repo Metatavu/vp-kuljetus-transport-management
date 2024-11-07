@@ -16,11 +16,10 @@ import ReactDOM from "react-dom/client";
 import { Flip, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { theme } from "./theme";
-import { LocalizedLabelKey } from "./types";
 
 const router = createRouter({ routeTree, context: { breadcrumbs: [] } });
 
-const queryClient = new QueryClient({
+export const queryClient = new QueryClient({
   defaultOptions: {
     queries: { staleTime: 30_000 },
   },
@@ -30,10 +29,6 @@ declare module "@tanstack/react-router" {
   interface Register {
     // This infers the type of our router and registers it across your entire project
     router: typeof router;
-  }
-
-  interface StaticDataRouteOption {
-    breadcrumbs?: LocalizedLabelKey[];
   }
 }
 
