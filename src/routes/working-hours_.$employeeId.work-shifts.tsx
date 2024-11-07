@@ -15,9 +15,7 @@ import {
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { deepEqual } from "@tanstack/react-router";
 import { Outlet, createFileRoute } from "@tanstack/react-router";
-import DatePickerWithArrows from "components/generic/date-picker-with-arrows";
 import AggregationsTable from "components/working-hours/aggregations-table";
 import ChangeLog from "components/working-hours/change-log";
 import WorkShiftRow from "components/working-hours/work-shift-row";
