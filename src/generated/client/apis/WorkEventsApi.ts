@@ -38,6 +38,7 @@ export interface FindEmployeeWorkEventRequest {
 
 export interface ListEmployeeWorkEventsRequest {
     employeeId: string;
+    employeeWorkShiftId?: string;
     after?: Date;
     before?: Date;
     first?: number;
@@ -55,7 +56,7 @@ export interface UpdateEmployeeWorkEventRequest {
  */
 export class WorkEventsApi extends runtime.BaseAPI {
     /**
-     * Creates Employees Work Event.
+     * Creates Employees Work Event.  If the work event starts a new shift, a new employee work shift is also created automatically. 
      * Create Employees Work Event.
      */
     async createEmployeeWorkEventRaw(requestParameters: CreateEmployeeWorkEventRequest): Promise<runtime.ApiResponse<WorkEvent>> {
@@ -85,7 +86,7 @@ export class WorkEventsApi extends runtime.BaseAPI {
         return new runtime.JSONApiResponse(response, (jsonValue) => WorkEventFromJSON(jsonValue));
     }
     /**
-     * Creates Employees Work Event.
+     * Creates Employees Work Event.  If the work event starts a new shift, a new employee work shift is also created automatically. 
      * Create Employees Work Event.
      */
     async createEmployeeWorkEvent(requestParameters: CreateEmployeeWorkEventRequest): Promise<WorkEvent> {
@@ -93,7 +94,7 @@ export class WorkEventsApi extends runtime.BaseAPI {
         return await response.value();
     }
     /**
-     * Creates Employees Work Event.
+     * Creates Employees Work Event.  If the work event starts a new shift, a new employee work shift is also created automatically. 
      * Create Employees Work Event.
      */
     async createEmployeeWorkEventWithHeaders(requestParameters: CreateEmployeeWorkEventRequest): Promise<[ WorkEvent, Headers ]> {
@@ -102,7 +103,7 @@ export class WorkEventsApi extends runtime.BaseAPI {
         return [ value, response.raw.headers ];
     }
     /**
-     * Deletes Employee\'s Work Event. Only accessible by managers.
+     * Deletes Employee\'s Work Event. Only accessible by managers. If deleting the last remaining work event from an employee work shift, the shift and its related work shift hours should also be deleted. 
      * Delete Employee\'s Work Event.
      */
     async deleteEmployeeWorkEventRaw(requestParameters: DeleteEmployeeWorkEventRequest): Promise<runtime.ApiResponse<void>> {
@@ -130,14 +131,14 @@ export class WorkEventsApi extends runtime.BaseAPI {
         return new runtime.VoidApiResponse(response);
     }
     /**
-     * Deletes Employee\'s Work Event. Only accessible by managers.
+     * Deletes Employee\'s Work Event. Only accessible by managers. If deleting the last remaining work event from an employee work shift, the shift and its related work shift hours should also be deleted. 
      * Delete Employee\'s Work Event.
      */
     async deleteEmployeeWorkEvent(requestParameters: DeleteEmployeeWorkEventRequest): Promise<void> {
         await this.deleteEmployeeWorkEventRaw(requestParameters);
     }
     /**
-     * Deletes Employee\'s Work Event. Only accessible by managers.
+     * Deletes Employee\'s Work Event. Only accessible by managers. If deleting the last remaining work event from an employee work shift, the shift and its related work shift hours should also be deleted. 
      * Delete Employee\'s Work Event.
      */
     async deleteEmployeeWorkEventWithHeaders(requestParameters: DeleteEmployeeWorkEventRequest): Promise<Headers> {
@@ -191,13 +192,16 @@ export class WorkEventsApi extends runtime.BaseAPI {
     }
     /**
      * Lists Employees Work Events. Sort by time, latest first.
-     * List Employees Time Entries.
+     * List Employees Work Events.
      */
     async listEmployeeWorkEventsRaw(requestParameters: ListEmployeeWorkEventsRequest): Promise<runtime.ApiResponse<Array<WorkEvent>>> {
         if (requestParameters.employeeId === null || requestParameters.employeeId === undefined) {
             throw new runtime.RequiredError('employeeId','Required parameter requestParameters.employeeId was null or undefined when calling listEmployeeWorkEvents.');
         }
         const queryParameters: any = {};
+        if (requestParameters.employeeWorkShiftId !== undefined) {
+            queryParameters['employeeWorkShiftId'] = requestParameters.employeeWorkShiftId;
+        }
         if (requestParameters.after !== undefined) {
             queryParameters['after'] = (requestParameters.after as any).toISOString();
         }
@@ -228,7 +232,7 @@ export class WorkEventsApi extends runtime.BaseAPI {
     }
     /**
      * Lists Employees Work Events. Sort by time, latest first.
-     * List Employees Time Entries.
+     * List Employees Work Events.
      */
     async listEmployeeWorkEvents(requestParameters: ListEmployeeWorkEventsRequest): Promise<Array<WorkEvent>> {
         const response = await this.listEmployeeWorkEventsRaw(requestParameters);
@@ -236,7 +240,7 @@ export class WorkEventsApi extends runtime.BaseAPI {
     }
     /**
      * Lists Employees Work Events. Sort by time, latest first.
-     * List Employees Time Entries.
+     * List Employees Work Events.
      */
     async listEmployeeWorkEventsWithHeaders(requestParameters: ListEmployeeWorkEventsRequest): Promise<[ Array<WorkEvent>, Headers ]> {
         const response = await this.listEmployeeWorkEventsRaw(requestParameters);

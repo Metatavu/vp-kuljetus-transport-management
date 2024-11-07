@@ -16,11 +16,19 @@ import AggregationsTable from "components/working-hours/aggregations-table";
 import ChangeLog from "components/working-hours/change-log";
 import WorkShiftRow from "components/working-hours/work-shift-row";
 import WorkShiftsTableHeader from "components/working-hours/work-shifts-table-header";
+import { t } from "i18next";
 import { useTranslation } from "react-i18next";
+import { Breadcrumb } from "src/types";
 
-export const Route = createFileRoute("/working-hours/$employeeId/work-shifts")({
+export const Route = createFileRoute("/working-hours_/$employeeId/work-shifts")({
   component: WorkShifts,
-  staticData: { breadcrumbs: ["workingHours.title", "workingHours.workingDays.title"] },
+  loader: () => {
+    const breadcrumbs: Breadcrumb[] = [
+      { label: t("workingHours.title") },
+      { label: t("workingHours.workingDays.title") },
+    ];
+    return { breadcrumbs };
+  },
 });
 
 // Styled root component

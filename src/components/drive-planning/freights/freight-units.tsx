@@ -2,15 +2,15 @@ import { Add } from "@mui/icons-material";
 import { Button } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { deepEqual } from "@tanstack/react-router";
+import { api } from "api/index";
 import GenericDataGrid from "components/generic/generic-data-grid";
 import { FreightUnit } from "generated/client";
+import { useCreateFreightUnit } from "hooks/use-mutations";
+import { QUERY_KEYS } from "hooks/use-queries";
+import { useSingleClickRowEditMode } from "hooks/use-single-click-row-edit-mode";
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { useApi } from "hooks/use-api";
-import { useSingleClickRowEditMode } from "hooks/use-single-click-row-edit-mode";
-import { QUERY_KEYS } from "hooks/use-queries";
-import { deepEqual } from "@tanstack/react-router";
-import { useCreateFreightUnit } from "hooks/use-mutations";
 
 const FREIGHT_UNIT_TYPES = [
   "EUR",
@@ -36,7 +36,6 @@ type Props = {
 
 const FreightUnits = ({ freightUnits, freightId, onEditFreightUnit }: Props) => {
   const { t } = useTranslation();
-  const { freightUnitsApi } = useApi();
   const queryClient = useQueryClient();
 
   const { rowModesModel, handleCellClick, handleRowModelsChange } = useSingleClickRowEditMode();
@@ -44,7 +43,7 @@ const FreightUnits = ({ freightUnits, freightId, onEditFreightUnit }: Props) => 
   const createFreightUnit = useCreateFreightUnit();
 
   const deleteFreightUnit = useMutation({
-    mutationFn: (id: string) => freightUnitsApi.deleteFreightUnit({ freightUnitId: id }),
+    mutationFn: (id: string) => api.freightUnits.deleteFreightUnit({ freightUnitId: id }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.FREIGHT_UNITS] });
     },

@@ -17,32 +17,38 @@
 /**
  * Work event types. UI implementations should translate these to more human readable form.
  * 
+ * *Driver work types*
+ * | name                 | finnish name               |
+ * | -------------------- | -------------------------- |
+ * | DRIVE                | Ajo                        |
+ * | LOADING              | Lastaus                    |
+ * | UNLOADING            | Purku                      |
+ * | AVAILABILITY         | Saatavuus                  |
+ * | DRIVER_CARD_INSERTED | Kuljettajakortti syötetty  |
+ * | DRIVER_CARD_REMOVED  | Kuljettajakortti poistettu |
+ * 
  * *Office/Terminal work types*
- * - VEGETABLE (Hevi)
- * - DRY (Kuiva)
- * - MEAT_CELLAR (Lihakellari)
- * - MEIRA (Meira)
- * - FROZEN (Pakaste)
- * - PALTE (Palte)
- * - BREWERY (Panimo)
- * - GREASE (Rasva)
- * - LOGIN
- * - LOGOUT
+ * | name        | finnish name         |
+ * | ----------- | -------------------- |
+ * | VEGETABLE   | Hevi                 |
+ * | DRY         | Kuiva                |
+ * | MEAT_CELLAR | Lihakellari          |
+ * | MEIRA       | Meira                |
+ * | FROZEN      | Pakaste              |
+ * | PALTE       | Palte                |
+ * | BREWERY     | Panimo               |
+ * | GREASE      | Rasva                |
+ * | LOGIN       | Sisäänkirjautuminen  |
+ * | LOGOUT      | Uloskirjautuminen    |
  * 
  * *Common work types*
- * - OTHER_WORK (Muu työ)
- * - BREAK (Tauko)
- * - SHIFT_START
- * - SHIFT_END
- * - UNKNOWN
- * 
- * *Driver work types*
- * - DRIVE
- * - LOADING
- * - UNLOADING
- * - AVAILABILITY
- * - DRIVER_CARD_INSERTED
- * - DRIVER_CARD_REMOVED
+ * | name        | finnish name         |
+ * | ----------- | -------------------- |
+ * | OTHER_WORK  | Muu työ              |
+ * | BREAK       | Tauko                |
+ * | SHIFT_START | Työvuoron alku       |
+ * | SHIFT_END   | Työvuoron loppu      |
+ * | UNKNOWN     | Tuntematon           |
  * 
  * @export
  */
