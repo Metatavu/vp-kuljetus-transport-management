@@ -89,12 +89,11 @@ function WorkShiftRow({ onClick, workShiftData, trucks, index }: Props) {
             variant="outlined"
             value={value ?? ""}
             onChange={(event) => {
-              console.log("töttöröö", event.target.value);
               onChange(event.target.value);
             }}
             {...rest}
           >
-            <MenuItem style={{ minHeight: 30 }} key="EMPTY" value="">
+            <MenuItem style={{ minHeight: 30 }} key="" value="">
               {""}
             </MenuItem>
             {Object.values(PerDiemAllowanceType).map((option) => (
@@ -169,14 +168,15 @@ function WorkShiftRow({ onClick, workShiftData, trucks, index }: Props) {
             name={`${index}.workShift.dayOffWorkAllowance`}
             control={control}
             defaultValue={workShiftData.dayOffWorkAllowance || false}
-            render={({ field }) => (
+            render={({ field: { value, onChange, ...rest } }) => (
               <Checkbox
-                {...field}
+                onChange={(event) => onChange(event.target.checked)}
                 size="small"
                 className="cell-checkbox"
                 title={t("workingHours.workingHourBalances.dayOffBonus")}
                 aria-label={t("workingHours.workingHourBalances.dayOffBonus")}
-                checked={field.value}
+                checked={value}
+                {...rest}
               />
             )}
           />
@@ -194,14 +194,16 @@ function WorkShiftRow({ onClick, workShiftData, trucks, index }: Props) {
           name={`${index}.workShift.approved`}
           control={control}
           defaultValue={workShiftData.approved || false}
-          render={({ field }) => (
+          render={({ field: { value, onChange, ref, ...rest } }) => (
             <Checkbox
-              {...field}
+              onChange={(event) => onChange(event)}
               size="small"
               className="cell-checkbox"
               title={t("workingHours.workingHourBalances.approved")}
               aria-label={t("workingHours.workingHourBalances.approved")}
-              checked={field.value}
+              checked={value}
+              inputRef={ref}
+              {...rest}
             />
           )}
         />

@@ -21,11 +21,13 @@ import AggregationsTable from "components/working-hours/aggregations-table";
 import ChangeLog from "components/working-hours/change-log";
 import WorkShiftRow from "components/working-hours/work-shift-row";
 import WorkShiftsTableHeader from "components/working-hours/work-shifts-table-header";
-import { EmployeeWorkShift } from "generated/client";
+import { EmployeeWorkShift, SalaryGroup } from "generated/client";
 import {
   QUERY_KEYS,
   getEmployeeWorkShiftsQueryOptions,
+  getFindEmployeeQueryOptions,
   getListEmployeesQueryOptions,
+  getListTimeEntriesQueryOptions,
   getListTrucksQueryOptions,
   getWorkingPeriodDates,
 } from "hooks/use-queries";
@@ -151,14 +153,19 @@ function WorkShifts() {
     mode: "onChange",
   });
 
-  const { handleSubmit } = methods;
-
-  // const { watch } = methods;
-  // const perDiem = watch("0.startedAt");
-  // console.log("startedAt", perDiem);
+  const { watch } = methods;
+  const perDiem = watch("0.workShift.approved");
 
   const trucks = useQuery(getListTrucksQueryOptions({})).data?.trucks;
   const employees = useQuery(getListEmployeesQueryOptions({})).data?.employees;
+
+  const employeeSalaryGroup =
+    employees?.find((employee) => employee.id === employeeId)?.salaryGroup ?? SalaryGroup.Driver;
+
+  const employeeWorkShiftHours = useQuery(
+    getListTimeEntriesQueryOptions({ employeeId }, true, employeeSalaryGroup, date.toJSDate()),
+  ).data?.employeeWorkShiftHours;
+  // console.log("employeeWorkShiftHours", employeeWorkShiftHours);
 
   const getWorkingPeriodsForEmployee = () => {
     const employeeSalaryGroup = employees?.find((employee) => employee.id === employeeId)?.salaryGroup;
@@ -181,6 +188,7 @@ function WorkShifts() {
   const onChangeDate = (newDate: DateTime | null) => setDate(newDate ?? DateTime.now());
 
   const onSaveClick = async (formValues: EmployeeWorkHoursForm) => {
+    console.log("formValues", formValues);
     const workShiftsToUpdate = formValues.reduce<EmployeeWorkShift[]>((list, workHoursFormRow, index) => {
       const existingWorkShift = workShifts?.find((workShift) => workShift.id === workHoursFormRow.workShift.id);
       const formFieldNames = Object.keys(workHoursFormRow.workShift) as (keyof EmployeeWorkHoursFormRow["workShift"])[];
@@ -189,6 +197,8 @@ function WorkShifts() {
         (fieldName) => methods.getFieldState(`${index}.workShift.${fieldName}`)?.isDirty,
       );
 
+      console.log("workshift", workHoursFormRow.workShift);
+
       if (isDirty) {
         list.push({
           ...existingWorkShift,
@@ -196,7 +206,7 @@ function WorkShifts() {
           employeeId: employeeId,
           dayOffWorkAllowance: workHoursFormRow.workShift.dayOffWorkAllowance,
           absence: workHoursFormRow.workShift.absence || undefined,
-          perDiemAllowance: workHoursFormRow.workShift.perDiemAllowance || "PARTIAL",
+          perDiemAllowance: workHoursFormRow.workShift.perDiemAllowance || undefined,
           approved: workHoursFormRow.workShift.approved,
           notes: workHoursFormRow.workShift.notes || undefined,
         });
@@ -204,7 +214,7 @@ function WorkShifts() {
 
       return list;
     }, []);
-
+    //console.log("workShiftsToUpdate", workShiftsToUpdate);
     for (const updatedWorkShift of workShiftsToUpdate) {
       await updateWorkShift.mutateAsync(updatedWorkShift);
     }
@@ -292,9 +302,7 @@ function WorkShifts() {
   const renderWorkingPeriodText = () => {
     const workingPeriods = getWorkingPeriodsForEmployee();
     if (!workingPeriods) return;
-    const start = DateTime.fromJSDate(workingPeriods.start)
-      .setLocale("fi") // Set locale to Finnish
-      .toFormat("EEE dd.MM"); // `cc` gives the first two letters of the day in Finnish
+    const start = DateTime.fromJSDate(workingPeriods.start).setLocale("fi").toFormat("EEE dd.MM"); // `EEE` gives the first two letters of the day in Finnish
 
     const end = DateTime.fromJSDate(workingPeriods.end).setLocale("fi").toFormat("EEE dd.MM");
     return (
@@ -308,7 +316,7 @@ function WorkShifts() {
     <>
       <Root>
         <FormProvider {...methods}>
-          <form onSubmit={handleSubmit(onSaveClick)}>
+          <form onSubmit={methods.handleSubmit(onSaveClick)}>
             {renderToolbar()}
             <Paper elevation={0}>
               <Stack>
