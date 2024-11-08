@@ -4,12 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "build-prod": "node infisical.js >> .env.production && npm run build",
-    "start": "infisical run --path /transport-management -- npm run dev",
+    "start": "npm run dev",
     "dev": "tsc && vite --open",
     "build": "tsc && vite build",
     "build-client": "openapi-generator-cli generate -i vp-kuljetus-transport-management-specs/specs/management.yaml -o src/generated/client -c generator-config.json -g typescript-fetch",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -59,7 +57,7 @@
     "@types/wellknown": "0.5.8",
     "@vitejs/plugin-react-swc": "3.5.0",
     "dotenv": "16.4.1",
-    "infisical-node": "1.5.1",
+    "node-vault": "0.10.2",
     "typescript": "5.6.3",
     "vite": "5.0.8"
   }
