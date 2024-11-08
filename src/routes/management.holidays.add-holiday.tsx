@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { api } from "api/index";
 import AddHolidayDialog from "components/management/holidays/add-holiday-dialog";
 import { Holiday as THoliday } from "generated/client";
-import { useApi } from "hooks/use-api";
 import { QUERY_KEYS } from "hooks/use-queries";
 import { DateTime } from "luxon";
 import { useTranslation } from "react-i18next";
@@ -16,7 +16,6 @@ export const Route = createFileRoute("/management/holidays/add-holiday")({
 });
 
 function AddHoliday() {
-  const { holidaysApi } = useApi();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { t } = useTranslation();
@@ -24,7 +23,7 @@ function AddHoliday() {
   const createHoliday = useMutation({
     mutationFn: async (holiday: THoliday) => {
       const { date, name, compensationType } = holiday;
-      await holidaysApi.createHoliday({
+      await api.holidays.createHoliday({
         holiday: {
           ...holiday,
           date: date,

@@ -16,18 +16,21 @@
 
 /**
  * Employee's type described as finnish abbreviation. UI implementations should translate these to more human readable form.
- * Pakettiautonkuljettaja (PA)
- * Kuorma-auton kuljettaja (KA)
- * Alihankkija (AH)
- * Vuokratyöntekijä (VK)
- * Työharjoittelija (TH)
- * Tilapäistyöntekijä (TP)
- * Ajojärjestelijä (AJ)
- * Esimies (JH)
- * Aikatuntipalkka (AP)
- * Kuukausipalkka (KK)
- * Ei-aktiivinen (POIS)
- * Täysperäkuljettaja (TPK)
+ * 
+ * | Abbreviation | finnish name            |
+ * | ------------ | ----------------------- |
+ * | PA           | Pakettiautonkuljettaja  |
+ * | KA           | Kuorma-auton kuljettaja |
+ * | AH           | Alihankkija             |
+ * | VK           | Vuokratyöntekijä        |
+ * | TH           | Työharjoittelija        |
+ * | TP           | Tilapäistyöntekijä      |
+ * | AJ           | Ajojärjestelijä         |
+ * | JH           | Esimies                 |
+ * | AP           | Aikatuntipalkka         |
+ * | KK           | Kuukausipalkka          |
+ * | POIS         | Ei-aktiivinen           |
+ * | TPK          | Täysperäkuljettaja      |
  * 
  * @export
  */

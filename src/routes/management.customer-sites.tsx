@@ -1,20 +1,28 @@
 import { Add } from "@mui/icons-material";
 import { Button, Stack, styled } from "@mui/material";
 import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { api } from "api/index";
 import GenericDataGrid from "components/generic/generic-data-grid";
 import LoaderWrapper from "components/generic/loader-wrapper";
 import ToolbarRow from "components/generic/toolbar-row";
 import { Site } from "generated/client";
-import { useApi } from "hooks/use-api";
-import { QUERY_KEYS, useSites } from "hooks/use-queries";
+import { QUERY_KEYS, getListSitesQueryOptions } from "hooks/use-queries";
+import { t } from "i18next";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Breadcrumb } from "src/types";
 
 export const Route = createFileRoute("/management/customer-sites")({
   component: ManagementCustomerSites,
-  staticData: { breadcrumbs: ["management.customerSites.title"] },
+  loader: () => {
+    const breadcrumbs: Breadcrumb[] = [
+      { label: t("management.title") },
+      { label: t("management.customerSites.title") },
+    ];
+    return { breadcrumbs };
+  },
 });
 
 // Styled root component
@@ -30,20 +38,21 @@ const Root = styled(Stack, {
 function ManagementCustomerSites() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { sitesApi } = useApi();
   const queryClient = useQueryClient();
 
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({ page: 0, pageSize: 25 });
 
-  const sitesQuery = useSites({
-    first: paginationModel.pageSize * paginationModel.page,
-    max: paginationModel.pageSize * paginationModel.page + paginationModel.pageSize,
-  });
+  const sitesQuery = useQuery(
+    getListSitesQueryOptions({
+      first: paginationModel.pageSize * paginationModel.page,
+      max: paginationModel.pageSize * paginationModel.page + paginationModel.pageSize,
+    }),
+  );
 
   const deleteCustomerSite = useMutation({
     mutationFn: (site: Site) => {
       if (!site.id) return Promise.reject();
-      return sitesApi.updateSite({ siteId: site.id, site: { ...site, archivedAt: new Date() } });
+      return api.sites.updateSite({ siteId: site.id, site: { ...site, archivedAt: new Date() } });
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.SITES] }),
   });

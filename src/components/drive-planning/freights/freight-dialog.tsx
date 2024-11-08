@@ -1,22 +1,27 @@
-import { Button, Dialog, DialogActions, DialogContent, Stack } from "@mui/material";
-import { useTranslation } from "react-i18next";
-import { useApi } from "hooks/use-api";
-import { UseMutationResult, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Freight, FreightUnit, Task } from "generated/client";
-import FreightCustomerSitesForm from "./freight-customer-sites-form";
-import FreightUnits from "./freight-units";
-import FreightTasks from "./freight-tasks";
-import { useCallback, useState } from "react";
-import LoaderWrapper from "components/generic/loader-wrapper";
-import { FormProvider, useForm } from "react-hook-form";
-import DialogHeader from "components/generic/dialog-header";
-import { QUERY_KEYS, useFreightUnits, useSites, useTasks } from "hooks/use-queries";
-import { BlobProvider } from "@react-pdf/renderer";
-import FreightWaybill from "./freight-waybill";
 import PrintIcon from "@mui/icons-material/Print";
-import { useCreateFreight, useCreateFreightUnit } from "hooks/use-mutations";
+import { Button, Dialog, DialogActions, DialogContent, Stack } from "@mui/material";
+import { BlobProvider } from "@react-pdf/renderer";
+import { UseMutationResult, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
+import { api } from "api/index";
+import DialogHeader from "components/generic/dialog-header";
+import LoaderWrapper from "components/generic/loader-wrapper";
+import { Freight, FreightUnit, Task } from "generated/client";
+import { useCreateFreight, useCreateFreightUnit } from "hooks/use-mutations";
+import {
+  QUERY_KEYS,
+  getListFreightUnitsQueryOptions,
+  getListSitesQueryOptions,
+  getListTasksQueryOptions,
+} from "hooks/use-queries";
+import { useCallback, useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import FreightCustomerSitesForm from "./freight-customer-sites-form";
+import FreightTasks from "./freight-tasks";
+import FreightUnits from "./freight-units";
+import FreightWaybill from "./freight-waybill";
 
 type Props = {
   freight?: Freight;
@@ -27,12 +32,11 @@ type Props = {
 const FreightDialog = ({ freight, onSave, onClose }: Props) => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
-  const { freightUnitsApi, tasksApi } = useApi();
   const navigate = useNavigate();
 
-  const customerSitesQuery = useSites();
-  const tasksQuery = useTasks({ freightId: freight?.id }, !!freight);
-  const freightUnitsQuery = useFreightUnits({ freightId: freight?.id }, !!freight);
+  const customerSitesQuery = useQuery(getListSitesQueryOptions());
+  const tasksQuery = useQuery(getListTasksQueryOptions({ freightId: freight?.id }, !!freight));
+  const freightUnitsQuery = useQuery(getListFreightUnitsQueryOptions({ freightId: freight?.id }, !!freight));
 
   const [pendingFreightUnits, setPendingFreightUnits] = useState<FreightUnit[]>([]);
   const [pendingTasks, setPendingTasks] = useState<Task[]>([]);
@@ -47,7 +51,7 @@ const FreightDialog = ({ freight, onSave, onClose }: Props) => {
       Promise.all(
         pendingFreightUnits.map((freightUnit) => {
           if (!freightUnit.id) return Promise.reject();
-          return freightUnitsApi.updateFreightUnit({
+          return api.freightUnits.updateFreightUnit({
             freightUnitId: freightUnit.id,
             freightUnit: freightUnit,
           });
@@ -63,7 +67,7 @@ const FreightDialog = ({ freight, onSave, onClose }: Props) => {
       Promise.all(
         pendingTasks.map((task) => {
           if (!task.id) throw Error("Task id is missing");
-          return tasksApi.updateTask({ taskId: task.id, task: task });
+          return api.tasks.updateTask({ taskId: task.id, task: task });
         }),
       ),
     onSuccess: () => {

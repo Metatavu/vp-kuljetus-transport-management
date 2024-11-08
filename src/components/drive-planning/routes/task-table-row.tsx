@@ -9,14 +9,14 @@ import {
   TableCell,
   TableRow,
 } from "@mui/material";
-import { useApi } from "hooks/use-api";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Site, Task, TaskType } from "generated/client";
-import LocalizationUtils from "utils/localization-utils";
-import { useTranslation } from "react-i18next";
-import { QUERY_KEYS, useFreights } from "hooks/use-queries";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
+import { api } from "api/index";
+import { Site, Task, TaskType } from "generated/client";
+import { QUERY_KEYS, getListFreightsQueryOptions } from "hooks/use-queries";
 import { useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
+import LocalizationUtils from "utils/localization-utils";
 
 type Props = {
   tasks: Task[];
@@ -27,11 +27,10 @@ type Props = {
 };
 
 const TaskTableRow = ({ tasks, type, site, groupNumber, taskCount }: Props) => {
-  const { tasksApi } = useApi();
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const navigate = useNavigate({ from: "/drive-planning/routes" });
-  const freightsQuery = useFreights();
+  const freightsQuery = useQuery(getListFreightsQueryOptions());
   const [menuCoordinates, setMenuCoordinates] = useState<{ clientX: number; clientY: number } | undefined>();
 
   const { name, address, postalCode, locality } = site;
@@ -41,7 +40,7 @@ const TaskTableRow = ({ tasks, type, site, groupNumber, taskCount }: Props) => {
       Promise.all(
         tasks.map((task) => {
           if (!task.id) return Promise.reject();
-          return tasksApi.updateTask({ taskId: task.id, task: { ...task, routeId: undefined } });
+          return api.tasks.updateTask({ taskId: task.id, task: { ...task, routeId: undefined } });
         }),
       ),
     onSuccess: () => {
@@ -104,7 +103,7 @@ const TaskTableRow = ({ tasks, type, site, groupNumber, taskCount }: Props) => {
         </TableCell>
         <TableCell>{taskCount}</TableCell>
         <TableCell>
-          <IconButton onClick={() => saveTask.mutate()} >
+          <IconButton onClick={() => saveTask.mutate()}>
             <Remove color="error" />
           </IconButton>
         </TableCell>

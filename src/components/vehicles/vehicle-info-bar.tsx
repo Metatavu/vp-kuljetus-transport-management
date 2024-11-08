@@ -16,14 +16,9 @@ type Props = {
 
 export const VehicleInfoBar = ({ selectedTruck, truckSpeed, selectedTruckLocation, title, navigateBack }: Props) => {
   return (
-    <Stack
-      justifyContent="space-between"
-      alignItems="center"
-      direction="row"
-      style={{ height: "58px", backgroundColor: "white", padding: "0 20px" }}
-    >
+    <Stack justifyContent="space-between" alignItems="center" direction="row" sx={{ bgcolor: "white", py: 1, px: 3 }}>
       {navigateBack && (
-        <IconButton sx={{ padding: "5px" }} onClick={navigateBack}>
+        <IconButton onClick={navigateBack}>
           <Tooltip title={t("tooltips.backToVehicles")} placement="bottom">
             <ArrowBackIcon />
           </Tooltip>
@@ -41,24 +36,24 @@ export const VehicleInfoBar = ({ selectedTruck, truckSpeed, selectedTruckLocatio
         {selectedTruck?.name} / {selectedTruck?.plateNumber}
       </Typography>
       <Typography variant="body2">
-        {t("vehicleList.mapView.speed")}
+        {t("vehicles.map.speed")}
         {truckSpeed?.speed ?? "-"}
       </Typography>
       <Typography variant="body2">
-        {t("vehicleList.mapView.heading")} {selectedTruckLocation?.heading ?? "-"}
+        {t("vehicles.map.heading")} {selectedTruckLocation?.heading ?? "-"}
       </Typography>
       <Typography variant="body2">
         {`${selectedTruckLocation?.latitude} : ${selectedTruckLocation?.longitude}`}
       </Typography>
-      <Chip style={{ backgroundColor: "#B9F6CA" }} icon={<GpsFixedIcon />} label={t("vehicleList.mapView.gps")} />
+      <Chip style={{ backgroundColor: "#B9F6CA" }} icon={<GpsFixedIcon />} label={t("vehicles.map.gps")} />
       <Typography variant="body2">
-        {t("vehicleList.mapView.lastUpdated")}
+        {t("vehicles.map.lastUpdated")}
         {TimeUtils.displayAsDateTime(selectedTruckLocation?.timestamp, "-")}
       </Typography>
       <Chip
         style={{ backgroundColor: "#B9F6CA" }}
         icon={<SignalCellularAltIcon />}
-        label={t("vehicleList.mapView.connection")}
+        label={t("vehicles.map.connection")}
       />
     </Stack>
   );

@@ -37,7 +37,7 @@
     "backToVehicles": "Back to vehicles",
     "backToWorkingHours": "Back to working hours"
   },
-  "vehicleList": {
+  "vehicles": {
     "title": "Vehicle list",
     "vehicle": {
       "type": "Type",
@@ -51,16 +51,19 @@
       "trailer": "Trailer",
       "driver": "Driver"
     },
-    "mapView": {
+    "list": {
+      "title": "Ajoneuvolista"
+    },
+    "map": {
       "title": "Map",
       "speed": "Speed: ",
       "gps": "GPS",
       "heading": "Direction: ",
       "lastUpdated": "Last updated: ",
       "connection": "Connection",
-      "showVehicleInfo": "Go to vehicle details"
+      "showVehicleDetails": "Go to vehicle details"
     },
-    "info": {
+    "details": {
       "title": "Vehicle information",
       "timeStamp": "Time",
       "event": "Event",
@@ -91,7 +94,7 @@
     "customerSites": {
       "title": "Customer sites",
       "new": "New customer site",
-      "modify": "Modify customer site",
+      "modify": "Modify customer site {{siteName}}",
       "type": "Type",
       "name": "Name",
       "address": "Address",
@@ -117,7 +120,7 @@
       "title": "Equipment list",
       "new": "New equipment",
       "open": "Open",
-      "modify": "Modify equipment",
+      "modify": "Modify equipment {{equipmentName}}",
       "type": "Type",
       "name": "Name",
       "licensePlate": "License plate",
@@ -315,22 +318,6 @@
   },
   "errorHandling": {
     "vehicleListing": "Error when listing vehicles"
-  },
-  "vehicleListScreen": {
-    "vehicleList": {
-      "headings": {
-        "type": "Type",
-        "name": "Name",
-        "number": "Plate",
-        "temperature": "Temperature",
-        "address": "Address",
-        "location": "Location",
-        "status": "Status",
-        "maintenance": "Maintenance",
-        "trailer": "Trailer",
-        "driver": "Driver"
-      }
-    }
   },
   "workingHours": {
     "title": "Working hours",
