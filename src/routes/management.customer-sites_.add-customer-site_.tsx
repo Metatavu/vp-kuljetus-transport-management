@@ -10,7 +10,7 @@ import { toast } from "react-toastify"
 import { Breadcrumb } from "src/types"
 
 export const Route = createFileRoute(
-  "/management/customer-sites/add-customer-site",
+  "/management/customer-sites_/add-customer-site_",
 )({
   component: CustomerSiteAdd,
   loader: () => {

@@ -25,7 +25,6 @@ import { EmployeeWorkShift, SalaryGroup } from "generated/client";
 import {
   QUERY_KEYS,
   getEmployeeWorkShiftsQueryOptions,
-  getFindEmployeeQueryOptions,
   getListEmployeesQueryOptions,
   getListTimeEntriesQueryOptions,
   getListTrucksQueryOptions,
@@ -33,14 +32,19 @@ import {
 } from "hooks/use-queries";
 import { t } from "i18next";
 import { DateTime } from "luxon";
-import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { EmployeeWorkHoursForm, EmployeeWorkHoursFormRow } from "src/types";
 import { Breadcrumb } from "src/types";
+import DataValidation from "src/utils/data-validation-utils";
+import { z } from "zod";
 
-export const Route = createFileRoute("/working-hours/$employeeId/work-shifts")({
+export const workShiftSearchSchema = z.object({
+  date: z.string().datetime({ offset: true }).transform(DataValidation.parseValidDateTime).optional(),
+});
+
+export const Route = createFileRoute("/working-hours_/$employeeId/work-shifts")({
   component: WorkShifts,
   loader: () => {
     const breadcrumbs: Breadcrumb[] = [
@@ -49,6 +53,7 @@ export const Route = createFileRoute("/working-hours/$employeeId/work-shifts")({
     ];
     return { breadcrumbs };
   },
+  validateSearch: workShiftSearchSchema,
 });
 
 // Styled root component
@@ -128,12 +133,32 @@ function WorkShifts() {
   const navigate = Route.useNavigate();
   const { employeeId } = Route.useParams();
   const queryClient = useQueryClient();
-  const [date, setDate] = useState(DateTime.now());
+  const selectedDate = Route.useSearch({ select: (search) => search.date ?? DateTime.now() });
+
+  const trucks = useQuery(getListTrucksQueryOptions({})).data?.trucks;
+  const employees = useQuery(getListEmployeesQueryOptions({})).data?.employees;
+
+  const employeeSalaryGroup =
+    employees?.find((employee) => employee.id === employeeId)?.salaryGroup ?? SalaryGroup.Driver;
+
+  const employeeWorkShiftHours = useQuery(
+    getListTimeEntriesQueryOptions({ employeeId }, true, employeeSalaryGroup, selectedDate.toJSDate()),
+  ).data?.employeeWorkShiftHours;
+  console.log("employeeWorkShiftHours", employeeWorkShiftHours);
+
+  const getWorkingPeriodsForEmployee = () => {
+    const employeeSalaryGroup = employees?.find((employee) => employee.id === employeeId)?.salaryGroup;
+    if (!employeeSalaryGroup) return;
+    const workinPeriodDates = getWorkingPeriodDates(employeeSalaryGroup, selectedDate.toJSDate());
+    return workinPeriodDates;
+  };
 
   const workShifts =
     useQuery(
       getEmployeeWorkShiftsQueryOptions({
         employeeId,
+        startedAfter: getWorkingPeriodsForEmployee()?.start,
+        startedBefore: getWorkingPeriodsForEmployee()?.end,
       }),
     ).data?.employeeWorkShifts ?? [];
 
@@ -146,7 +171,7 @@ function WorkShifts() {
         dayOffWorkAllowance: workShift.dayOffWorkAllowance ?? false,
         absence: workShift.absence ?? "",
         perDiemAllowance: workShift.perDiemAllowance ?? "",
-        approved: workShift.approved,
+        approved: workShift.approved ?? false,
         notes: workShift.notes ?? "",
       },
     })),
@@ -155,24 +180,7 @@ function WorkShifts() {
 
   const { watch } = methods;
   const perDiem = watch("0.workShift.approved");
-
-  const trucks = useQuery(getListTrucksQueryOptions({})).data?.trucks;
-  const employees = useQuery(getListEmployeesQueryOptions({})).data?.employees;
-
-  const employeeSalaryGroup =
-    employees?.find((employee) => employee.id === employeeId)?.salaryGroup ?? SalaryGroup.Driver;
-
-  const employeeWorkShiftHours = useQuery(
-    getListTimeEntriesQueryOptions({ employeeId }, true, employeeSalaryGroup, date.toJSDate()),
-  ).data?.employeeWorkShiftHours;
-  // console.log("employeeWorkShiftHours", employeeWorkShiftHours);
-
-  const getWorkingPeriodsForEmployee = () => {
-    const employeeSalaryGroup = employees?.find((employee) => employee.id === employeeId)?.salaryGroup;
-    if (!employeeSalaryGroup) return;
-    const workinPeriodDates = getWorkingPeriodDates(employeeSalaryGroup, DateTime.now().toJSDate());
-    return workinPeriodDates;
-  };
+  console.log("perDiem", perDiem);
 
   const updateWorkShift = useMutation({
     mutationFn: (employeeWorkShift: EmployeeWorkShift) =>
@@ -185,10 +193,11 @@ function WorkShifts() {
     onError: () => toast.error(t("management.employees.errorToast")),
   });
 
-  const onChangeDate = (newDate: DateTime | null) => setDate(newDate ?? DateTime.now());
+  const onChangeDate = (newDate: DateTime | null) =>
+    navigate({ search: (prev) => ({ ...prev, date: newDate ?? DateTime.now() }) });
 
   const onSaveClick = async (formValues: EmployeeWorkHoursForm) => {
-    console.log("formValues", formValues);
+    console.log("formValues", formValues[0].workShift.approved);
     const workShiftsToUpdate = formValues.reduce<EmployeeWorkShift[]>((list, workHoursFormRow, index) => {
       const existingWorkShift = workShifts?.find((workShift) => workShift.id === workHoursFormRow.workShift.id);
       const formFieldNames = Object.keys(workHoursFormRow.workShift) as (keyof EmployeeWorkHoursFormRow["workShift"])[];
@@ -219,7 +228,7 @@ function WorkShifts() {
       await updateWorkShift.mutateAsync(updatedWorkShift);
     }
 
-    toast.success(t("management.employees.successToast"));
+    toast.success(t("workingHours.workingHourBalances.successToast"));
 
     queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.WORK_SHIFTS] });
   };
@@ -263,9 +272,8 @@ function WorkShifts() {
           )}
           <Stack>
             <DatePicker
-              // TODO: set formatted text for date
               label={t("workingHours.workingHourBalances.payPeriod")}
-              value={date}
+              value={selectedDate}
               slotProps={{
                 openPickerButton: { size: "small", title: t("openCalendar") },
                 textField: {
@@ -300,11 +308,11 @@ function WorkShifts() {
   };
 
   const renderWorkingPeriodText = () => {
-    const workingPeriods = getWorkingPeriodsForEmployee();
-    if (!workingPeriods) return;
-    const start = DateTime.fromJSDate(workingPeriods.start).setLocale("fi").toFormat("EEE dd.MM"); // `EEE` gives the first two letters of the day in Finnish
+    const workingPeriodDates = getWorkingPeriodDates(employeeSalaryGroup, selectedDate.toJSDate());
+    if (!workingPeriodDates) return null;
+    const start = DateTime.fromJSDate(workingPeriodDates.start).setLocale("fi").toFormat("EEE dd.MM"); // `EEE` gives the first two letters of the day in Finnish
 
-    const end = DateTime.fromJSDate(workingPeriods.end).setLocale("fi").toFormat("EEE dd.MM");
+    const end = DateTime.fromJSDate(workingPeriodDates.end).setLocale("fi").toFormat("EEE dd.MM");
     return (
       <Typography variant="subtitle1">
         {start} - {end}
@@ -334,18 +342,15 @@ function WorkShifts() {
                 </TableHeader>
                 <TableContainer>
                   <WorkShiftsTableHeader />
-                  {
-                    // TODO: Render work days for set time period by salarygroup
-                    workShifts?.map((employeeWorkShift, index) => (
-                      <WorkShiftRow
-                        key={`${index}_${employeeWorkShift.id}`}
-                        onClick={() => navigate({ to: "work-shift-details" })}
-                        workShiftData={employeeWorkShift}
-                        trucks={trucks ?? []}
-                        index={index}
-                      />
-                    ))
-                  }
+                  {workShifts?.map((employeeWorkShift, index) => (
+                    <WorkShiftRow
+                      key={`${index}_${employeeWorkShift.id}`}
+                      onClick={() => navigate({ to: "work-shift-details" })}
+                      workShiftData={employeeWorkShift}
+                      trucks={trucks ?? []}
+                      index={index}
+                    />
+                  ))}
                 </TableContainer>
               </Stack>
             </Paper>

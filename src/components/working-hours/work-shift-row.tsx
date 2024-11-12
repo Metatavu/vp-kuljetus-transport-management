@@ -75,35 +75,26 @@ function WorkShiftRow({ onClick, workShiftData, trucks, index }: Props) {
   const renderPerDiemAllowanceSelectInput = () => {
     const label = t("workingHours.workingDays.table.dailyAllowance");
     return (
-      <Controller
-        control={control}
-        name={`${index}.workShift.perDiemAllowance`}
-        render={({ field: { value, onChange, ...rest } }) => (
-          <TextField
-            select
-            className="cell-input"
-            size="small"
-            aria-label={label}
-            title={label}
-            fullWidth
-            variant="outlined"
-            value={value ?? ""}
-            onChange={(event) => {
-              onChange(event.target.value);
-            }}
-            {...rest}
-          >
-            <MenuItem style={{ minHeight: 30 }} key="" value="">
-              {""}
-            </MenuItem>
-            {Object.values(PerDiemAllowanceType).map((option) => (
-              <MenuItem style={{ minHeight: 30 }} key={option} value={option}>
-                {LocalizationUtils.getPerDiemAllowanceType(option, t)}
-              </MenuItem>
-            ))}
-          </TextField>
-        )}
-      />
+      <TextField
+        select
+        className="cell-input"
+        size="small"
+        aria-label={label}
+        title={label}
+        fullWidth
+        variant="outlined"
+        defaultValue={workShiftData.perDiemAllowance}
+        InputProps={register(`${index}.workShift.perDiemAllowance`)}
+      >
+        <MenuItem style={{ minHeight: 30 }} key="EMPTY" value="">
+          {""}
+        </MenuItem>
+        {Object.values(PerDiemAllowanceType).map((option) => (
+          <MenuItem style={{ minHeight: 30 }} key={option} value={option}>
+            {LocalizationUtils.getPerDiemAllowanceType(option, t)}
+          </MenuItem>
+        ))}
+      </TextField>
     );
   };
 
@@ -117,6 +108,7 @@ function WorkShiftRow({ onClick, workShiftData, trucks, index }: Props) {
         aria-label={label}
         title={label}
         fullWidth
+        defaultValue={workShiftData.absence}
         variant="outlined"
         InputProps={register(`${index}.workShift.absence`)}
       >
@@ -193,10 +185,9 @@ function WorkShiftRow({ onClick, workShiftData, trucks, index }: Props) {
         <Controller
           name={`${index}.workShift.approved`}
           control={control}
-          defaultValue={workShiftData.approved || false}
-          render={({ field: { value, onChange, ref, ...rest } }) => (
+          render={({ field: { value = false, onChange, ref, ...rest } }) => (
             <Checkbox
-              onChange={(event) => onChange(event)}
+              onChange={onChange}
               size="small"
               className="cell-checkbox"
               title={t("workingHours.workingHourBalances.approved")}

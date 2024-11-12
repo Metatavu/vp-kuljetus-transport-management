@@ -11,7 +11,7 @@ import { Breadcrumb } from "src/types"
 import { getEquipmentDisplayName } from "src/utils/format-utils"
 
 export const Route = createFileRoute(
-  "/management/equipment/towable/$towableId/modify",
+  "/management/equipment_/towable/$towableId/modify",
 )({
   component: TowableModify,
   loader: async ({ params: { towableId } }) => {

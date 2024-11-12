@@ -12,7 +12,7 @@ import { queryClient } from "src/main"
 import { Breadcrumb } from "src/types"
 
 export const Route = createFileRoute(
-  "/management/customer-sites/$customerSiteId/modify",
+  "/management/customer-sites_/$customerSiteId/modify",
 )({
   component: CustomerSiteModify,
   loader: async ({ params: { customerSiteId } }) => {

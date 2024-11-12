@@ -339,7 +339,8 @@
       "halfDayAllowance": "Half-Day Allowance",
       "fullDayAllowance": "Full-Day Allowance",
       "toWorkHourDetails": "To Work hour details",
-      "approved": "Checked"
+      "approved": "Checked",
+      "successToast": "Working hours saved!"
     },
     "workingDays": {
       "title": "Working days",

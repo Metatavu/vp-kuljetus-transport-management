@@ -427,7 +427,8 @@
       "halfDayAllowance": "Osapäiväraha",
       "fullDayAllowance": "Kokopäiväraha",
       "toWorkHourDetails": "Näytä erittely",
-      "approved": "Tarkastettu"
+      "approved": "Tarkastettu",
+      "successToast": "Työvuoro tallennettu!"
     },
     "workingDays": {
       "title": "Työpäivät",

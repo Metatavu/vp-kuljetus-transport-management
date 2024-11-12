@@ -43,7 +43,7 @@ export const vehicleInfoRouteSearchSchema = z.object({
     .optional(),
 })
 
-export const Route = createFileRoute("/vehicles/$truckId/details")({
+export const Route = createFileRoute("/vehicles_/$truckId/details")({
   component: VehicleInfo,
   validateSearch: vehicleInfoRouteSearchSchema,
   loader: async ({ params: { truckId } }) => {

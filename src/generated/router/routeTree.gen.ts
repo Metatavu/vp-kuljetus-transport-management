@@ -42,148 +42,175 @@ import { Route as ManagementEquipmentTowableTowableIdModifyImport } from "./../.
 // Create/Update Routes
 
 const VehiclesRoute = VehiclesImport.update({
+  id: "/vehicles",
   path: "/vehicles",
   getParentRoute: () => rootRoute,
 } as any)
 
 const ManagementRoute = ManagementImport.update({
+  id: "/management",
   path: "/management",
   getParentRoute: () => rootRoute,
 } as any)
 
 const DrivePlanningRoute = DrivePlanningImport.update({
+  id: "/drive-planning",
   path: "/drive-planning",
   getParentRoute: () => rootRoute,
 } as any)
 
 const IndexRoute = IndexImport.update({
+  id: "/",
   path: "/",
   getParentRoute: () => rootRoute,
 } as any)
 
 const WorkingHoursIndexRoute = WorkingHoursIndexImport.update({
+  id: "/working-hours/",
   path: "/working-hours/",
   getParentRoute: () => rootRoute,
 } as any)
 
 const VehiclesMapRoute = VehiclesMapImport.update({
+  id: "/map",
   path: "/map",
   getParentRoute: () => VehiclesRoute,
 } as any)
 
 const VehiclesListRoute = VehiclesListImport.update({
+  id: "/list",
   path: "/list",
   getParentRoute: () => VehiclesRoute,
 } as any)
 
 const ManagementVehiclesRoute = ManagementVehiclesImport.update({
+  id: "/vehicles",
   path: "/vehicles",
   getParentRoute: () => ManagementRoute,
 } as any)
 
 const ManagementHolidaysRoute = ManagementHolidaysImport.update({
+  id: "/holidays",
   path: "/holidays",
   getParentRoute: () => ManagementRoute,
 } as any)
 
 const ManagementEquipmentRoute = ManagementEquipmentImport.update({
+  id: "/equipment",
   path: "/equipment",
   getParentRoute: () => ManagementRoute,
 } as any)
 
 const ManagementEmployeesRoute = ManagementEmployeesImport.update({
+  id: "/employees",
   path: "/employees",
   getParentRoute: () => ManagementRoute,
 } as any)
 
 const ManagementCustomerSitesRoute = ManagementCustomerSitesImport.update({
+  id: "/customer-sites",
   path: "/customer-sites",
   getParentRoute: () => ManagementRoute,
 } as any)
 
 const DrivePlanningRoutesRoute = DrivePlanningRoutesImport.update({
+  id: "/routes",
   path: "/routes",
   getParentRoute: () => DrivePlanningRoute,
 } as any)
 
 const DrivePlanningFreightsRoute = DrivePlanningFreightsImport.update({
+  id: "/freights",
   path: "/freights",
   getParentRoute: () => DrivePlanningRoute,
 } as any)
 
 const WorkingHoursEmployeeIdWorkShiftsRoute =
   WorkingHoursEmployeeIdWorkShiftsImport.update({
+    id: "/working-hours_/$employeeId/work-shifts",
     path: "/working-hours/$employeeId/work-shifts",
     getParentRoute: () => rootRoute,
   } as any)
 
 const VehiclesTruckIdDetailsRoute = VehiclesTruckIdDetailsImport.update({
+  id: "/vehicles_/$truckId/details",
   path: "/vehicles/$truckId/details",
   getParentRoute: () => rootRoute,
 } as any)
 
 const ManagementHolidaysAddHolidayRoute =
   ManagementHolidaysAddHolidayImport.update({
+    id: "/add-holiday",
     path: "/add-holiday",
     getParentRoute: () => ManagementHolidaysRoute,
   } as any)
 
 const ManagementEquipmentAddEquipmentRoute =
   ManagementEquipmentAddEquipmentImport.update({
+    id: "/equipment_/add-equipment",
     path: "/equipment/add-equipment",
     getParentRoute: () => ManagementRoute,
   } as any)
 
 const ManagementEmployeesAddEmployeeRoute =
   ManagementEmployeesAddEmployeeImport.update({
+    id: "/employees_/add-employee",
     path: "/employees/add-employee",
     getParentRoute: () => ManagementRoute,
   } as any)
 
 const ManagementCustomerSitesAddCustomerSiteRoute =
   ManagementCustomerSitesAddCustomerSiteImport.update({
+    id: "/customer-sites_/add-customer-site_",
     path: "/customer-sites/add-customer-site",
     getParentRoute: () => ManagementRoute,
   } as any)
 
 const DrivePlanningRoutesAddRouteRoute =
   DrivePlanningRoutesAddRouteImport.update({
+    id: "/add-route",
     path: "/add-route",
     getParentRoute: () => DrivePlanningRoutesRoute,
   } as any)
 
 const DrivePlanningFreightsAddFreightRoute =
   DrivePlanningFreightsAddFreightImport.update({
+    id: "/add-freight",
     path: "/add-freight",
     getParentRoute: () => DrivePlanningFreightsRoute,
   } as any)
 
 const WorkingHoursEmployeeIdWorkShiftsWorkShiftDetailsRoute =
   WorkingHoursEmployeeIdWorkShiftsWorkShiftDetailsImport.update({
+    id: "/work-shift-details",
     path: "/work-shift-details",
     getParentRoute: () => WorkingHoursEmployeeIdWorkShiftsRoute,
   } as any)
 
 const ManagementEmployeesEmployeeIdModifyRoute =
   ManagementEmployeesEmployeeIdModifyImport.update({
+    id: "/employees_/$employeeId/modify",
     path: "/employees/$employeeId/modify",
     getParentRoute: () => ManagementRoute,
   } as any)
 
 const ManagementCustomerSitesCustomerSiteIdModifyRoute =
   ManagementCustomerSitesCustomerSiteIdModifyImport.update({
+    id: "/customer-sites_/$customerSiteId/modify",
     path: "/customer-sites/$customerSiteId/modify",
     getParentRoute: () => ManagementRoute,
   } as any)
 
 const ManagementEquipmentTruckTruckIdModifyRoute =
   ManagementEquipmentTruckTruckIdModifyImport.update({
+    id: "/equipment_/truck/$truckId/modify",
     path: "/equipment/truck/$truckId/modify",
     getParentRoute: () => ManagementRoute,
   } as any)
 
 const ManagementEquipmentTowableTowableIdModifyRoute =
   ManagementEquipmentTowableTowableIdModifyImport.update({
+    id: "/equipment_/towable/$towableId/modify",
     path: "/equipment/towable/$towableId/modify",
     getParentRoute: () => ManagementRoute,
   } as any)
@@ -304,22 +331,22 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof DrivePlanningRoutesAddRouteImport
       parentRoute: typeof DrivePlanningRoutesImport
     }
-    "/management/customer-sites/add-customer-site": {
-      id: "/management/customer-sites/add-customer-site"
+    "/management/customer-sites_/add-customer-site_": {
+      id: "/management/customer-sites_/add-customer-site_"
       path: "/customer-sites/add-customer-site"
       fullPath: "/management/customer-sites/add-customer-site"
       preLoaderRoute: typeof ManagementCustomerSitesAddCustomerSiteImport
       parentRoute: typeof ManagementImport
     }
-    "/management/employees/add-employee": {
-      id: "/management/employees/add-employee"
+    "/management/employees_/add-employee": {
+      id: "/management/employees_/add-employee"
       path: "/employees/add-employee"
       fullPath: "/management/employees/add-employee"
       preLoaderRoute: typeof ManagementEmployeesAddEmployeeImport
       parentRoute: typeof ManagementImport
     }
-    "/management/equipment/add-equipment": {
-      id: "/management/equipment/add-equipment"
+    "/management/equipment_/add-equipment": {
+      id: "/management/equipment_/add-equipment"
       path: "/equipment/add-equipment"
       fullPath: "/management/equipment/add-equipment"
       preLoaderRoute: typeof ManagementEquipmentAddEquipmentImport
@@ -332,50 +359,50 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof ManagementHolidaysAddHolidayImport
       parentRoute: typeof ManagementHolidaysImport
     }
-    "/vehicles/$truckId/details": {
-      id: "/vehicles/$truckId/details"
+    "/vehicles_/$truckId/details": {
+      id: "/vehicles_/$truckId/details"
       path: "/vehicles/$truckId/details"
       fullPath: "/vehicles/$truckId/details"
       preLoaderRoute: typeof VehiclesTruckIdDetailsImport
       parentRoute: typeof rootRoute
     }
-    "/working-hours/$employeeId/work-shifts": {
-      id: "/working-hours/$employeeId/work-shifts"
+    "/working-hours_/$employeeId/work-shifts": {
+      id: "/working-hours_/$employeeId/work-shifts"
       path: "/working-hours/$employeeId/work-shifts"
       fullPath: "/working-hours/$employeeId/work-shifts"
       preLoaderRoute: typeof WorkingHoursEmployeeIdWorkShiftsImport
       parentRoute: typeof rootRoute
     }
-    "/management/customer-sites/$customerSiteId/modify": {
-      id: "/management/customer-sites/$customerSiteId/modify"
+    "/management/customer-sites_/$customerSiteId/modify": {
+      id: "/management/customer-sites_/$customerSiteId/modify"
       path: "/customer-sites/$customerSiteId/modify"
       fullPath: "/management/customer-sites/$customerSiteId/modify"
       preLoaderRoute: typeof ManagementCustomerSitesCustomerSiteIdModifyImport
       parentRoute: typeof ManagementImport
     }
-    "/management/employees/$employeeId/modify": {
-      id: "/management/employees/$employeeId/modify"
+    "/management/employees_/$employeeId/modify": {
+      id: "/management/employees_/$employeeId/modify"
       path: "/employees/$employeeId/modify"
       fullPath: "/management/employees/$employeeId/modify"
       preLoaderRoute: typeof ManagementEmployeesEmployeeIdModifyImport
       parentRoute: typeof ManagementImport
     }
-    "/working-hours/$employeeId/work-shifts/work-shift-details": {
-      id: "/working-hours/$employeeId/work-shifts/work-shift-details"
+    "/working-hours_/$employeeId/work-shifts/work-shift-details": {
+      id: "/working-hours_/$employeeId/work-shifts/work-shift-details"
       path: "/work-shift-details"
       fullPath: "/working-hours/$employeeId/work-shifts/work-shift-details"
       preLoaderRoute: typeof WorkingHoursEmployeeIdWorkShiftsWorkShiftDetailsImport
       parentRoute: typeof WorkingHoursEmployeeIdWorkShiftsImport
     }
-    "/management/equipment/towable/$towableId/modify": {
-      id: "/management/equipment/towable/$towableId/modify"
+    "/management/equipment_/towable/$towableId/modify": {
+      id: "/management/equipment_/towable/$towableId/modify"
       path: "/equipment/towable/$towableId/modify"
       fullPath: "/management/equipment/towable/$towableId/modify"
       preLoaderRoute: typeof ManagementEquipmentTowableTowableIdModifyImport
       parentRoute: typeof ManagementImport
     }
-    "/management/equipment/truck/$truckId/modify": {
-      id: "/management/equipment/truck/$truckId/modify"
+    "/management/equipment_/truck/$truckId/modify": {
+      id: "/management/equipment_/truck/$truckId/modify"
       path: "/equipment/truck/$truckId/modify"
       fullPath: "/management/equipment/truck/$truckId/modify"
       preLoaderRoute: typeof ManagementEquipmentTruckTruckIdModifyImport
@@ -581,17 +608,17 @@ export interface FileRoutesById {
   "/working-hours/": typeof WorkingHoursIndexRoute
   "/drive-planning/freights/add-freight": typeof DrivePlanningFreightsAddFreightRoute
   "/drive-planning/routes/add-route": typeof DrivePlanningRoutesAddRouteRoute
-  "/management/customer-sites/add-customer-site": typeof ManagementCustomerSitesAddCustomerSiteRoute
-  "/management/employees/add-employee": typeof ManagementEmployeesAddEmployeeRoute
-  "/management/equipment/add-equipment": typeof ManagementEquipmentAddEquipmentRoute
+  "/management/customer-sites_/add-customer-site_": typeof ManagementCustomerSitesAddCustomerSiteRoute
+  "/management/employees_/add-employee": typeof ManagementEmployeesAddEmployeeRoute
+  "/management/equipment_/add-equipment": typeof ManagementEquipmentAddEquipmentRoute
   "/management/holidays/add-holiday": typeof ManagementHolidaysAddHolidayRoute
-  "/vehicles/$truckId/details": typeof VehiclesTruckIdDetailsRoute
-  "/working-hours/$employeeId/work-shifts": typeof WorkingHoursEmployeeIdWorkShiftsRouteWithChildren
-  "/management/customer-sites/$customerSiteId/modify": typeof ManagementCustomerSitesCustomerSiteIdModifyRoute
-  "/management/employees/$employeeId/modify": typeof ManagementEmployeesEmployeeIdModifyRoute
-  "/working-hours/$employeeId/work-shifts/work-shift-details": typeof WorkingHoursEmployeeIdWorkShiftsWorkShiftDetailsRoute
-  "/management/equipment/towable/$towableId/modify": typeof ManagementEquipmentTowableTowableIdModifyRoute
-  "/management/equipment/truck/$truckId/modify": typeof ManagementEquipmentTruckTruckIdModifyRoute
+  "/vehicles_/$truckId/details": typeof VehiclesTruckIdDetailsRoute
+  "/working-hours_/$employeeId/work-shifts": typeof WorkingHoursEmployeeIdWorkShiftsRouteWithChildren
+  "/management/customer-sites_/$customerSiteId/modify": typeof ManagementCustomerSitesCustomerSiteIdModifyRoute
+  "/management/employees_/$employeeId/modify": typeof ManagementEmployeesEmployeeIdModifyRoute
+  "/working-hours_/$employeeId/work-shifts/work-shift-details": typeof WorkingHoursEmployeeIdWorkShiftsWorkShiftDetailsRoute
+  "/management/equipment_/towable/$towableId/modify": typeof ManagementEquipmentTowableTowableIdModifyRoute
+  "/management/equipment_/truck/$truckId/modify": typeof ManagementEquipmentTruckTruckIdModifyRoute
 }
 
 export interface FileRouteTypes {
@@ -671,17 +698,17 @@ export interface FileRouteTypes {
     | "/working-hours/"
     | "/drive-planning/freights/add-freight"
     | "/drive-planning/routes/add-route"
-    | "/management/customer-sites/add-customer-site"
-    | "/management/employees/add-employee"
-    | "/management/equipment/add-equipment"
+    | "/management/customer-sites_/add-customer-site_"
+    | "/management/employees_/add-employee"
+    | "/management/equipment_/add-equipment"
     | "/management/holidays/add-holiday"
-    | "/vehicles/$truckId/details"
-    | "/working-hours/$employeeId/work-shifts"
-    | "/management/customer-sites/$customerSiteId/modify"
-    | "/management/employees/$employeeId/modify"
-    | "/working-hours/$employeeId/work-shifts/work-shift-details"
-    | "/management/equipment/towable/$towableId/modify"
-    | "/management/equipment/truck/$truckId/modify"
+    | "/vehicles_/$truckId/details"
+    | "/working-hours_/$employeeId/work-shifts"
+    | "/management/customer-sites_/$customerSiteId/modify"
+    | "/management/employees_/$employeeId/modify"
+    | "/working-hours_/$employeeId/work-shifts/work-shift-details"
+    | "/management/equipment_/towable/$towableId/modify"
+    | "/management/equipment_/truck/$truckId/modify"
   fileRoutesById: FileRoutesById
 }
 
@@ -723,8 +750,8 @@ export const routeTree = rootRoute
         "/management",
         "/vehicles",
         "/working-hours/",
-        "/vehicles/$truckId/details",
-        "/working-hours/$employeeId/work-shifts"
+        "/vehicles_/$truckId/details",
+        "/working-hours_/$employeeId/work-shifts"
       ]
     },
     "/": {
@@ -745,13 +772,13 @@ export const routeTree = rootRoute
         "/management/equipment",
         "/management/holidays",
         "/management/vehicles",
-        "/management/customer-sites/add-customer-site",
-        "/management/employees/add-employee",
-        "/management/equipment/add-equipment",
-        "/management/customer-sites/$customerSiteId/modify",
-        "/management/employees/$employeeId/modify",
-        "/management/equipment/towable/$towableId/modify",
-        "/management/equipment/truck/$truckId/modify"
+        "/management/customer-sites_/add-customer-site_",
+        "/management/employees_/add-employee",
+        "/management/equipment_/add-equipment",
+        "/management/customer-sites_/$customerSiteId/modify",
+        "/management/employees_/$employeeId/modify",
+        "/management/equipment_/towable/$towableId/modify",
+        "/management/equipment_/truck/$truckId/modify"
       ]
     },
     "/vehicles": {
@@ -817,15 +844,15 @@ export const routeTree = rootRoute
       "filePath": "drive-planning.routes.add-route.tsx",
       "parent": "/drive-planning/routes"
     },
-    "/management/customer-sites/add-customer-site": {
+    "/management/customer-sites_/add-customer-site_": {
       "filePath": "management.customer-sites_.add-customer-site_.tsx",
       "parent": "/management"
     },
-    "/management/employees/add-employee": {
+    "/management/employees_/add-employee": {
       "filePath": "management.employees_.add-employee.tsx",
       "parent": "/management"
     },
-    "/management/equipment/add-equipment": {
+    "/management/equipment_/add-equipment": {
       "filePath": "management.equipment_.add-equipment.tsx",
       "parent": "/management"
     },
@@ -833,32 +860,32 @@ export const routeTree = rootRoute
       "filePath": "management.holidays.add-holiday.tsx",
       "parent": "/management/holidays"
     },
-    "/vehicles/$truckId/details": {
+    "/vehicles_/$truckId/details": {
       "filePath": "vehicles_.$truckId.details.tsx"
     },
-    "/working-hours/$employeeId/work-shifts": {
+    "/working-hours_/$employeeId/work-shifts": {
       "filePath": "working-hours_.$employeeId.work-shifts.tsx",
       "children": [
-        "/working-hours/$employeeId/work-shifts/work-shift-details"
+        "/working-hours_/$employeeId/work-shifts/work-shift-details"
       ]
     },
-    "/management/customer-sites/$customerSiteId/modify": {
+    "/management/customer-sites_/$customerSiteId/modify": {
       "filePath": "management.customer-sites_.$customerSiteId.modify.tsx",
       "parent": "/management"
     },
-    "/management/employees/$employeeId/modify": {
+    "/management/employees_/$employeeId/modify": {
       "filePath": "management.employees_.$employeeId.modify.tsx",
       "parent": "/management"
     },
-    "/working-hours/$employeeId/work-shifts/work-shift-details": {
+    "/working-hours_/$employeeId/work-shifts/work-shift-details": {
       "filePath": "working-hours_.$employeeId.work-shifts.work-shift-details.tsx",
-      "parent": "/working-hours/$employeeId/work-shifts"
+      "parent": "/working-hours_/$employeeId/work-shifts"
     },
-    "/management/equipment/towable/$towableId/modify": {
+    "/management/equipment_/towable/$towableId/modify": {
       "filePath": "management.equipment_.towable.$towableId.modify.tsx",
       "parent": "/management"
     },
-    "/management/equipment/truck/$truckId/modify": {
+    "/management/equipment_/truck/$truckId/modify": {
       "filePath": "management.equipment_.truck.$truckId.modify.tsx",
       "parent": "/management"
     }

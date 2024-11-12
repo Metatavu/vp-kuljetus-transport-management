@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next"
 import { toast } from "react-toastify"
 import { Breadcrumb } from "src/types"
 
-export const Route = createFileRoute("/management/equipment/add-equipment")({
+export const Route = createFileRoute("/management/equipment_/add-equipment")({
   component: () => <EquipmentAdd />,
   loader: () => {
     const breadcrumbs: Breadcrumb[] = [
