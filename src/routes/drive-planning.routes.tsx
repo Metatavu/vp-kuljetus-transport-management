@@ -1,34 +1,36 @@
-import { Button, Paper, Stack, Typography, styled } from "@mui/material";
-import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router";
-import ToolbarRow from "components/generic/toolbar-row";
-import { RouterContext } from "./__root";
-import { Add, Refresh } from "@mui/icons-material";
-import { LoadingButton } from "@mui/lab";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { DateTime } from "luxon";
-import { useApi } from "hooks/use-api";
-import { useMutation, useQueries, useQueryClient } from "@tanstack/react-query";
-import { useTranslation } from "react-i18next";
-import { Route as TRoute, Task } from "generated/client";
-import UnallocatedTasksDrawer from "components/drive-planning/routes/unallocated-tasks-drawer";
-import RoutesTable from "components/drive-planning/routes/routes-table";
-import { QUERY_KEYS, useRoutes, useSites } from "hooks/use-queries";
 import {
   Active,
   DndContext,
   DragEndEvent,
+  DragOverEvent,
   DragOverlay,
   DragStartEvent,
-  DragOverEvent,
   MeasuringStrategy,
 } from "@dnd-kit/core";
-import DatePickerWithArrows from "components/generic/date-picker-with-arrows";
-import { toast } from "react-toastify";
-import { DraggableType, DroppableType, DraggedTaskData } from "../types";
+import { Add, Refresh } from "@mui/icons-material";
+import { LoadingButton } from "@mui/lab";
+import { Button, Paper, Stack, Typography, styled } from "@mui/material";
 import { GridPaginationModel } from "@mui/x-data-grid";
-import DataValidation from "utils/data-validation-utils";
+import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Outlet, createFileRoute } from "@tanstack/react-router";
+import { api } from "api/index";
+import RootFreightDialog from "components/drive-planning/freights/root-freight-dialog";
 import DraggedTaskOverlay from "components/drive-planning/routes/dragged-task-overlay";
+import RoutesTable from "components/drive-planning/routes/routes-table";
+import UnallocatedTasksDrawer from "components/drive-planning/routes/unallocated-tasks-drawer";
+import DatePickerWithArrows from "components/generic/date-picker-with-arrows";
+import ToolbarRow from "components/generic/toolbar-row";
+import { Route as TRoute, Task } from "generated/client";
+import { QUERY_KEYS, getListRoutesQueryOptions, getListSitesQueryOptions } from "hooks/use-queries";
+import { t } from "i18next";
+import { DateTime } from "luxon";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 import DragAndDropUtils, { TRouteTasks } from "src/utils/drag-and-drop-utils";
+import DataValidation from "utils/data-validation-utils";
+import { z } from "zod";
+import { Breadcrumb, DraggableType, DraggedTaskData, DroppableType } from "../types";
 
 // Styled components
 const Root = styled(Paper, {
@@ -40,23 +42,26 @@ const Root = styled(Paper, {
   flexDirection: "column",
 }));
 
+export const drivePlanningRoutesSearchSchema = z.object({
+  date: z.string().datetime({ offset: true }).transform(DataValidation.parseValidDateTime).optional(),
+  freightId: z.string().uuid().optional(),
+});
+
 export const Route = createFileRoute("/drive-planning/routes")({
   component: DrivePlanningRoutes,
-  beforeLoad: (): RouterContext => ({
-    breadcrumbs: ["drivePlanning.routes.title"],
-  }),
-  validateSearch: ({ date }: Record<string, unknown>) => ({
-    date: date ? DateTime.fromISO(date as string) : undefined,
-  }),
+  loader: () => {
+    const breadcrumbs: Breadcrumb[] = [{ label: t("drivePlanning.title") }, { label: t("drivePlanning.routes.title") }];
+    return { breadcrumbs };
+  },
+  validateSearch: drivePlanningRoutesSearchSchema,
 });
 
 function DrivePlanningRoutes() {
-  const { routesApi, tasksApi } = useApi();
   const { t } = useTranslation();
-  const navigate = useNavigate({ from: Route.fullPath });
+  const navigate = Route.useNavigate();
   const queryClient = useQueryClient();
 
-  const sitesQuery = useSites();
+  const sitesQuery = useQuery(getListSitesQueryOptions());
 
   const [unallocatedDrawerOpen, setUnallocatedDrawerOpen] = useState(true);
   const [activeDraggable, setActiveDraggable] = useState<Active | null>(null);
@@ -69,26 +74,26 @@ function DrivePlanningRoutes() {
   const activeRouteIdBeforeDrag = useRef<string | null>(null);
   const currentNewIndex = useRef<number | null>(null);
 
-  const selectedDate = Route.useSearch({
-    select: ({ date }) => date ?? DateTime.now(),
-  });
+  const selectedDate = Route.useSearch({ select: (search) => search.date ?? DateTime.now() });
 
-  const routesQuery = useRoutes(
-    {
-      departureAfter: selectedDate?.startOf("day").toJSDate(),
-      departureBefore: selectedDate?.endOf("day").toJSDate(),
-      first: paginationModel.pageSize * paginationModel.page,
-      max: paginationModel.pageSize * paginationModel.page + paginationModel.pageSize,
-    },
-    !!selectedDate && activeDraggable === null,
-    10_000,
-    () => setLastRefreshedAt(DateTime.now()),
+  const routesQuery = useQuery(
+    getListRoutesQueryOptions(
+      {
+        departureAfter: selectedDate.startOf("day").toJSDate(),
+        departureBefore: selectedDate.endOf("day").toJSDate(),
+        first: paginationModel.pageSize * paginationModel.page,
+        max: paginationModel.pageSize * paginationModel.page + paginationModel.pageSize,
+      },
+      !!selectedDate && activeDraggable === null,
+      10_000,
+      () => setLastRefreshedAt(DateTime.now()),
+    ),
   );
 
   const routeTasks = useQueries({
     queries: (routesQuery.data?.routes ?? []).map((route) => ({
       queryKey: [QUERY_KEYS.TASKS_BY_ROUTE, route.id],
-      queryFn: () => tasksApi.listTasks({ routeId: route.id }),
+      queryFn: () => api.tasks.listTasks({ routeId: route.id }),
     })),
     combine: (results) => ({
       data: results.flatMap((result) => result.data).filter(DataValidation.validateValueIsNotUndefinedNorNull),
@@ -109,7 +114,7 @@ function DrivePlanningRoutes() {
   const updateRoute = useMutation({
     mutationFn: (route: TRoute) => {
       if (!route.id) return Promise.reject();
-      return routesApi.updateRoute({ routeId: route.id, route });
+      return api.routes.updateRoute({ routeId: route.id, route });
     },
     onSuccess: (route) => {
       toast.success(t("drivePlanning.routes.successToast"));
@@ -130,7 +135,7 @@ function DrivePlanningRoutes() {
   const updateTask = useMutation({
     mutationFn: (task: Task) => {
       if (!task.id) return Promise.reject();
-      return tasksApi.updateTask({ taskId: task.id, task });
+      return api.tasks.updateTask({ taskId: task.id, task });
     },
     onSuccess: () => {
       toast.success(t("drivePlanning.routes.taskMovedToast"));
@@ -146,7 +151,7 @@ function DrivePlanningRoutes() {
         buttonsWithText
         labelVisible={false}
         date={selectedDate ?? DateTime.now().startOf("day")}
-        setDate={(date) => navigate({ search: (search) => ({ ...search, date: date }) })}
+        setDate={(date) => navigate({ search: (prev) => ({ ...prev, date: date }) })}
       />
     ),
     [selectedDate, navigate],
@@ -155,26 +160,26 @@ function DrivePlanningRoutes() {
   const renderRightToolbar = useCallback(
     () => (
       <Stack direction={"row"} gap={2} alignItems="center">
-        <Typography variant="caption" color="primary">
-          {t("drivePlanning.routes.lastRefreshedAt", {
-            lastRefreshedAt: lastRefreshedAt?.toFormat("HH:mm"),
-          })}
-        </Typography>
         <LoadingButton
+          startIcon={<Refresh />}
           variant="text"
           loading={routesQuery.isLoading}
           onClick={() => routesQuery.refetch()}
           title={t("drivePlanning.routes.refresh")}
         >
-          <Refresh />
+          {t("refresh")}
         </LoadingButton>
+        <Typography variant="caption" color="primary">
+          {t("drivePlanning.routes.lastRefreshedAt", {
+            lastRefreshedAt: lastRefreshedAt?.toFormat("HH:mm"),
+          })}
+        </Typography>
         <Button
           size="small"
-          variant="text"
           startIcon={<Add />}
           onClick={() =>
             navigate({
-              to: "/drive-planning/routes/add-route",
+              to: "add-route",
               search: { date: selectedDate ?? DateTime.now() },
             })
           }
@@ -336,6 +341,7 @@ function DrivePlanningRoutes() {
     <>
       <Outlet />
       <Root>
+        <RootFreightDialog />
         <DndContext
           measuring={{
             droppable: {

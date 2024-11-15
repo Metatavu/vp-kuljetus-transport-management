@@ -1,12 +1,20 @@
 /* tslint:disable */
 /* eslint-disable */
+export * from './AbsenceType';
+export * from './ClientApp';
+export * from './ClientAppMetadata';
+export * from './ClientAppStatus';
+export * from './CompensationType';
 export * from './Driver';
 export * from './Employee';
 export * from './EmployeeType';
+export * from './EmployeeWorkShift';
 export * from './Freight';
 export * from './FreightUnit';
+export * from './Holiday';
 export * from './ModelError';
 export * from './Office';
+export * from './PerDiemAllowanceType';
 export * from './Route';
 export * from './SalaryGroup';
 export * from './Site';
@@ -22,3 +30,7 @@ export * from './TruckLocation';
 export * from './TruckSortByField';
 export * from './TruckSpeed';
 export * from './Vehicle';
+export * from './WorkEvent';
+export * from './WorkEventType';
+export * from './WorkShiftHours';
+export * from './WorkType';

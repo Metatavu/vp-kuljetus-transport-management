@@ -1,27 +1,32 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { api } from "api/index";
 import EmployeeComponent from "components/management/employees/employee";
 import { Employee } from "generated/client";
-import { useApi } from "hooks/use-api";
 import { QUERY_KEYS } from "hooks/use-queries";
+import { t } from "i18next";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { RouterContext } from "./__root";
+import { Breadcrumb } from "src/types";
 
-export const Route = createFileRoute("/management/employees/add-employee")({
+export const Route = createFileRoute("/management/employees_/add-employee")({
   component: AddEmployee,
-  beforeLoad: (): RouterContext => ({
-    breadcrumbs: ["management.employees.title", "management.employees.new"],
-  }),
+  loader: () => {
+    const breadcrumbs: Breadcrumb[] = [
+      { label: t("management.title") },
+      { label: t("management.employees.title"), route: "/management/employees" },
+      { label: t("management.employees.new") },
+    ];
+    return { breadcrumbs };
+  },
 });
 
 function AddEmployee() {
-  const { employeesApi } = useApi();
   const queryClient = useQueryClient();
   const { t } = useTranslation();
 
   const createEmployee = useMutation({
-    mutationFn: (employee: Employee) => employeesApi.createEmployee({ employee }),
+    mutationFn: (employee: Employee) => api.employees.createEmployee({ employee }),
     onSuccess: () => {
       toast.success(t("management.employees.successToast"));
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.EMPLOYEES] });

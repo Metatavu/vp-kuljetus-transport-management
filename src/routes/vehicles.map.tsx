@@ -13,30 +13,31 @@ import {
 } from "@mui/material";
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { api } from "api/index";
 import { VehicleInfoBar } from "components/vehicles/vehicle-info-bar";
 import { TruckLocation } from "generated/client";
+import { t } from "i18next";
 import { Map as LeafletMap, divIcon, latLng } from "leaflet";
+import { DateTime } from "luxon";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { MapContainer, Marker, TileLayer, Tooltip } from "react-leaflet";
-import { RouterContext } from "src/routes/__root";
+import { Breadcrumb } from "src/types";
 import config from "../app/config";
-import { useApi } from "../hooks/use-api";
-import { DateTime } from "luxon";
 
-export const Route = createFileRoute("/vehicle-list/map-view")({
-  component: () => <VehicleListMapView />,
-  beforeLoad: (): RouterContext => ({
-    breadcrumbs: ["management.vehicles.title"],
-  }),
+export const Route = createFileRoute("/vehicles/map")({
+  component: VehiclesMap,
+  loader: () => {
+    const breadcrumbs: Breadcrumb[] = [{ label: t("vehicles.title") }];
+    return { breadcrumbs };
+  },
 });
 
 const DEFAULT_MAP_CENTER = latLng(61.1621924, 28.65865865);
 
-const VehicleListMapView = () => {
+function VehiclesMap() {
   const { t } = useTranslation("translation");
   const navigate = useNavigate();
-  const { trucksApi } = useApi();
   const [selectedTruckId, setSelectedTruckId] = useState<string>();
 
   const {
@@ -48,7 +49,7 @@ const VehicleListMapView = () => {
   const trucks = useQuery({
     queryKey: ["trucks"],
     queryFn: async () => {
-      const trucks = await trucksApi.listTrucks({});
+      const trucks = await api.trucks.listTrucks({});
       return trucks;
     },
   });
@@ -58,7 +59,11 @@ const VehicleListMapView = () => {
     queryFn: async () => {
       if (!selectedTruckId) throw new Error("Truck must be selected to fetch truck speed");
 
-      const truckSpeeds = await trucksApi.listTruckSpeeds({ truckId: selectedTruckId, max: 1, first: 0 });
+      const truckSpeeds = await api.trucks.listTruckSpeeds({
+        truckId: selectedTruckId,
+        max: 1,
+        first: 0,
+      });
       return truckSpeeds[0];
     },
     refetchInterval: 10_000,
@@ -71,8 +76,14 @@ const VehicleListMapView = () => {
       queryFn: async () => ({
         // biome-ignore lint/style/noNonNullAssertion: id must exist in trucks from API
         truckId: truck.id!,
-        // biome-ignore lint/style/noNonNullAssertion: id must exist in trucks from API
-        location: (await trucksApi.listTruckLocations({ truckId: truck.id!, max: 1, first: 0 })).at(0),
+        location: (
+          await api.trucks.listTruckLocations({
+            // biome-ignore lint/style/noNonNullAssertion: <explanation>
+            truckId: truck.id!,
+            max: 1,
+            first: 0,
+          })
+        ).at(0),
       }),
       refetchInterval: 10_000,
       enabled: trucks.isSuccess,
@@ -186,12 +197,12 @@ const VehicleListMapView = () => {
                       size="small"
                       edge="end"
                       aria-label="info"
-                      title={t("vehicleList.mapView.showVehicleInfo")}
+                      title={t("vehicles.map.showVehicleDetails")}
                       onClick={() =>
                         truck.id &&
                         navigate({
-                          to: "/vehicle-list/vehicles/$vehicleId/info",
-                          params: { vehicleId: truck.id },
+                          to: "/vehicles/$truckId/details",
+                          params: { truckId: truck.id },
                           search: { date: DateTime.now() },
                         })
                       }
@@ -208,4 +219,4 @@ const VehicleListMapView = () => {
       </Stack>
     </>
   );
-};
+}

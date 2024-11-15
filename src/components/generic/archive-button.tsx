@@ -19,7 +19,6 @@ const ArchiveButton = ({ title, description, onArchive }: Props) => {
       showConfirmDialog({
         title: title,
         description: description,
-        cancelButtonEnabled: true,
         positiveButtonColor: "error",
         positiveButtonText: t("archive"),
         onPositiveClick: onArchive,

@@ -1,13 +1,13 @@
+import { Close } from "@mui/icons-material";
 import { Button, MenuItem, Stack, TextField } from "@mui/material";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
+import { api } from "api/index";
+import { useConfirmDialog } from "components/providers/confirm-dialog-provider";
+import { Towable, TowableTypeEnum, Truck, TruckTypeEnum } from "generated/client";
 import { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { Towable, TowableTypeEnum, Truck, TruckTypeEnum } from "generated/client";
 import LocalizationUtils from "utils/localization-utils";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useConfirmDialog } from "components/providers/confirm-dialog-provider";
-import { useApi } from "hooks/use-api";
-import { useNavigate } from "@tanstack/react-router";
-import { Close } from "@mui/icons-material";
 
 type Props = {
   errors: FieldErrors<Truck | Towable>;
@@ -20,7 +20,6 @@ type Props = {
 const EquipmentForm = ({ errors, register, equipment, watch }: Props) => {
   const { t } = useTranslation("translation");
   const showConfirmDialog = useConfirmDialog();
-  const { trucksApi, towablesApi } = useApi();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -47,7 +46,7 @@ const EquipmentForm = ({ errors, register, equipment, watch }: Props) => {
     mutationKey: ["archiveTruck", watch("id")],
     mutationFn: async (truck?: Truck) => {
       if (!truck?.id) return;
-      return trucksApi.updateTruck({ truckId: truck.id, truck: { ...truck, archivedAt: new Date() } });
+      return api.trucks.updateTruck({ truckId: truck.id, truck: { ...truck, archivedAt: new Date() } });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["trucks"] });
@@ -60,7 +59,7 @@ const EquipmentForm = ({ errors, register, equipment, watch }: Props) => {
     mutationKey: ["archiveTowable", watch("id")],
     mutationFn: async (towable?: Towable) => {
       if (!towable?.id) return;
-      return towablesApi.updateTowable({ towableId: towable.id, towable: { ...towable, archivedAt: new Date() } });
+      return api.towables.updateTowable({ towableId: towable.id, towable: { ...towable, archivedAt: new Date() } });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["towables"] });
@@ -109,7 +108,6 @@ const EquipmentForm = ({ errors, register, equipment, watch }: Props) => {
               showConfirmDialog({
                 title: t("management.equipment.archiveDialog.title"),
                 description: t("management.equipment.archiveDialog.description", { name: equipment?.name }),
-                cancelButtonEnabled: true,
                 onPositiveClick: () => onArchiveEquipment(equipment),
               })
             }

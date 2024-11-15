@@ -1,21 +1,24 @@
-import { Button, Stack, styled } from "@mui/material";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import ToolbarRow from "components/generic/toolbar-row";
-import { RouterContext } from "./__root";
-import { useTranslation } from "react-i18next";
-import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
-import { useMemo, useState } from "react";
-import GenericDataGrid from "components/generic/generic-data-grid";
 import { Add } from "@mui/icons-material";
-import { useApi } from "hooks/use-api";
+import { Button, Stack, styled } from "@mui/material";
+import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import { useQuery } from "@tanstack/react-query";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { api } from "api/index";
+import GenericDataGrid from "components/generic/generic-data-grid";
+import ToolbarRow from "components/generic/toolbar-row";
+import { Towable, Truck } from "generated/client";
+import { t } from "i18next";
+import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Breadcrumb } from "src/types";
 import LocalizationUtils from "utils/localization-utils";
 
 export const Route = createFileRoute("/management/equipment")({
   component: ManagementEquipment,
-  beforeLoad: (): RouterContext => ({
-    breadcrumbs: ["management.equipment.title"],
-  }),
+  loader: () => {
+    const breadcrumbs: Breadcrumb[] = [{ label: t("management.title") }, { label: t("management.equipment.title") }];
+    return { breadcrumbs };
+  },
 });
 
 // Styled root component
@@ -30,20 +33,16 @@ const Root = styled(Stack, {
 
 function ManagementEquipment() {
   const { t } = useTranslation();
-  const { trucksApi, towablesApi } = useApi();
   const navigate = useNavigate();
 
   const [totalTruckResults, setTotalTruckResults] = useState(0);
   const [totalTowableResults, setTotalTowableResults] = useState(0);
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({ page: 0, pageSize: 25 });
 
-  /**
-   * NOTE: We need to figure out how to fetch both trucks and towables in a meaningful way
-   */
-  const trucks = useQuery({
+  const listTrucksQuery = useQuery({
     queryKey: ["trucks", paginationModel],
     queryFn: async () => {
-      const [trucks, headers] = await trucksApi.listTrucksWithHeaders({
+      const [trucks, headers] = await api.trucks.listTrucksWithHeaders({
         first: paginationModel.pageSize * paginationModel.page,
         max: paginationModel.pageSize * paginationModel.page + paginationModel.pageSize,
       });
@@ -54,10 +53,10 @@ function ManagementEquipment() {
     },
   });
 
-  const towables = useQuery({
+  const listTowablesQuery = useQuery({
     queryKey: ["towables", paginationModel],
     queryFn: async () => {
-      const [towables, headers] = await towablesApi.listTowablesWithHeaders({
+      const [towables, headers] = await api.towables.listTowablesWithHeaders({
         first: paginationModel.pageSize * paginationModel.page,
         max: paginationModel.pageSize * paginationModel.page + paginationModel.pageSize,
       });
@@ -68,20 +67,11 @@ function ManagementEquipment() {
     },
   });
 
-  const trucksData = trucks.data ?? [];
-  const towablesData = towables.data ?? [];
+  const trucks = useMemo(() => listTrucksQuery.data ?? [], [listTrucksQuery]);
+  const towables = useMemo(() => listTowablesQuery.data ?? [], [listTowablesQuery]);
+  const equipment = useMemo(() => [...trucks, ...towables], [trucks, towables]);
 
-  // Combine trucks and towables
-  const equipment = [...trucksData, ...towablesData];
-
-  const localizedEquipment = equipment?.map((equipment) => {
-    return {
-      ...equipment,
-      type: LocalizationUtils.getLocalizedEquipmentType(equipment.type, t),
-    };
-  });
-
-  const columns: GridColDef[] = useMemo(
+  const columns = useMemo<GridColDef<Truck | Towable>[]>(
     () => [
       {
         field: "name",
@@ -105,6 +95,7 @@ function ManagementEquipment() {
         headerName: t("management.equipment.type"),
         sortable: false,
         width: 400,
+        valueGetter: ({ row: { type } }) => LocalizationUtils.getLocalizedEquipmentType(type, t),
       },
       {
         field: "vin",
@@ -118,18 +109,28 @@ function ManagementEquipment() {
         type: "actions",
         width: 150,
         renderHeader: () => null,
-        renderCell: ({ id }) => (
+        renderCell: ({ row: { id, type } }) => (
           <Stack direction="row" spacing={1}>
             <Button
               variant="text"
               color="primary"
               size="small"
-              onClick={() =>
-                navigate({
-                  to: "/management/equipment/$equipmentId/modify",
-                  params: { equipmentId: id as string },
-                })
-              }
+              onClick={() => {
+                if (!id) return;
+                const equipmentType = type === "TRUCK" || type === "SEMI_TRUCK" ? "truck" : "towable";
+
+                navigate(
+                  equipmentType === "truck"
+                    ? {
+                        to: "/management/equipment/truck/$truckId/modify",
+                        params: { truckId: id },
+                      }
+                    : {
+                        to: "/management/equipment/towable/$towableId/modify",
+                        params: { towableId: id },
+                      },
+                );
+              }}
             >
               {t("management.equipment.open")}
             </Button>
@@ -163,14 +164,13 @@ function ManagementEquipment() {
         <GenericDataGrid
           fullScreen
           autoHeight={false}
-          rows={localizedEquipment ?? []}
+          rows={equipment}
           columns={columns}
           pagination
           showCellVerticalBorder
           showColumnVerticalBorder
           disableColumnSelector
           loading={false}
-          getRowId={(row) => `${row.id}-${equipment.find((e) => e.id === row.id)?.type}`}
           paginationMode="server"
           pageSizeOptions={[25, 50, 100]}
           rowCount={totalTruckResults + totalTowableResults}

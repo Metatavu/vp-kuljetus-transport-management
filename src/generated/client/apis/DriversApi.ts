@@ -37,7 +37,7 @@ export interface ListDriversRequest {
  */
 export class DriversApi extends runtime.BaseAPI {
     /**
-     * Finds a driver by id.
+     * Finds a driver by ID.
      * Find a driver.
      */
     async findDriverRaw(requestParameters: FindDriverRequest): Promise<runtime.ApiResponse<Driver>> {
@@ -62,7 +62,7 @@ export class DriversApi extends runtime.BaseAPI {
         return new runtime.JSONApiResponse(response, (jsonValue) => DriverFromJSON(jsonValue));
     }
     /**
-     * Finds a driver by id.
+     * Finds a driver by ID.
      * Find a driver.
      */
     async findDriver(requestParameters: FindDriverRequest): Promise<Driver> {
@@ -70,7 +70,7 @@ export class DriversApi extends runtime.BaseAPI {
         return await response.value();
     }
     /**
-     * Finds a driver by id.
+     * Finds a driver by ID.
      * Find a driver.
      */
     async findDriverWithHeaders(requestParameters: FindDriverRequest): Promise<[ Driver, Headers ]> {

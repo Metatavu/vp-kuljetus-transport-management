@@ -5,10 +5,10 @@ import { DateTime } from "luxon";
 import { useTranslation } from "react-i18next";
 
 type Props = {
-  date: DateTime;
+  date: DateTime<true>;
   labelVisible?: boolean;
   buttonsWithText?: boolean;
-  setDate: (date: DateTime) => void;
+  setDate: (date: DateTime<true>) => void;
 };
 
 const DatePickerWithArrows = ({ date, labelVisible, buttonsWithText, setDate }: Props) => {
@@ -57,7 +57,7 @@ const DatePickerWithArrows = ({ date, labelVisible, buttonsWithText, setDate }: 
   };
 
   return (
-    <Stack direction="row" justifyContent="center" alignItems="center" gap={1}>
+    <Stack display="inline-flex" direction="row" justifyContent="center" alignItems="center" gap={1}>
       {renderPreviousDayButton()}
       <DatePicker
         label={labelVisible && t("drivePlanning.routes.date")}

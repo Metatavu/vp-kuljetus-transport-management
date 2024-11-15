@@ -1,18 +1,18 @@
-import { UnallocatedTasksRowDragHandles } from "../../../types";
-import DataValidation from "utils/data-validation-utils";
-import { QUERY_KEYS, useTasks } from "hooks/use-queries";
-import { useQueries } from "@tanstack/react-query";
-import { useApi } from "hooks/use-api";
-import { useTranslation } from "react-i18next";
-import { Site, Task } from "generated/client";
-import { useCallback, useMemo, useState } from "react";
-import { GridColDef, GridRowProps } from "@mui/x-data-grid";
-import LocalizationUtils from "utils/localization-utils";
-import GenericDataGrid from "components/generic/generic-data-grid";
-import DraggableUnallocatedTasksTableRow from "./draggable-unallocated-tasks-table-row";
 import { DragHandle } from "@mui/icons-material";
 import { IconButton } from "@mui/material";
+import { GridColDef, GridRowProps } from "@mui/x-data-grid";
+import { useQueries, useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
+import { api } from "api/index";
+import GenericDataGrid from "components/generic/generic-data-grid";
+import { Site, Task } from "generated/client";
+import { QUERY_KEYS, getListTasksQueryOptions } from "hooks/use-queries";
+import { useCallback, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import DataValidation from "utils/data-validation-utils";
+import LocalizationUtils from "utils/localization-utils";
+import { UnallocatedTasksRowDragHandles } from "../../../types";
+import DraggableUnallocatedTasksTableRow from "./draggable-unallocated-tasks-table-row";
 
 type Props = {
   sites: Site[];
@@ -20,12 +20,11 @@ type Props = {
 
 const UnallocatedTasksTable = ({ sites }: Props) => {
   const { t } = useTranslation();
-  const { freightsApi, freightUnitsApi } = useApi();
 
   const navigate = useNavigate({ from: "/drive-planning/routes" });
   const [rowDragHandles, setRowDragHandles] = useState<UnallocatedTasksRowDragHandles>({});
 
-  const tasksQuery = useTasks({ assignedToRoute: false });
+  const tasksQuery = useQuery(getListTasksQueryOptions({ assignedToRoute: false }));
 
   const getDistinctFreightIds = () => [...new Set((tasksQuery.data?.tasks ?? []).map((task) => task.freightId))];
 
@@ -33,7 +32,7 @@ const UnallocatedTasksTable = ({ sites }: Props) => {
     queries:
       getDistinctFreightIds().map((freightId) => ({
         queryKey: [QUERY_KEYS.FREIGHTS, freightId],
-        queryFn: () => freightsApi.findFreight({ freightId: freightId }),
+        queryFn: () => api.freights.findFreight({ freightId: freightId }),
       })) ?? [],
     combine: (results) => ({
       data: results.flatMap((result) => result.data).filter(DataValidation.validateValueIsNotUndefinedNorNull),
@@ -44,7 +43,7 @@ const UnallocatedTasksTable = ({ sites }: Props) => {
     queries:
       freightsQueries.data?.map((freight) => ({
         queryKey: [QUERY_KEYS.FREIGHT_UNITS_BY_FREIGHT, freight.id],
-        queryFn: () => freightUnitsApi.listFreightUnits({ freightId: freight.id }),
+        queryFn: () => api.freightUnits.listFreightUnits({ freightId: freight.id }),
       })) ?? [],
     combine: (results) => ({
       data: results.flatMap((result) => result.data).filter(DataValidation.validateValueIsNotUndefinedNorNull),
@@ -62,7 +61,14 @@ const UnallocatedTasksTable = ({ sites }: Props) => {
           const { setActivatorNodeRef, attributes, listeners } = rowDragHandles[id as string] ?? {};
 
           return (
-            <IconButton size="small" ref={setActivatorNodeRef} sx={{ cursor: "grab" }} {...attributes} {...listeners} title={t("drivePlanning.routes.unallocatedTasksTable.taskRowTooltip")} >
+            <IconButton
+              size="small"
+              ref={setActivatorNodeRef}
+              sx={{ cursor: "grab" }}
+              {...attributes}
+              {...listeners}
+              title={t("drivePlanning.routes.unallocatedTasksTable.taskRowTooltip")}
+            >
               <DragHandle />
             </IconButton>
           );

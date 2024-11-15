@@ -1,24 +1,36 @@
-import { Button, Stack, styled } from "@mui/material";
-import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router";
-import ToolbarRow from "components/generic/toolbar-row";
-import { RouterContext } from "./__root";
-import { useTranslation } from "react-i18next";
-import { useApi } from "hooks/use-api";
-import { useQueries } from "@tanstack/react-query";
-import { useCallback, useMemo, useState } from "react";
-import { GridColDef, GridPaginationModel, GridRenderCellParams, GridTreeNodeWithRender } from "@mui/x-data-grid";
 import { Add } from "@mui/icons-material";
+import { Button, Stack, styled } from "@mui/material";
+import { GridColDef, GridPaginationModel, GridRenderCellParams, GridTreeNodeWithRender } from "@mui/x-data-grid";
+import { useQueries, useQuery } from "@tanstack/react-query";
+import { Outlet, createFileRoute } from "@tanstack/react-router";
+import { api } from "api/index";
+import RootFreightDialog from "components/drive-planning/freights/root-freight-dialog";
 import GenericDataGrid from "components/generic/generic-data-grid";
-import { Freight } from "generated/client";
 import LoaderWrapper from "components/generic/loader-wrapper";
+import ToolbarRow from "components/generic/toolbar-row";
+import { Freight } from "generated/client";
+import { getListFreightsQueryOptions, getListSitesQueryOptions } from "hooks/use-queries";
+import { t } from "i18next";
+import { useCallback, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Breadcrumb } from "src/types";
 import DataValidation from "utils/data-validation-utils";
-import { useFreights, useSites } from "hooks/use-queries";
+import { z } from "zod";
+
+export const drivePlanningFreightsRouteSearchSchema = z.object({
+  freightId: z.string().optional(),
+});
 
 export const Route = createFileRoute("/drive-planning/freights")({
   component: DrivePlanningFreights,
-  beforeLoad: (): RouterContext => ({
-    breadcrumbs: ["drivePlanning.freights.title"],
-  }),
+  loader: () => {
+    const breadcrumbs: Breadcrumb[] = [
+      { label: t("drivePlanning.title") },
+      { label: t("drivePlanning.freights.title") },
+    ];
+    return { breadcrumbs };
+  },
+  validateSearch: drivePlanningFreightsRouteSearchSchema,
 });
 
 // Styled root component
@@ -33,21 +45,22 @@ const Root = styled(Stack, {
 
 function DrivePlanningFreights() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
-  const { freightUnitsApi } = useApi();
+  const navigate = Route.useNavigate();
 
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({ page: 0, pageSize: 25 });
 
-  const freightsQuery = useFreights({
-    first: paginationModel.pageSize * paginationModel.page,
-    max: paginationModel.pageSize * paginationModel.page + paginationModel.pageSize,
-  });
-  const sitesQuery = useSites(undefined, !freightsQuery.isLoading);
+  const freightsQuery = useQuery(
+    getListFreightsQueryOptions({
+      first: paginationModel.pageSize * paginationModel.page,
+      max: paginationModel.pageSize * paginationModel.page + paginationModel.pageSize,
+    }),
+  );
+  const sitesQuery = useQuery(getListSitesQueryOptions(undefined, !freightsQuery.isLoading));
 
   const freightUnitsQuery = useQueries({
     queries: (freightsQuery.data?.freights ?? []).map((freight) => ({
       queryKey: ["freightUnits", freight.id],
-      queryFn: () => freightUnitsApi.listFreightUnits({ freightId: freight.id }),
+      queryFn: () => api.freightUnits.listFreightUnits({ freightId: freight.id }),
     })),
     combine: (results) => ({
       data: results.flatMap((result) => result.data).filter(DataValidation.validateValueIsNotUndefinedNorNull),
@@ -63,7 +76,7 @@ function DrivePlanningFreights() {
     [sitesQuery.data],
   );
 
-  const columns: GridColDef[] = useMemo(
+  const columns: GridColDef<Freight>[] = useMemo(
     () => [
       {
         field: "freightNumber",
@@ -104,7 +117,7 @@ function DrivePlanningFreights() {
         headerName: t("drivePlanning.freights.freightUnits"),
         sortable: false,
         flex: 1,
-        renderCell: ({ row: { id } }: GridRenderCellParams<Freight, unknown, unknown, GridTreeNodeWithRender>) => {
+        renderCell: ({ row: { id } }) => {
           const freightsUnits = freightUnitsQuery.data.filter((freightUnit) => freightUnit.freightId === id);
 
           return freightsUnits
@@ -117,13 +130,13 @@ function DrivePlanningFreights() {
         field: "actions",
         type: "actions",
         renderHeader: () => null,
-        renderCell: ({ id }) => (
+        renderCell: (params) => (
           <Stack direction="row" spacing={1}>
             <Button
               variant="text"
               color="primary"
               size="small"
-              onClick={() => navigate({ params: {}, search: { freightId: id as string } })}
+              onClick={() => navigate({ search: { freightId: params.row.id as string } })}
             >
               {t("open")}
             </Button>
@@ -138,11 +151,12 @@ function DrivePlanningFreights() {
     <>
       <Outlet />
       <Root>
+        <RootFreightDialog />
         <ToolbarRow
+          title={t("drivePlanning.freights.title")}
           toolbarButtons={
             <Button
               size="small"
-              variant="text"
               startIcon={<Add />}
               onClick={() => navigate({ to: "/drive-planning/freights/add-freight" })}
             >
@@ -158,7 +172,6 @@ function DrivePlanningFreights() {
             columns={columns}
             rowCount={freightsQuery.data?.totalResults}
             disableRowSelectionOnClick
-            paginationMode="server"
             paginationModel={paginationModel}
             onPaginationModelChange={setPaginationModel}
           />

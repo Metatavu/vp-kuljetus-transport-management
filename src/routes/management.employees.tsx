@@ -1,27 +1,27 @@
 import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from "@mui/icons-material/Search";
-import { Button, Divider, MenuItem, Stack, styled, TextField, Typography } from "@mui/material";
+import { Button, Divider, MenuItem, Stack, TextField, Typography, styled } from "@mui/material";
 import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import GenericDataGrid from "components/generic/generic-data-grid";
 import ToolbarRow from "components/generic/toolbar-row";
-import { Key, ReactNode, useCallback, useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { theme } from "src/theme";
-import { LocalizedLabelKey } from "src/types";
-import { RouterContext } from "./__root";
-import { TFunction } from "i18next";
 import { Employee, EmployeeType, Office, SalaryGroup } from "generated/client";
-import LocalizationUtils from "src/utils/localization-utils";
-import { useForm } from "react-hook-form";
 import { useDebounce } from "hooks/use-debounce";
-import { useEmployees } from "hooks/use-queries";
+import { getListEmployeesQueryOptions } from "hooks/use-queries";
+import { TFunction, t } from "i18next";
+import { Key, ReactNode, useCallback, useMemo, useState } from "react";
+import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import { Breadcrumb, LocalizedLabelKey } from "src/types";
+import LocalizationUtils from "src/utils/localization-utils";
 
 export const Route = createFileRoute("/management/employees")({
   component: ManagementEmployees,
-  beforeLoad: (): RouterContext => ({
-    breadcrumbs: ["management.employees.title"],
-  }),
+  loader: () => {
+    const breadcrumbs: Breadcrumb[] = [{ label: t("management.title") }, { label: t("management.employees.title") }];
+    return { breadcrumbs };
+  },
 });
 
 type EmployeeFilters = {
@@ -61,14 +61,16 @@ function ManagementEmployees() {
   const salaryGroupFilter = watch("salaryGroup");
   const employeeTypeFilter = watch("employeeType");
 
-  const employeesQuery = useEmployees({
-    first: pageSize * page,
-    max: pageSize,
-    search: debouncedSearchTerm || undefined,
-    office: officeFilter === "ALL" ? undefined : officeFilter,
-    salaryGroup: salaryGroupFilter === "ALL" ? undefined : salaryGroupFilter,
-    type: employeeTypeFilter === "ALL" ? undefined : employeeTypeFilter,
-  });
+  const employeesQuery = useQuery(
+    getListEmployeesQueryOptions({
+      first: pageSize * page,
+      max: pageSize,
+      search: debouncedSearchTerm || undefined,
+      office: officeFilter === "ALL" ? undefined : officeFilter,
+      salaryGroup: salaryGroupFilter === "ALL" ? undefined : salaryGroupFilter,
+      type: employeeTypeFilter === "ALL" ? undefined : employeeTypeFilter,
+    }),
+  );
 
   const renderLocalizedMenuItem = useCallback(
     <T extends string>(value: T, labelResolver: (value: T, t: TFunction) => string) => (
@@ -90,8 +92,8 @@ function ManagementEmployees() {
   const renderSelectFilter = useCallback(
     (label: LocalizedLabelKey, key: keyof EmployeeFilters, menuItems: ReactNode) => (
       <TextField
+        key={key}
         select
-        sx={{ width: 200 }}
         defaultValue={watch(key)}
         size="small"
         variant="outlined"
@@ -110,16 +112,15 @@ function ManagementEmployees() {
 
   const renderLeftToolbar = useCallback(
     () => (
-      <Stack direction="row" spacing={2}>
+      <Stack direction="row" gap={2} flex={1} pr={2}>
         <TextField
           onChange={({ target: { value } }) => setSearchTerm(value)}
           size="small"
-          sx={{ width: 200 }}
           variant="outlined"
           label={t("management.employees.filters.name.label")}
           placeholder={t("management.employees.filters.name.placeholder")}
           InputProps={{
-            startAdornment: <SearchIcon sx={{ marginRight: theme.spacing(1) }} />,
+            startAdornment: <SearchIcon sx={{ mr: 1 }} />,
             notched: false,
             sx: { height: 32 },
           }}
@@ -263,18 +264,18 @@ function ManagementEmployees() {
     <Root>
       <ToolbarRow
         height={80}
-        titleFirst
         title={t("management.employees.title")}
         toolbarButtons={
-          <Button
-            size="small"
-            variant="contained"
-            sx={{ height: 30 }}
-            startIcon={<AddIcon />}
-            onClick={() => navigate({ to: "/management/employees/add-employee" })}
-          >
-            {t("addNew")}
-          </Button>
+          <Stack justifyContent="flex-end" pb={1}>
+            <Button
+              size="small"
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={() => navigate({ to: "/management/employees/add-employee" })}
+            >
+              {t("addNew")}
+            </Button>
+          </Stack>
         }
         leftToolbar={renderLeftToolbar()}
       />

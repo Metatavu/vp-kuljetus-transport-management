@@ -1,27 +1,32 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { api } from "api/index";
 import CustomerSiteComponent from "components/management/customer-sites/customer-site";
 import { Site } from "generated/client";
-import { useApi } from "hooks/use-api";
 import { QUERY_KEYS } from "hooks/use-queries";
+import { t } from "i18next";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { RouterContext } from "src/routes/__root";
+import { Breadcrumb } from "src/types";
 
-export const Route = createFileRoute("/management/customer-sites/add-customer-site")({
-  component: () => <CustomerSiteAdd />,
-  beforeLoad: (): RouterContext => ({
-    breadcrumbs: ["management.customerSites.title", "management.customerSites.new"],
-  }),
+export const Route = createFileRoute("/management/customer-sites_/add-customer-site_")({
+  component: CustomerSiteAdd,
+  loader: () => {
+    const breadcrumbs: Breadcrumb[] = [
+      { label: t("management.title") },
+      { label: t("management.customerSites.title"), route: "/management/customer-sites" },
+      { label: t("management.customerSites.new") },
+    ];
+    return { breadcrumbs };
+  },
 });
 
-const CustomerSiteAdd = () => {
-  const { sitesApi } = useApi();
+function CustomerSiteAdd() {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
 
   const createSite = useMutation({
-    mutationFn: (site: Site) => sitesApi.createSite({ site }),
+    mutationFn: (site: Site) => api.sites.createSite({ site }),
     onSuccess: () => {
       toast.success(t("management.customerSites.successToast"));
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.SITES] });
@@ -30,4 +35,4 @@ const CustomerSiteAdd = () => {
   });
 
   return <CustomerSiteComponent formType="ADD" onSave={createSite} />;
-};
+}

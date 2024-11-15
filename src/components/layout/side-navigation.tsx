@@ -1,12 +1,12 @@
-import { useState } from "react";
-import { Paper, Tabs, Tab, styled } from "@mui/material";
+import { Menu } from "@mui/icons-material";
+import { Paper, Tab, Tabs, styled } from "@mui/material";
 import { useMatches, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { NavigationItem } from "src/types";
-import { Menu } from "@mui/icons-material";
 
 type Props = {
-  navigationItems: readonly NavigationItem[];
+  navigationItems: NavigationItem[];
 };
 
 const SideDrawer = styled(Paper, {
@@ -14,7 +14,7 @@ const SideDrawer = styled(Paper, {
 })(() => ({
   position: "sticky",
   borderRadius: 0,
-  transition: "width 0.3s ease-out"
+  transition: "width 0.3s ease-out",
 }));
 
 const SideNavigation = ({ navigationItems }: Props) => {
@@ -24,10 +24,10 @@ const SideNavigation = ({ navigationItems }: Props) => {
 
   const [collapsed, setCollapsed] = useState(false);
 
-  const selectedRouteIndex = navigationItems.findIndex(([route]) => location.pathname.startsWith(route));
+  const selectedRouteIndex = navigationItems.findIndex(({ route }) => !!route && location.pathname.startsWith(route));
 
   return (
-    <SideDrawer sx={{ width: collapsed ? "46px" : "248px" }}>
+    <SideDrawer sx={{ width: collapsed ? 46 : 248 }}>
       <Tabs
         TabScrollButtonProps={{ sx: { display: "none" } }}
         orientation="vertical"
@@ -46,20 +46,20 @@ const SideNavigation = ({ navigationItems }: Props) => {
           onClick={() => setCollapsed(!collapsed)}
           sx={{
             justifyContent: "space-between",
-            minHeight: "42px",
+            minHeight: 46,
           }}
         />
-        {navigationItems.map(([path, title, Icon], index) => (
+        {navigationItems.map(({ route, label, Icon }, index) => (
           <Tab
-            key={path}
+            key={route}
             icon={Icon && <Icon />}
-            label={collapsed ? "" : t(title)}
+            label={collapsed ? "" : t(label)}
             value={index}
-            onClick={() => navigate({ to: path, params: {}, search: {} })}
+            onClick={() => navigate({ to: route, params: {}, search: {} })}
             iconPosition="start"
             sx={{
               justifyContent: "flex-start",
-              minHeight: "42px",
+              minHeight: 42,
               backgroundColor: selectedRouteIndex === index ? "rgba(0, 65, 79, 0.1)" : "transparent",
             }}
           />

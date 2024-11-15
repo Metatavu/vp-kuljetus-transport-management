@@ -1,44 +1,35 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { RouterContext } from "./__root";
-import { useApi } from "hooks/use-api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Route as TRoute } from "generated/client";
+import { createFileRoute } from "@tanstack/react-router";
+import { api } from "api/index";
 import RouteDialog from "components/drive-planning/routes/route-dialog";
-import { DateTime } from "luxon";
+import { Route as TRoute } from "generated/client";
 import { QUERY_KEYS } from "hooks/use-queries";
+import { DateTime } from "luxon";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import DataValidation from "src/utils/data-validation-utils";
 
 export const Route = createFileRoute("/drive-planning/routes/add-route")({
   component: AddRoute,
-  beforeLoad: (): RouterContext => ({
-    breadcrumbs: ["drivePlanning.routes.title", "drivePlanning.routes.newRoute"],
-  }),
-  validateSearch: ({ date }: Record<string, unknown>) => ({
-    date: date ? DateTime.fromISO(date as string) : DateTime.now(),
-  }),
 });
 
 function AddRoute() {
-  const { routesApi } = useApi();
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { t } = useTranslation();
-  const initialDate = Route.useSearch({
-    select: ({ date }) => date,
-  });
+  const initialDate = Route.useSearch({ select: ({ date }) => date ?? DateTime.now() });
+  const navigate = Route.useNavigate();
 
   const createRoute = useMutation({
     mutationFn: async (route: TRoute) => {
       const { departureTime, truckId, driverId } = route;
-      await routesApi.createRoute({
+      await api.routes.createRoute({
         route: {
           ...route,
           truckId: truckId === "EMPTY" ? undefined : truckId,
           driverId: driverId === "EMPTY" ? undefined : driverId,
         },
       });
-      navigate({ to: "/drive-planning/routes", search: { date: DateTime.fromJSDate(departureTime) } });
+      navigate({ to: "..", search: { date: DataValidation.parseValidDateTime(departureTime) } });
     },
     onSuccess: () => {
       toast.success(t("drivePlanning.routes.successToast"));

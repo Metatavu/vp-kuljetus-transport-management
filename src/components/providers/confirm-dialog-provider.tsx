@@ -1,4 +1,5 @@
-import { Button, ButtonOwnProps, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
+import { Button, ButtonOwnProps, Dialog, DialogActions, DialogContent } from "@mui/material";
+import DialogHeader from "components/generic/dialog-header";
 import { ReactNode, createContext, useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -6,7 +7,6 @@ type ConfirmDialogOptions = {
   title: string;
   description: string;
   positiveButtonText?: string;
-  cancelButtonEnabled?: boolean;
   positiveButtonColor?: ButtonOwnProps["color"];
   onPositiveClick: () => void | Promise<void>;
 };
@@ -35,15 +35,17 @@ const ConfirmDialogProvider = ({ children }: { children: ReactNode }) => {
   return (
     <>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>{options?.title}</DialogTitle>
+        <DialogHeader
+          closeTooltip={t("tooltips.closeDialog")}
+          title={options?.title ?? ""}
+          onClose={handleClose}
+        />
         <DialogContent>{options?.description}</DialogContent>
         <DialogActions>
-          {options?.cancelButtonEnabled && (
-            <Button variant="text" onClick={handleClose}>
-              {t("cancel")}
-            </Button>
-          )}
-          <Button variant="contained" color={options?.positiveButtonColor} onClick={handleSubmit}>
+          <Button variant="text" onClick={handleClose}>
+            {t("cancel")}
+          </Button>
+          <Button variant="contained" color={options?.positiveButtonColor} onClick={handleSubmit} autoFocus>
             {options?.positiveButtonText || "OK"}
           </Button>
         </DialogActions>

@@ -1,35 +1,45 @@
-import { Box, Breadcrumbs, Typography, styled } from "@mui/material";
-import { useRouter } from "@tanstack/react-router";
-import { useTranslation } from "react-i18next";
-import { RouterContext } from "src/routes/__root";
-import DataValidation from "utils/data-validation-utils";
+import { Breadcrumbs, Typography, styled } from "@mui/material";
+import { Stack } from "@mui/system";
+import { Link, useLoaderData, useMatches } from "@tanstack/react-router";
 
-const BreadCrumbBar = styled(Box, {
+const BreadCrumbBar = styled(Stack, {
   label: "styled-breadcrumb-bar",
 })(({ theme }) => ({
   backgroundColor: theme.palette.primary.light,
-  padding: theme.spacing(0.5, 3),
+  paddingLeft: theme.spacing(2),
+  height: 32,
+  flexDirection: "row",
+  alignItems: "center",
 }));
 
 const BreadcrumbsBar = () => {
-  const { t } = useTranslation();
-  const router = useRouter();
-  const breadcrumbs = router.state.matches
-    .flatMap(({ routeContext }) => (routeContext as RouterContext).breadcrumbs)
-    .filter(DataValidation.validateValueIsNotUndefinedNorNull);
+  const deepestRouteId = useMatches({ select: (matches) => matches.at(-1)?.routeId });
+  if (!deepestRouteId) throw new Error("No match found");
+
+  const loaderData = useLoaderData({ from: deepestRouteId });
+  const breadcrumbs = loaderData && "breadcrumbs" in loaderData ? loaderData.breadcrumbs : [];
 
   return (
     <BreadCrumbBar>
-      <Breadcrumbs sx={{ color: "#ffffff" }}>
-        {breadcrumbs.map((breadcrumb, index) => (
-          <Typography
-            key={`breadcrumb-${index}`}
-            color="#ffffff"
-            sx={{ fontWeight: index === breadcrumbs.length - 1 ? "bold" : undefined }}
-          >
-            {t(breadcrumb)}
-          </Typography>
-        ))}
+      <Breadcrumbs aria-label="breadcrumb" sx={{ color: "#ffffff" }}>
+        {breadcrumbs.map(({ label, route }, index) => {
+          return route ? (
+            <Link href={route} key={`breadcrumb-${index}`} style={{ color: "#fff" }}>
+              <Typography variant="h6" sx={{ userSelect: "none" }}>
+                {label}
+              </Typography>
+            </Link>
+          ) : (
+            <Typography
+              key={`breadcrumb-${index}`}
+              color="#ffffff"
+              variant={index === 0 ? "body2" : "h6"}
+              sx={{ userSelect: "none" }}
+            >
+              {label}
+            </Typography>
+          );
+        })}
       </Breadcrumbs>
     </BreadCrumbBar>
   );

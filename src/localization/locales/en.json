@@ -1,6 +1,10 @@
 {
+  "refresh": "Refresh",
   "save": "Save",
+  "saveChanges": "Save changes",
+  "undoChanges": "Undo changes",
   "cancel": "Cancel",
+  "close": "Close",
   "logout": "Logout",
   "edit": "Edit",
   "delete": "Delete",
@@ -8,11 +12,11 @@
   "open": "Open",
   "noSelection": "No selection",
   "all": "All",
+  "yes": "Yes",
   "noResults": "No results",
   "actions": "Actions",
   "menu": "Menu",
   "vehicleInfo": "Vehicle information",
-  "workingTime": "Working time",
   "addNew": "Add new",
   "previousDay": "Next day",
   "nextDay": "Previous day",
@@ -30,9 +34,10 @@
     "showDetails": "Show details",
     "openCalendar": "Open calendar",
     "closeDialog": "Close dialog",
-    "backToVehicles": "Back to vehicles"
+    "backToVehicles": "Back to vehicles",
+    "backToWorkingHours": "Back to working hours"
   },
-  "vehicleList": {
+  "vehicles": {
     "title": "Vehicle list",
     "vehicle": {
       "type": "Type",
@@ -46,16 +51,19 @@
       "trailer": "Trailer",
       "driver": "Driver"
     },
-    "mapView": {
+    "list": {
+      "title": "Ajoneuvolista"
+    },
+    "map": {
       "title": "Map",
       "speed": "Speed: ",
       "gps": "GPS",
       "heading": "Direction: ",
       "lastUpdated": "Last updated: ",
       "connection": "Connection",
-      "showVehicleInfo": "Go to vehicle details"
+      "showVehicleDetails": "Go to vehicle details"
     },
-    "info": {
+    "details": {
       "title": "Vehicle information",
       "timeStamp": "Time",
       "event": "Event",
@@ -86,7 +94,7 @@
     "customerSites": {
       "title": "Customer sites",
       "new": "New customer site",
-      "modify": "Modify customer site",
+      "modify": "Modify customer site {{siteName}}",
       "type": "Type",
       "name": "Name",
       "address": "Address",
@@ -112,7 +120,7 @@
       "title": "Equipment list",
       "new": "New equipment",
       "open": "Open",
-      "modify": "Modify equipment",
+      "modify": "Modify equipment {{equipmentName}}",
       "type": "Type",
       "name": "Name",
       "licensePlate": "License plate",
@@ -130,58 +138,82 @@
       },
       "successToast": "Equipment saved!",
       "errorToast": "Failed to save equipment!"
-    }
-  },
-  "vehicles": {
-    "title": "Vehicles",
-    "new": "New vehicle",
-    "modify": "Modify vehicle",
-    "type": "Type",
-    "name": "Name",
-    "licensePlate": "License plate",
-    "errorMessages": {
-      "nameMissing": "Name is required",
-      "licensePlateMissing": "License plate is required"
-    }
-  },
-  "employees": {
-    "title": "Employees",
-    "new": "New employee",
-    "modify": "Modify employee",
-    "filters": {
-      "name": {
-        "label": "Name",
-        "placeholder": "Search by name"
+    },
+    "vehicles": {
+      "title": "Vehicles",
+      "new": "New vehicle",
+      "modify": "Modify vehicle",
+      "type": "Type",
+      "name": "Name",
+      "licensePlate": "License plate",
+      "errorMessages": {
+        "nameMissing": "Name is required",
+        "licensePlateMissing": "License plate is required"
       }
     },
-    "employeeNumber": "Number",
-    "lastName": "Last name",
-    "firstName": "First names",
-    "driverCard": "Driver card",
-    "phoneNumber": "Phone number",
-    "email": "Email",
-    "pinCode": "PIN code",
-    "type": "Type",
-    "salaryGroup": "Salary group",
-    "office": "Office",
-    "regularWorkingHours": "Work hours (h / 2wk)",
-    "driverCardLastEmptied": "Driver card last emptied",
-    "lastDriven": "Last driven",
-    "errorMessages": {
-      "firstNameMissing": "First name is required.",
-      "lastNameMissing": "Last name is required.",
-      "officeMissing": "Office is required.",
-      "typeMissing": "Type is required.",
-      "salaryGroupMissing": "Salary group is required.",
-      "invalidDriverCard": "Driver card must be 16 characters long."
+    "employees": {
+      "title": "Employees",
+      "new": "New employee",
+      "modify": "Modify employee",
+      "filters": {
+        "name": {
+          "label": "Name",
+          "placeholder": "Search by name"
+        }
+      },
+      "employeeNumber": "Number",
+      "lastName": "Last name",
+      "firstName": "First names",
+      "driverCard": "Driver card",
+      "phoneNumber": "Phone number",
+      "email": "Email",
+      "pinCode": "PIN code",
+      "type": "Type",
+      "salaryGroup": "Salary group",
+      "office": "Office",
+      "regularWorkingHours": "Work hours (h / 2wk)",
+      "driverCardLastEmptied": "Driver card last emptied",
+      "lastDriven": "Last driven",
+      "errorMessages": {
+        "firstNameMissing": "First name is required.",
+        "lastNameMissing": "Last name is required.",
+        "officeMissing": "Office is required.",
+        "typeMissing": "Type is required.",
+        "salaryGroupMissing": "Salary group is required.",
+        "invalidDriverCard": "Driver card must be 16 characters long."
+      },
+      "archiveDialog": {
+        "title": "Archive employee",
+        "description": "Are you sure you want to archive employee {{name}}?"
+      },
+      "successToast": "Employee saved!",
+      "archiveToast": "Employee archived!",
+      "errorToast": "Failed to save employee!"
     },
-    "archiveDialog": {
-      "title": "Archive employee",
-      "description": "Are you sure you want to archive employee {{name}}?"
-    },
-    "successToast": "Employee saved!",
-    "archiveToast": "Employee archived!",
-    "errorToast": "Failed to save employee!"
+    "holidays": {
+      "title": "Midweek holidays",
+      "date": "Date",
+      "name": "Name",
+      "addHoliday": "Add holiday",
+      "addHolidays": "Add holidays",
+      "getHolidays": "Get holidays",
+      "getHolidaysFromTheYear": "Get holidays from the year:",
+      "year": "Year",
+      "compensationType": {
+        "title": "Compensation type",
+        "publicHolidayAllowance": "Public holiday allowance",
+        "dayOffWorkAllowance": "Day off work allowance"
+      },
+      "confirmationMessage": "For the year {{year}} there are total of {{holidayCount}} midweek holidays. Do you want to add them?",
+      "successToast_one": "Holiday added!",
+      "successToast_other": "Holidays added!",
+      "errorToast_one": "Failed to add holiday!",
+      "errorToast_other": "Failed to add holidays!",
+      "editErrorToast": "Failed to edit holiday!",
+      "editSuccessToast": "Holiday modification saved!",
+      "deleteHoliday": "Delete holiday",
+      "deleteConfirmationDescription": "Are you sure you want to delete holiday {{name}} {{date}}?"
+    }
   },
   "drivePlanning": {
     "title": "Drive planning",
@@ -278,19 +310,122 @@
   "errorHandling": {
     "vehicleListing": "Error when listing vehicles"
   },
-  "vehicleListScreen": {
-    "vehicleList": {
-      "headings": {
-        "type": "Type",
-        "name": "Name",
-        "number": "Plate",
-        "temperature": "Temperature",
-        "address": "Address",
-        "location": "Location",
-        "status": "Status",
-        "maintenance": "Maintenance",
-        "trailer": "Trailer",
-        "driver": "Driver"
+  "workingHours": {
+    "title": "Working hours",
+    "workingHourBalances": {
+      "title": "Working hour balances",
+      "salaryGroup": "Salary Group",
+      "payPeriod": "Pay Period",
+      "office": "Work Location",
+      "nameSearch": "Name Search",
+      "searchByName": "Search by Name",
+      "uncheckedCount": "Unchecked: {{ count }}",
+      "person": "Person",
+      "number": "Number",
+      "totalWorkTime": "Total Work Time",
+      "breaks": "Breaks",
+      "waitingTime": "Waiting Time",
+      "overtime": "Overtime",
+      "eveningWork": "Evening Work 15%",
+      "nightWork": "Night Work 20%",
+      "taskSpecificBonus": "Task-Specific Bonus",
+      "freezerBonus": "Freezer Bonus",
+      "holidayBonus": "Holiday Bonus",
+      "dayOffBonus": "Day Off Bonus",
+      "sickLeaveOrAbsent": "Sick Leave / Absent",
+      "pekkanens": "Pekkanens",
+      "vacation": "Vacation",
+      "fillHours": "Fill Hours",
+      "halfDayAllowance": "Half-Day Allowance",
+      "fullDayAllowance": "Full-Day Allowance",
+      "toWorkHourDetails": "To Work hour details"
+    },
+    "workingDays": {
+      "title": "Working days",
+      "employee": "Employee",
+      "print": "Print",
+      "sendToPayroll": "Send to payroll",
+      "table": {
+        "date": "Date",
+        "shiftStarts": "Shift Starts",
+        "workStarted": "Work Started",
+        "workEnded": "Work Ended",
+        "workingHours": "Working Hours",
+        "unpaidBreak": "Unpaid Break",
+        "payableWorkingHours": "Payable Working Hours",
+        "waitingTime": "Waiting Time",
+        "eveningWork": "Evening Work",
+        "nightWork": "Night Work",
+        "holidayBonus": "Holiday Bonus",
+        "taskSpecificBonus": "Task-Specific Bonus",
+        "freezerBonus": "Freezer Bonus",
+        "absence": "Absence",
+        "vehicle": "Vehicle",
+        "dailyAllowance": "Daily Allowance",
+        "inspected": "Inspected",
+        "remarks": "Remarks"
+      },
+      "aggregationsTable": {
+        "workingHours": "Working Hours",
+        "eveningWork": "Evening Work 15%",
+        "nightWork": "Night Work 20%",
+        "vacation": "Vacation",
+        "pekkanens": "Compensatory Leave",
+        "workTime": "Regular Working Hours",
+        "unpaid": "Unpaid",
+        "sickHours": "Sick Hours",
+        "partialDailyAllowance": "Partial Daily Allowance",
+        "fullDayAllowance": "Full Day Allowance",
+        "overtimeHalf": "Overtime 50%",
+        "overtimeFull": "Overtime 100%",
+        "holiday": "Holiday",
+        "responsibilities": "Responsibility duties",
+        "increasedDailyAllowance": "Increased Full Day Allowance",
+        "dayOffBonus": "Day Off Bonus",
+        "trainingDuringWorkTime": "Training During Work Time",
+        "abroadAllowance": "Abroad Allowance",
+        "waitingTime": "Waiting Time",
+        "fillingHours": "Filling Hours",
+        "absenceHours": "Absence Hours"
+      },
+      "changeLog": {
+        "title": "Change log",
+        "time": "Time",
+        "user": "User",
+        "reviewed": "Reviewed",
+        "affectedDates": "Affected dates",
+        "explanation": "Explanation"
+      },
+      "workShiftDialog": {
+        "title": "Work shift events",
+        "time": "Time",
+        "vehicle": "Vehicle",
+        "event": "Event",
+        "duration": "Duration",
+        "distance": "Distance",
+        "eventTypes": {
+          "vegetable": "Vegetable",
+          "dry": "Dry",
+          "meatCellar": "Meat cellar",
+          "meira": "Meira",
+          "frozen": "Frozen",
+          "palte": "Palte",
+          "brewery": "Brewery",
+          "grease": "Grease",
+          "login": "Login",
+          "logout": "Logout",
+          "otherWork": "Other work",
+          "break": "Break",
+          "shiftStart": "Shift start",
+          "shiftEnd": "Shift end",
+          "unknown": "Unknown",
+          "drive": "Drive",
+          "loading": "Loading",
+          "unloading": "Unloading",
+          "availability": "Availability",
+          "driverCardInserted": "Driver card inserted",
+          "driverCardRemoved": "Driver card removed"
+        }
       }
     }
   }

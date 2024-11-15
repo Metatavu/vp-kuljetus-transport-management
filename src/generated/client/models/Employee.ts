@@ -64,6 +64,12 @@ export interface Employee {
      */
     driverCardId?: string;
     /**
+     * Employee's PIN code.
+     * @type {string}
+     * @memberof Employee
+     */
+    pinCode?: string;
+    /**
      * 
      * @type {EmployeeType}
      * @memberof Employee
@@ -151,6 +157,7 @@ export function EmployeeFromJSONTyped(json: any, ignoreDiscriminator: boolean): 
         'firstName': json['firstName'],
         'lastName': json['lastName'],
         'driverCardId': !exists(json, 'driverCardId') ? undefined : json['driverCardId'],
+        'pinCode': !exists(json, 'pinCode') ? undefined : json['pinCode'],
         'type': EmployeeTypeFromJSON(json['type']),
         'salaryGroup': SalaryGroupFromJSON(json['salaryGroup']),
         'office': OfficeFromJSON(json['office']),
@@ -175,6 +182,7 @@ export function EmployeeToJSON(value?: Employee | null): any {
         'firstName': value.firstName,
         'lastName': value.lastName,
         'driverCardId': value.driverCardId,
+        'pinCode': value.pinCode,
         'type': EmployeeTypeToJSON(value.type),
         'salaryGroup': SalaryGroupToJSON(value.salaryGroup),
         'office': OfficeToJSON(value.office),

@@ -1,24 +1,19 @@
-import { CommuteRounded, HailRounded, PlaceRounded } from "@mui/icons-material";
+import { CommuteRounded, HailRounded, PlaceRounded, TodayRounded } from "@mui/icons-material";
 import { Stack } from "@mui/material";
 import { Outlet, createFileRoute } from "@tanstack/react-router";
 import SideNavigation from "components/layout/side-navigation";
 import ViewContainer from "components/layout/view-container";
-import { RouterContext } from "./__root";
 import { NavigationItem } from "src/types";
 
-export const Route = createFileRoute("/management")({
-  component: ManagementLayoutComponent,
-  beforeLoad: (): RouterContext => ({
-    breadcrumbs: ["management.title"],
-  }),
-});
+export const Route = createFileRoute("/management")({ component: ManagementLayoutComponent });
 
 function ManagementLayoutComponent() {
-  const sideNavigationItems: readonly NavigationItem[] = [
-    ["/management/customer-sites", "management.customerSites.title", PlaceRounded],
-    ["/management/equipment", "management.equipment.title", CommuteRounded],
-    ["/management/employees", "management.employees.title", HailRounded],
-  ] as const;
+  const sideNavigationItems: NavigationItem[] = [
+    { route: "/management/customer-sites", label: "management.customerSites.title", Icon: PlaceRounded },
+    { route: "/management/equipment", label: "management.equipment.title", Icon: CommuteRounded },
+    { route: "/management/employees", label: "management.employees.title", Icon: HailRounded },
+    { route: "/management/holidays", label: "management.holidays.title", Icon: TodayRounded },
+  ];
 
   return (
     <Stack direction="row" height="100%" width="100%">

@@ -7,11 +7,16 @@ import { DefaultNamespace, ParseKeys } from "i18next";
 
 export type LocalizedLabelKey = ParseKeys<DefaultNamespace> | TemplateStringsArray;
 
-export type NavigationItem = readonly [
-  RoutePaths<RegisteredRouter["routeTree"]>,
-  LocalizedLabelKey,
-  typeof SvgIcon | undefined,
-];
+export type Breadcrumb = {
+  label: string;
+  route?: RoutePaths<RegisteredRouter["routeTree"]>;
+};
+
+export type NavigationItem = {
+  route?: RoutePaths<RegisteredRouter["routeTree"]>;
+  label: LocalizedLabelKey;
+  Icon?: typeof SvgIcon;
+};
 
 type UnallocatedTasksRowDragHandle = {
   setActivatorNodeRef: (element: HTMLElement | null) => void;
@@ -44,17 +49,17 @@ export type GroupedTask = {
   routeId: string;
 };
 
-export const DraggableType =  {
+export const DraggableType = {
   GROUPED_TASK: "grouped-task",
   UNALLOCATED_TASK: "unallocated-task",
 } as const;
-export type DraggableType = typeof DraggableType[keyof typeof DraggableType];
+export type DraggableType = (typeof DraggableType)[keyof typeof DraggableType];
 
-export const DroppableType =  {
+export const DroppableType = {
   ROUTES_TASKS_DROPPABLE: "routes-tasks-droppable",
   UNALLOCATED_TASKS_DROPPABLE: "unallocated-tasks-droppable",
- } as const;
-export type DroppableType = typeof DroppableType[keyof typeof DroppableType];
+} as const;
+export type DroppableType = (typeof DroppableType)[keyof typeof DroppableType];
 
 export type DraggedTaskData = {
   draggableType: "grouped-task";

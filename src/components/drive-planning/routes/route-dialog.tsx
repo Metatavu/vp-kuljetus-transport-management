@@ -1,16 +1,16 @@
 import { Button, Dialog, DialogActions, DialogContent, MenuItem, Stack, TextField } from "@mui/material";
+import { TimePicker } from "@mui/x-date-pickers";
 import { UseMutationResult, useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
+import { api } from "api/index";
+import DialogHeader from "components/generic/dialog-header";
 import LoaderWrapper from "components/generic/loader-wrapper";
 import { Driver, Route, Truck } from "generated/client";
+import { QUERY_KEYS } from "hooks/use-queries";
+import { DateTime } from "luxon";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { useApi } from "hooks/use-api";
-import { TimePicker } from "@mui/x-date-pickers";
-import { DateTime } from "luxon";
-import DialogHeader from "components/generic/dialog-header";
-import { QUERY_KEYS } from "hooks/use-queries";
-import { useEffect } from "react";
 
 type RouteForm = {
   truckId: string;
@@ -20,7 +20,7 @@ type RouteForm = {
 };
 
 type Props = {
-  initialDate: DateTime;
+  initialDate: DateTime<true>;
   routeId?: string;
   onSave?: UseMutationResult<void, Error, Route, unknown>;
 };
@@ -28,11 +28,10 @@ type Props = {
 const RouteDialog = ({ initialDate, routeId, onSave }: Props) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { routesApi, trucksApi, driversApi } = useApi();
 
   const routeQuery = useQuery({
     queryKey: [QUERY_KEYS.ROUTES, routeId],
-    queryFn: () => (routeId ? routesApi.findRoute({ routeId: routeId }) : undefined),
+    queryFn: () => (routeId ? api.routes.findRoute({ routeId: routeId }) : undefined),
     enabled: !!routeId,
   });
 
@@ -67,12 +66,12 @@ const RouteDialog = ({ initialDate, routeId, onSave }: Props) => {
 
   const trucksQuery = useQuery({
     queryKey: [QUERY_KEYS.TRUCKS],
-    queryFn: () => trucksApi.listTrucks(),
+    queryFn: () => api.trucks.listTrucks(),
   });
 
   const driversQuery = useQuery({
     queryKey: [QUERY_KEYS.DRIVERS],
-    queryFn: () => driversApi.listDrivers(),
+    queryFn: () => api.drivers.listDrivers(),
   });
 
   const onSaveClick = (form: RouteForm) =>
@@ -84,7 +83,7 @@ const RouteDialog = ({ initialDate, routeId, onSave }: Props) => {
       departureTime: form.departureTime,
     });
 
-  const handleClose = () => navigate({ to: "/drive-planning/routes", search: { date: initialDate } });
+  const handleClose = () => navigate({ to: "..", search: { date: initialDate } });
 
   const renderTruck = (truck: Truck) => (
     <MenuItem key={truck.id} value={truck.id}>
@@ -125,7 +124,7 @@ const RouteDialog = ({ initialDate, routeId, onSave }: Props) => {
           onClose={handleClose}
         />
         <form onSubmit={handleSubmit(onSaveClick)}>
-          <DialogContent sx={{ padding: "16px" }}>
+          <DialogContent sx={{ p: 2 }}>
             <Stack spacing={2}>
               <TimePicker
                 label={t("drivePlanning.routes.departureTime")}

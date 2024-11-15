@@ -189,7 +189,7 @@ const FreightWaybill = ({ freight, sites, tasks, freightUnits }: Props) => {
             <ColumnView>
               <LabelText label={t("drivePlanning.freights.print.freightForwarder")} margin />
               <View style={{ paddingLeft: 10 }}>
-                <Image src={logo} />
+                <Image src={logo ? logo : ""} />
               </View>
             </ColumnView>
           </RowView>

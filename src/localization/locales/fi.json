@@ -1,18 +1,22 @@
 {
+  "refresh": "Päivitä",
   "save": "Tallenna",
+  "saveChanges": "Tallenna muutokset",
+  "undoChanges": "Peru muutokset",
   "cancel": "Peruuta",
+  "close": "Sulje",
   "logout": "Kirjaudu ulos",
   "edit": "Muokkaa",
   "delete": "Poista",
   "archive": "Arkistoi",
   "open": "Avaa",
+  "yes": "Kyllä",
   "noSelection": "Ei valintaa",
   "all": "Kaikki",
   "noResults": "Ei tuloksia",
   "actions": "Toiminnot",
   "menu": "Valikko",
   "vehicleInfo": "Ajoneuvon tiedot",
-  "workingTime": "Työaika",
   "addNew": "Lisää uusi",
   "previousDay": "Edellinen päivä",
   "nextDay": "Seuraava päivä",
@@ -30,11 +34,13 @@
     "showDetails": "Näytä tiedot",
     "openCalendar": "Avaa kalenteri",
     "closeDialog": "Sulje ikkuna",
-    "backToVehicles": "Takaisin ajoneuvolistaukseen"
+    "backToVehicles": "Takaisin ajoneuvolistaukseen",
+    "backToWorkingHours": "Takaisin työaikasaldoihin"
   },
-  "vehicleList": {
+  "vehicles": {
     "title": "Ajoneuvot",
-    "vehicle": {
+    "list": {
+      "title": "Ajoneuvolista",
       "type": "Tyyppi",
       "plateNumber": "Auto",
       "number": "Tunnus",
@@ -46,17 +52,16 @@
       "trailer": "Kalusto",
       "driver": "Kuljettaja"
     },
-    "mapView": {
+    "map": {
       "title": "Kartta",
       "speed": "Nopeus: ",
       "gps": "GPS",
       "heading": "Suunta: ",
       "lastUpdated": "Viimeksi päivitetty: ",
       "connection": "Tietoliikenneyhteys",
-      "showVehicleInfo": "Siirry ajoneuvon tietoihin"
+      "showVehicleDetails": "Siirry ajoneuvon tietoihin"
     },
-    "info": {
-      "title": "Ajoneuvon tiedot",
+    "details": {
       "timeStamp": "Aika",
       "event": "Tapahtuma",
       "duration": "Kesto",
@@ -86,7 +91,7 @@
     "customerSites": {
       "title": "Asiakaspaikat",
       "new": "Uusi asiakaspaikka",
-      "modify": "Muokkaa asiakaspaikkaa",
+      "modify": "Muokkaa asiakaspaikkaa {{siteName}}",
       "type": "Tyyppi",
       "name": "Nimi",
       "address": "Osoite",
@@ -112,7 +117,7 @@
       "title": "Kalustoluettelo",
       "new": "Uusi kalusto",
       "open": "Avaa",
-      "modify": "Muokkaa kalustoa",
+      "modify": "Muokkaa kalustoa {{equipmentName}}",
       "type": "Tyyppi",
       "name": "Nimi",
       "licensePlate": "Rekisterinumero",
@@ -145,7 +150,7 @@
     "employees": {
       "title": "Työntekijät",
       "new": "Uusi työntekijä",
-      "modify": "Muokkaa työntekijää",
+      "modify": "Muokkaa työntekijää {{employeeName}}",
       "filters": {
         "name": {
           "label": "Nimihaku",
@@ -205,6 +210,30 @@
       "successToast": "Työntekijä tallennettu!",
       "archiveToast": "Työntekijä arkistoitu!",
       "errorToast": "Työntekijän tallennus epäonnistui!"
+    },
+    "holidays": {
+      "title": "Arkipyhät",
+      "date": "Päivämäärä",
+      "name": "Nimi",
+      "addHoliday": "Lisää arkipyhä",
+      "addHolidays": "Lisää arkipyhät",
+      "getHolidays": "Hae arkipyhät",
+      "getHolidaysFromTheYear": "Hae arkipyhät vuodelta:",
+      "year": "Vuosi",
+      "compensationType": {
+        "title": "Lisän tyyppi",
+        "publicHolidayAllowance": "Pyhälisä",
+        "dayOffWorkAllowance": "Vapaapäivätyönlisä"
+      },
+      "confirmationMessage": "Vuodelle {{year}} löytyi {{holidayCount}} arkipyhää. Haluatko lisätä ne?",
+      "successToast_one": "Arkipyhä lisätty!",
+      "successToast_other": "Arkipyhät lisätty!",
+      "errorToast_one": "Arkipyhän lisäys epäonnistui!",
+      "errorToast_other": "Arkipyhien lisäys epäonnistui!",
+      "editSuccessToast": "Arkipyhän muutos tallennettu!",
+      "editErrorToast": "Arkipyhän muutos epäonnistui!",
+      "deleteHoliday": "Poista arkipyhä",
+      "deleteConfirmationDescription": "Haluatko varmasti poistaa arkipyhän {{name}} {{date}}?"
     }
   },
   "drivePlanning": {
@@ -226,7 +255,7 @@
         "saveNewRoute": "Lisää reitti",
         "saveExistingRoute": "Tallenna reitti"
       },
-      "lastRefreshedAt": "Tiedot päivitetty {{lastRefreshedAt}}",
+      "lastRefreshedAt": "Viimeksi päivitetty: {{lastRefreshedAt}}",
       "refresh": "Päivitä tiedot",
       "tasksTable": {
         "task": "Tehtävä",
@@ -369,19 +398,122 @@
   "errorHandling": {
     "vehicleListing": "Ajoneuvolistauksessa tapahtui virhe"
   },
-  "vehicleListScreen": {
-    "vehicleList": {
-      "headings": {
-        "type": "Tyyppi",
-        "name": "Auto",
-        "number": "Tunnus",
-        "temperature": "Lämpötila",
-        "address": "Osoite",
-        "location": "Sijainti",
-        "status": "Tila",
-        "maintenance": "Huolto",
-        "trailer": "Kalusto",
-        "driver": "Kuljettaja"
+  "workingHours": {
+    "title": "Työaika",
+    "workingHourBalances": {
+      "title": "Työaikasaldot",
+      "salaryGroup": "Palkkaryhmä",
+      "payPeriod": "Palkkajakso",
+      "office": "Toimipiste",
+      "nameSearch": "Nimihaku",
+      "searchByName": "Hae nimellä",
+      "uncheckedCount": "Tarkastamattomia: {{ count }}",
+      "person": "Henkilö",
+      "number": "Nro",
+      "totalWorkTime": "Kokonaistyöaika",
+      "breaks": "Tauot",
+      "waitingTime": "Odotus",
+      "overtime": "Ylityöt",
+      "eveningWork": "Iltatyö 15%",
+      "nightWork": "Yötyö 20%",
+      "taskSpecificBonus": "Työkohtaisuuslisä",
+      "freezerBonus": "Pakastelisä",
+      "holidayBonus": "Pyhälisä",
+      "dayOffBonus": "Vapaapäivätyön lisä",
+      "sickLeaveOrAbsent": "Sairas / poissa",
+      "pekkanens": "Pekkaset",
+      "vacation": "Loma",
+      "fillHours": "Täyttötunnit",
+      "halfDayAllowance": "Osapäiväraha",
+      "fullDayAllowance": "Kokopäiväraha",
+      "toWorkHourDetails": "Näytä erittely"
+    },
+    "workingDays": {
+      "title": "Työpäivät",
+      "employee": "Työntekijä",
+      "print": "Tulosta",
+      "sendToPayroll": "Lähetä palkanlaskentaan",
+      "table": {
+        "date": "Pvm.",
+        "shiftStarts": "Vuoro alkaa",
+        "workStarted": "Työ alkoi",
+        "workEnded": "Työ päättyi",
+        "workingHours": "Työaika",
+        "unpaidBreak": "Palkaton tauko",
+        "payableWorkingHours": "Maksettava työaika",
+        "waitingTime": "Odotus",
+        "eveningWork": "Iltatyö",
+        "nightWork": "Yötyö",
+        "holidayBonus": "Pyhälisä",
+        "taskSpecificBonus": "Työkohtaisuuslisä",
+        "freezerBonus": "Pakastelisä",
+        "absence": "Poissaolo",
+        "vehicle": "Auto",
+        "dailyAllowance": "Päiväraha",
+        "inspected": "Tarkastettu",
+        "remarks": "Huomautuksia"
+      },
+      "aggregationsTable": {
+        "workingHours": "Työtunnit",
+        "eveningWork": "Iltatyö 15%",
+        "nightWork": "Yötyö 20%",
+        "vacation": "Loma",
+        "pekkanens": "Pekkaset",
+        "workTime": "Säännöllinen työaika",
+        "unpaid": "Palkaton",
+        "sickHours": "Sairastunnit",
+        "partialDailyAllowance": "Osapäiväraha",
+        "fullDayAllowance": "Kokopäiväraha",
+        "overtimeHalf": "Ylityö 50%",
+        "overtimeFull": "Ylityö 100%",
+        "holiday": "Pyhä",
+        "responsibilities": "Luottamustoimet",
+        "increasedDailyAllowance": "Korotettu kokopäiväraha",
+        "dayOffBonus": "Vapaapäivätyön lisä",
+        "trainingDuringWorkTime": "Koulutus työajalla",
+        "abroadAllowance": "Ulkomaan päiväraha",
+        "waitingTime": "Odotus",
+        "fillingHours": "Täyttötunnit",
+        "absenceHours": "Poissaolotunnit"
+      },
+      "changeLog": {
+        "title": "Muutosloki",
+        "time": "Aika",
+        "user": "Käyttäjä",
+        "reviewed": "Tarkastanut",
+        "affectedDates": "Muutetut päivämäärät",
+        "explanation": "Selite"
+      },
+      "workShiftDialog": {
+        "title": "Työajan erittely",
+        "time": "Aika",
+        "vehicle": "Auto",
+        "event": "Tapahtuma",
+        "duration": "Kesto",
+        "distance": "Matka",
+        "eventTypes": {
+          "vegetable": "Vihannes",
+          "dry": "Kuiva",
+          "meatCellar": "Lihavarasto",
+          "meira": "Meira",
+          "frozen": "Pakaste",
+          "palte": "Palte",
+          "brewery": "Panimo",
+          "grease": "Rasva",
+          "login": "Sisäänkirjautuminen",
+          "logout": "Uloskirjautuminen",
+          "otherWork": "Muu työ",
+          "break": "Tauko",
+          "shiftStart": "Vuoron aloitus",
+          "shiftEnd": "Vuoron lopetus",
+          "unknown": "Väliaika",
+          "drive": "Ajo",
+          "loading": "Lastaus",
+          "unloading": "Purku",
+          "availability": "Saatavuus",
+          "driverCardInserted": "Sisäänkirjautuminen",
+          "driverCardRemoved": "Uloskirjautuminen"
+        }
       }
     }
   }
