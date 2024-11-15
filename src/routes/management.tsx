@@ -12,7 +12,7 @@ function ManagementLayoutComponent() {
     { route: "/management/customer-sites", label: "management.customerSites.title", Icon: PlaceRounded },
     { route: "/management/equipment", label: "management.equipment.title", Icon: CommuteRounded },
     { route: "/management/employees", label: "management.employees.title", Icon: HailRounded },
-    { route: "/management/devices", label: "management.devices.title", Icon: Devices },
+    { route: "/management/client-apps", label: "management.clientApps.title", Icon: Devices },
     { route: "/management/holidays", label: "management.holidays.title", Icon: TodayRounded },
   ];
 

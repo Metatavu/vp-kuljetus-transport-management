@@ -8,6 +8,7 @@
   "logout": "Kirjaudu ulos",
   "edit": "Muokkaa",
   "delete": "Poista",
+  "approve": "Hyväksy",
   "archive": "Arkistoi",
   "open": "Avaa",
   "yes": "Kyllä",
@@ -136,8 +137,23 @@
       "successToast": "Kalusto tallennettu!",
       "errorToast": "Kaluston tallennus epäonnistui!"
     },
-    "devices": {
+    "clientApps": {
       "title": "Päätelaitteet",
+      "name": "Laitteen nimi",
+      "tag": "Tunniste",
+      "deviceId": "Laitetunnus",
+      "deviceOs": "Käyttöjärjestelmä",
+      "appVersion": "Sovellusversio",
+      "status": "Tila",
+      "createdAt": "Luotu",
+      "statuses": {
+        "WAITING_FOR_APPROVAL": "Odottaa hyväksyntää",
+        "APPROVED": "Hyväksytty"
+      },
+      "lastLoginAt": "Viimeisin kirjautuminen",
+      "confirmDeleteDevice": "Poista laite {{name}}?",
+      "confirmApproveDeviceTitle": "Hyväksy laite",
+      "approveDeviceInstructions": "Tarkista että laitteen sovelluksen tunnus täsmää ja anna laitteelle helposti tunnistettava nimi.",
       "archiveDialog": {
         "title": "Arkistoi laite",
         "description": "Oletko varma että haluat arkistoida laitteen {{name}}?"
