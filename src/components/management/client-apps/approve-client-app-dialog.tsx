@@ -16,15 +16,15 @@ type Props = {
 
 const ClientAppTagContainer = styled(Stack, {
   label: "client-app-tag-container",
-})(() => ({
+})(({ theme }) => ({
   width: "100%",
   justifyContent: "center",
   alignItems: "center",
   border: "1px solid",
-  borderColor: "grey.300",
-  borderRadius: 2,
-  bgcolor: "grey.100",
-  p: 2,
+  borderColor: theme.palette.grey[300],
+  borderRadius: theme.spacing(1),
+  backgroundColor: theme.palette.grey[100],
+  padding: theme.spacing(2),
 }));
 
 export const ApproveClientAppDialog = ({ clientApp, onClose }: Props) => {
