@@ -255,6 +255,9 @@ const theme = createTheme(
         },
       },
       MuiFilledInput: {
+        defaultProps: {
+          disableUnderline: true,
+        },
         styleOverrides: {
           root: {
             height: "auto",

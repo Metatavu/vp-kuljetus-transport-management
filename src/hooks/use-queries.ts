@@ -3,6 +3,7 @@ import { api } from "api/index";
 import {
   FindTowableRequest,
   FindTruckRequest,
+  ListClientAppsRequest,
   ListEmployeesRequest,
   ListFreightUnitsRequest,
   ListHolidaysRequest,
@@ -31,6 +32,7 @@ export const QUERY_KEYS = {
   EMPLOYEES: "employees",
   WORK_SHIFT_HOURS: "work-shift-hours",
   HOLIDAYS: "holidays",
+  CLIENT_APPS: "clientApps",
 } as const;
 
 export const getListSitesQueryOptions = (requestParams: ListSitesRequest = {}, enabled = true) =>
@@ -49,7 +51,7 @@ export const getFindSiteQueryOptions = (siteId: string, enabled = true) =>
   queryOptions({
     queryKey: [QUERY_KEYS.SITES, siteId],
     enabled: enabled,
-    queryFn: async () => api.sites.findSite({ siteId }),
+    queryFn: () => api.sites.findSite({ siteId }),
   });
 
 export const getListRoutesQueryOptions = (
@@ -149,7 +151,7 @@ export const getFindFreightQueryOptions = (freightId: string, enabled = true) =>
   queryOptions({
     queryKey: [QUERY_KEYS.FREIGHTS, freightId],
     enabled: enabled,
-    queryFn: async () => api.freights.findFreight({ freightId: freightId }),
+    queryFn: () => api.freights.findFreight({ freightId: freightId }),
   });
 
 export const getListEmployeesQueryOptions = (requestParams: ListEmployeesRequest = {}, enabled = true) =>
@@ -168,7 +170,7 @@ export const getFindEmployeeQueryOptions = (employeeId: string, enabled = true) 
   queryOptions({
     queryKey: [QUERY_KEYS.EMPLOYEES, employeeId],
     enabled: enabled,
-    queryFn: async () => api.employees.findEmployee({ employeeId }),
+    queryFn: () => api.employees.findEmployee({ employeeId }),
   });
 
 export const getListTimeEntriesQueryOptions = (
@@ -212,7 +214,23 @@ export const getFindHolidayQueryOptions = (holidayId: string, enabled = true) =>
   queryOptions({
     queryKey: [QUERY_KEYS.HOLIDAYS, holidayId],
     enabled: enabled,
-    queryFn: async () => api.holidays.findHoliday({ holidayId }),
+    queryFn: () => api.holidays.findHoliday({ holidayId }),
+  });
+
+export const getListClientAppsQueryOptions = (params: ListClientAppsRequest = {}) =>
+  queryOptions({
+    queryKey: [QUERY_KEYS.CLIENT_APPS, params],
+    queryFn: async () => {
+      const [clientApps, headers] = await api.clientApps.listClientAppsWithHeaders(params);
+      const totalResults = getTotalResultsFromHeaders(headers);
+      return { clientApps, totalResults };
+    },
+  });
+
+export const getFindClientAppQueryOptions = (clientAppId: string) =>
+  queryOptions({
+    queryKey: [QUERY_KEYS.CLIENT_APPS, clientAppId],
+    queryFn: () => api.clientApps.findClientApp({ clientAppId }),
   });
 
 /**

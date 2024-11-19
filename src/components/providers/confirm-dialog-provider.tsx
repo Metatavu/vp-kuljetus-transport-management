@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 
 type ConfirmDialogOptions = {
   title: string;
-  description: string;
+  description?: string;
   positiveButtonText?: string;
   positiveButtonColor?: ButtonOwnProps["color"];
   onPositiveClick: () => void | Promise<void>;
@@ -35,12 +35,8 @@ const ConfirmDialogProvider = ({ children }: { children: ReactNode }) => {
   return (
     <>
       <Dialog open={open} onClose={handleClose}>
-        <DialogHeader
-          closeTooltip={t("tooltips.closeDialog")}
-          title={options?.title ?? ""}
-          onClose={handleClose}
-        />
-        <DialogContent>{options?.description}</DialogContent>
+        <DialogHeader closeTooltip={t("tooltips.closeDialog")} title={options?.title ?? ""} onClose={handleClose} />
+        {options?.description && <DialogContent>{options.description}</DialogContent>}
         <DialogActions>
           <Button variant="text" onClick={handleClose}>
             {t("cancel")}

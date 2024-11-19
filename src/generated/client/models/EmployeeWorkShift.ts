@@ -76,7 +76,7 @@ export interface EmployeeWorkShift {
      * @type {string}
      * @memberof EmployeeWorkShift
      */
-    readonly employeeId: string;
+    employeeId: string;
     /**
      * List of truck IDs used during the work shift. Derived from work events in the shift.
      * @type {Array<string>}
@@ -166,6 +166,7 @@ export function EmployeeWorkShiftToJSON(value?: EmployeeWorkShift | null): any {
     return {
         
         'date': (value.date.toISOString().substring(0,10)),
+        'employeeId': value.employeeId,
         'dayOffWorkAllowance': value.dayOffWorkAllowance,
         'absence': AbsenceTypeToJSON(value.absence),
         'PerDiemAllowance': PerDiemAllowanceTypeToJSON(value.perDiemAllowance),
