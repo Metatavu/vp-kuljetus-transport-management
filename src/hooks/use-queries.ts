@@ -187,19 +187,7 @@ export const getFindEmployeeQueryOptions = (employeeId: string, enabled = true) 
     queryFn: async () => api.employees.findEmployee({ employeeId }),
   });
 
-export const getListTimeEntriesQueryOptions = (
-  requestParams: ListWorkShiftHoursRequest,
-  useWorkingPeriod: boolean,
-  salaryGroup: SalaryGroup,
-  selectedDate?: Date,
-  enabled = true,
-) => {
-  if (useWorkingPeriod && selectedDate) {
-    const workingPeriodDates = getWorkingPeriodDates(salaryGroup, selectedDate);
-    requestParams.employeeWorkShiftStartedAfter = workingPeriodDates.start;
-    requestParams.employeeWorkShiftStartedBefore = workingPeriodDates.end;
-  }
-
+export const getListWorkShiftHoursQueryOptions = (requestParams: ListWorkShiftHoursRequest, enabled = true) => {
   return queryOptions({
     queryKey: [QUERY_KEYS.WORK_SHIFT_HOURS, requestParams],
     enabled: enabled,

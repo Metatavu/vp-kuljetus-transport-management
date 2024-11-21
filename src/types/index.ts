@@ -2,7 +2,7 @@ import { DraggableAttributes } from "@dnd-kit/core";
 import { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 import { SvgIcon } from "@mui/material";
 import { RegisteredRouter, RoutePaths } from "@tanstack/react-router";
-import { AbsenceType, PerDiemAllowanceType, Site, Task, TaskType } from "generated/client";
+import { EmployeeWorkShift, Site, Task, TaskType, WorkShiftHours, WorkType } from "generated/client";
 import { DefaultNamespace, ParseKeys } from "i18next";
 
 export type LocalizedLabelKey = ParseKeys<DefaultNamespace> | TemplateStringsArray;
@@ -71,13 +71,6 @@ export type DraggedTaskData = {
 export type EmployeeWorkHoursForm = EmployeeWorkHoursFormRow[];
 
 export type EmployeeWorkHoursFormRow = {
-  workShift: {
-    id?: string;
-    date: Date;
-    dayOffWorkAllowance: boolean;
-    absence: AbsenceType | "";
-    perDiemAllowance: PerDiemAllowanceType | "";
-    approved: boolean;
-    notes: string;
-  };
+  workShift: EmployeeWorkShift;
+  workShiftHours: Record<WorkType, WorkShiftHours>;
 };

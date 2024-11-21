@@ -38,6 +38,7 @@
  * | PALTE       | Palte                |
  * | BREWERY     | Panimo               |
  * | GREASE      | Rasva                |
+ * | OFFICE      | Toimisto             |
  * | LOGIN       | Sisäänkirjautuminen  |
  * | LOGOUT      | Uloskirjautuminen    |
  * 
@@ -61,6 +62,7 @@ export const WorkEventType = {
     Palte: 'PALTE',
     Brewery: 'BREWERY',
     Grease: 'GREASE',
+    Office: 'OFFICE',
     Login: 'LOGIN',
     Logout: 'LOGOUT',
     OtherWork: 'OTHER_WORK',

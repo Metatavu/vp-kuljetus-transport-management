@@ -1,15 +1,14 @@
 import { Button, Checkbox, Link, MenuItem, Stack, TextField, Typography, styled } from "@mui/material";
-import { TimePicker } from "@mui/x-date-pickers";
-import { AbsenceType, EmployeeWorkShift, PerDiemAllowanceType, Truck } from "generated/client";
+import { AbsenceType, PerDiemAllowanceType, Truck, WorkShiftHours, WorkType } from "generated/client";
 import { DateTime } from "luxon";
-import { Controller, useFormContext } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { EmployeeWorkHoursForm } from "src/types";
+import { EmployeeWorkHoursForm, EmployeeWorkHoursFormRow } from "src/types";
 import LocalizationUtils from "src/utils/localization-utils";
 
 type Props = {
   onClick: () => void;
-  workShiftData: EmployeeWorkShift;
+  workShiftData: EmployeeWorkHoursFormRow;
   trucks: Truck[];
   index: number;
 };
@@ -44,33 +43,25 @@ const Cell = styled(Stack, {
 
 function WorkShiftRow({ onClick, workShiftData, trucks, index }: Props) {
   const { t } = useTranslation();
-  const { register, control } = useFormContext<EmployeeWorkHoursForm>();
+  const { register } = useFormContext<EmployeeWorkHoursForm>();
 
   const getTruckById = (truckId: string) => {
     return truckId ? trucks.find((truck) => truck.id === truckId)?.name : undefined;
   };
 
-  const renderTimeInput = (title: string, value?: Date) => {
-    return (
-      <TimePicker
-        value={value ? DateTime.fromJSDate(value) : undefined}
-        disableOpenPicker
-        // onChange={(value: DateTime | null) =>
-        //   value ? setValue(`${index}.date`, value.toJSDate()) : resetField(`${index}.date`)
-        // }
-        slotProps={{
-          textField: {
-            "aria-label": title,
-            variant: "outlined",
-            className: "cell-input",
-            size: "small",
-            title: title,
-            fullWidth: true,
-          },
-        }}
-      />
-    );
-  };
+  const renderWorkHourInput = (title: string, workShiftHours: WorkShiftHours) => (
+    <TextField
+      className="cell-input"
+      size="small"
+      aria-label={title}
+      title={title}
+      fullWidth
+      variant="outlined"
+      defaultValue={workShiftHours?.actualHours}
+      placeholder={workShiftHours?.calculatedHours?.toString()}
+      InputProps={register(`${index}.workShiftHours.${workShiftHours.workType}.actualHours`)}
+    />
+  );
 
   const renderPerDiemAllowanceSelectInput = () => {
     const label = t("workingHours.workingDays.table.dailyAllowance");
@@ -83,7 +74,7 @@ function WorkShiftRow({ onClick, workShiftData, trucks, index }: Props) {
         title={label}
         fullWidth
         variant="outlined"
-        defaultValue={workShiftData.perDiemAllowance}
+        defaultValue={workShiftData.workShift.perDiemAllowance}
         InputProps={register(`${index}.workShift.perDiemAllowance`)}
       >
         <MenuItem style={{ minHeight: 30 }} key="EMPTY" value="">
@@ -108,7 +99,7 @@ function WorkShiftRow({ onClick, workShiftData, trucks, index }: Props) {
         aria-label={label}
         title={label}
         fullWidth
-        defaultValue={workShiftData.absence}
+        defaultValue={workShiftData.workShift.absence}
         variant="outlined"
         InputProps={register(`${index}.workShift.absence`)}
       >
@@ -128,17 +119,21 @@ function WorkShiftRow({ onClick, workShiftData, trucks, index }: Props) {
     <Row>
       <Cell width={90}>
         <Link variant="body2" title={t("workingHours.workingHourBalances.toWorkHourDetails")} onClick={onClick}>
-          {workShiftData.date && DateTime.fromJSDate(workShiftData.date).toFormat("dd.MM")}
+          {workShiftData.workShift.date && DateTime.fromJSDate(workShiftData.workShift.date).toFormat("dd.MM")}
         </Link>
       </Cell>
       <Cell minWidth={75} flex={1}>
         <Typography variant="body2">
-          {workShiftData.startedAt ? DateTime.fromJSDate(workShiftData.startedAt).toFormat("HH:mm") : ""}
+          {workShiftData.workShift.startedAt
+            ? DateTime.fromJSDate(workShiftData.workShift.startedAt).toFormat("HH:mm")
+            : ""}
         </Typography>
       </Cell>
       <Cell minWidth={75} flex={1}>
         <Typography variant="body2">
-          {workShiftData.endedAt ? DateTime.fromJSDate(workShiftData.endedAt).toFormat("HH:mm") : ""}
+          {workShiftData.workShift.endedAt
+            ? DateTime.fromJSDate(workShiftData.workShift.endedAt).toFormat("HH:mm")
+            : ""}
         </Typography>
       </Cell>
       <Cell minWidth={75} flex={1}>
@@ -147,56 +142,75 @@ function WorkShiftRow({ onClick, workShiftData, trucks, index }: Props) {
       <Cell minWidth={75} flex={1}>
         <Typography variant="body2">{"00:00"}</Typography>
       </Cell>
-      <Cell flex={1}>{renderTimeInput(t("workingHours.workingDays.table.payableWorkingHours"))}</Cell>
-      <Cell flex={1}>{renderTimeInput(t("workingHours.workingDays.table.waitingTime"))}</Cell>
-      <Cell flex={1}>{renderTimeInput(t("workingHours.workingDays.table.eveningWork"))}</Cell>
-      <Cell flex={1}>{renderTimeInput(t("workingHours.workingDays.table.nightWork"))}</Cell>
-      <Cell flex={1}>{renderTimeInput(t("workingHours.workingDays.table.holidayBonus"))}</Cell>
-      <Cell flex={1}>{renderTimeInput(t("workingHours.workingDays.table.taskSpecificBonus"))}</Cell>
-      <Cell flex={1}>{renderTimeInput(t("workingHours.workingDays.table.freezerBonus"))}</Cell>
+      <Cell flex={1}>
+        {renderWorkHourInput(
+          t("workingHours.workingDays.table.payableWorkingHours"),
+          workShiftData.workShiftHours[WorkType.PaidWork],
+        )}
+      </Cell>
+      <Cell flex={1}>
+        {renderWorkHourInput(
+          t("workingHours.workingDays.table.waitingTime"),
+          workShiftData.workShiftHours[WorkType.Standby],
+        )}
+      </Cell>
+      <Cell flex={1}>
+        {renderWorkHourInput(
+          t("workingHours.workingDays.table.eveningWork"),
+          workShiftData.workShiftHours[WorkType.EveningAllowance],
+        )}
+      </Cell>
+      <Cell flex={1}>
+        {renderWorkHourInput(
+          t("workingHours.workingDays.table.nightWork"),
+          workShiftData.workShiftHours[WorkType.NightAllowance],
+        )}
+      </Cell>
+      <Cell flex={1}>
+        {renderWorkHourInput(
+          t("workingHours.workingDays.table.holidayBonus"),
+          workShiftData.workShiftHours[WorkType.HolidayAllowance],
+        )}
+      </Cell>
+      <Cell flex={1}>
+        {renderWorkHourInput(
+          t("workingHours.workingDays.table.taskSpecificBonus"),
+          workShiftData.workShiftHours[WorkType.JobSpecificAllowance],
+        )}
+      </Cell>
+      <Cell flex={1}>
+        {renderWorkHourInput(
+          t("workingHours.workingDays.table.freezerBonus"),
+          workShiftData.workShiftHours[WorkType.FrozenAllowance],
+        )}
+      </Cell>
       <Cell minWidth={115} flex={1}>
         <Stack gap={0.5} direction="row" width="100%">
-          <Controller
-            name={`${index}.workShift.dayOffWorkAllowance`}
-            control={control}
-            defaultValue={workShiftData.dayOffWorkAllowance || false}
-            render={({ field: { value, onChange, ...rest } }) => (
-              <Checkbox
-                onChange={(event) => onChange(event.target.checked)}
-                size="small"
-                className="cell-checkbox"
-                title={t("workingHours.workingHourBalances.dayOffBonus")}
-                aria-label={t("workingHours.workingHourBalances.dayOffBonus")}
-                checked={value}
-                {...rest}
-              />
-            )}
+          <Checkbox
+            size="small"
+            className="cell-checkbox"
+            title={t("workingHours.workingHourBalances.dayOffBonus")}
+            aria-label={t("workingHours.workingHourBalances.dayOffBonus")}
+            defaultChecked={workShiftData.workShift.dayOffWorkAllowance}
+            {...register(`${index}.workShift.dayOffWorkAllowance`)}
           />
           {renderAbsenceTypeSelectInput()}
         </Stack>
       </Cell>
       <Cell width={90}>
         <Typography variant="body2">
-          {workShiftData.truckIds?.map((truckId) => getTruckById(truckId)).join(", ")}
+          {workShiftData.workShift.truckIds?.map((truckId) => getTruckById(truckId)).join(", ")}
         </Typography>
       </Cell>
       <Cell width={90}>{renderPerDiemAllowanceSelectInput()}</Cell>
       <Cell width={90}>
-        <Controller
-          name={`${index}.workShift.approved`}
-          control={control}
-          render={({ field: { value = false, onChange, ref, ...rest } }) => (
-            <Checkbox
-              onChange={onChange}
-              size="small"
-              className="cell-checkbox"
-              title={t("workingHours.workingHourBalances.approved")}
-              aria-label={t("workingHours.workingHourBalances.approved")}
-              checked={value}
-              inputRef={ref}
-              {...rest}
-            />
-          )}
+        <Checkbox
+          size="small"
+          className="cell-checkbox"
+          title={t("workingHours.workingHourBalances.approved")}
+          aria-label={t("workingHours.workingHourBalances.approved")}
+          defaultChecked={workShiftData.workShift.approved}
+          {...register(`${index}.workShift.approved`)}
         />
       </Cell>
       <Cell minWidth={275} flex={1}>
@@ -206,7 +220,7 @@ function WorkShiftRow({ onClick, workShiftData, trucks, index }: Props) {
           aria-label={t("workingHours.workingDays.table.remarks")}
           fullWidth
           variant="outlined"
-          value={workShiftData.notes}
+          defaultValue={workShiftData.workShift.notes}
           InputProps={register(`${index}.workShift.notes`)}
         />
       </Cell>

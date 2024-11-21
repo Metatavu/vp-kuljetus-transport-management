@@ -190,7 +190,7 @@ export class EmployeeWorkShiftsApi extends runtime.BaseAPI {
         return [ value, response.raw.headers ];
     }
     /**
-     * Lists Employees work Shifts. Sort by time, latest first. 
+     * Lists Employees work Shifts. Sort by time, latest first.  Employees can only see their own work shifts. Managers can see all employees\' work shifts. 
      * List Employees Work Shifts.
      */
     async listEmployeeWorkShiftsRaw(requestParameters: ListEmployeeWorkShiftsRequest): Promise<runtime.ApiResponse<Array<EmployeeWorkShift>>> {
@@ -213,7 +213,7 @@ export class EmployeeWorkShiftsApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
         if (this.configuration && this.configuration.accessToken) {
             const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", ["manager"]);
+            const tokenString = await token("BearerAuth", ["manager", "employee"]);
             if (tokenString) {
                 headerParameters["Authorization"] = `Bearer ${tokenString}`;
             }
@@ -227,7 +227,7 @@ export class EmployeeWorkShiftsApi extends runtime.BaseAPI {
         return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(EmployeeWorkShiftFromJSON));
     }
     /**
-     * Lists Employees work Shifts. Sort by time, latest first. 
+     * Lists Employees work Shifts. Sort by time, latest first.  Employees can only see their own work shifts. Managers can see all employees\' work shifts. 
      * List Employees Work Shifts.
      */
     async listEmployeeWorkShifts(requestParameters: ListEmployeeWorkShiftsRequest): Promise<Array<EmployeeWorkShift>> {
@@ -235,7 +235,7 @@ export class EmployeeWorkShiftsApi extends runtime.BaseAPI {
         return await response.value();
     }
     /**
-     * Lists Employees work Shifts. Sort by time, latest first. 
+     * Lists Employees work Shifts. Sort by time, latest first.  Employees can only see their own work shifts. Managers can see all employees\' work shifts. 
      * List Employees Work Shifts.
      */
     async listEmployeeWorkShiftsWithHeaders(requestParameters: ListEmployeeWorkShiftsRequest): Promise<[ Array<EmployeeWorkShift>, Headers ]> {
