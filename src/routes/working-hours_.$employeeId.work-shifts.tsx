@@ -14,7 +14,7 @@ import {
   styled,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Outlet, createFileRoute } from "@tanstack/react-router";
 import { api } from "api/index";
 import AggregationsTable from "components/working-hours/aggregations-table";
@@ -24,10 +24,8 @@ import WorkShiftsTableHeader from "components/working-hours/work-shifts-table-he
 import { EmployeeWorkShift, SalaryGroup, WorkShiftHours, WorkType } from "generated/client";
 import {
   QUERY_KEYS,
-  getEmployeeWorkShiftsQueryOptions,
   getListEmployeesQueryOptions,
   getListTrucksQueryOptions,
-  getListWorkShiftHoursQueryOptions,
   getWorkingPeriodDates,
 } from "hooks/use-queries";
 import { t } from "i18next";
@@ -35,24 +33,129 @@ import { DateTime, Interval } from "luxon";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import { queryClient } from "src/main";
 import { Breadcrumb, EmployeeWorkHoursForm, EmployeeWorkHoursFormRow } from "src/types";
 import DataValidation from "src/utils/data-validation-utils";
 import { z } from "zod";
 
 export const workShiftSearchSchema = z.object({
-  date: z.string().datetime({ offset: true }).transform(DataValidation.parseValidDateTime).optional(),
+  date: z.string().datetime({ offset: true }).transform(DataValidation.parseValidDateTime),
 });
 
+const addMissingWorkShiftRows = (
+  employeeId: string,
+  formValues: EmployeeWorkHoursFormRow[],
+  workingPeriod: { start: Date; end: Date },
+): EmployeeWorkHoursFormRow[] => {
+  if (!workingPeriod) return formValues;
+
+  const allDatesInWorkingPeriod = eachDayOfInterval(workingPeriod.start, workingPeriod.end).map((date) =>
+    date.toJSDate(),
+  );
+
+  const existingWorkShiftDates = formValues.map((row) =>
+    DateTime.fromJSDate(row.workShift.date).startOf("day").toISODate(),
+  );
+
+  // Create empty rows for missing dates
+  const missingRows: EmployeeWorkHoursFormRow[] = allDatesInWorkingPeriod
+    .filter((date) => !existingWorkShiftDates.includes(DateTime.fromJSDate(date).toISODate()))
+    .map((missingDate) => ({
+      workShift: {
+        id: undefined, // No ID for missing work shifts
+        date: missingDate,
+        dayOffWorkAllowance: false,
+        absence: undefined,
+        perDiemAllowance: undefined,
+        approved: false,
+        notes: undefined,
+        startedAt: undefined,
+        endedAt: undefined,
+        truckIds: undefined,
+        employeeId,
+      } as EmployeeWorkShift,
+      // Create empty work shift hours for all work types
+      workShiftHours: Object.values(WorkType).reduce<Record<WorkType, WorkShiftHours>>(
+        (workShiftHours, workType) => {
+          workShiftHours[workType] = {
+            id: undefined, // No ID for missing work shift hours
+            employeeId,
+            workType,
+            calculatedHours: undefined,
+            actualHours: undefined,
+            employeeWorkShiftId: "", // No employee work shift ID for missing work shift hours
+          };
+          return workShiftHours;
+        },
+        {} as Record<WorkType, WorkShiftHours>,
+      ),
+    }));
+
+  const allRows = [...formValues, ...missingRows];
+
+  return allRows.sort(
+    (a, b) => DateTime.fromJSDate(a.workShift.date).toMillis() - DateTime.fromJSDate(b.workShift.date).toMillis(),
+  );
+};
+
 export const Route = createFileRoute("/working-hours_/$employeeId/work-shifts")({
-  component: WorkShifts,
-  loader: () => {
+  validateSearch: workShiftSearchSchema,
+  loaderDeps: ({ search }) => ({ date: search.date }),
+  loader: async ({ params: { employeeId }, deps: { date } }) => {
+    const { trucks } = await queryClient.ensureQueryData(getListTrucksQueryOptions({}));
+    const { employees } = await queryClient.ensureQueryData(getListEmployeesQueryOptions({}));
+
+    const employeeSalaryGroup =
+      employees.find((employee) => employee.id === employeeId)?.salaryGroup ?? SalaryGroup.Driver;
+
+    const workingPeriodsForEmployee = getWorkingPeriodDates(employeeSalaryGroup, date?.toJSDate());
+
+    const workShiftsData = await queryClient.ensureQueryData({
+      queryKey: [QUERY_KEYS.WORK_SHIFTS, employeeId, "workShiftsData"],
+      queryFn: async () => {
+        const [workShifts] = await api.employeeWorkShifts.listEmployeeWorkShiftsWithHeaders({
+          employeeId,
+          startedAfter: workingPeriodsForEmployee?.start,
+          startedBefore: workingPeriodsForEmployee?.end,
+        });
+
+        return await Promise.all(
+          workShifts.map<Promise<{ workShift: EmployeeWorkShift; workShiftHours: Record<WorkType, WorkShiftHours> }>>(
+            async (workShift) => {
+              const [workShiftHours] = await api.workShiftHours.listWorkShiftHoursWithHeaders({
+                employeeId,
+                employeeWorkShiftId: workShift.id,
+              });
+
+              return {
+                workShift: workShift,
+                workShiftHours: workShiftHours.reduce<Record<WorkType, WorkShiftHours>>(
+                  (workShiftHoursRecord, singleWorkShiftHours) => {
+                    workShiftHoursRecord[singleWorkShiftHours.workType] = singleWorkShiftHours;
+                    return workShiftHoursRecord;
+                  },
+                  {} as Record<WorkType, WorkShiftHours>,
+                ),
+              };
+            },
+          ),
+        );
+      },
+    });
+
+    const workShiftsDataWithWorkingPeriodDates = addMissingWorkShiftRows(
+      employeeId,
+      workShiftsData,
+      getWorkingPeriodDates(employeeSalaryGroup, date.toJSDate()),
+    );
+
     const breadcrumbs: Breadcrumb[] = [
       { label: t("workingHours.title") },
       { label: t("workingHours.workingDays.title") },
     ];
-    return { breadcrumbs };
+    return { breadcrumbs, trucks, employees, workShiftsDataWithWorkingPeriodDates, employeeSalaryGroup };
   },
-  validateSearch: workShiftSearchSchema,
+  component: WorkShifts,
 });
 
 // Styled root component
@@ -127,200 +230,307 @@ const TableContainer = styled(Stack, {
   borderBottom: `1px solid ${theme.palette.divider}`,
 }));
 
+const eachDayOfInterval = (start: Date, end: Date): DateTime[] => {
+  const interval = Interval.fromDateTimes(
+    DateTime.fromJSDate(start).startOf("day"),
+    DateTime.fromJSDate(end).endOf("day"),
+  );
+
+  // Divide the interval into days and map them
+  return interval
+    .splitBy({ days: 1 })
+    .map((i) => i.start)
+    .filter((date): date is DateTime => date !== undefined);
+};
+
 function WorkShifts() {
+  const { employees, workShiftsDataWithWorkingPeriodDates, employeeSalaryGroup } = Route.useLoaderData();
   const { t } = useTranslation();
   const navigate = Route.useNavigate();
   const { employeeId } = Route.useParams();
   const queryClient = useQueryClient();
-  const selectedDate = Route.useSearch({ select: (search) => search.date ?? DateTime.now() });
+  const selectedDate = Route.useSearch({ select: (search) => search.date });
 
-  const trucks = useQuery(getListTrucksQueryOptions({})).data?.trucks;
-  const employees = useQuery(getListEmployeesQueryOptions({})).data?.employees;
+  // const trucksQuery = useQuery(getListTrucksQueryOptions({}));
+  // const trucks = useMemo(() => trucksQuery.data?.trucks, [trucksQuery.data]);
+  // const employeesQuery = useQuery(getListEmployeesQueryOptions({}));
+  // const employees = useMemo(() => employeesQuery.data?.employees, [employeesQuery.data]);
 
-  const employeeSalaryGroup =
-    employees?.find((employee) => employee.id === employeeId)?.salaryGroup ?? SalaryGroup.Driver;
+  // const employeeSalaryGroup = useMemo(
+  //   () => employees?.find((employee) => employee.id === employeeId)?.salaryGroup ?? SalaryGroup.Driver,
+  //   [employees, employeeId],
+  // );
 
-  const getWorkingPeriodsForEmployee = () => {
-    const employeeSalaryGroup = employees?.find((employee) => employee.id === employeeId)?.salaryGroup;
-    if (!employeeSalaryGroup) return;
-    return getWorkingPeriodDates(employeeSalaryGroup, selectedDate.toJSDate());
-  };
+  // const workingPeriodsForEmployee = useMemo(() => {
+  //   const employeeSalaryGroup = employees?.find((employee) => employee.id === employeeId)?.salaryGroup;
+  //   if (!employeeSalaryGroup) return;
+  //   return getWorkingPeriodDates(employeeSalaryGroup, selectedDate.toJSDate());
+  // }, [employees, employeeId, selectedDate]);
 
-  const eachDayOfInterval = (start: Date, end: Date): DateTime[] => {
-    const interval = Interval.fromDateTimes(
-      DateTime.fromJSDate(start).startOf("day"),
-      DateTime.fromJSDate(end).endOf("day"),
-    );
+  // const workShiftsDataQuery = useQuery({
+  //   queryKey: [QUERY_KEYS.WORK_SHIFTS, employeeId, "workShiftsData"],
+  //   queryFn: async () => {
+  //     const [workShifts] = await api.employeeWorkShifts.listEmployeeWorkShiftsWithHeaders({
+  //       employeeId,
+  //       startedAfter: workingPeriodsForEmployee?.start,
+  //       startedBefore: workingPeriodsForEmployee?.end,
+  //     });
 
-    // Divide the interval into days and map them
-    return interval
-      .splitBy({ days: 1 })
-      .map((i) => i.start)
-      .filter((date): date is DateTime => date !== undefined);
-  };
+  //     return await Promise.all(
+  //       workShifts.map<Promise<{ workShift: EmployeeWorkShift; workShiftHours: Record<WorkType, WorkShiftHours> }>>(
+  //         async (workShift) => {
+  //           const [workShiftHours] = await api.workShiftHours.listWorkShiftHoursWithHeaders({
+  //             employeeId,
+  //             employeeWorkShiftId: workShift.id,
+  //           });
 
-  const workingPeriod = getWorkingPeriodsForEmployee();
-
-  const workShifts = useQuery(
-    getEmployeeWorkShiftsQueryOptions({
-      employeeId,
-      startedAfter: getWorkingPeriodsForEmployee()?.start,
-      startedBefore: getWorkingPeriodsForEmployee()?.end,
-    }),
-  );
-
-  const workShiftsData = useQueries({
-    queries:
-      workShifts?.data?.employeeWorkShifts.map((workShift) => ({
-        ...getListWorkShiftHoursQueryOptions({ employeeWorkShiftId: workShift.id }),
-        select: (data: { employeeWorkShiftHours: WorkShiftHours[]; totalResults: number }) => ({
-          workShift: workShift,
-          workShiftHours: data?.employeeWorkShiftHours.reduce<Record<WorkType, WorkShiftHours>>(
-            (workShiftHoursRecord, singleWorkShiftHours) => {
-              workShiftHoursRecord[singleWorkShiftHours.workType] = singleWorkShiftHours;
-              return workShiftHoursRecord;
-            },
-            {} as Record<WorkType, WorkShiftHours>,
-          ),
-        }),
-      })) ?? [],
-    combine: (results) => results.filter((result) => result.isSuccess),
-  });
-
-  // //Get all dates in working period with month and day
-  // const allDatesInWorkingPeriod =
-  //   workingPeriod && eachDayOfInterval(workingPeriod.start, workingPeriod.end).map((date) => date.toJSDate());
-  // console.log("allDatesInWorkingPeriod", allDatesInWorkingPeriod);
-  // //Get all work shift dates from workShiftsData
-  // //Check if all work shift dates are in the working period and add missing ones to workShiftsData
-  // const workShiftDates = workShiftsData.map(({ data }) => data.workShift.startedAt);
-  // console.log("workShiftDates", workShiftDates.length);
-  // // change DateTime to Date from start of day
-  // const missingDates =
-  //   allDatesInWorkingPeriod?.filter(
-  //     (date) =>
-  //       !workShiftDates.find(
-  //         (workShiftDate) =>
-  //           workShiftDate && DateTime.fromJSDate(workShiftDate).startOf("day").toJSDate().getTime() === date.getTime(),
+  //           return {
+  //             workShift: workShift,
+  //             workShiftHours: workShiftHours.reduce<Record<WorkType, WorkShiftHours>>(
+  //               (workShiftHoursRecord, singleWorkShiftHours) => {
+  //                 workShiftHoursRecord[singleWorkShiftHours.workType] = singleWorkShiftHours;
+  //                 return workShiftHoursRecord;
+  //               },
+  //               {} as Record<WorkType, WorkShiftHours>,
+  //             ),
+  //           };
+  //         },
   //       ),
-  //   ) ?? [];
+  //     );
+  //   },
+  //   enabled: workingPeriodsForEmployee !== undefined,
+  // });
 
-  // console.log("missingDates", missingDates.length);
+  // const addMissingWorkShiftRows = useCallback(
+  //   (formValues: EmployeeWorkHoursFormRow[], workingPeriod: { start: Date; end: Date }): EmployeeWorkHoursFormRow[] => {
+  //     if (!workingPeriod) return formValues;
 
-  const addMissingWorkShiftRows = (
-    formValues: EmployeeWorkHoursFormRow[],
-    workingPeriod: { start: Date; end: Date },
-  ): EmployeeWorkHoursFormRow[] => {
-    if (!workingPeriod) return formValues;
+  //     const allDatesInWorkingPeriod = eachDayOfInterval(workingPeriod.start, workingPeriod.end).map((date) =>
+  //       date.toJSDate(),
+  //     );
 
-    const allDatesInWorkingPeriod = eachDayOfInterval(workingPeriod.start, workingPeriod.end).map((date) =>
-      date.toJSDate(),
-    );
+  //     const existingWorkShiftDates = formValues.map((row) =>
+  //       DateTime.fromJSDate(row.workShift.date).startOf("day").toISODate(),
+  //     );
 
-    // Extract existing work shift dates from formValues
-    const existingWorkShiftDates = formValues.map((row) =>
-      DateTime.fromJSDate(row.workShift.date).startOf("day").toISODate(),
-    );
+  //     // Create empty rows for missing dates
+  //     const missingRows: EmployeeWorkHoursFormRow[] = allDatesInWorkingPeriod
+  //       .filter((date) => !existingWorkShiftDates.includes(DateTime.fromJSDate(date).toISODate()))
+  //       .map((missingDate) => ({
+  //         workShift: {
+  //           id: undefined, // No ID for missing work shifts
+  //           date: missingDate,
+  //           dayOffWorkAllowance: false,
+  //           absence: undefined,
+  //           perDiemAllowance: undefined,
+  //           approved: false,
+  //           notes: undefined,
+  //           startedAt: undefined,
+  //           endedAt: undefined,
+  //           truckIds: undefined,
+  //           employeeId,
+  //         } as EmployeeWorkShift,
+  //         // Create empty work shift hours for all work types
+  //         workShiftHours: Object.values(WorkType).reduce<Record<WorkType, WorkShiftHours>>(
+  //           (workShiftHours, workType) => {
+  //             workShiftHours[workType] = {
+  //               id: undefined, // No ID for missing work shift hours
+  //               employeeId,
+  //               workType,
+  //               calculatedHours: undefined,
+  //               actualHours: undefined,
+  //               employeeWorkShiftId: "", // No employee work shift ID for missing work shift hours
+  //             };
+  //             return workShiftHours;
+  //           },
+  //           {} as Record<WorkType, WorkShiftHours>,
+  //         ),
+  //       }));
 
-    // Create empty rows for missing dates
-    const missingRows = allDatesInWorkingPeriod
-      .filter((date) => !existingWorkShiftDates.includes(DateTime.fromJSDate(date).toISODate()))
-      .map((missingDate) => ({
-        workShift: {
-          id: undefined, // No ID for missing work shifts
-          date: missingDate,
-          dayOffWorkAllowance: false,
-          absence: undefined,
-          perDiemAllowance: undefined,
-          approved: false,
-          notes: "",
-          startedAt: undefined,
-          endedAt: undefined,
-          truckIds: undefined,
-          employeeId, // Ensure to set the current employee ID
-        },
-        workShiftHours: {} as Record<WorkType, WorkShiftHours>, // No work shift hours for missing work shifts
-      }));
+  //     const allRows = [...formValues, ...missingRows];
 
-    // Combine existing rows with missing rows
-    const allRows = [...formValues, ...missingRows];
+  //     return allRows.sort(
+  //       (a, b) => DateTime.fromJSDate(a.workShift.date).toMillis() - DateTime.fromJSDate(b.workShift.date).toMillis(),
+  //     );
+  //   },
+  //   [employeeId],
+  // );
 
-    // Sort rows by date
-    return allRows.sort(
-      (a, b) => DateTime.fromJSDate(a.workShift.date).toMillis() - DateTime.fromJSDate(b.workShift.date).toMillis(),
-    );
-  };
+  // const workShiftsDataWithWorkingPeriodDates = useMemo(
+  //   () =>
+  //     addMissingWorkShiftRows(
+  //       workShiftsDataQuery.data ?? [],
+  //       getWorkingPeriodDates(employeeSalaryGroup, selectedDate.toJSDate()),
+  //     ),
+  //   [addMissingWorkShiftRows, workShiftsDataQuery, employeeSalaryGroup, selectedDate],
+  // );
 
-  if (workingPeriod) {
-    console.log(
-      "workShiftsData",
-      addMissingWorkShiftRows(
-        workShiftsData.map<EmployeeWorkHoursFormRow>((workShiftsData) => workShiftsData.data),
-        workingPeriod,
-      ),
-    );
-  }
-
-  const workShiftsDataWithWorkingPeriodDates = addMissingWorkShiftRows(
-    workShiftsData.map<EmployeeWorkHoursFormRow>((workShiftsData) => workShiftsData.data),
-    getWorkingPeriodDates(employeeSalaryGroup, selectedDate.toJSDate()),
-  );
+  // useEffect(() => {
+  //   methods.reset(workShiftsDataWithWorkingPeriodDates);
+  // }, [workShiftsDataWithWorkingPeriodDates]);
 
   const methods = useForm<EmployeeWorkHoursForm>({
-    defaultValues: [],
-    //values: workShiftsData.map<EmployeeWorkHoursFormRow>((workShiftsData) => workShiftsData.data),
+    defaultValues: workShiftsDataWithWorkingPeriodDates,
     values: workShiftsDataWithWorkingPeriodDates,
     mode: "onChange",
-    disabled: workShiftsDataWithWorkingPeriodDates.length === 0,
   });
+
+  // const getUpdatedWorkShiftsAndWorkShiftHours = (): [
+  //   updatedWorkShifts: EmployeeWorkShift[],
+  //   updatedWorkShiftHours: WorkShiftHours[],
+  // ] => {
+  //   const workShiftsToUpdate: EmployeeWorkShift[] = [];
+  //   const workShiftHoursToUpdate: WorkShiftHours[] = [];
+
+  //   const dirtyFormRows = Object.values(methods.getValues()).filter(
+  //     (_, index) => methods.getFieldState(`${index}`).isDirty,
+  //   );
+  //   console.log("dirtyFormRows", dirtyFormRows);
+  //   for (let i = 0; i < dirtyFormRows.length; i++) {
+  //     if (methods.getFieldState(`${i}.workShift`)?.isDirty) {
+  //       workShiftsToUpdate.push(methods.getValues(`${i}.workShift`));
+  //     }
+
+  //     const rowWorkTypes = Object.keys(methods.getValues(`${i}.workShiftHours`)) as WorkType[];
+
+  //     const dirtyWorkTypes = rowWorkTypes.filter(
+  //       (workType) => methods.getFieldState(`${i}.workShiftHours.${workType}`).isDirty,
+  //     );
+
+  //     workShiftHoursToUpdate.push(
+  //       ...dirtyWorkTypes.map((workType) => methods.getValues(`${i}.workShiftHours.${workType}`)),
+  //     );
+  //   }
+
+  //   return [workShiftsToUpdate, workShiftHoursToUpdate];
+  // };
 
   const getUpdatedWorkShiftsAndWorkShiftHours = (): [
     updatedWorkShifts: EmployeeWorkShift[],
     updatedWorkShiftHours: WorkShiftHours[],
+    newRows: EmployeeWorkHoursFormRow[],
   ] => {
     const workShiftsToUpdate: EmployeeWorkShift[] = [];
     const workShiftHoursToUpdate: WorkShiftHours[] = [];
+    const newRows: EmployeeWorkHoursFormRow[] = [];
 
-    const dirtyFormRows = Object.values(methods.getValues()).filter(
-      (_, index) => methods.getFieldState(`${index}`).isDirty,
-    );
+    const formValues = methods.getValues();
 
-    for (let i = 0; i < dirtyFormRows.length; i++) {
-      if (methods.getFieldState(`${i}.workShift`)?.isDirty) {
-        workShiftsToUpdate.push(methods.getValues(`${i}.workShift`));
+    const dirtyFormRowIndices = Object.values(formValues).reduce<number[]>((indices, _, index) => {
+      if (methods.getFieldState(`${index}`).isDirty) indices.push(index);
+      return indices;
+    }, []);
+
+    for (const i of dirtyFormRowIndices) {
+      const row = methods.getValues(`${i}`);
+      console.log("ROW", row);
+      console.log("STANDBY", methods.getValues(`${i}.workShiftHours.STANDBY`));
+
+      if (!row.workShift.id) {
+        newRows.push(row);
+        continue;
+      }
+
+      const fieldState = methods.getFieldState(`${i}.workShift`);
+
+      if (fieldState.isDirty && fieldState.isTouched) {
+        workShiftsToUpdate.push(row.workShift);
       }
 
       const rowWorkTypes = Object.keys(methods.getValues(`${i}.workShiftHours`)) as WorkType[];
 
-      const dirtyWorkTypes = rowWorkTypes.filter(
-        (workType) => methods.getFieldState(`${i}.workShiftHours.${workType}`).isDirty,
-      );
+      const dirtyWorkTypes = rowWorkTypes.filter((workType) => {
+        const fieldState = methods.getFieldState(`${i}.workShiftHours.${workType}`);
+        return fieldState.isDirty && fieldState.isTouched;
+      });
 
       workShiftHoursToUpdate.push(
         ...dirtyWorkTypes.map((workType) => methods.getValues(`${i}.workShiftHours.${workType}`)),
       );
     }
 
-    return [workShiftsToUpdate, workShiftHoursToUpdate];
+    return [workShiftsToUpdate, workShiftHoursToUpdate, newRows];
   };
+
+  // const updateWorkShift = useMutation({
+  //   mutationFn: async () => {
+  //     const [updatedWorkShifts, updatedWorkShiftHours] = getUpdatedWorkShiftsAndWorkShiftHours();
+
+  //     await Promise.all(
+  //       updatedWorkShifts.map((workShift) =>
+  //         api.employeeWorkShifts.updateEmployeeWorkShift({
+  //           employeeId,
+  //           // biome-ignore lint/style/noNonNullAssertion: Work shift id is always defined
+  //           workShiftId: workShift.id!,
+  //           employeeWorkShift: workShift,
+  //         }),
+  //       ),
+  //     );
+
+  //     await Promise.all(
+  //       updatedWorkShiftHours.map((workShiftHours) =>
+  //         api.workShiftHours.updateWorkShiftHours({
+  //           // biome-ignore lint/style/noNonNullAssertion: Work shift id is always defined
+  //           workShiftHoursId: workShiftHours.id!,
+  //           workShiftHours: workShiftHours,
+  //         }),
+  //       ),
+  //     );
+  //   },
+  //   onError: () => toast.error(t("management.employees.errorToast")),
+  //   onSuccess: () => {
+  //     queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.WORK_SHIFTS] });
+  //     queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.WORK_SHIFT_HOURS] });
+  //     toast.success(t("workingHours.workingHourBalances.successToast"));
+  //   },
+  // });
 
   const updateWorkShift = useMutation({
     mutationFn: async () => {
-      const [updatedWorkShifts, updatedWorkShiftHours] = getUpdatedWorkShiftsAndWorkShiftHours();
+      const [updatedWorkShifts, updatedWorkShiftHours, newRows] = getUpdatedWorkShiftsAndWorkShiftHours();
+
+      const newRowsWithWorkShiftIds = await Promise.all(
+        newRows.map(async (row) => {
+          const workShift = await api.employeeWorkShifts.createEmployeeWorkShift({
+            employeeId,
+            employeeWorkShift: row.workShift,
+          });
+          return { ...row, workShift: workShift };
+        }),
+      );
+
+      const newWorkShiftHours = (
+        await Promise.all(
+          newRowsWithWorkShiftIds.map(async (row) =>
+            api.workShiftHours.listWorkShiftHours({
+              employeeId,
+              employeeWorkShiftId: row.workShift.id,
+            }),
+          ),
+        )
+      ).flat();
+
+      const newWorkShiftHoursWithUpdatedValues = newWorkShiftHours.reduce<WorkShiftHours[]>((list, hours) => {
+        const matchingRow = newRowsWithWorkShiftIds.find((row) => row.workShift.id === hours.employeeWorkShiftId);
+        const hoursFromRow = matchingRow?.workShiftHours[hours.workType];
+        if (hoursFromRow?.actualHours !== undefined) list.push({ ...hours, actualHours: hoursFromRow.actualHours });
+        return list;
+      }, []);
 
       await Promise.all(
         updatedWorkShifts.map((workShift) =>
           api.employeeWorkShifts.updateEmployeeWorkShift({
             employeeId,
-            // biome-ignore lint/style/noNonNullAssertion: Work shift id is always defined
+            // biome-ignore lint/style/noNonNullAssertion: <explanation>
             workShiftId: workShift.id!,
             employeeWorkShift: workShift,
           }),
         ),
       );
 
+      const allWorkShiftHoursToUpdate = [...updatedWorkShiftHours, ...newWorkShiftHoursWithUpdatedValues];
       await Promise.all(
-        updatedWorkShiftHours.map((workShiftHours) =>
+        allWorkShiftHoursToUpdate.map((workShiftHours) =>
           api.workShiftHours.updateWorkShiftHours({
             // biome-ignore lint/style/noNonNullAssertion: Work shift id is always defined
             workShiftHoursId: workShiftHours.id!,
@@ -328,12 +538,15 @@ function WorkShifts() {
           }),
         ),
       );
-    },
-    onError: () => toast.error(t("management.employees.errorToast")),
-    onSuccess: () => {
+
+      // Step 5: Invalidate queries to refresh form data
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.WORK_SHIFTS] });
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.WORK_SHIFT_HOURS] });
+
       toast.success(t("workingHours.workingHourBalances.successToast"));
+    },
+    onError: () => {
+      toast.error(t("management.employees.errorToast"));
     },
   });
 
@@ -347,6 +560,7 @@ function WorkShifts() {
           navigate({
             to: "/working-hours/$employeeId/work-shifts",
             params: { employeeId: employee.id },
+            search: { date: selectedDate },
           })
         }
         key={employee.id}
@@ -418,7 +632,7 @@ function WorkShifts() {
     const workingPeriodDates = getWorkingPeriodDates(employeeSalaryGroup, selectedDate.toJSDate());
     if (!workingPeriodDates) return null;
 
-    const start = DateTime.fromJSDate(workingPeriodDates.start).setLocale("fi").toFormat("EEE dd.MM"); // `EEE` gives the first two letters of the day in Finnish
+    const start = DateTime.fromJSDate(workingPeriodDates.start).setLocale("fi").toFormat("EEE dd.MM");
     const end = DateTime.fromJSDate(workingPeriodDates.end).setLocale("fi").toFormat("EEE dd.MM");
 
     return (
@@ -450,12 +664,11 @@ function WorkShifts() {
                 </TableHeader>
                 <TableContainer>
                   <WorkShiftsTableHeader />
-                  {workShiftsData.map(({ data: workShiftFormRow }, index) => (
+                  {workShiftsDataWithWorkingPeriodDates.map((workShiftFormRow, index) => (
+                    // {workShiftsData.map(({ data: workShiftFormRow }, index) => (
                     <WorkShiftRow
                       key={`${index}_${workShiftFormRow.workShift.id}`}
-                      onClick={() => navigate({ to: "work-shift-details" })}
-                      workShiftData={workShiftFormRow}
-                      trucks={trucks ?? []}
+                      onClick={() => navigate({ to: "work-shift-details", search: { date: selectedDate } })}
                       index={index}
                     />
                   ))}
