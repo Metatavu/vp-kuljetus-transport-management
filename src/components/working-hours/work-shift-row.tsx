@@ -1,7 +1,7 @@
-import { Button, Checkbox, Link, MenuItem, Stack, TextField, Typography, styled } from "@mui/material";
+import { Button, Checkbox, Link, MenuItem, Stack, TextField, Tooltip, Typography, styled } from "@mui/material";
 import { AbsenceType, EmployeeWorkShift, PerDiemAllowanceType, WorkShiftHours, WorkType } from "generated/client";
 import { DateTime } from "luxon";
-import { Controller, useFormContext } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Route } from "routes/working-hours_.$employeeId.work-shifts";
 import { EmployeeWorkHoursForm } from "src/types";
@@ -42,13 +42,11 @@ const Cell = styled(Stack, {
 
 function WorkShiftRow({ onClick, index }: Props) {
   const { t } = useTranslation();
-  const { control, watch, setValue } = useFormContext<EmployeeWorkHoursForm>();
+  const { watch, setValue } = useFormContext<EmployeeWorkHoursForm>();
   const workShift = watch(`${index}.workShift`) as EmployeeWorkShift | undefined;
   const dayOffWorkAllowance = watch(`${index}.workShift.dayOffWorkAllowance`);
   const approved = watch(`${index}.workShift.approved`) as boolean | undefined;
   const workShiftHours = watch(`${index}.workShiftHours`) as Record<WorkType, WorkShiftHours> | undefined;
-
-  console.log(watch(`${index}.workShiftHours.STANDBY.actualHours`));
 
   const { trucks } = Route.useLoaderData();
 
@@ -56,25 +54,31 @@ function WorkShiftRow({ onClick, index }: Props) {
     return truckId ? trucks.find((truck) => truck.id === truckId)?.name : undefined;
   };
 
-  const renderWorkHourInput = (title: string, workType: WorkType) => (
-    <TextField
-      className="cell-input"
-      size="small"
-      aria-label={title}
-      title={title}
-      fullWidth
-      variant="outlined"
-      placeholder={workShiftHours?.[workType].calculatedHours?.toString()}
-      value={workShiftHours?.[workType].actualHours || ""}
-      onChange={(event) =>
-        setValue(`${index}.workShiftHours.${workType}.actualHours`, parseFloat(event.target.value), {
-          shouldDirty: true,
-          shouldValidate: true,
-          shouldTouch: true,
-        })
-      }
-    />
-  );
+  const renderWorkHourInput = (title: string, workType: WorkType) => {
+    const calculatedHoursTooltipText = `${t("workingHours.workingDays.table.calculatedHours")}: ${
+      workShiftHours?.[workType].calculatedHours?.toString() ?? title
+    } `;
+    return (
+      <Tooltip title={calculatedHoursTooltipText} placement="top">
+        <TextField
+          className="cell-input"
+          size="small"
+          aria-label={title}
+          fullWidth
+          variant="outlined"
+          placeholder={workShiftHours?.[workType].calculatedHours?.toString()}
+          value={workShiftHours?.[workType].actualHours || ""}
+          onChange={(event) =>
+            setValue(`${index}.workShiftHours.${workType}.actualHours`, parseFloat(event.target.value), {
+              shouldDirty: true,
+              shouldValidate: true,
+              shouldTouch: true,
+            })
+          }
+        />
+      </Tooltip>
+    );
+  };
 
   const renderPerDiemAllowanceSelectInput = () => {
     const label = t("workingHours.workingDays.table.dailyAllowance");

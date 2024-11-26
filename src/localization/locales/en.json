@@ -340,7 +340,8 @@
       "fullDayAllowance": "Full-Day Allowance",
       "toWorkHourDetails": "To Work hour details",
       "approved": "Checked",
-      "successToast": "Working hours saved!"
+      "successToast": "Working hours saved!",
+      "errorToast": "Failed to save working hours"
     },
     "workingDays": {
       "title": "Working days",
@@ -365,7 +366,8 @@
         "vehicle": "Vehicle",
         "dailyAllowance": "Daily Allowance",
         "inspected": "Inspected",
-        "remarks": "Remarks"
+        "remarks": "Remarks",
+        "calculatedHours": "Calculated hours"
       },
       "aggregationsTable": {
         "workingHours": "Working Hours",

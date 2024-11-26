@@ -1,23 +1,22 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router"
-import WorkShiftDialog from "components/working-hours/work-shift-dialog"
-import { t } from "i18next"
-import { Breadcrumb } from "src/types"
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import WorkShiftDialog from "components/working-hours/work-shift-dialog";
+import { t } from "i18next";
+import { Breadcrumb } from "src/types";
 
-export const Route = createFileRoute(
-  "/working-hours_/$employeeId/work-shifts/work-shift-details",
-)({
+export const Route = createFileRoute("/working-hours_/$employeeId/work-shifts/work-shift-details")({
   component: WorkShiftDetails,
   loader: () => {
     const breadcrumbs: Breadcrumb[] = [
       { label: t("workingHours.title") },
       { label: t("workingHours.workingDays.title") },
-    ]
-    return { breadcrumbs }
+    ];
+    return { breadcrumbs };
   },
-})
+});
 
 function WorkShiftDetails() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const selectedDate = Route.useSearch({ select: (search) => search.date });
 
-  return <WorkShiftDialog onClose={() => navigate({ to: ".." })} />
+  return <WorkShiftDialog onClose={() => navigate({ to: "..", search: { date: selectedDate } })} />;
 }

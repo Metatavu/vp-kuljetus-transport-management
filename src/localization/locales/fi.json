@@ -428,7 +428,8 @@
       "fullDayAllowance": "Kokopäiväraha",
       "toWorkHourDetails": "Näytä erittely",
       "approved": "Tarkastettu",
-      "successToast": "Työvuoro tallennettu!"
+      "successToast": "Työvuoro tallennettu!",
+      "errorToast": "Työvuoron tallennus epäonnistui"
     },
     "workingDays": {
       "title": "Työpäivät",
@@ -453,7 +454,8 @@
         "vehicle": "Auto",
         "dailyAllowance": "Päiväraha",
         "inspected": "Tarkastettu",
-        "remarks": "Huomautuksia"
+        "remarks": "Huomautuksia",
+        "calculatedHours": "Laskettu työaika"
       },
       "aggregationsTable": {
         "workingHours": "Työtunnit",
