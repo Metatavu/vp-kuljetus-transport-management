@@ -1,15 +1,22 @@
 import { Button, Checkbox, Link, MenuItem, Stack, TextField, Tooltip, Typography, styled } from "@mui/material";
-import { AbsenceType, EmployeeWorkShift, PerDiemAllowanceType, WorkShiftHours, WorkType } from "generated/client";
+import {
+  AbsenceType,
+  EmployeeWorkShift,
+  PerDiemAllowanceType,
+  Truck,
+  WorkShiftHours,
+  WorkType,
+} from "generated/client";
 import { DateTime } from "luxon";
 import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { Route } from "routes/working-hours_.$employeeId.work-shifts";
 import { EmployeeWorkHoursForm } from "src/types";
 import LocalizationUtils from "src/utils/localization-utils";
 
 type Props = {
   onClick: () => void;
   index: number;
+  trucks: Truck[];
 };
 
 // Styled work shift row
@@ -40,15 +47,13 @@ const Cell = styled(Stack, {
   },
 }));
 
-function WorkShiftRow({ onClick, index }: Props) {
+function WorkShiftRow({ onClick, index, trucks }: Props) {
   const { t } = useTranslation();
   const { watch, setValue } = useFormContext<EmployeeWorkHoursForm>();
   const workShift = watch(`${index}.workShift`) as EmployeeWorkShift | undefined;
   const dayOffWorkAllowance = watch(`${index}.workShift.dayOffWorkAllowance`);
   const approved = watch(`${index}.workShift.approved`) as boolean | undefined;
   const workShiftHours = watch(`${index}.workShiftHours`) as Record<WorkType, WorkShiftHours> | undefined;
-
-  const { trucks } = Route.useLoaderData();
 
   const getTruckById = (truckId: string) => {
     return truckId ? trucks.find((truck) => truck.id === truckId)?.name : undefined;
@@ -59,7 +64,7 @@ function WorkShiftRow({ onClick, index }: Props) {
       workShiftHours?.[workType].calculatedHours?.toString() ?? title
     } `;
     return (
-      <Tooltip title={calculatedHoursTooltipText} placement="top">
+      <Tooltip title={calculatedHoursTooltipText} placement="bottom">
         <TextField
           className="cell-input"
           size="small"

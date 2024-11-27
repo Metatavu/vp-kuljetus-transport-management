@@ -14,8 +14,8 @@ import {
   styled,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Outlet, createFileRoute, useRouter } from "@tanstack/react-router";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Outlet, createFileRoute } from "@tanstack/react-router";
 import { api } from "api/index";
 import AggregationsTable from "components/working-hours/aggregations-table";
 import ChangeLog from "components/working-hours/change-log";
@@ -28,7 +28,6 @@ import { DateTime } from "luxon";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { queryClient } from "src/main";
 import { Breadcrumb, EmployeeWorkHoursForm, EmployeeWorkHoursFormRow } from "src/types";
 import DataValidation from "src/utils/data-validation-utils";
 import TimeUtils from "src/utils/time-utils";
@@ -38,122 +37,16 @@ export const workShiftSearchSchema = z.object({
   date: z.string().datetime({ offset: true }).transform(DataValidation.parseValidDateTime),
 });
 
-const addMissingWorkShiftRows = (
-  employeeId: string,
-  formValues: EmployeeWorkHoursFormRow[],
-  workingPeriod: { start: Date; end: Date },
-): EmployeeWorkHoursFormRow[] => {
-  if (!workingPeriod) return formValues;
-
-  const allDatesInWorkingPeriod = TimeUtils.eachDayOfWorkingPeriod(workingPeriod.start, workingPeriod.end).map((date) =>
-    date.toJSDate(),
-  );
-
-  const existingWorkShiftDates = formValues.map((row) =>
-    DateTime.fromJSDate(row.workShift.date).startOf("day").toISODate(),
-  );
-
-  // Create empty rows for missing dates
-  const missingRows: EmployeeWorkHoursFormRow[] = allDatesInWorkingPeriod
-    .filter((date) => !existingWorkShiftDates.includes(DateTime.fromJSDate(date).toISODate()))
-    .map((missingDate) => ({
-      workShift: {
-        id: undefined, // No ID for missing work shifts
-        date: missingDate,
-        dayOffWorkAllowance: false,
-        absence: undefined,
-        perDiemAllowance: undefined,
-        approved: false,
-        notes: undefined,
-        startedAt: undefined,
-        endedAt: undefined,
-        truckIds: undefined,
-        employeeId,
-      } as EmployeeWorkShift,
-      // Create empty work shift hours for all work types
-      workShiftHours: Object.values(WorkType).reduce<Record<WorkType, WorkShiftHours>>(
-        (workShiftHours, workType) => {
-          workShiftHours[workType] = {
-            id: undefined, // No ID for missing work shift hours
-            employeeId,
-            workType,
-            calculatedHours: undefined,
-            actualHours: undefined,
-            employeeWorkShiftId: "", // No employee work shift ID for missing work shift hours
-          };
-          return workShiftHours;
-        },
-        {} as Record<WorkType, WorkShiftHours>,
-      ),
-    }));
-
-  const allRows = [...formValues, ...missingRows];
-
-  return allRows.sort(
-    (a, b) => DateTime.fromJSDate(a.workShift.date).toMillis() - DateTime.fromJSDate(b.workShift.date).toMillis(),
-  );
-};
-
 export const Route = createFileRoute("/working-hours_/$employeeId/work-shifts")({
-  validateSearch: workShiftSearchSchema,
-  loaderDeps: ({ search }) => ({ date: search.date }),
-  loader: async ({ params: { employeeId }, deps: { date } }) => {
-    const { trucks } = await queryClient.ensureQueryData(getListTrucksQueryOptions({}));
-    const { employees } = await queryClient.ensureQueryData(getListEmployeesQueryOptions({}));
-
-    const employeeSalaryGroup =
-      employees.find((employee) => employee.id === employeeId)?.salaryGroup ?? SalaryGroup.Driver;
-
-    const workingPeriodsForEmployee = TimeUtils.getWorkingPeriodDates(employeeSalaryGroup, date?.toJSDate());
-
-    const workShiftsData = await queryClient.ensureQueryData({
-      queryKey: [QUERY_KEYS.WORK_SHIFTS, employeeId, "workShiftsData"],
-      queryFn: async () => {
-        const [workShifts] = await api.employeeWorkShifts.listEmployeeWorkShiftsWithHeaders({
-          employeeId,
-          startedAfter: workingPeriodsForEmployee?.start,
-          startedBefore: workingPeriodsForEmployee?.end,
-        });
-
-        return await Promise.all(
-          workShifts.map<Promise<{ workShift: EmployeeWorkShift; workShiftHours: Record<WorkType, WorkShiftHours> }>>(
-            async (workShift) => {
-              const [workShiftHours] = await api.workShiftHours.listWorkShiftHoursWithHeaders({
-                employeeId,
-                employeeWorkShiftId: workShift.id,
-              });
-
-              return {
-                workShift: workShift,
-                workShiftHours: workShiftHours.reduce<Record<WorkType, WorkShiftHours>>(
-                  (workShiftHoursRecord, singleWorkShiftHours) => {
-                    workShiftHoursRecord[singleWorkShiftHours.workType] = singleWorkShiftHours;
-                    return workShiftHoursRecord;
-                  },
-                  {} as Record<WorkType, WorkShiftHours>,
-                ),
-              };
-            },
-          ),
-        );
-      },
-    });
-
-    const workShiftsDataWithWorkingPeriodDates = addMissingWorkShiftRows(
-      employeeId,
-      workShiftsData,
-      TimeUtils.getWorkingPeriodDates(employeeSalaryGroup, date.toJSDate()),
-    );
-
+  component: WorkShifts,
+  loader: () => {
     const breadcrumbs: Breadcrumb[] = [
       { label: t("workingHours.title") },
       { label: t("workingHours.workingDays.title") },
     ];
-    return { breadcrumbs, trucks, employees, workShiftsDataWithWorkingPeriodDates, employeeSalaryGroup };
+    return { breadcrumbs };
   },
-  component: WorkShifts,
-  errorComponent: () => <div>Error</div>,
-  pendingComponent: () => <div>Loading...</div>,
+  validateSearch: workShiftSearchSchema,
 });
 
 // Styled root component
@@ -229,12 +122,113 @@ const TableContainer = styled(Stack, {
 }));
 
 function WorkShifts() {
-  const { employees, workShiftsDataWithWorkingPeriodDates, employeeSalaryGroup } = Route.useLoaderData();
   const { t } = useTranslation();
   const navigate = Route.useNavigate();
   const { employeeId } = Route.useParams();
   const queryClient = useQueryClient();
   const selectedDate = Route.useSearch({ select: (search) => search.date });
+
+  const trucks = useQuery(getListTrucksQueryOptions({})).data?.trucks;
+  const employees = useQuery(getListEmployeesQueryOptions({})).data?.employees;
+
+  const employeeSalaryGroup =
+    employees?.find((employee) => employee.id === employeeId)?.salaryGroup ?? SalaryGroup.Driver;
+
+  const workingPeriodsForEmployee = TimeUtils.getWorkingPeriodDates(employeeSalaryGroup, selectedDate?.toJSDate());
+
+  const workShiftsData = useQuery({
+    queryKey: [QUERY_KEYS.WORK_SHIFTS, employeeId, "workShiftsData", workingPeriodsForEmployee],
+    queryFn: async () => {
+      const [workShifts] = await api.employeeWorkShifts.listEmployeeWorkShiftsWithHeaders({
+        employeeId,
+        startedAfter: workingPeriodsForEmployee?.start,
+        startedBefore: workingPeriodsForEmployee?.end,
+      });
+
+      return await Promise.all(
+        workShifts.map<Promise<{ workShift: EmployeeWorkShift; workShiftHours: Record<WorkType, WorkShiftHours> }>>(
+          async (workShift) => {
+            const [workShiftHours] = await api.workShiftHours.listWorkShiftHoursWithHeaders({
+              employeeId,
+              employeeWorkShiftId: workShift.id,
+            });
+
+            return {
+              workShift: workShift,
+              workShiftHours: workShiftHours.reduce<Record<WorkType, WorkShiftHours>>(
+                (workShiftHoursRecord, singleWorkShiftHours) => {
+                  workShiftHoursRecord[singleWorkShiftHours.workType] = singleWorkShiftHours;
+                  return workShiftHoursRecord;
+                },
+                {} as Record<WorkType, WorkShiftHours>,
+              ),
+            };
+          },
+        ),
+      );
+    },
+  });
+
+  const addMissingWorkShiftRows = (
+    employeeId: string,
+    formValues: EmployeeWorkHoursFormRow[],
+    workingPeriod: { start: Date; end: Date },
+  ): EmployeeWorkHoursFormRow[] => {
+    if (!workingPeriod) return formValues;
+
+    const allDatesInWorkingPeriod = TimeUtils.eachDayOfWorkingPeriod(workingPeriod.start, workingPeriod.end).map(
+      (date) => date.toJSDate(),
+    );
+
+    const existingWorkShiftDates = formValues.map((row) =>
+      DateTime.fromJSDate(row.workShift.date).startOf("day").toISODate(),
+    );
+
+    const missingRows: EmployeeWorkHoursFormRow[] = allDatesInWorkingPeriod
+      .filter((date) => !existingWorkShiftDates.includes(DateTime.fromJSDate(date).toISODate()))
+      .map((missingDate) => ({
+        workShift: {
+          id: undefined, // No ID for missing work shifts
+          date: missingDate,
+          dayOffWorkAllowance: false,
+          absence: undefined,
+          perDiemAllowance: undefined,
+          approved: false,
+          notes: undefined,
+          startedAt: undefined,
+          endedAt: undefined,
+          truckIds: undefined,
+          employeeId,
+        } as EmployeeWorkShift,
+        // Create empty work shift hours for each work type
+        workShiftHours: Object.values(WorkType).reduce<Record<WorkType, WorkShiftHours>>(
+          (workShiftHours, workType) => {
+            workShiftHours[workType] = {
+              id: undefined, // No ID for missing work shift hours
+              employeeId,
+              workType,
+              calculatedHours: undefined,
+              actualHours: undefined,
+              employeeWorkShiftId: "", // No employee work shift ID for missing work shift hours
+            };
+            return workShiftHours;
+          },
+          {} as Record<WorkType, WorkShiftHours>,
+        ),
+      }));
+
+    const allRows = [...formValues, ...missingRows];
+
+    return allRows.sort(
+      (a, b) => DateTime.fromJSDate(a.workShift.date).toMillis() - DateTime.fromJSDate(b.workShift.date).toMillis(),
+    );
+  };
+
+  const workShiftsDataWithWorkingPeriodDates = addMissingWorkShiftRows(
+    employeeId,
+    workShiftsData.data ?? [],
+    TimeUtils.getWorkingPeriodDates(employeeSalaryGroup, selectedDate.toJSDate()),
+  );
 
   const methods = useForm<EmployeeWorkHoursForm>({
     defaultValues: workShiftsDataWithWorkingPeriodDates,
@@ -323,7 +317,7 @@ function WorkShifts() {
         updatedWorkShifts.map((workShift) =>
           api.employeeWorkShifts.updateEmployeeWorkShift({
             employeeId,
-            // biome-ignore lint/style/noNonNullAssertion: <explanation>
+            // biome-ignore lint/style/noNonNullAssertion: Work shift id is always defined
             workShiftId: workShift.id!,
             employeeWorkShift: workShift,
           }),
@@ -341,10 +335,8 @@ function WorkShifts() {
         ),
       );
 
-      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.WORK_SHIFTS] });
-      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.WORK_SHIFT_HOURS] });
-
-      //window.location.reload();
+      await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.WORK_SHIFTS] });
+      await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.WORK_SHIFT_HOURS] });
 
       toast.success(t("workingHours.workingHourBalances.successToast"));
     },
@@ -472,6 +464,7 @@ function WorkShifts() {
                       key={`${index}_${workShiftFormRow.workShift.id}`}
                       onClick={() => navigate({ to: "work-shift-details", search: { date: selectedDate } })}
                       index={index}
+                      trucks={trucks ?? []}
                     />
                   ))}
                 </TableContainer>
