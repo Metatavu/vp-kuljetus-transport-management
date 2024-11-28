@@ -146,8 +146,8 @@ function WorkShifts() {
     queryFn: async () => {
       const [workShifts] = await api.employeeWorkShifts.listEmployeeWorkShiftsWithHeaders({
         employeeId,
-        startedAfter: workingPeriodsForEmployee?.start,
-        startedBefore: workingPeriodsForEmployee?.end,
+        dateAfter: workingPeriodsForEmployee?.start,
+        dateBefore: workingPeriodsForEmployee?.end,
       });
 
       return await Promise.all(
