@@ -40,6 +40,8 @@ export interface ListEmployeeWorkShiftsRequest {
     employeeId: string;
     startedAfter?: Date;
     startedBefore?: Date;
+    dateAfter?: Date;
+    dateBefore?: Date;
     first?: number;
     max?: number;
 }
@@ -203,6 +205,12 @@ export class EmployeeWorkShiftsApi extends runtime.BaseAPI {
         }
         if (requestParameters.startedBefore !== undefined) {
             queryParameters['startedBefore'] = (requestParameters.startedBefore as any).toISOString();
+        }
+        if (requestParameters.dateAfter !== undefined) {
+            queryParameters['dateAfter'] = (requestParameters.dateAfter as any).toISOString();
+        }
+        if (requestParameters.dateBefore !== undefined) {
+            queryParameters['dateBefore'] = (requestParameters.dateBefore as any).toISOString();
         }
         if (requestParameters.first !== undefined) {
             queryParameters['first'] = requestParameters.first;
