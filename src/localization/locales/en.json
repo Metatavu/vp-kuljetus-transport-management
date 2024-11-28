@@ -8,6 +8,7 @@
   "logout": "Logout",
   "edit": "Edit",
   "delete": "Delete",
+  "approve": "Approve",
   "archive": "Archive",
   "open": "Open",
   "noSelection": "No selection",
@@ -138,6 +139,30 @@
       },
       "successToast": "Equipment saved!",
       "errorToast": "Failed to save equipment!"
+    },
+    "clientApps": {
+      "title": "Devices",
+      "name": "Device name",
+      "tag": "Tag",
+      "deviceId": "Device ID",
+      "deviceOs": "Operating system",
+      "appVersion": "App version",
+      "status": "Status",
+      "createdAt": "Created at",
+      "statuses": {
+        "WAITING_FOR_APPROVAL": "Waiting for approval",
+        "APPROVED": "Approved"
+      },
+      "lastLoginAt": "Last login",
+      "confirmDeleteDevice": "Delete device {{name}}?",
+      "confirmApproveDeviceTitle": "Approve device",
+      "approveDeviceInstructions": "Check that the device's application ID matches and give the device an easily recognizable name.",
+      "archiveDialog": {
+        "title": "Archive device",
+        "description": "Are you sure you want to archive device {{name}}?"
+      },
+      "successToast": "Device information saved!",
+      "errorToast": "Failed to save device information!"
     },
     "vehicles": {
       "title": "Vehicles",

@@ -1,6 +1,7 @@
 import config from "app/config";
 import { authAtom } from "atoms/auth";
 import {
+  ClientAppsApi,
   Configuration,
   DriversApi,
   EmployeeWorkShiftsApi,
@@ -40,4 +41,5 @@ export const api = {
   workShiftHours: new WorkShiftHoursApi(configuration),
   holidays: new HolidaysApi(configuration),
   employeeWorkShifts: new EmployeeWorkShiftsApi(configuration),
+  clientApps: new ClientAppsApi(configuration),
 };

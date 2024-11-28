@@ -1,4 +1,5 @@
 import { ArrowBack, Print, Save, Send } from "@mui/icons-material";
+import { LoadingButton } from "@mui/lab";
 import {
   Box,
   Button,
@@ -14,6 +15,7 @@ import {
   styled,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { BlobProvider } from "@react-pdf/renderer";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Outlet, createFileRoute } from "@tanstack/react-router";
 import { api } from "api/index";
@@ -21,6 +23,7 @@ import AggregationsTable from "components/working-hours/aggregations-table";
 import ChangeLog from "components/working-hours/change-log";
 import WorkShiftRow from "components/working-hours/work-shift-row";
 import WorkShiftsTableHeader from "components/working-hours/work-shifts-table-header";
+import WorkingHoursDocument from "components/working-hours/working-hours-document";
 import { EmployeeWorkShift, SalaryGroup, WorkShiftHours, WorkType } from "generated/client";
 import { QUERY_KEYS, getListEmployeesQueryOptions, getListTrucksQueryOptions } from "hooks/use-queries";
 import { t } from "i18next";
@@ -403,9 +406,20 @@ function WorkShifts() {
           </Stack>
         </ToolbarContainer>
         <Stack direction="row" alignItems="end" gap={2} p={2}>
-          <Button size="small" variant="outlined" endIcon={<Print />}>
-            {t("workingHours.workingDays.print")}
-          </Button>
+          <BlobProvider document={<WorkingHoursDocument />}>
+            {({ loading, url }) => (
+              <LoadingButton
+                loading={loading}
+                href={url || ""}
+                target="_blank"
+                size="small"
+                variant="outlined"
+                endIcon={<Print />}
+              >
+                {t("workingHours.workingDays.print")}
+              </LoadingButton>
+            )}
+          </BlobProvider>
           <Button size="small" variant="contained" disabled={true} endIcon={<Send />}>
             {t("workingHours.workingDays.sendToPayroll")}
           </Button>

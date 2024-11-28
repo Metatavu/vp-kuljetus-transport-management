@@ -7,8 +7,8 @@
   - `nvm use`
   - For instructions on setting up automatic node version switching see [this](https://github.com/nvm-sh/nvm#deeper-shell-integration)
 - `npm i`
-- See [Environment variables](#environment-variables) for setting up Infisical for managing environment variables
-- After setting up Infisical you can run the project with `npm run start`
+- See [Environment variables](#environment-variables) for setting up automatic secret injection from Hashicorp Vault
+- After this, you can run the project with `withhcv npm run start`
 
 ### Linting / formatting
 
@@ -32,16 +32,7 @@ This project uses i18next for localization. Different features about what i18nex
 
 ### Environment variables
 
-This project uses [Infisical](https://infisical.com) for managing environment variables. It provides a centralized way for serving environment variables to both CI/CD pipeline and local development. Proceed with the following steps to get started:
-
-1. Install Infisical CLI by referencing the official documentation here: [Infisical CLI](https://infisical.com/docs/cli/overview)
-2. Request fellow developers to get access to
-   1. Infisical organization
-   2. VP-Kuljetus project
-3. Run `infisical login` and authenticate with your Infisical account
-   1.  Select `Infisical Cloud` when asked
-4. Run `npm run start`
-5. You will see in the terminal that Infisical has successfully injected the environment variables and the project has started
+- add `.env` file with `VAULT_PATH` secret. Contact project team to acquire the secret value and the credentials to HCV.
 
 ### To update spec
 Run `git submodule update --init`
