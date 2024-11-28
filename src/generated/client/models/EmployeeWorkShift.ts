@@ -150,7 +150,7 @@ export function EmployeeWorkShiftFromJSONTyped(json: any, ignoreDiscriminator: b
         'truckIds': !exists(json, 'truckIds') ? undefined : json['truckIds'],
         'dayOffWorkAllowance': !exists(json, 'dayOffWorkAllowance') ? undefined : json['dayOffWorkAllowance'],
         'absence': !exists(json, 'absence') ? undefined : AbsenceTypeFromJSON(json['absence']),
-        'perDiemAllowance': !exists(json, 'PerDiemAllowance') ? undefined : PerDiemAllowanceTypeFromJSON(json['PerDiemAllowance']),
+        'perDiemAllowance': !exists(json, 'perDiemAllowance') ? undefined : PerDiemAllowanceTypeFromJSON(json['perDiemAllowance']),
         'approved': json['approved'],
         'notes': !exists(json, 'notes') ? undefined : json['notes'],
     };
@@ -169,7 +169,7 @@ export function EmployeeWorkShiftToJSON(value?: EmployeeWorkShift | null): any {
         'employeeId': value.employeeId,
         'dayOffWorkAllowance': value.dayOffWorkAllowance,
         'absence': AbsenceTypeToJSON(value.absence),
-        'PerDiemAllowance': PerDiemAllowanceTypeToJSON(value.perDiemAllowance),
+        'perDiemAllowance': PerDiemAllowanceTypeToJSON(value.perDiemAllowance),
         'approved': value.approved,
         'notes': value.notes,
     };

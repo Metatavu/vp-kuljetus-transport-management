@@ -4,6 +4,7 @@ import {
   FindTowableRequest,
   FindTruckRequest,
   ListClientAppsRequest,
+  ListEmployeeWorkEventsRequest,
   ListEmployeesRequest,
   ListFreightUnitsRequest,
   ListHolidaysRequest,
@@ -33,6 +34,8 @@ export const QUERY_KEYS = {
   WORK_SHIFT_HOURS: "work-shift-hours",
   HOLIDAYS: "holidays",
   CLIENT_APPS: "clientApps",
+  WORK_SHIFTS: "work-shifts",
+  EMPLOYEE_WORK_EVENTS: "employee-work-events",
 } as const;
 
 export const getListSitesQueryOptions = (requestParams: ListSitesRequest = {}, enabled = true) =>
@@ -231,6 +234,12 @@ export const getFindClientAppQueryOptions = (clientAppId: string) =>
   queryOptions({
     queryKey: [QUERY_KEYS.CLIENT_APPS, clientAppId],
     queryFn: () => api.clientApps.findClientApp({ clientAppId }),
+  });
+
+export const getListEmployeeWorkEventsQueryOptions = (params: ListEmployeeWorkEventsRequest) =>
+  queryOptions({
+    queryKey: [QUERY_KEYS.EMPLOYEE_WORK_EVENTS, params],
+    queryFn: () => api.workEvents.listEmployeeWorkEvents(params),
   });
 
 /**

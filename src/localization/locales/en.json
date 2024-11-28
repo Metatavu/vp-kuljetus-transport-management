@@ -449,7 +449,8 @@
           "unloading": "Unloading",
           "availability": "Availability",
           "driverCardInserted": "Driver card inserted",
-          "driverCardRemoved": "Driver card removed"
+          "driverCardRemoved": "Driver card removed",
+          "office": "Office"
         }
       }
     }

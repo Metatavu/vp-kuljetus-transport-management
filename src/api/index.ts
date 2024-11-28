@@ -4,6 +4,7 @@ import {
   ClientAppsApi,
   Configuration,
   DriversApi,
+  EmployeeWorkShiftsApi,
   EmployeesApi,
   FreightUnitsApi,
   FreightsApi,
@@ -14,6 +15,7 @@ import {
   TowablesApi,
   TrucksApi,
   VehiclesApi,
+  WorkEventsApi,
   WorkShiftHoursApi,
 } from "generated/client";
 import { getDefaultStore } from "jotai";
@@ -40,4 +42,6 @@ export const api = {
   workShiftHours: new WorkShiftHoursApi(configuration),
   holidays: new HolidaysApi(configuration),
   clientApps: new ClientAppsApi(configuration),
+  workEvents: new WorkEventsApi(configuration),
+  employeeWorkShifts: new EmployeeWorkShiftsApi(configuration),
 };

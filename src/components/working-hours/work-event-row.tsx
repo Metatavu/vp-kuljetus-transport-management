@@ -1,16 +1,18 @@
 import { MenuItem, TableCell, TableRow, TextField, styled } from "@mui/material";
-import { WorkEventType } from "generated/client";
+import { Truck, WorkEventType } from "generated/client";
 import { TFunction } from "i18next";
+import { DateTime } from "luxon";
 import { Key, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import LocalizationUtils from "src/utils/localization-utils";
 
 type Props = {
   type: WorkEventType;
-  startTime: string;
-  vehicle: number | null;
+  startTime: DateTime;
+  truck?: Truck;
   duration: string;
-  distance?: string | null;
+  distance?: string;
+  onHover: (timestamp: number | null, truckId?: string) => void;
 };
 
 // Styled work event TextField
@@ -29,7 +31,7 @@ const CellInput = styled(TextField, {
   },
 }));
 
-const WorkEventRow = ({ type, startTime, vehicle, duration, distance }: Props) => {
+const WorkEventRow = ({ type, startTime, truck, duration, distance, onHover }: Props) => {
   const { t } = useTranslation();
 
   const renderLocalizedMenuItem = useCallback(
@@ -50,7 +52,7 @@ const WorkEventRow = ({ type, startTime, vehicle, duration, distance }: Props) =
   switch (type) {
     case WorkEventType.ShiftStart:
       return (
-        <TableRow>
+        <TableRow onMouseEnter={() => onHover(startTime.toSeconds(), truck?.id)} onMouseLeave={() => onHover(null)}>
           <TableCell sx={{ p: 0.5 }} width={100}>
             <CellInput
               aria-label={t("workingHours.workingDays.workShiftDialog.time")}
@@ -61,7 +63,7 @@ const WorkEventRow = ({ type, startTime, vehicle, duration, distance }: Props) =
               }}
             />
           </TableCell>
-          <TableCell align="center">{vehicle ? vehicle : ""}</TableCell>
+          <TableCell align="center">{truck?.name ?? ""}</TableCell>
           <TableCell>{LocalizationUtils.getLocalizedWorkEventType(type, t)}</TableCell>
           <TableCell align="center">{duration}</TableCell>
           <TableCell align="center">{distance}</TableCell>
@@ -69,7 +71,7 @@ const WorkEventRow = ({ type, startTime, vehicle, duration, distance }: Props) =
       );
     case WorkEventType.ShiftEnd:
       return (
-        <TableRow>
+        <TableRow onMouseEnter={() => onHover(startTime.toSeconds(), truck?.id)} onMouseLeave={() => onHover(null)}>
           <TableCell sx={{ p: 0.5 }} width={100}>
             <CellInput
               aria-label={t("workingHours.workingDays.workShiftDialog.time")}
@@ -77,7 +79,7 @@ const WorkEventRow = ({ type, startTime, vehicle, duration, distance }: Props) =
               defaultValue={startTime}
             />
           </TableCell>
-          <TableCell align="center">{vehicle ? vehicle : ""}</TableCell>
+          <TableCell align="center">{truck?.name ?? ""}</TableCell>
           <TableCell>{LocalizationUtils.getLocalizedWorkEventType(type, t)}</TableCell>
           <TableCell align="center">{duration}</TableCell>
           <TableCell align="center">{distance}</TableCell>
@@ -85,9 +87,9 @@ const WorkEventRow = ({ type, startTime, vehicle, duration, distance }: Props) =
       );
     case WorkEventType.Logout:
       return (
-        <TableRow>
-          <TableCell width={100}>{startTime}</TableCell>
-          <TableCell align="center">{vehicle ? vehicle : ""}</TableCell>
+        <TableRow onMouseEnter={() => onHover(startTime.toSeconds(), truck?.id)} onMouseLeave={() => onHover(null)}>
+          <TableCell width={100}>{startTime.toFormat("HH:mm")}</TableCell>
+          <TableCell align="center">{truck?.name ?? ""}</TableCell>
           <TableCell>{LocalizationUtils.getLocalizedWorkEventType(type, t)}</TableCell>
           <TableCell align="center">{duration}</TableCell>
           <TableCell align="center">{distance}</TableCell>
@@ -95,9 +97,9 @@ const WorkEventRow = ({ type, startTime, vehicle, duration, distance }: Props) =
       );
     case WorkEventType.Login:
       return (
-        <TableRow>
-          <TableCell width={100}>{startTime}</TableCell>
-          <TableCell align="center">{vehicle ? vehicle : ""}</TableCell>
+        <TableRow onMouseEnter={() => onHover(startTime.toSeconds(), truck?.id)} onMouseLeave={() => onHover(null)}>
+          <TableCell width={100}>{startTime.toFormat("HH:mm")}</TableCell>
+          <TableCell align="center">{truck?.name ?? ""}</TableCell>
           <TableCell>{LocalizationUtils.getLocalizedWorkEventType(type, t)}</TableCell>
           <TableCell align="center">{duration}</TableCell>
           <TableCell align="center">{distance}</TableCell>
@@ -105,7 +107,7 @@ const WorkEventRow = ({ type, startTime, vehicle, duration, distance }: Props) =
       );
     case WorkEventType.Unknown:
       return (
-        <TableRow>
+        <TableRow onMouseEnter={() => onHover(startTime.toSeconds(), truck?.id)} onMouseLeave={() => onHover(null)}>
           <TableCell sx={{ p: 0.5 }} width={100}>
             <CellInput
               aria-label={t("workingHours.workingDays.workShiftDialog.time")}
@@ -113,7 +115,7 @@ const WorkEventRow = ({ type, startTime, vehicle, duration, distance }: Props) =
               defaultValue={startTime}
             />
           </TableCell>
-          <TableCell align="center">{vehicle ? vehicle : ""}</TableCell>
+          <TableCell align="center">{truck?.name ?? ""}</TableCell>
           <TableCell>{LocalizationUtils.getLocalizedWorkEventType(type, t)}</TableCell>
           <TableCell align="center">{duration}</TableCell>
           <TableCell align="center">{distance}</TableCell>
@@ -121,15 +123,11 @@ const WorkEventRow = ({ type, startTime, vehicle, duration, distance }: Props) =
       );
     default:
       return (
-        <TableRow>
-          <TableCell width={100}>{startTime}</TableCell>
-          <TableCell align="center">{vehicle ? vehicle : ""}</TableCell>
+        <TableRow onMouseEnter={() => onHover(startTime.toSeconds(), truck?.id)} onMouseLeave={() => onHover(null)}>
+          <TableCell width={100}>{startTime.toFormat("HH:mm")}</TableCell>
+          <TableCell align="center">{truck?.name ?? ""}</TableCell>
           <TableCell sx={{ p: 0.5 }}>
-            <CellInput
-              select
-              aria-label={t("workingHours.workingDays.workShiftDialog.event")}
-              defaultValue={LocalizationUtils.getLocalizedWorkEventType(type, t)}
-            >
+            <CellInput select aria-label={t("workingHours.workingDays.workShiftDialog.event")} defaultValue={type}>
               {renderLocalizedMenuItems(Object.values(WorkEventType), LocalizationUtils.getLocalizedWorkEventType)}
             </CellInput>
           </TableCell>

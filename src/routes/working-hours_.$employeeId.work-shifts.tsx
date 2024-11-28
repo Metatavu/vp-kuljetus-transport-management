@@ -12,22 +12,37 @@ import {
   styled,
 } from "@mui/material";
 import { Outlet, createFileRoute } from "@tanstack/react-router";
+import { api } from "api/index";
 import AggregationsTable from "components/working-hours/aggregations-table";
 import ChangeLog from "components/working-hours/change-log";
 import WorkShiftRow from "components/working-hours/work-shift-row";
 import WorkShiftsTableHeader from "components/working-hours/work-shifts-table-header";
+import { QUERY_KEYS } from "hooks/use-queries";
 import { t } from "i18next";
 import { useTranslation } from "react-i18next";
+import { queryClient } from "src/main";
 import { Breadcrumb } from "src/types";
 
 export const Route = createFileRoute("/working-hours_/$employeeId/work-shifts")({
   component: WorkShifts,
-  loader: () => {
+  loader: async ({ params }) => {
+    const { employeeId } = params;
     const breadcrumbs: Breadcrumb[] = [
       { label: t("workingHours.title") },
       { label: t("workingHours.workingDays.title") },
     ];
-    return { breadcrumbs };
+
+    const [[workShift]] = await queryClient.ensureQueryData({
+      queryKey: [QUERY_KEYS.WORK_SHIFTS, employeeId],
+      queryFn: async () =>
+        await api.employeeWorkShifts.listEmployeeWorkShiftsWithHeaders({
+          employeeId,
+          max: 1,
+          first: 0,
+        }),
+    });
+
+    return { breadcrumbs, workShift };
   },
 });
 
@@ -106,6 +121,7 @@ const TableContainer = styled(Stack, {
 function WorkShifts() {
   const { t } = useTranslation();
   const navigate = Route.useNavigate();
+  const { workShift } = Route.useLoaderData();
 
   const renderToolbar = () => {
     return (
@@ -162,7 +178,9 @@ function WorkShifts() {
                 Array.from({ length: 14 }).map((index) => (
                   <WorkShiftRow
                     key={`${index}_${Math.random()}`}
-                    onClick={() => navigate({ to: "work-shift-details" })}
+                    onClick={() =>
+                      workShift.id && navigate({ to: "$workShiftId/details", params: { workShiftId: workShift.id } })
+                    }
                   />
                 ))
               }

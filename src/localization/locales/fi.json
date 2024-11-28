@@ -537,7 +537,8 @@
           "unloading": "Purku",
           "availability": "Saatavuus",
           "driverCardInserted": "Sisäänkirjautuminen",
-          "driverCardRemoved": "Uloskirjautuminen"
+          "driverCardRemoved": "Uloskirjautuminen",
+          "office": "Toimisto"
         }
       }
     }
