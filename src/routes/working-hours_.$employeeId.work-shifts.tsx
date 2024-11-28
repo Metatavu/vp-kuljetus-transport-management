@@ -1,4 +1,5 @@
 import { ArrowBack, Print, Save, Send } from "@mui/icons-material";
+import { LoadingButton } from "@mui/lab";
 import {
   Box,
   Button,
@@ -11,11 +12,13 @@ import {
   Typography,
   styled,
 } from "@mui/material";
+import { BlobProvider } from "@react-pdf/renderer";
 import { Outlet, createFileRoute } from "@tanstack/react-router";
 import AggregationsTable from "components/working-hours/aggregations-table";
 import ChangeLog from "components/working-hours/change-log";
 import WorkShiftRow from "components/working-hours/work-shift-row";
 import WorkShiftsTableHeader from "components/working-hours/work-shifts-table-header";
+import WorkingHoursDocument from "components/working-hours/working-hours-document";
 import { t } from "i18next";
 import { useTranslation } from "react-i18next";
 import { Breadcrumb } from "src/types";
@@ -123,9 +126,20 @@ function WorkShifts() {
           />
         </ToolbarContainer>
         <Stack direction="row" alignItems="end" gap={2} p={2}>
-          <Button size="small" variant="outlined" endIcon={<Print />}>
-            {t("workingHours.workingDays.print")}
-          </Button>
+          <BlobProvider document={<WorkingHoursDocument />}>
+            {({ loading, url }) => (
+              <LoadingButton
+                loading={loading}
+                href={url || ""}
+                target="_blank"
+                size="small"
+                variant="outlined"
+                endIcon={<Print />}
+              >
+                {t("workingHours.workingDays.print")}
+              </LoadingButton>
+            )}
+          </BlobProvider>
           <Button size="small" variant="contained" disabled={true} endIcon={<Send />}>
             {t("workingHours.workingDays.sendToPayroll")}
           </Button>
