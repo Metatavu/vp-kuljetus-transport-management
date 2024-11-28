@@ -453,6 +453,7 @@
       "fullDayAllowance": "Kokopäiväraha",
       "toWorkHourDetails": "Näytä erittely",
       "approved": "Tarkastettu",
+      "markAllApproved": "Merkitse kaikki tarkastetuiksi",
       "successToast": "Työvuoro tallennettu!",
       "errorToast": "Työvuoron tallennus epäonnistui"
     },
@@ -552,7 +553,8 @@
           "unloading": "Purku",
           "availability": "Saatavuus",
           "driverCardInserted": "Sisäänkirjautuminen",
-          "driverCardRemoved": "Uloskirjautuminen"
+          "driverCardRemoved": "Uloskirjautuminen",
+          "office": "Toimisto"
         }
       }
     }

@@ -113,7 +113,7 @@ namespace LocalizationUtils {
       UNKNOWN: t("workingHours.workingDays.workShiftDialog.eventTypes.unknown"),
       UNLOADING: t("workingHours.workingDays.workShiftDialog.eventTypes.unloading"),
       VEGETABLE: t("workingHours.workingDays.workShiftDialog.eventTypes.vegetable"),
-      OFFICE: t("workingHours.workingDays.workShiftDialog.eventTypes.vegetable"),
+      OFFICE: t("workingHours.workingDays.workShiftDialog.eventTypes.office"),
     })[workEventType];
 
   export const getLocalizedAbsenceType = (absenceType: AbsenceType, t: TFunction) =>

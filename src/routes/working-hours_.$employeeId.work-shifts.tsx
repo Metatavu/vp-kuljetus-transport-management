@@ -28,12 +28,14 @@ import { EmployeeWorkShift, SalaryGroup, WorkShiftHours, WorkType } from "genera
 import { QUERY_KEYS, getListEmployeesQueryOptions, getListTrucksQueryOptions } from "hooks/use-queries";
 import { t } from "i18next";
 import { DateTime } from "luxon";
+import { useCallback } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { Breadcrumb, EmployeeWorkHoursForm, EmployeeWorkHoursFormRow } from "src/types";
 import DataValidation from "src/utils/data-validation-utils";
 import TimeUtils from "src/utils/time-utils";
+import WorkShiftsUtils from "src/utils/workshift-utils";
 import { z } from "zod";
 
 export const workShiftSearchSchema = z.object({
@@ -139,7 +141,7 @@ function WorkShifts() {
 
   const workingPeriodsForEmployee = TimeUtils.getWorkingPeriodDates(employeeSalaryGroup, selectedDate?.toJSDate());
 
-  const workShiftsData = useQuery({
+  const workShiftsDataForFormRows = useQuery({
     queryKey: [QUERY_KEYS.WORK_SHIFTS, employeeId, "workShiftsData", workingPeriodsForEmployee],
     queryFn: async () => {
       const [workShifts] = await api.employeeWorkShifts.listEmployeeWorkShiftsWithHeaders({
@@ -158,13 +160,7 @@ function WorkShifts() {
 
             return {
               workShift: workShift,
-              workShiftHours: workShiftHours.reduce<Record<WorkType, WorkShiftHours>>(
-                (workShiftHoursRecord, singleWorkShiftHours) => {
-                  workShiftHoursRecord[singleWorkShiftHours.workType] = singleWorkShiftHours;
-                  return workShiftHoursRecord;
-                },
-                {} as Record<WorkType, WorkShiftHours>,
-              ),
+              workShiftHours: WorkShiftsUtils.getWorkShiftHoursWithWorkTypes(workShiftHours),
             };
           },
         ),
@@ -229,7 +225,7 @@ function WorkShifts() {
 
   const workShiftsDataWithWorkingPeriodDates = addMissingWorkShiftRows(
     employeeId,
-    workShiftsData.data ?? [],
+    workShiftsDataForFormRows.data ?? [],
     TimeUtils.getWorkingPeriodDates(employeeSalaryGroup, selectedDate.toJSDate()),
   );
 
@@ -348,8 +344,10 @@ function WorkShifts() {
     },
   });
 
-  const onChangeDate = (newDate: DateTime | null) =>
-    navigate({ search: (prev) => ({ ...prev, date: newDate ?? DateTime.now() }) });
+  const onChangeDate = useCallback(
+    (newDate: DateTime | null) => navigate({ search: (prev) => ({ ...prev, date: newDate ?? DateTime.now() }) }),
+    [navigate],
+  );
 
   const renderEmployeeMenuItems = () => {
     return employees?.map((employee) => (
@@ -441,8 +439,8 @@ function WorkShifts() {
     const workingPeriodDates = TimeUtils.getWorkingPeriodDates(employeeSalaryGroup, selectedDate.toJSDate());
     if (!workingPeriodDates) return null;
 
-    const start = DateTime.fromJSDate(workingPeriodDates.start).setLocale("fi").toFormat("EEE dd.MM");
-    const end = DateTime.fromJSDate(workingPeriodDates.end).setLocale("fi").toFormat("EEE dd.MM");
+    const start = DateTime.fromJSDate(workingPeriodDates.start).toFormat("EEE dd.MM");
+    const end = DateTime.fromJSDate(workingPeriodDates.end).toFormat("EEE dd.MM");
 
     return (
       <Typography variant="subtitle1">
@@ -463,7 +461,7 @@ function WorkShifts() {
                   {renderWorkingPeriodText()}
                   <Stack spacing={4} direction="row" alignItems="center">
                     <FormControlLabel
-                      control={<Checkbox title="Merkitse kaikki tarkistetuiksi" />}
+                      control={<Checkbox title={t("workingHours.workingHourBalances.markAllApproved")} />}
                       label={t("workingHours.workingDays.table.inspected")}
                     />
                     <Box minWidth={245}>

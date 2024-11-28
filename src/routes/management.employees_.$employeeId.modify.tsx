@@ -48,8 +48,6 @@ function EmployeeModify() {
     onError: () => toast.error(t("management.employees.errorToast")),
   });
 
-  useQuery(getListWorkShiftHoursQueryOptions({ employeeId }, employeeQuery.isSuccess));
-
   return (
     <LoaderWrapper loading={employeeQuery.isLoading}>
       <EmployeeComponent
