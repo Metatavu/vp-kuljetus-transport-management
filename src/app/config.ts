@@ -1,4 +1,4 @@
-import { cleanEnv, url, str } from "envalid";
+import { url, cleanEnv, str } from "envalid";
 
 const env = cleanEnv(import.meta.env, {
   VITE_KEYCLOAK_URL: url(),
@@ -16,12 +16,12 @@ const config = {
     clientId: env.VITE_KEYCLOAK_CLIENT_ID,
   },
   api: {
-    baseUrl: env.VITE_API_BASE_URL
+    baseUrl: env.VITE_API_BASE_URL,
   },
   mapbox: {
     baseUrl: env.VITE_MAPBOX_API_BASE_URL,
     publicApiKey: env.VITE_MAPBOX_PUBLIC_API_KEY,
-  }
+  },
 } as const;
 
 export default config;

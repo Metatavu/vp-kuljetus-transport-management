@@ -1,4 +1,4 @@
-import { Table, TableRow, TableCell, Typography, TableHead, TableBody } from "@mui/material";
+import { Table, TableBody, TableCell, TableHead, TableRow, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
 function ChangeLog() {
@@ -18,14 +18,20 @@ function ChangeLog() {
       <TableBody>
         <TableRow>
           <TableCell>3.5.2024 09:50:33</TableCell>
-          <TableCell align="center"><Typography>Jere</Typography></TableCell>
-          <TableCell align="center"><Typography>Teemu</Typography></TableCell>
-          <TableCell align="left"><Typography>30.4., 1.5., 3.5.</Typography></TableCell>
+          <TableCell align="center">
+            <Typography>Jere</Typography>
+          </TableCell>
+          <TableCell align="center">
+            <Typography>Teemu</Typography>
+          </TableCell>
+          <TableCell align="left">
+            <Typography>30.4., 1.5., 3.5.</Typography>
+          </TableCell>
           <TableCell>Poissaolokoodi SL asetettiin</TableCell>
         </TableRow>
       </TableBody>
     </Table>
   );
-};
+}
 
 export default ChangeLog;

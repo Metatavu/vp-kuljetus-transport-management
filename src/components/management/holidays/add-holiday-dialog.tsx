@@ -73,7 +73,7 @@ const AddHolidayFormDialog = ({ holiday, onSave, onClose }: Props) => {
           <DatePicker
             label={t("management.holidays.date")}
             value={date}
-            onChange={(value: DateTime | null) => value ? setValue("date", value.toJSDate()) : resetField("date")}
+            onChange={(value: DateTime | null) => (value ? setValue("date", value.toJSDate()) : resetField("date"))}
           />
           <TextField
             label={t("management.holidays.name")}

@@ -8,7 +8,8 @@
     "dev": "tsc && vite --open",
     "build": "tsc && vite build",
     "build-client": "openapi-generator-cli generate -i vp-kuljetus-transport-management-specs/specs/management.yaml -o src/generated/client -c generator-config.json -g typescript-fetch",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint": "biome check --apply ./src"
   },
   "dependencies": {
     "@dnd-kit/core": "6.1.0",
