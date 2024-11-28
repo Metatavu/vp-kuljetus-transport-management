@@ -36,13 +36,14 @@ export const Route = createFileRoute("/working-hours_/$employeeId/work-shifts/$w
 function WorkShiftDetails() {
   const navigate = useNavigate();
   const { workEvents, trucks, workShift } = Route.useLoaderData();
+  const selectedDate = Route.useSearch({ select: (search) => search.date });
 
   return (
     <WorkShiftDialog
       workEvents={workEvents}
       trucks={trucks}
       workShift={workShift}
-      onClose={() => navigate({ to: ".." })}
+      onClose={() => navigate({ to: "..", search: { date: selectedDate } })}
     />
   );
 }
