@@ -70,8 +70,9 @@ function WorkShiftRow({ onClick, index, trucks }: Props) {
           size="small"
           aria-label={title}
           fullWidth
+          disabled={workShift?.approved}
           variant="outlined"
-          placeholder={workShiftHours?.[workType].calculatedHours?.toString()}
+          placeholder={workShiftHours?.[workType].calculatedHours?.toFixed(2).toString()}
           value={workShiftHours?.[workType].actualHours || ""}
           onChange={(event) =>
             setValue(`${index}.workShiftHours.${workType}.actualHours`, parseFloat(event.target.value), {
@@ -95,6 +96,7 @@ function WorkShiftRow({ onClick, index, trucks }: Props) {
         aria-label={label}
         title={label}
         fullWidth
+        disabled={workShift?.approved}
         variant="outlined"
         value={workShift?.perDiemAllowance || ""}
         onChange={(event) =>
@@ -131,6 +133,7 @@ function WorkShiftRow({ onClick, index, trucks }: Props) {
         aria-label={label}
         title={label}
         fullWidth
+        disabled={workShift?.approved}
         variant="outlined"
         value={workShift?.absence || ""}
         onChange={(event) =>
@@ -202,6 +205,7 @@ function WorkShiftRow({ onClick, index, trucks }: Props) {
             className="cell-checkbox"
             title={t("workingHours.workingHourBalances.dayOffBonus")}
             aria-label={t("workingHours.workingHourBalances.dayOffBonus")}
+            disabled={workShift?.approved}
             checked={dayOffWorkAllowance ?? false}
             onChange={(_, checked) =>
               setValue(`${index}.workShift.dayOffWorkAllowance`, checked, {
@@ -242,6 +246,7 @@ function WorkShiftRow({ onClick, index, trucks }: Props) {
           size="small"
           aria-label={t("workingHours.workingDays.table.remarks")}
           fullWidth
+          disabled={!!workShift?.approved}
           variant="outlined"
           value={workShift?.notes || ""}
           onChange={(event) =>

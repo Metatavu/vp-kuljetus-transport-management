@@ -449,6 +449,21 @@ function WorkShifts() {
     );
   };
 
+  const handleAllApprovedChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const isApproved = event.target.checked;
+    const formValues = methods.getValues();
+
+    const updatedFormValues = Object.values(formValues).map((row) => {
+      if (row.workShift.id === undefined || row.workShift.approved === isApproved) return row;
+
+      return {
+        ...row,
+        workShift: { ...row.workShift, approved: isApproved },
+      };
+    });
+    methods.reset(updatedFormValues);
+  };
+
   return (
     <>
       <Root>
@@ -461,7 +476,12 @@ function WorkShifts() {
                   {renderWorkingPeriodText()}
                   <Stack spacing={4} direction="row" alignItems="center">
                     <FormControlLabel
-                      control={<Checkbox title={t("workingHours.workingHourBalances.markAllApproved")} />}
+                      control={
+                        <Checkbox
+                          onChange={handleAllApprovedChange}
+                          title={t("workingHours.workingHourBalances.markAllApproved")}
+                        />
+                      }
                       label={t("workingHours.workingDays.table.inspected")}
                     />
                     <Box minWidth={245}>
@@ -488,7 +508,7 @@ function WorkShifts() {
                   <TableHeader>
                     <Typography variant="subtitle1">{"Selected year and date range"}</Typography>
                   </TableHeader>
-                  <AggregationsTable />
+                  <AggregationsTable workShiftsData={workShiftsDataForFormRows.data ?? []} />
                 </Stack>
               </Paper>
               <Paper elevation={0} sx={{ display: "flex", flex: 1 }}>
