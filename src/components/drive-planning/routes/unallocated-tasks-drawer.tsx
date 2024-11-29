@@ -1,13 +1,13 @@
+import { useDroppable } from "@dnd-kit/core";
+import { AssignmentSharp, ExpandLess, ExpandMore } from "@mui/icons-material";
 import { Collapse, Stack } from "@mui/material";
 import DialogHeader from "components/generic/dialog-header";
-import { useTranslation } from "react-i18next";
-import { AssignmentSharp, ExpandLess, ExpandMore } from "@mui/icons-material";
 import { Site } from "generated/client";
-import UnallocatedTasksTable from "./unallocated-tasks-table";
-import { useDroppable } from "@dnd-kit/core";
-import { DraggableType, DroppableType } from "src/types";
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { theme } from "src/theme";
+import { DraggableType, DroppableType } from "src/types";
+import UnallocatedTasksTable from "./unallocated-tasks-table";
 
 type Props = {
   open: boolean;

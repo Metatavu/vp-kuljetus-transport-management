@@ -17,8 +17,15 @@ export const Route = createFileRoute("/management/equipment_/truck/$truckId/modi
     const truck = await queryClient.ensureQueryData(getFindTruckQueryOptions({ truckId }));
     const breadcrumbs: Breadcrumb[] = [
       { label: t("management.title") },
-      { label: t("management.equipment.title"), route: "/management/equipment" },
-      { label: t("management.equipment.modify", { equipmentName: getEquipmentDisplayName(truck) }) },
+      {
+        label: t("management.equipment.title"),
+        route: "/management/equipment",
+      },
+      {
+        label: t("management.equipment.modify", {
+          equipmentName: getEquipmentDisplayName(truck),
+        }),
+      },
     ];
     return { breadcrumbs, truck };
   },

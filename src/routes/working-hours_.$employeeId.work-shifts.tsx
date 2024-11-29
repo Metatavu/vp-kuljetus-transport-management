@@ -6,22 +6,41 @@ import {
   Checkbox,
   FormControlLabel,
   IconButton,
+  MenuItem,
   Paper,
+  Skeleton,
   Stack,
   TextField,
   Typography,
   styled,
 } from "@mui/material";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { BlobProvider } from "@react-pdf/renderer";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Outlet, createFileRoute } from "@tanstack/react-router";
+import { api } from "api/index";
 import AggregationsTable from "components/working-hours/aggregations-table";
 import ChangeLog from "components/working-hours/change-log";
 import WorkShiftRow from "components/working-hours/work-shift-row";
 import WorkShiftsTableHeader from "components/working-hours/work-shifts-table-header";
 import WorkingHoursDocument from "components/working-hours/working-hours-document";
+import { EmployeeWorkShift, SalaryGroup, WorkShiftHours, WorkType } from "generated/client";
+import { QUERY_KEYS, getListEmployeesQueryOptions, getListTrucksQueryOptions } from "hooks/use-queries";
 import { t } from "i18next";
+import { DateTime } from "luxon";
+import { useCallback } from "react";
+import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { Breadcrumb } from "src/types";
+import { toast } from "react-toastify";
+import { Breadcrumb, EmployeeWorkHoursForm, EmployeeWorkHoursFormRow } from "src/types";
+import DataValidation from "src/utils/data-validation-utils";
+import TimeUtils from "src/utils/time-utils";
+import WorkShiftsUtils from "src/utils/workshift-utils";
+import { z } from "zod";
+
+export const workShiftSearchSchema = z.object({
+  date: z.string().datetime({ offset: true }).transform(DataValidation.parseValidDateTime),
+});
 
 export const Route = createFileRoute("/working-hours_/$employeeId/work-shifts")({
   component: WorkShifts,
@@ -32,6 +51,7 @@ export const Route = createFileRoute("/working-hours_/$employeeId/work-shifts")(
     ];
     return { breadcrumbs };
   },
+  validateSearch: workShiftSearchSchema,
 });
 
 // Styled root component
@@ -109,6 +129,243 @@ const TableContainer = styled(Stack, {
 function WorkShifts() {
   const { t } = useTranslation();
   const navigate = Route.useNavigate();
+  const { employeeId } = Route.useParams();
+  const queryClient = useQueryClient();
+  const selectedDate = Route.useSearch({ select: (search) => search.date });
+
+  const trucks = useQuery(getListTrucksQueryOptions({})).data?.trucks;
+  const employees = useQuery(getListEmployeesQueryOptions({})).data?.employees;
+
+  const employeeSalaryGroup =
+    employees?.find((employee) => employee.id === employeeId)?.salaryGroup ?? SalaryGroup.Driver;
+
+  const workingPeriodsForEmployee = TimeUtils.getWorkingPeriodDates(employeeSalaryGroup, selectedDate?.toJSDate());
+
+  const workShiftsDataForFormRows = useQuery({
+    queryKey: [QUERY_KEYS.WORK_SHIFTS, employeeId, "workShiftsData", workingPeriodsForEmployee],
+    queryFn: async () => {
+      const [workShifts] = await api.employeeWorkShifts.listEmployeeWorkShiftsWithHeaders({
+        employeeId,
+        dateAfter: workingPeriodsForEmployee?.start,
+        dateBefore: workingPeriodsForEmployee?.end,
+      });
+
+      return await Promise.all(
+        workShifts.map<Promise<{ workShift: EmployeeWorkShift; workShiftHours: Record<WorkType, WorkShiftHours> }>>(
+          async (workShift) => {
+            const [workShiftHours] = await api.workShiftHours.listWorkShiftHoursWithHeaders({
+              employeeId,
+              employeeWorkShiftId: workShift.id,
+            });
+
+            return {
+              workShift: workShift,
+              workShiftHours: WorkShiftsUtils.getWorkShiftHoursWithWorkTypes(workShiftHours),
+            };
+          },
+        ),
+      );
+    },
+  });
+
+  const addMissingWorkShiftRows = (
+    employeeId: string,
+    formValues: EmployeeWorkHoursFormRow[],
+    workingPeriod: { start: Date; end: Date },
+  ): EmployeeWorkHoursFormRow[] => {
+    if (!workingPeriod) return formValues;
+
+    const allDatesInWorkingPeriod = TimeUtils.eachDayOfWorkingPeriod(workingPeriod.start, workingPeriod.end).map(
+      (date) => date.toJSDate(),
+    );
+
+    const existingWorkShiftDates = formValues.map((row) =>
+      DateTime.fromJSDate(row.workShift.date).startOf("day").toISODate(),
+    );
+
+    const missingRows: EmployeeWorkHoursFormRow[] = allDatesInWorkingPeriod
+      .filter((date) => !existingWorkShiftDates.includes(DateTime.fromJSDate(date).toISODate()))
+      .map((missingDate) => ({
+        workShift: {
+          id: undefined, // No ID for missing work shifts
+          date: missingDate,
+          dayOffWorkAllowance: false,
+          absence: undefined,
+          perDiemAllowance: undefined,
+          approved: false,
+          notes: undefined,
+          startedAt: undefined,
+          endedAt: undefined,
+          truckIds: undefined,
+          employeeId,
+        } as EmployeeWorkShift,
+        // Create empty work shift hours for each work type
+        workShiftHours: Object.values(WorkType).reduce<Record<WorkType, WorkShiftHours>>(
+          (workShiftHours, workType) => {
+            workShiftHours[workType] = {
+              id: undefined, // No ID for missing work shift hours
+              employeeId,
+              workType,
+              calculatedHours: undefined,
+              actualHours: undefined,
+              employeeWorkShiftId: "", // No employee work shift ID for missing work shift hours
+            };
+            return workShiftHours;
+          },
+          {} as Record<WorkType, WorkShiftHours>,
+        ),
+      }));
+
+    const allRows = [...formValues, ...missingRows];
+
+    return allRows.sort(
+      (a, b) => DateTime.fromJSDate(a.workShift.date).toMillis() - DateTime.fromJSDate(b.workShift.date).toMillis(),
+    );
+  };
+
+  const workShiftsDataWithWorkingPeriodDates = addMissingWorkShiftRows(
+    employeeId,
+    workShiftsDataForFormRows.data ?? [],
+    TimeUtils.getWorkingPeriodDates(employeeSalaryGroup, selectedDate.toJSDate()),
+  );
+
+  const methods = useForm<EmployeeWorkHoursForm>({
+    defaultValues: workShiftsDataWithWorkingPeriodDates,
+    values: workShiftsDataWithWorkingPeriodDates,
+    mode: "onChange",
+  });
+
+  const getUpdatedWorkShiftsAndWorkShiftHours = (): [
+    updatedWorkShifts: EmployeeWorkShift[],
+    updatedWorkShiftHours: WorkShiftHours[],
+    newRows: EmployeeWorkHoursFormRow[],
+  ] => {
+    const workShiftsToUpdate: EmployeeWorkShift[] = [];
+    const workShiftHoursToUpdate: WorkShiftHours[] = [];
+    const newRows: EmployeeWorkHoursFormRow[] = [];
+
+    const formValues = methods.getValues();
+
+    const dirtyFormRowIndices = Object.values(formValues).reduce<number[]>((indices, _, index) => {
+      if (methods.getFieldState(`${index}`).isDirty) indices.push(index);
+      return indices;
+    }, []);
+
+    for (const i of dirtyFormRowIndices) {
+      const row = methods.getValues(`${i}`);
+
+      if (!row.workShift.id) {
+        newRows.push(row);
+        continue;
+      }
+
+      const fieldState = methods.getFieldState(`${i}.workShift`);
+
+      if (fieldState.isDirty && fieldState.isTouched) {
+        workShiftsToUpdate.push(row.workShift);
+      }
+
+      const rowWorkTypes = Object.keys(methods.getValues(`${i}.workShiftHours`)) as WorkType[];
+
+      const dirtyWorkTypes = rowWorkTypes.filter((workType) => {
+        const fieldState = methods.getFieldState(`${i}.workShiftHours.${workType}`);
+        return fieldState.isDirty && fieldState.isTouched;
+      });
+
+      workShiftHoursToUpdate.push(
+        ...dirtyWorkTypes.map((workType) => methods.getValues(`${i}.workShiftHours.${workType}`)),
+      );
+    }
+
+    return [workShiftsToUpdate, workShiftHoursToUpdate, newRows];
+  };
+
+  const updateWorkShift = useMutation({
+    mutationFn: async () => {
+      const [updatedWorkShifts, updatedWorkShiftHours, newRows] = getUpdatedWorkShiftsAndWorkShiftHours();
+
+      const newRowsWithWorkShiftIds = await Promise.all(
+        newRows.map(async (row) => {
+          const workShift = await api.employeeWorkShifts.createEmployeeWorkShift({
+            employeeId,
+            employeeWorkShift: row.workShift,
+          });
+          return { ...row, workShift: workShift };
+        }),
+      );
+
+      const newWorkShiftHours = (
+        await Promise.all(
+          newRowsWithWorkShiftIds.map(async (row) =>
+            api.workShiftHours.listWorkShiftHours({
+              employeeId,
+              employeeWorkShiftId: row.workShift.id,
+            }),
+          ),
+        )
+      ).flat();
+
+      const newWorkShiftHoursWithUpdatedValues = newWorkShiftHours.reduce<WorkShiftHours[]>((list, hours) => {
+        const matchingRow = newRowsWithWorkShiftIds.find((row) => row.workShift.id === hours.employeeWorkShiftId);
+        const hoursFromRow = matchingRow?.workShiftHours[hours.workType];
+        if (hoursFromRow?.actualHours !== undefined) list.push({ ...hours, actualHours: hoursFromRow.actualHours });
+        return list;
+      }, []);
+
+      await Promise.all(
+        updatedWorkShifts.map((workShift) =>
+          api.employeeWorkShifts.updateEmployeeWorkShift({
+            employeeId,
+            // biome-ignore lint/style/noNonNullAssertion: Work shift id is always defined
+            workShiftId: workShift.id!,
+            employeeWorkShift: workShift,
+          }),
+        ),
+      );
+
+      const allWorkShiftHoursToUpdate = [...updatedWorkShiftHours, ...newWorkShiftHoursWithUpdatedValues];
+      await Promise.all(
+        allWorkShiftHoursToUpdate.map((workShiftHours) =>
+          api.workShiftHours.updateWorkShiftHours({
+            // biome-ignore lint/style/noNonNullAssertion: Work shift id is always defined
+            workShiftHoursId: workShiftHours.id!,
+            workShiftHours: workShiftHours,
+          }),
+        ),
+      );
+
+      await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.WORK_SHIFTS] });
+      await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.WORK_SHIFT_HOURS] });
+
+      toast.success(t("workingHours.workingHourBalances.successToast"));
+    },
+    onError: () => {
+      toast.error(t("workingHours.workingHourBalances.errorToast"));
+    },
+  });
+
+  const onChangeDate = useCallback(
+    (newDate: DateTime | null) => navigate({ search: (prev) => ({ ...prev, date: newDate ?? DateTime.now() }) }),
+    [navigate],
+  );
+
+  const renderEmployeeMenuItems = () => {
+    return employees?.map((employee) => (
+      <MenuItem
+        onClick={() =>
+          navigate({
+            to: "/working-hours/$employeeId/work-shifts",
+            params: { employeeId: employee.id },
+            search: { date: selectedDate },
+          })
+        }
+        key={employee.id}
+        value={employee.id}
+      >
+        {employee.firstName} {employee.lastName}
+      </MenuItem>
+    ));
+  };
 
   const renderToolbar = () => {
     return (
@@ -117,13 +374,34 @@ function WorkShifts() {
           <IconButton onClick={() => navigate({ to: "../.." })} title={t("tooltips.backToWorkingHours")}>
             <ArrowBack />
           </IconButton>
-          <TextField sx={{ maxWidth: 300 }} select variant="standard" label={t("workingHours.workingDays.employee")} />
-          <TextField
-            sx={{ maxWidth: 300 }}
-            select
-            variant="standard"
-            label={t("workingHours.workingHourBalances.payPeriod")}
-          />
+          {employees?.length ? (
+            <TextField
+              sx={{ maxWidth: 300 }}
+              select
+              variant="standard"
+              defaultValue={employees?.find((employee) => employee.id === employeeId)?.id}
+              label={t("workingHours.workingDays.employee")}
+            >
+              {renderEmployeeMenuItems()}
+            </TextField>
+          ) : (
+            <Skeleton variant="rectangular" width={300} height={30} style={{ marginTop: 16 }} />
+          )}
+          <Stack>
+            <DatePicker
+              label={t("workingHours.workingHourBalances.payPeriod")}
+              value={selectedDate}
+              slotProps={{
+                openPickerButton: { size: "small", title: t("openCalendar") },
+                textField: {
+                  size: "small",
+                  InputProps: { sx: { width: 300 } },
+                },
+              }}
+              onChange={onChangeDate}
+              sx={{ width: 300 }}
+            />
+          </Stack>
         </ToolbarContainer>
         <Stack direction="row" alignItems="end" gap={2} p={2}>
           <BlobProvider document={<WorkingHoursDocument />}>
@@ -143,7 +421,13 @@ function WorkShifts() {
           <Button size="small" variant="contained" disabled={true} endIcon={<Send />}>
             {t("workingHours.workingDays.sendToPayroll")}
           </Button>
-          <Button size="small" variant="contained" disabled={true} endIcon={<Save />}>
+          <Button
+            size="small"
+            variant="contained"
+            endIcon={<Save />}
+            type="submit"
+            disabled={!methods.formState.isDirty}
+          >
             {t("save")}
           </Button>
         </Stack>
@@ -151,57 +435,75 @@ function WorkShifts() {
     );
   };
 
+  const renderWorkingPeriodText = () => {
+    const workingPeriodDates = TimeUtils.getWorkingPeriodDates(employeeSalaryGroup, selectedDate.toJSDate());
+    if (!workingPeriodDates) return null;
+
+    const start = DateTime.fromJSDate(workingPeriodDates.start).toFormat("EEE dd.MM");
+    const end = DateTime.fromJSDate(workingPeriodDates.end).toFormat("EEE dd.MM");
+
+    return (
+      <Typography variant="subtitle1">
+        {t("workingHours.workingHourBalances.payPeriod")}: {start} - {end}
+      </Typography>
+    );
+  };
+
   return (
     <>
       <Root>
-        {renderToolbar()}
-        <Paper elevation={0}>
-          <Stack>
-            <TableHeader>
-              <Typography variant="subtitle1">{"Su 28.4. 00.00 - La 11.5. 24:00"}</Typography>
-              <Stack spacing={4} direction="row" alignItems="center">
-                <FormControlLabel
-                  control={<Checkbox title="Merkitse kaikki tarkistetuiksi" />}
-                  label={t("workingHours.workingDays.table.inspected")}
-                />
-                <Box minWidth={245}>
-                  <Typography variant="body2">{"Tiedot tallennettu 11.5.2021 12:00"}</Typography>
-                </Box>
+        <FormProvider {...methods}>
+          <form onSubmit={methods.handleSubmit(() => updateWorkShift.mutateAsync())}>
+            {renderToolbar()}
+            <Paper elevation={0}>
+              <Stack>
+                <TableHeader>
+                  {renderWorkingPeriodText()}
+                  <Stack spacing={4} direction="row" alignItems="center">
+                    <FormControlLabel
+                      control={<Checkbox title={t("workingHours.workingHourBalances.markAllApproved")} />}
+                      label={t("workingHours.workingDays.table.inspected")}
+                    />
+                    <Box minWidth={245}>
+                      <Typography variant="body2">{"Tiedot tallennettu 11.5.2021 12:00"}</Typography>
+                    </Box>
+                  </Stack>
+                </TableHeader>
+                <TableContainer>
+                  <WorkShiftsTableHeader />
+                  {workShiftsDataWithWorkingPeriodDates.map((workShiftFormRow, index) => (
+                    <WorkShiftRow
+                      key={`${index}_${workShiftFormRow.workShift.id}`}
+                      onClick={() => navigate({ to: "work-shift-details", search: { date: selectedDate } })}
+                      index={index}
+                      trucks={trucks ?? []}
+                    />
+                  ))}
+                </TableContainer>
               </Stack>
-            </TableHeader>
-            <TableContainer>
-              <WorkShiftsTableHeader />
-              {
-                // TODO: Render work days for set time period by salarygroup
-                Array.from({ length: 14 }).map((index) => (
-                  <WorkShiftRow
-                    key={`${index}_${Math.random()}`}
-                    onClick={() => navigate({ to: "work-shift-details" })}
-                  />
-                ))
-              }
-            </TableContainer>
-          </Stack>
-        </Paper>
-        <BottomAreaContainer>
-          <Paper elevation={0} sx={{ display: "flex", flex: 2 }}>
-            <Stack flex={1}>
-              <TableHeader>
-                <Typography variant="subtitle1">{"Selected year and date range"}</Typography>
-              </TableHeader>
-              <AggregationsTable />
-            </Stack>
-          </Paper>
-          <Paper elevation={0} sx={{ display: "flex", flex: 1 }}>
-            <Stack flex={1}>
-              <TableHeader>
-                <Typography variant="subtitle1">{t("workingHours.workingDays.changeLog.title")}</Typography>
-              </TableHeader>
-              <ChangeLog />
-            </Stack>
-          </Paper>
-        </BottomAreaContainer>
+            </Paper>
+            <BottomAreaContainer>
+              <Paper elevation={0} sx={{ display: "flex", flex: 2 }}>
+                <Stack flex={1}>
+                  <TableHeader>
+                    <Typography variant="subtitle1">{"Selected year and date range"}</Typography>
+                  </TableHeader>
+                  <AggregationsTable />
+                </Stack>
+              </Paper>
+              <Paper elevation={0} sx={{ display: "flex", flex: 1 }}>
+                <Stack flex={1}>
+                  <TableHeader>
+                    <Typography variant="subtitle1">{t("workingHours.workingDays.changeLog.title")}</Typography>
+                  </TableHeader>
+                  <ChangeLog />
+                </Stack>
+              </Paper>
+            </BottomAreaContainer>
+          </form>
+        </FormProvider>
       </Root>
+
       <Outlet />
     </>
   );

@@ -19,7 +19,7 @@ const WorkShiftMap = () => {
         url={`${baseUrl}/styles/v1/metatavu/clsszigf302jx01qy0e4q0c7e/tiles/{z}/{x}/{y}?access_token=${publicApiKey}`}
       />
     </MapContainer>
-  )
-}
+  );
+};
 
 export default WorkShiftMap;

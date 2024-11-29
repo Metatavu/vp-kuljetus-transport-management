@@ -14,7 +14,10 @@ export const Route = createFileRoute("/management/customer-sites_/add-customer-s
   loader: () => {
     const breadcrumbs: Breadcrumb[] = [
       { label: t("management.title") },
-      { label: t("management.customerSites.title"), route: "/management/customer-sites" },
+      {
+        label: t("management.customerSites.title"),
+        route: "/management/customer-sites",
+      },
       { label: t("management.customerSites.new") },
     ];
     return { breadcrumbs };

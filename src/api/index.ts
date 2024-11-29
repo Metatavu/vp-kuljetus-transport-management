@@ -4,6 +4,7 @@ import {
   ClientAppsApi,
   Configuration,
   DriversApi,
+  EmployeeWorkShiftsApi,
   EmployeesApi,
   FreightUnitsApi,
   FreightsApi,
@@ -39,5 +40,6 @@ export const api = {
   employees: new EmployeesApi(configuration),
   workShiftHours: new WorkShiftHoursApi(configuration),
   holidays: new HolidaysApi(configuration),
+  employeeWorkShifts: new EmployeeWorkShiftsApi(configuration),
   clientApps: new ClientAppsApi(configuration),
 };

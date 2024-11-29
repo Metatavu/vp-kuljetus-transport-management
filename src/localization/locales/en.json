@@ -363,7 +363,11 @@
       "fillHours": "Fill Hours",
       "halfDayAllowance": "Half-Day Allowance",
       "fullDayAllowance": "Full-Day Allowance",
-      "toWorkHourDetails": "To Work hour details"
+      "toWorkHourDetails": "To Work hour details",
+      "approved": "Checked",
+      "markAllApproved": "Mark all checked",
+      "successToast": "Working hours saved!",
+      "errorToast": "Failed to save working hours"
     },
     "workingDays": {
       "title": "Working days",
@@ -388,7 +392,8 @@
         "vehicle": "Vehicle",
         "dailyAllowance": "Daily Allowance",
         "inspected": "Inspected",
-        "remarks": "Remarks"
+        "remarks": "Remarks",
+        "calculatedHours": "Calculated hours"
       },
       "aggregationsTable": {
         "workingHours": "Working Hours",
@@ -411,7 +416,18 @@
         "abroadAllowance": "Abroad Allowance",
         "waitingTime": "Waiting Time",
         "fillingHours": "Filling Hours",
-        "absenceHours": "Absence Hours"
+        "absenceHours": "Absence Hours",
+        "absenceTypes": {
+          "training": "Training",
+          "vacation": "Vacation",
+          "officialDuties": "Official duties",
+          "compensatoryLeave": "Compensatory leave",
+          "sickLeave": "Sick leave"
+        },
+        "perDiemAllowanceTypes": {
+          "partial": "Partial",
+          "full": "Full"
+        }
       },
       "changeLog": {
         "title": "Change log",
@@ -449,7 +465,8 @@
           "unloading": "Unloading",
           "availability": "Availability",
           "driverCardInserted": "Driver card inserted",
-          "driverCardRemoved": "Driver card removed"
+          "driverCardRemoved": "Driver card removed",
+          "office": "Office"
         }
       }
     }

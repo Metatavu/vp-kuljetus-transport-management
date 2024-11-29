@@ -3,8 +3,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { api } from "api/index";
 import LoaderWrapper from "components/generic/loader-wrapper";
 import EmployeeComponent from "components/management/employees/employee";
-import { Employee, SalaryGroup } from "generated/client";
-import { QUERY_KEYS, getFindEmployeeQueryOptions, getListTimeEntriesQueryOptions } from "hooks/use-queries";
+import { Employee } from "generated/client";
+import { QUERY_KEYS, getFindEmployeeQueryOptions } from "hooks/use-queries";
 import { t } from "i18next";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
@@ -17,8 +17,15 @@ export const Route = createFileRoute("/management/employees_/$employeeId/modify"
     const employee = await queryClient.ensureQueryData(getFindEmployeeQueryOptions(params.employeeId));
     const breadcrumbs: Breadcrumb[] = [
       { label: t("management.title") },
-      { label: t("management.employees.title"), route: "/management/employees" },
-      { label: t("management.employees.modify", { employeeName: `${employee.firstName} ${employee.lastName}` }) },
+      {
+        label: t("management.employees.title"),
+        route: "/management/employees",
+      },
+      {
+        label: t("management.employees.modify", {
+          employeeName: `${employee.firstName} ${employee.lastName}`,
+        }),
+      },
     ];
     return { breadcrumbs, employee };
   },
@@ -40,16 +47,6 @@ function EmployeeModify() {
     },
     onError: () => toast.error(t("management.employees.errorToast")),
   });
-
-  useQuery(
-    getListTimeEntriesQueryOptions(
-      { employeeId },
-      true,
-      employee.salaryGroup ?? SalaryGroup.Terminal,
-      new Date(),
-      employeeQuery.isSuccess,
-    ),
-  );
 
   return (
     <LoaderWrapper loading={employeeQuery.isLoading}>

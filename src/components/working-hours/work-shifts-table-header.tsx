@@ -23,12 +23,7 @@ function WorkShiftsTableHeader() {
 
   return (
     <Stack direction="row">
-      <HeaderCell width={90}>
-        {t("workingHours.workingDays.table.date")}
-      </HeaderCell>
-      <HeaderCell flex={1}>
-        {t("workingHours.workingDays.table.shiftStarts")}
-      </HeaderCell>
+      <HeaderCell width={90}>{t("workingHours.workingDays.table.date")}</HeaderCell>
       <HeaderCell minWidth={75} flex={1}>
         {t("workingHours.workingDays.table.workStarted")}
       </HeaderCell>
@@ -41,45 +36,25 @@ function WorkShiftsTableHeader() {
       <HeaderCell minWidth={75} flex={1}>
         {t("workingHours.workingDays.table.unpaidBreak")}
       </HeaderCell>
-      <HeaderCell flex={1}>
-        {t("workingHours.workingDays.table.payableWorkingHours")}
-      </HeaderCell>
-      <HeaderCell flex={1}>
-        {t("workingHours.workingDays.table.waitingTime")}
-      </HeaderCell>
-      <HeaderCell flex={1}>
-        {t("workingHours.workingDays.table.eveningWork")}
-      </HeaderCell>
-      <HeaderCell flex={1}>
-        {t("workingHours.workingDays.table.nightWork")}
-      </HeaderCell>
-      <HeaderCell flex={1}>
-        {t("workingHours.workingDays.table.holidayBonus")}
-      </HeaderCell>
-      <HeaderCell flex={1}>
-        {t("workingHours.workingDays.table.taskSpecificBonus")}
-      </HeaderCell>
-      <HeaderCell flex={1}>
-        {t("workingHours.workingDays.table.freezerBonus")}
-      </HeaderCell>
+      <HeaderCell flex={1}>{t("workingHours.workingDays.table.payableWorkingHours")}</HeaderCell>
+      <HeaderCell flex={1}>{t("workingHours.workingDays.table.waitingTime")}</HeaderCell>
+      <HeaderCell flex={1}>{t("workingHours.workingDays.table.eveningWork")}</HeaderCell>
+      <HeaderCell flex={1}>{t("workingHours.workingDays.table.nightWork")}</HeaderCell>
+      <HeaderCell flex={1}>{t("workingHours.workingDays.table.holidayBonus")}</HeaderCell>
+      <HeaderCell flex={1}>{t("workingHours.workingDays.table.taskSpecificBonus")}</HeaderCell>
+      <HeaderCell flex={1}>{t("workingHours.workingDays.table.freezerBonus")}</HeaderCell>
       <HeaderCell minWidth={115} flex={1}>
         {t("workingHours.workingDays.table.absence")}
       </HeaderCell>
-      <HeaderCell width={90}>
-        {t("workingHours.workingDays.table.vehicle")}
-      </HeaderCell>
-      <HeaderCell width={90}>
-        {t("workingHours.workingDays.table.dailyAllowance")}
-      </HeaderCell>
-      <HeaderCell width={90}>
-        {t("workingHours.workingDays.table.inspected")}
-      </HeaderCell>
+      <HeaderCell width={90}>{t("workingHours.workingDays.table.vehicle")}</HeaderCell>
+      <HeaderCell width={90}>{t("workingHours.workingDays.table.dailyAllowance")}</HeaderCell>
+      <HeaderCell width={90}>{t("workingHours.workingDays.table.inspected")}</HeaderCell>
       <HeaderCell minWidth={275} flex={1}>
         {t("workingHours.workingDays.table.remarks")}
       </HeaderCell>
       <HeaderCell width={75} />
     </Stack>
   );
-};
+}
 
 export default WorkShiftsTableHeader;

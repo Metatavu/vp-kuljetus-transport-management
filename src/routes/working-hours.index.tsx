@@ -8,6 +8,7 @@ import { EmployeeType, Office, SalaryGroup } from "generated/client";
 import { useDebounce } from "hooks/use-debounce";
 import { getListEmployeesQueryOptions } from "hooks/use-queries";
 import { TFunction, t } from "i18next";
+import { DateTime } from "luxon";
 import { Key, ReactNode, useCallback, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -117,6 +118,7 @@ function WorkingHours() {
                 navigate({
                   to: "/working-hours/$employeeId/work-shifts",
                   params: { employeeId: params.row.id as string },
+                  search: { date: DateTime.now() },
                 })
               }
             >

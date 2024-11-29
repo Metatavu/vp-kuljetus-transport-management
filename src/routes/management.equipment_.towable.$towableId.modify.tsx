@@ -16,8 +16,15 @@ export const Route = createFileRoute("/management/equipment_/towable/$towableId/
     const towable = await queryClient.ensureQueryData(getFindTowableQueryOptions({ towableId }));
     const breadcrumbs: Breadcrumb[] = [
       { label: t("management.title") },
-      { label: t("management.equipment.title"), route: "/management/equipment" },
-      { label: t("management.equipment.modify", { equipmentName: getEquipmentDisplayName(towable) }) },
+      {
+        label: t("management.equipment.title"),
+        route: "/management/equipment",
+      },
+      {
+        label: t("management.equipment.modify", {
+          equipmentName: getEquipmentDisplayName(towable),
+        }),
+      },
     ];
     return { breadcrumbs, towable };
   },

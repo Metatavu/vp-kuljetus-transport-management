@@ -5,8 +5,12 @@
 	},
 	"files": {
 		"ignoreUnknown": true,
+		"include": [
+			"src/*"
+		],
 		"ignore": [
-			"generated/*"
+			"generated/*",
+			"vp-kuljetus-transport-management-specs/*"
 		]
 	},
 	"vcs": {

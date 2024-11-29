@@ -18,7 +18,7 @@ namespace DragAndDropUtils {
     overRouteId: string,
     newIndex: number,
     routeTasks: TRouteTasks,
-    draggedTasks: Task[]
+    draggedTasks: Task[],
   ): TRouteTasks => {
     const newTargetRouteTasks = [
       ...routeTasks[overRouteId].slice(0, newIndex),
@@ -31,9 +31,7 @@ namespace DragAndDropUtils {
 
     return {
       ...routeTasks,
-      [activeRouteId]: newTasks.filter(
-        (task, index, self) => index === self.findIndex((t) => t.id === task.id),
-      ),
+      [activeRouteId]: newTasks.filter((task, index, self) => index === self.findIndex((t) => t.id === task.id)),
       [overRouteId]: newTargetRouteTasks.filter(
         (task, index, array) => index === array.findIndex((t) => t.id === task.id),
       ),
@@ -53,7 +51,7 @@ namespace DragAndDropUtils {
     activeRouteId: string,
     overRouteId: string,
     routeTasks: TRouteTasks,
-    draggedTasks: Task[]
+    draggedTasks: Task[],
   ): TRouteTasks => {
     const originRouteTasks = routeTasks[activeRouteId] ?? [];
     const targetRouteTasks = routeTasks[overRouteId] ?? [];
@@ -63,7 +61,7 @@ namespace DragAndDropUtils {
     return {
       ...routeTasks,
       [activeRouteId]: newTasks,
-      [overRouteId]: [...targetRouteTasks, ...draggedTasks]
+      [overRouteId]: [...targetRouteTasks, ...draggedTasks],
     };
   };
 
@@ -80,7 +78,7 @@ namespace DragAndDropUtils {
     overRouteId: string,
     newIndex: number,
     routeTasks: TRouteTasks,
-    draggedTasks: Task[]
+    draggedTasks: Task[],
   ): TRouteTasks => {
     const targetRouteTasks = routeTasks[overRouteId] ?? [];
     const activeDraggedTaskIds = draggedTasks.map((task: Task) => task.id);
@@ -94,7 +92,7 @@ namespace DragAndDropUtils {
         ...newTasks.slice(newIndex, newTasks.length),
       ].filter((task, index, self) => index === self.findIndex((t) => t.id === task.id)),
     };
-  }
+  };
 
   /**
    * Removes tasks from route
@@ -103,15 +101,12 @@ namespace DragAndDropUtils {
    * @param draggedTasks tasks that are dragged
    * @returns updated route tasks
    */
-  export const removeTasksFromRoute = (
-    routeTasks: TRouteTasks,
-    draggedTasks: Task[],
-  ): TRouteTasks => {
+  export const removeTasksFromRoute = (routeTasks: TRouteTasks, draggedTasks: Task[]): TRouteTasks => {
     const newRouteTasks: TRouteTasks = {};
     for (const key of Object.keys(routeTasks)) {
       const routesTasks = routeTasks[key];
-      const draggedTaskIds = draggedTasks.map(task => task.id);
-      newRouteTasks[key] = routesTasks.filter(task => !draggedTaskIds.includes(task.id));
+      const draggedTaskIds = draggedTasks.map((task) => task.id);
+      newRouteTasks[key] = routesTasks.filter((task) => !draggedTaskIds.includes(task.id));
     }
 
     return newRouteTasks;
