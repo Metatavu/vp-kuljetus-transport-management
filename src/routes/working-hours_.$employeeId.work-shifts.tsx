@@ -1,4 +1,5 @@
 import { ArrowBack, Print, Save, Send } from "@mui/icons-material";
+import { LoadingButton } from "@mui/lab";
 import {
   Box,
   Button,
@@ -14,6 +15,7 @@ import {
   styled,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { BlobProvider } from "@react-pdf/renderer";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Outlet, createFileRoute } from "@tanstack/react-router";
 import { api } from "api/index";
@@ -21,10 +23,12 @@ import AggregationsTable from "components/working-hours/aggregations-table";
 import ChangeLog from "components/working-hours/change-log";
 import WorkShiftRow from "components/working-hours/work-shift-row";
 import WorkShiftsTableHeader from "components/working-hours/work-shifts-table-header";
+import WorkingHoursDocument from "components/working-hours/working-hours-document";
 import { EmployeeWorkShift, SalaryGroup, WorkShiftHours, WorkType } from "generated/client";
 import { QUERY_KEYS, getListEmployeesQueryOptions, getListTrucksQueryOptions } from "hooks/use-queries";
 import { t } from "i18next";
 import { DateTime } from "luxon";
+import { useCallback } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
@@ -32,6 +36,7 @@ import { queryClient } from "src/main";
 import { Breadcrumb, EmployeeWorkHoursForm, EmployeeWorkHoursFormRow } from "src/types";
 import DataValidation from "src/utils/data-validation-utils";
 import TimeUtils from "src/utils/time-utils";
+import WorkShiftsUtils from "src/utils/workshift-utils";
 import { z } from "zod";
 
 export const workShiftSearchSchema = z.object({
@@ -149,13 +154,13 @@ function WorkShifts() {
 
   const workingPeriodsForEmployee = TimeUtils.getWorkingPeriodDates(employeeSalaryGroup, selectedDate?.toJSDate());
 
-  const workShiftsData = useQuery({
+  const workShiftsDataForFormRows = useQuery({
     queryKey: [QUERY_KEYS.WORK_SHIFTS, employeeId, "workShiftsData", workingPeriodsForEmployee],
     queryFn: async () => {
       const [workShifts] = await api.employeeWorkShifts.listEmployeeWorkShiftsWithHeaders({
         employeeId,
-        startedAfter: workingPeriodsForEmployee?.start,
-        startedBefore: workingPeriodsForEmployee?.end,
+        dateAfter: workingPeriodsForEmployee?.start,
+        dateBefore: workingPeriodsForEmployee?.end,
       });
 
       return await Promise.all(
@@ -168,13 +173,7 @@ function WorkShifts() {
 
             return {
               workShift: workShift,
-              workShiftHours: workShiftHours.reduce<Record<WorkType, WorkShiftHours>>(
-                (workShiftHoursRecord, singleWorkShiftHours) => {
-                  workShiftHoursRecord[singleWorkShiftHours.workType] = singleWorkShiftHours;
-                  return workShiftHoursRecord;
-                },
-                {} as Record<WorkType, WorkShiftHours>,
-              ),
+              workShiftHours: WorkShiftsUtils.getWorkShiftHoursWithWorkTypes(workShiftHours),
             };
           },
         ),
@@ -239,7 +238,7 @@ function WorkShifts() {
 
   const workShiftsDataWithWorkingPeriodDates = addMissingWorkShiftRows(
     employeeId,
-    workShiftsData.data ?? [],
+    workShiftsDataForFormRows.data ?? [],
     TimeUtils.getWorkingPeriodDates(employeeSalaryGroup, selectedDate.toJSDate()),
   );
 
@@ -358,8 +357,10 @@ function WorkShifts() {
     },
   });
 
-  const onChangeDate = (newDate: DateTime | null) =>
-    navigate({ search: (prev) => ({ ...prev, date: newDate ?? DateTime.now() }) });
+  const onChangeDate = useCallback(
+    (newDate: DateTime | null) => navigate({ search: (prev) => ({ ...prev, date: newDate ?? DateTime.now() }) }),
+    [navigate],
+  );
 
   const renderEmployeeMenuItems = () => {
     return employees?.map((employee) => (
@@ -416,9 +417,20 @@ function WorkShifts() {
           </Stack>
         </ToolbarContainer>
         <Stack direction="row" alignItems="end" gap={2} p={2}>
-          <Button size="small" variant="outlined" endIcon={<Print />}>
-            {t("workingHours.workingDays.print")}
-          </Button>
+          <BlobProvider document={<WorkingHoursDocument />}>
+            {({ loading, url }) => (
+              <LoadingButton
+                loading={loading}
+                href={url || ""}
+                target="_blank"
+                size="small"
+                variant="outlined"
+                endIcon={<Print />}
+              >
+                {t("workingHours.workingDays.print")}
+              </LoadingButton>
+            )}
+          </BlobProvider>
           <Button size="small" variant="contained" disabled={true} endIcon={<Send />}>
             {t("workingHours.workingDays.sendToPayroll")}
           </Button>
@@ -440,8 +452,8 @@ function WorkShifts() {
     const workingPeriodDates = TimeUtils.getWorkingPeriodDates(employeeSalaryGroup, selectedDate.toJSDate());
     if (!workingPeriodDates) return null;
 
-    const start = DateTime.fromJSDate(workingPeriodDates.start).setLocale("fi").toFormat("EEE dd.MM");
-    const end = DateTime.fromJSDate(workingPeriodDates.end).setLocale("fi").toFormat("EEE dd.MM");
+    const start = DateTime.fromJSDate(workingPeriodDates.start).toFormat("EEE dd.MM");
+    const end = DateTime.fromJSDate(workingPeriodDates.end).toFormat("EEE dd.MM");
 
     return (
       <Typography variant="subtitle1">
@@ -462,7 +474,7 @@ function WorkShifts() {
                   {renderWorkingPeriodText()}
                   <Stack spacing={4} direction="row" alignItems="center">
                     <FormControlLabel
-                      control={<Checkbox title="Merkitse kaikki tarkistetuiksi" />}
+                      control={<Checkbox title={t("workingHours.workingHourBalances.markAllApproved")} />}
                       label={t("workingHours.workingDays.table.inspected")}
                     />
                     <Box minWidth={245}>

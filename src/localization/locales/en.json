@@ -365,6 +365,7 @@
       "fullDayAllowance": "Full-Day Allowance",
       "toWorkHourDetails": "To Work hour details",
       "approved": "Checked",
+      "markAllApproved": "Mark all checked",
       "successToast": "Working hours saved!",
       "errorToast": "Failed to save working hours"
     },

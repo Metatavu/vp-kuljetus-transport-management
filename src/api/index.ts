@@ -42,6 +42,6 @@ export const api = {
   workShiftHours: new WorkShiftHoursApi(configuration),
   holidays: new HolidaysApi(configuration),
   clientApps: new ClientAppsApi(configuration),
-  workEvents: new WorkEventsApi(configuration),
   employeeWorkShifts: new EmployeeWorkShiftsApi(configuration),
+  workEvents: new WorkEventsApi(configuration),
 };

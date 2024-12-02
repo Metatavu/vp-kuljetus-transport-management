@@ -1,11 +1,11 @@
-import { Popper, Paper, Stack, List, ListItemButton, ListItemText, styled } from "@mui/material";
+import { List, ListItemButton, ListItemText, Paper, Popper, Stack, styled } from "@mui/material";
 import { GridCellModes, GridEditInputCell, GridRenderEditCellParams } from "@mui/x-data-grid";
 import DatePickerWithArrows from "components/generic/date-picker-with-arrows";
 import { Route, Task } from "generated/client";
 import { DateTime } from "luxon";
 import { Dispatch, SetStateAction, useCallback } from "react";
-import { theme } from "../../../theme";
 import { useTranslation } from "react-i18next";
+import { theme } from "../../../theme";
 
 // Styled components
 const DropDownPaper = styled(Paper, {

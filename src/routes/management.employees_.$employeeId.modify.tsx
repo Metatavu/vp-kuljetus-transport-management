@@ -4,7 +4,7 @@ import { api } from "api/index";
 import LoaderWrapper from "components/generic/loader-wrapper";
 import EmployeeComponent from "components/management/employees/employee";
 import { Employee } from "generated/client";
-import { QUERY_KEYS, getFindEmployeeQueryOptions, getListWorkShiftHoursQueryOptions } from "hooks/use-queries";
+import { QUERY_KEYS, getFindEmployeeQueryOptions } from "hooks/use-queries";
 import { t } from "i18next";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
@@ -47,8 +47,6 @@ function EmployeeModify() {
     },
     onError: () => toast.error(t("management.employees.errorToast")),
   });
-
-  useQuery(getListWorkShiftHoursQueryOptions({ employeeId }, employeeQuery.isSuccess));
 
   return (
     <LoaderWrapper loading={employeeQuery.isLoading}>

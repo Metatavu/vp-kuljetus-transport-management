@@ -1,9 +1,9 @@
 import { useDraggable } from "@dnd-kit/core";
 import { GridRow, GridRowProps } from "@mui/x-data-grid";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { Task } from "generated/client";
 import { Dispatch, SetStateAction, useEffect, useMemo } from "react";
 import { DraggableType, UnallocatedTasksRowDragHandles } from "../../../types";
-import { useNavigate, useSearch } from "@tanstack/react-router";
 
 type Props = GridRowProps & {
   setRowDragHandles: Dispatch<SetStateAction<UnallocatedTasksRowDragHandles>>;

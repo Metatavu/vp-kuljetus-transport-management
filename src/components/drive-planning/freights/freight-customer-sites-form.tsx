@@ -1,4 +1,4 @@
-import { MenuItem, TextField, Grid, Box } from "@mui/material";
+import { Box, Grid, MenuItem, TextField } from "@mui/material";
 import { Freight, Site } from "generated/client";
 import { useMemo } from "react";
 import { useFormContext } from "react-hook-form";
