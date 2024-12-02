@@ -283,12 +283,14 @@ function WorkShifts() {
   const updateWorkShift = useMutation({
     mutationFn: async () => {
       const [updatedWorkShifts, updatedWorkShiftHours, newRows] = getUpdatedWorkShiftsAndWorkShiftHours();
-
       const newRowsWithWorkShiftIds = await Promise.all(
         newRows.map(async (row) => {
+          const normalizeDateFromRow = new Date(
+            DateTime.fromJSDate(row.workShift.date).toISODate() ?? DateTime.now().toISODate(),
+          );
           const workShift = await api.employeeWorkShifts.createEmployeeWorkShift({
             employeeId,
-            employeeWorkShift: row.workShift,
+            employeeWorkShift: { ...row.workShift, date: normalizeDateFromRow },
           });
           return { ...row, workShift: workShift };
         }),

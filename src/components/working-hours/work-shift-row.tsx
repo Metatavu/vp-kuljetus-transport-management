@@ -1,4 +1,4 @@
-import { Button, Checkbox, Link, MenuItem, Stack, TextField, Tooltip, Typography, styled } from "@mui/material";
+import { Button, Checkbox, Link, MenuItem, Stack, TextField, Tooltip, Typography, alpha, styled } from "@mui/material";
 import {
   AbsenceType,
   EmployeeWorkShift,
@@ -10,6 +10,7 @@ import {
 import { DateTime } from "luxon";
 import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
+import { theme } from "src/theme";
 import { EmployeeWorkHoursForm } from "src/types";
 import LocalizationUtils from "src/utils/localization-utils";
 
@@ -24,7 +25,6 @@ const Row = styled(Stack, {
   label: "work-shift-row",
 })(({ theme }) => ({
   flexDirection: "row",
-  backgroundColor: theme.palette.background.paper,
   borderBottom: `1px solid ${theme.palette.divider}`,
 }));
 
@@ -157,10 +157,25 @@ function WorkShiftRow({ onClick, index, trucks }: Props) {
   };
 
   return (
-    <Row>
+    <Row
+      style={{
+        backgroundColor:
+          workShift?.date && DateTime.fromJSDate(workShift.date) < DateTime.now().startOf("day")
+            ? theme.palette.background.paper
+            : theme.palette.background.default,
+      }}
+    >
       <Cell width={90}>
-        <Link variant="body2" title={t("workingHours.workingHourBalances.toWorkHourDetails")} onClick={onClick}>
-          {workShift?.date && DateTime.fromJSDate(workShift.date).toFormat("dd.MM")}
+        <Link
+          style={{
+            fontWeight:
+              workShift?.date && DateTime.fromJSDate(workShift.date).hasSame(DateTime.now(), "day") ? "bold" : "normal",
+          }}
+          variant="body2"
+          title={t("workingHours.workingHourBalances.toWorkHourDetails")}
+          onClick={onClick}
+        >
+          {workShift?.date && DateTime.fromJSDate(workShift.date).toFormat("EEE dd.MM")}
         </Link>
       </Cell>
       <Cell minWidth={75} flex={1}>

@@ -147,7 +147,7 @@ function AggregationsTable({ workShiftsData }: Props) {
           </TableCell>
           <TableCell>{t("workingHours.workingDays.aggregationsTable.fillingHours")}</TableCell>
           <TableCell align="right">
-            <Typography variant="h6">0 pv</Typography>
+            <Typography variant="h6">0 h</Typography>
           </TableCell>
         </TableRow>
       </TableBody>
