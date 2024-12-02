@@ -16,7 +16,7 @@ import { api } from "api/index";
 import DialogHeader from "components/generic/dialog-header";
 import { EmployeeWorkShift, Truck, WorkEvent } from "generated/client";
 import { DateTime } from "luxon";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import DataValidation from "src/utils/data-validation-utils";
 import WorkEventRow from "./work-event-row";
@@ -26,11 +26,20 @@ type Props = {
   workEvents: WorkEvent[];
   trucks: Truck[];
   workShift: EmployeeWorkShift;
+  shiftStartedAt: DateTime;
   onClose: () => void;
 };
 
-const WorkShiftDialog = ({ workEvents, trucks, workShift, onClose }: Props) => {
+const WorkShiftDialog = ({ workEvents, trucks, workShift, shiftStartedAt, onClose }: Props) => {
   const { t } = useTranslation();
+
+  /**
+   * It is illegal to do workshifts over 15 hours, so if the workshift has not received ended at time, we assume it has ended after 15 hours.
+   */
+  const workShiftEndedAt = useMemo(
+    () => workShift.endedAt ?? shiftStartedAt.plus({ hours: 15 }).toJSDate(),
+    [workShift, shiftStartedAt],
+  );
 
   const truckLocationsQuery = useQueries({
     queries:
@@ -43,7 +52,7 @@ const WorkShiftDialog = ({ workEvents, trucks, workShift, onClose }: Props) => {
                 locations: await api.trucks.listTruckLocations({
                   truckId: id,
                   after: workShift.startedAt,
-                  before: workShift.endedAt,
+                  before: workShiftEndedAt,
                 }),
               }
             : null,
@@ -59,8 +68,8 @@ const WorkShiftDialog = ({ workEvents, trucks, workShift, onClose }: Props) => {
     }
 
     const nextWorkEvent = allWorkEvents[index + 1];
-    const duration = DateTime.fromJSDate(currentWorkEvent.time).diff(
-      DateTime.fromJSDate(nextWorkEvent.time),
+    const duration = DateTime.fromJSDate(nextWorkEvent.time).diff(
+      DateTime.fromJSDate(currentWorkEvent.time),
       "seconds",
     );
     return duration.toFormat("hh:mm.ss");

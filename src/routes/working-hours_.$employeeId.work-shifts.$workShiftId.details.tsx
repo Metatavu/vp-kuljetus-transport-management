@@ -3,6 +3,7 @@ import { api } from "api/index";
 import WorkShiftDialog from "components/working-hours/work-shift-dialog";
 import { QUERY_KEYS, getFindTruckQueryOptions, getListEmployeeWorkEventsQueryOptions } from "hooks/use-queries";
 import { t } from "i18next";
+import { DateTime } from "luxon";
 import { queryClient } from "src/main";
 import { Breadcrumb } from "src/types";
 
@@ -27,6 +28,7 @@ export const Route = createFileRoute("/working-hours_/$employeeId/work-shifts/$w
         max: 100000,
       }),
     );
+    workEvents.reverse();
     const trucks = await Promise.all(
       (workShift.truckIds ?? []).map((truckId) => queryClient.ensureQueryData(getFindTruckQueryOptions({ truckId }))),
     );
@@ -42,12 +44,16 @@ function WorkShiftDetails() {
   const navigate = useNavigate();
   const { workEvents, trucks, workShift } = Route.useLoaderData();
   const selectedDate = Route.useSearch({ select: (search) => search.date });
+  const { startedAt } = workShift;
+
+  if (!startedAt) return null;
 
   return (
     <WorkShiftDialog
       workEvents={workEvents}
       trucks={trucks}
       workShift={workShift}
+      shiftStartedAt={DateTime.fromJSDate(startedAt)}
       onClose={() => navigate({ to: "..", search: { date: selectedDate } })}
     />
   );
