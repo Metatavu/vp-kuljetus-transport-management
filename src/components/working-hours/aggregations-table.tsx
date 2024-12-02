@@ -68,7 +68,7 @@ function AggregationsTable({ workShiftsData }: Props) {
           </TableCell>
           <TableCell>{t("workingHours.workingDays.aggregationsTable.pekkanens")}</TableCell>
           <TableCell align="right">
-            <Typography variant="h6">-</Typography>
+            <Typography variant="h6">- </Typography>
           </TableCell>
           <TableCell>{t("workingHours.workingDays.aggregationsTable.partialDailyAllowance")}</TableCell>
           <TableCell align="right">
