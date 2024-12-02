@@ -1,4 +1,5 @@
 import { Button, Checkbox, Link, MenuItem, Stack, TextField, Tooltip, Typography, styled } from "@mui/material";
+import { useNavigate, useParams } from "@tanstack/react-router";
 import {
   AbsenceType,
   EmployeeWorkShift,
@@ -14,9 +15,10 @@ import { EmployeeWorkHoursForm } from "src/types";
 import LocalizationUtils from "src/utils/localization-utils";
 
 type Props = {
-  onClick: () => void;
+  date: DateTime;
   index: number;
   trucks: Truck[];
+  workShiftId?: string;
 };
 
 // Styled work shift row
@@ -47,8 +49,10 @@ const Cell = styled(Stack, {
   },
 }));
 
-function WorkShiftRow({ onClick, index, trucks }: Props) {
+function WorkShiftRow({ index, trucks, date, workShiftId }: Props) {
   const { t } = useTranslation();
+  const { employeeId } = useParams({ from: "/working-hours_/$employeeId/work-shifts" });
+  const navigate = useNavigate();
   const { watch, setValue } = useFormContext<EmployeeWorkHoursForm>();
   const workShift = watch(`${index}.workShift`) as EmployeeWorkShift | undefined;
   const dayOffWorkAllowance = watch(`${index}.workShift.dayOffWorkAllowance`);
@@ -154,9 +158,21 @@ function WorkShiftRow({ onClick, index, trucks }: Props) {
   };
 
   return (
-    <Row>
+    <Row key={workShiftId}>
       <Cell width={90}>
-        <Link variant="body2" title={t("workingHours.workingHourBalances.toWorkHourDetails")} onClick={onClick}>
+        <Link
+          underline={workShiftId ? "always" : "none"}
+          sx={{ cursor: workShiftId ? "pointer" : "default" }}
+          title={t("workingHours.workingHourBalances.toWorkHourDetails")}
+          onClick={() => {
+            if (!workShiftId) return null;
+            navigate({
+              to: "/working-hours/$employeeId/work-shifts/$workShiftId/details",
+              params: { employeeId, workShiftId },
+              search: { date },
+            });
+          }}
+        >
           {workShift?.date && DateTime.fromJSDate(workShift.date).toFormat("dd.MM")}
         </Link>
       </Cell>
@@ -254,12 +270,7 @@ function WorkShiftRow({ onClick, index, trucks }: Props) {
         />
       </Cell>
       <Cell width={75}>
-        <Button
-          variant="text"
-          color="primary"
-          title={t("workingHours.workingHourBalances.toWorkHourDetails")}
-          onClick={onClick}
-        >
+        <Button variant="text" color="primary" title={t("workingHours.workingHourBalances.toWorkHourDetails")}>
           {t("open")}
         </Button>
       </Cell>

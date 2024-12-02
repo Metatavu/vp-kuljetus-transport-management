@@ -12,7 +12,6 @@ type Props = {
   truck?: Truck;
   duration: string;
   distance?: string;
-  onHover: (timestamp: number | null, truckId?: string) => void;
 };
 
 // Styled work event TextField
@@ -31,7 +30,7 @@ const CellInput = styled(TextField, {
   },
 }));
 
-const WorkEventRow = ({ type, startTime, truck, duration, distance, onHover }: Props) => {
+const WorkEventRow = ({ type, startTime, truck, duration, distance }: Props) => {
   const { t } = useTranslation();
 
   const renderLocalizedMenuItem = useCallback(
@@ -52,7 +51,7 @@ const WorkEventRow = ({ type, startTime, truck, duration, distance, onHover }: P
   switch (type) {
     case WorkEventType.ShiftStart:
       return (
-        <TableRow onMouseEnter={() => onHover(startTime.toSeconds(), truck?.id)} onMouseLeave={() => onHover(null)}>
+        <TableRow>
           <TableCell sx={{ p: 0.5 }} width={100}>
             <CellInput
               aria-label={t("workingHours.workingDays.workShiftDialog.time")}
@@ -71,7 +70,7 @@ const WorkEventRow = ({ type, startTime, truck, duration, distance, onHover }: P
       );
     case WorkEventType.ShiftEnd:
       return (
-        <TableRow onMouseEnter={() => onHover(startTime.toSeconds(), truck?.id)} onMouseLeave={() => onHover(null)}>
+        <TableRow>
           <TableCell sx={{ p: 0.5 }} width={100}>
             <CellInput
               aria-label={t("workingHours.workingDays.workShiftDialog.time")}
@@ -87,7 +86,7 @@ const WorkEventRow = ({ type, startTime, truck, duration, distance, onHover }: P
       );
     case WorkEventType.Logout:
       return (
-        <TableRow onMouseEnter={() => onHover(startTime.toSeconds(), truck?.id)} onMouseLeave={() => onHover(null)}>
+        <TableRow>
           <TableCell width={100}>{startTime.toFormat("HH:mm")}</TableCell>
           <TableCell align="center">{truck?.name ?? ""}</TableCell>
           <TableCell>{LocalizationUtils.getLocalizedWorkEventType(type, t)}</TableCell>
@@ -97,7 +96,7 @@ const WorkEventRow = ({ type, startTime, truck, duration, distance, onHover }: P
       );
     case WorkEventType.Login:
       return (
-        <TableRow onMouseEnter={() => onHover(startTime.toSeconds(), truck?.id)} onMouseLeave={() => onHover(null)}>
+        <TableRow>
           <TableCell width={100}>{startTime.toFormat("HH:mm")}</TableCell>
           <TableCell align="center">{truck?.name ?? ""}</TableCell>
           <TableCell>{LocalizationUtils.getLocalizedWorkEventType(type, t)}</TableCell>
@@ -107,7 +106,7 @@ const WorkEventRow = ({ type, startTime, truck, duration, distance, onHover }: P
       );
     case WorkEventType.Unknown:
       return (
-        <TableRow onMouseEnter={() => onHover(startTime.toSeconds(), truck?.id)} onMouseLeave={() => onHover(null)}>
+        <TableRow>
           <TableCell sx={{ p: 0.5 }} width={100}>
             <CellInput
               aria-label={t("workingHours.workingDays.workShiftDialog.time")}
@@ -123,7 +122,7 @@ const WorkEventRow = ({ type, startTime, truck, duration, distance, onHover }: P
       );
     default:
       return (
-        <TableRow onMouseEnter={() => onHover(startTime.toSeconds(), truck?.id)} onMouseLeave={() => onHover(null)}>
+        <TableRow>
           <TableCell width={100}>{startTime.toFormat("HH:mm")}</TableCell>
           <TableCell align="center">{truck?.name ?? ""}</TableCell>
           <TableCell sx={{ p: 0.5 }}>

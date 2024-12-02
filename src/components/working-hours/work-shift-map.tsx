@@ -1,17 +1,16 @@
 import config from "app/config";
 import { TruckLocation } from "generated/client";
-import { LatLng, Map as LeafletMap, latLng } from "leaflet";
-import { useCallback, useRef } from "react";
-import { MapContainer, Marker, Polyline, TileLayer } from "react-leaflet";
+import { LatLng, LatLngBounds, LatLngTuple, Map as LeafletMap, latLng } from "leaflet";
+import { useCallback, useEffect, useRef } from "react";
+import { MapContainer, Polyline, TileLayer } from "react-leaflet";
 
 const DEFAULT_MAP_CENTER = latLng(61.1621924, 28.65865865);
 
 type Props = {
   truckLocations: TruckLocation[][];
-  hoveredLocation?: LatLng;
 };
 
-const WorkShiftMap = ({ truckLocations, hoveredLocation }: Props) => {
+const WorkShiftMap = ({ truckLocations }: Props) => {
   const {
     mapbox: { baseUrl, publicApiKey },
   } = config;
@@ -33,6 +32,16 @@ const WorkShiftMap = ({ truckLocations, hoveredLocation }: Props) => {
 
   const renderTruckLines = useCallback(() => truckLocations.map(renderTruckLine), [truckLocations, renderTruckLine]);
 
+  useEffect(() => {
+    if (!mapRef.current || !truckLocations.length) return;
+
+    const allPoints = truckLocations.flat().map(({ latitude, longitude }) => [latitude, longitude]) as LatLngTuple[];
+    if (!allPoints.length) return;
+
+    const bounds = new LatLngBounds(allPoints);
+    mapRef.current.fitBounds(bounds, { padding: [10, 10] });
+  }, [truckLocations]);
+
   return (
     <MapContainer ref={mapRef} style={{ height: 600, display: "flex", flex: 1 }} center={DEFAULT_MAP_CENTER} zoom={13}>
       <TileLayer
@@ -40,7 +49,6 @@ const WorkShiftMap = ({ truckLocations, hoveredLocation }: Props) => {
         url={`${baseUrl}/styles/v1/metatavu/clsszigf302jx01qy0e4q0c7e/tiles/{z}/{x}/{y}?access_token=${publicApiKey}`}
       />
       {renderTruckLines()}
-      {hoveredLocation && <Marker position={hoveredLocation} />}
     </MapContainer>
   );
 };

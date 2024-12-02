@@ -475,7 +475,8 @@ function WorkShifts() {
                   {workShiftsDataWithWorkingPeriodDates.map((workShiftFormRow, index) => (
                     <WorkShiftRow
                       key={`${index}_${workShiftFormRow.workShift.id}`}
-                      onClick={() => navigate({ to: "work-shift-details", search: { date: selectedDate } })}
+                      workShiftId={workShiftFormRow.workShift.id}
+                      date={selectedDate}
                       index={index}
                       trucks={trucks ?? []}
                     />

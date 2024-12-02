@@ -28,7 +28,6 @@ export const QUERY_KEYS = {
   FREIGHTS: "freights",
   FREIGHT_UNITS_BY_FREIGHT: "freight-units-by-freight",
   EMPLOYEES: "employees",
-  WORK_SHIFTS: "work-shifts",
   WORK_SHIFT_HOURS: "work-shift-hours",
   HOLIDAYS: "holidays",
   CLIENT_APPS: "clientApps",
@@ -239,7 +238,12 @@ export const getFindClientAppQueryOptions = (clientAppId: string) =>
 export const getListEmployeeWorkEventsQueryOptions = (params: ListEmployeeWorkEventsRequest) =>
   queryOptions({
     queryKey: [QUERY_KEYS.EMPLOYEE_WORK_EVENTS, params],
-    queryFn: () => api.workEvents.listEmployeeWorkEvents(params),
+    queryFn: async () => {
+      const [workEvents, headers] = await api.workEvents.listEmployeeWorkEventsWithHeaders(params);
+      const totalResults = getTotalResultsFromHeaders(headers);
+
+      return { workEvents, totalResults };
+    },
   });
 
 /**

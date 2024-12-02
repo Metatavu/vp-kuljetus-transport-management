@@ -14,10 +14,9 @@ import {
 import { useQueries } from "@tanstack/react-query";
 import { api } from "api/index";
 import DialogHeader from "components/generic/dialog-header";
-import { EmployeeWorkShift, Truck, TruckLocation, WorkEvent } from "generated/client";
-import { LatLng } from "leaflet";
+import { EmployeeWorkShift, Truck, WorkEvent } from "generated/client";
 import { DateTime } from "luxon";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import DataValidation from "src/utils/data-validation-utils";
 import WorkEventRow from "./work-event-row";
@@ -32,8 +31,6 @@ type Props = {
 
 const WorkShiftDialog = ({ workEvents, trucks, workShift, onClose }: Props) => {
   const { t } = useTranslation();
-
-  const [hoveredTimestamp, setHoveredTimestamp] = useState<{ [key: string]: string } | null>(null);
 
   const truckLocationsQuery = useQueries({
     queries:
@@ -56,19 +53,6 @@ const WorkShiftDialog = ({ workEvents, trucks, workShift, onClose }: Props) => {
     }),
   });
 
-  const truckLocationsLookup = useMemo(
-    () =>
-      truckLocationsQuery.data?.reduce((acc: Record<string, Record<number, LatLng>>, { truckId, locations }) => {
-        acc[truckId] = locations.reduce((ac: Record<number, LatLng>, truckLocation: TruckLocation) => {
-          ac[truckLocation.timestamp] = new LatLng(truckLocation.latitude, truckLocation.longitude);
-
-          return ac;
-        }, {});
-        return acc;
-      }, {}),
-    [truckLocationsQuery.data],
-  );
-
   const calculateDuration = useCallback((currentWorkEvent: WorkEvent, index: number, allWorkEvents: WorkEvent[]) => {
     if (index === allWorkEvents.length - 1) {
       return "";
@@ -85,13 +69,11 @@ const WorkShiftDialog = ({ workEvents, trucks, workShift, onClose }: Props) => {
   const renderWorkEventRow = useCallback(
     (workEvent: WorkEvent, index: number, workEvents: WorkEvent[]) => (
       <WorkEventRow
+        key={workEvent.id}
         type={workEvent.workEventType}
         startTime={DateTime.fromJSDate(workEvent.time)}
         truck={trucks.find((truck) => truck.id === workEvent.truckId)}
         duration={calculateDuration(workEvent, index, workEvents)}
-        onHover={(timestamp, truckId) =>
-          truckId && timestamp ? setHoveredTimestamp({ [truckId]: timestamp.toString() }) : setHoveredTimestamp(null)
-        }
       />
     ),
     [trucks, calculateDuration],
@@ -108,14 +90,7 @@ const WorkShiftDialog = ({ workEvents, trucks, workShift, onClose }: Props) => {
       />
       <DialogContent sx={{ p: 0 }}>
         <Stack direction="row">
-          <WorkShiftMap
-            truckLocations={(truckLocationsQuery.data ?? []).map(({ locations }) => locations)}
-            hoveredLocation={
-              truckLocationsLookup[hoveredTimestamp?.truckId ?? ""]?.[
-                Number.parseInt(hoveredTimestamp?.timestamp ?? "0")
-              ]
-            }
-          />
+          <WorkShiftMap truckLocations={(truckLocationsQuery.data ?? []).map(({ locations }) => locations)} />
           <Box display="flex" flex={1} maxHeight={600}>
             <TableContainer>
               <Table stickyHeader>

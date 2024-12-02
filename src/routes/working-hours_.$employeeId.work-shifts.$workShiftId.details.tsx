@@ -19,8 +19,13 @@ export const Route = createFileRoute("/working-hours_/$employeeId/work-shifts/$w
           workShiftId,
         }),
     });
-    const workEvents = await queryClient.ensureQueryData(
-      getListEmployeeWorkEventsQueryOptions({ employeeId, employeeWorkShiftId: workShiftId, first: 0, max: 100000 }),
+    const { workEvents } = await queryClient.ensureQueryData(
+      getListEmployeeWorkEventsQueryOptions({
+        employeeId,
+        employeeWorkShiftId: workShiftId,
+        first: 0,
+        max: 100000,
+      }),
     );
     const trucks = await Promise.all(
       (workShift.truckIds ?? []).map((truckId) => queryClient.ensureQueryData(getFindTruckQueryOptions({ truckId }))),
