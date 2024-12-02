@@ -31,6 +31,9 @@ import {
     TruckLocation,
     TruckLocationFromJSON,
     TruckLocationToJSON,
+    TruckOdometerReading,
+    TruckOdometerReadingFromJSON,
+    TruckOdometerReadingToJSON,
     TruckSortByField,
     TruckSortByFieldFromJSON,
     TruckSortByFieldToJSON,
@@ -58,6 +61,14 @@ export interface ListDriveStatesRequest {
 }
 
 export interface ListTruckLocationsRequest {
+    truckId: string;
+    after?: Date;
+    before?: Date;
+    first?: number;
+    max?: number;
+}
+
+export interface ListTruckOdometerReadingsRequest {
     truckId: string;
     after?: Date;
     before?: Date;
@@ -288,6 +299,60 @@ export class TrucksApi extends runtime.BaseAPI {
      */
     async listTruckLocationsWithHeaders(requestParameters: ListTruckLocationsRequest): Promise<[ Array<TruckLocation>, Headers ]> {
         const response = await this.listTruckLocationsRaw(requestParameters);
+        const value = await response.value(); 
+        return [ value, response.raw.headers ];
+    }
+    /**
+     * Lists truck odometer readings.
+     * List truck odometer readings
+     */
+    async listTruckOdometerReadingsRaw(requestParameters: ListTruckOdometerReadingsRequest): Promise<runtime.ApiResponse<Array<TruckOdometerReading>>> {
+        if (requestParameters.truckId === null || requestParameters.truckId === undefined) {
+            throw new runtime.RequiredError('truckId','Required parameter requestParameters.truckId was null or undefined when calling listTruckOdometerReadings.');
+        }
+        const queryParameters: any = {};
+        if (requestParameters.after !== undefined) {
+            queryParameters['after'] = (requestParameters.after as any).toISOString();
+        }
+        if (requestParameters.before !== undefined) {
+            queryParameters['before'] = (requestParameters.before as any).toISOString();
+        }
+        if (requestParameters.first !== undefined) {
+            queryParameters['first'] = requestParameters.first;
+        }
+        if (requestParameters.max !== undefined) {
+            queryParameters['max'] = requestParameters.max;
+        }
+        const headerParameters: runtime.HTTPHeaders = {};
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("BearerAuth", ["manager"]);
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/vehicle-management/v1/trucks/{truckId}/odometerReadings`.replace(`{${"truckId"}}`, encodeURIComponent(String(requestParameters.truckId))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        });
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(TruckOdometerReadingFromJSON));
+    }
+    /**
+     * Lists truck odometer readings.
+     * List truck odometer readings
+     */
+    async listTruckOdometerReadings(requestParameters: ListTruckOdometerReadingsRequest): Promise<Array<TruckOdometerReading>> {
+        const response = await this.listTruckOdometerReadingsRaw(requestParameters);
+        return await response.value();
+    }
+    /**
+     * Lists truck odometer readings.
+     * List truck odometer readings
+     */
+    async listTruckOdometerReadingsWithHeaders(requestParameters: ListTruckOdometerReadingsRequest): Promise<[ Array<TruckOdometerReading>, Headers ]> {
+        const response = await this.listTruckOdometerReadingsRaw(requestParameters);
         const value = await response.value(); 
         return [ value, response.raw.headers ];
     }

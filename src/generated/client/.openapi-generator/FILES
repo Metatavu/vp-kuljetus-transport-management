@@ -42,6 +42,7 @@ models/Truck.ts
 models/TruckDriveState.ts
 models/TruckDriveStateEnum.ts
 models/TruckLocation.ts
+models/TruckOdometerReading.ts
 models/TruckSortByField.ts
 models/TruckSpeed.ts
 models/Vehicle.ts
