@@ -1,4 +1,4 @@
-import { Button, Checkbox, Link, MenuItem, Stack, TextField, Tooltip, Typography, alpha, styled } from "@mui/material";
+import { Button, Checkbox, Link, MenuItem, Stack, TextField, Tooltip, Typography, styled } from "@mui/material";
 import {
   AbsenceType,
   EmployeeWorkShift,

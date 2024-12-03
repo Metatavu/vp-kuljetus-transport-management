@@ -136,6 +136,8 @@ function WorkShifts() {
   const trucks = useQuery(getListTrucksQueryOptions({})).data?.trucks;
   const employees = useQuery(getListEmployeesQueryOptions({})).data?.employees;
 
+  const employee = employees?.find((employee) => employee.id === employeeId);
+
   const employeeSalaryGroup =
     employees?.find((employee) => employee.id === employeeId)?.salaryGroup ?? SalaryGroup.Driver;
 
@@ -437,6 +439,21 @@ function WorkShifts() {
     );
   };
 
+  const handleAllApprovedChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const isApproved = event.target.checked;
+    const formValues = methods.getValues();
+
+    const updatedFormValues = Object.values(formValues).map((row) => {
+      if (row.workShift.id === undefined || row.workShift.approved === isApproved) return row;
+
+      return {
+        ...row,
+        workShift: { ...row.workShift, approved: isApproved },
+      };
+    });
+    methods.reset(updatedFormValues);
+  };
+
   const renderWorkingPeriodText = () => {
     const workingPeriodDates = TimeUtils.getWorkingPeriodDates(employeeSalaryGroup, selectedDate.toJSDate());
     if (!workingPeriodDates) return null;
@@ -451,19 +468,19 @@ function WorkShifts() {
     );
   };
 
-  const handleAllApprovedChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const isApproved = event.target.checked;
-    const formValues = methods.getValues();
+  const renderAggregationsTableTitle = () => {
+    const workingPeriodDates = TimeUtils.getWorkingPeriodDates(employeeSalaryGroup, selectedDate.toJSDate());
+    if (!workingPeriodDates) return null;
 
-    const updatedFormValues = Object.values(formValues).map((row) => {
-      if (row.workShift.id === undefined || row.workShift.approved === isApproved) return row;
-
-      return {
-        ...row,
-        workShift: { ...row.workShift, approved: isApproved },
-      };
-    });
-    methods.reset(updatedFormValues);
+    const start = DateTime.fromJSDate(workingPeriodDates.start).toFormat("dd.MM");
+    const end = DateTime.fromJSDate(workingPeriodDates.end).toFormat("dd.MM");
+    return (
+      <TableHeader>
+        <Typography variant="subtitle1">
+          {t("workingHours.workingDays.aggregationsTable.title", { year: selectedDate.year, start: start, end: end })}
+        </Typography>
+      </TableHeader>
+    );
   };
 
   return (
@@ -507,10 +524,11 @@ function WorkShifts() {
             <BottomAreaContainer>
               <Paper elevation={0} sx={{ display: "flex", flex: 2 }}>
                 <Stack flex={1}>
-                  <TableHeader>
-                    <Typography variant="subtitle1">{"Selected year and date range"}</Typography>
-                  </TableHeader>
-                  <AggregationsTable workShiftsData={workShiftsDataForFormRows.data ?? []} />
+                  <TableHeader>{renderAggregationsTableTitle()}</TableHeader>
+                  <AggregationsTable
+                    workShiftsData={workShiftsDataForFormRows.data ?? []}
+                    employee={employee ?? undefined}
+                  />
                 </Stack>
               </Paper>
               <Paper elevation={0} sx={{ display: "flex", flex: 1 }}>
