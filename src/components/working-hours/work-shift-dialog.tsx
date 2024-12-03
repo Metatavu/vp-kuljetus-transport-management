@@ -4,12 +4,14 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
+  Skeleton,
   Stack,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
+  TableRow,
 } from "@mui/material";
 import { useQueries } from "@tanstack/react-query";
 import { api } from "api/index";
@@ -25,20 +27,25 @@ import WorkShiftMap from "./work-shift-map";
 type Props = {
   workEvents: WorkEvent[];
   trucks: Truck[];
-  workShift: EmployeeWorkShift;
-  shiftStartedAt: DateTime;
+  workShift?: EmployeeWorkShift;
+  loading: boolean;
   onClose: () => void;
 };
 
-const WorkShiftDialog = ({ workEvents, trucks, workShift, shiftStartedAt, onClose }: Props) => {
+const WorkShiftDialog = ({ workEvents, trucks, workShift, loading, onClose }: Props) => {
   const { t } = useTranslation();
+
+  const workShiftStartedAt = useMemo(
+    () => DateTime.fromJSDate(workShift?.startedAt ?? new Date(Date.now())),
+    [workShift],
+  );
 
   /**
    * It is illegal to do workshifts over 15 hours, so if the workshift has not received ended at time, we assume it has ended after 15 hours.
    */
   const workShiftEndedAt = useMemo(
-    () => workShift.endedAt ?? shiftStartedAt.plus({ hours: 15 }).toJSDate(),
-    [workShift, shiftStartedAt],
+    () => workShift?.endedAt ?? workShiftStartedAt.plus({ hours: 15 }).toJSDate(),
+    [workShift, workShift],
   );
 
   const truckLocationsQuery = useQueries({
@@ -51,7 +58,7 @@ const WorkShiftDialog = ({ workEvents, trucks, workShift, shiftStartedAt, onClos
                 truckId: id,
                 locations: await api.trucks.listTruckLocations({
                   truckId: id,
-                  after: workShift.startedAt,
+                  after: workShift?.startedAt,
                   before: workShiftEndedAt,
                 }),
               }
@@ -88,7 +95,25 @@ const WorkShiftDialog = ({ workEvents, trucks, workShift, shiftStartedAt, onClos
     [trucks, calculateDuration],
   );
 
-  const renderWorkEventRows = useCallback(() => workEvents.map(renderWorkEventRow), [workEvents, renderWorkEventRow]);
+  const renderWorkEventRows = useCallback(
+    () =>
+      loading
+        ? Array(15)
+            .fill(null)
+            .map(() => (
+              <TableRow>
+                {Array(5)
+                  .fill(null)
+                  .map(() => (
+                    <TableCell sx={{ border: "none" }}>
+                      <Skeleton />
+                    </TableCell>
+                  ))}
+              </TableRow>
+            ))
+        : workEvents.map(renderWorkEventRow),
+    [loading, workEvents, renderWorkEventRow],
+  );
 
   return (
     <Dialog fullWidth={true} maxWidth="lg" open={true} onClose={onClose} PaperProps={{ sx: { m: 0, borderRadius: 0 } }}>

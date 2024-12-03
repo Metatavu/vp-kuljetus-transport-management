@@ -1,6 +1,7 @@
 import { queryOptions } from "@tanstack/react-query";
 import { api } from "api/index";
 import {
+  FindEmployeeWorkShiftRequest,
   FindTowableRequest,
   FindTruckRequest,
   ListClientAppsRequest,
@@ -244,6 +245,12 @@ export const getListEmployeeWorkEventsQueryOptions = (params: ListEmployeeWorkEv
 
       return { workEvents, totalResults };
     },
+  });
+
+export const getFindEmployeeWorkShiftQueryOptions = (params: FindEmployeeWorkShiftRequest) =>
+  queryOptions({
+    queryKey: [QUERY_KEYS.WORK_SHIFTS, params],
+    queryFn: () => api.employeeWorkShifts.findEmployeeWorkShift(params),
   });
 
 /**
