@@ -56,7 +56,7 @@ const WorkEventRow = ({ type, startTime, truck, duration, distance }: Props) => 
             <CellInput
               aria-label={t("workingHours.workingDays.workShiftDialog.time")}
               type="time"
-              defaultValue={startTime}
+              defaultValue={startTime.toFormat("HH:mm")}
               InputLabelProps={{
                 shrink: true,
               }}
@@ -75,7 +75,7 @@ const WorkEventRow = ({ type, startTime, truck, duration, distance }: Props) => 
             <CellInput
               aria-label={t("workingHours.workingDays.workShiftDialog.time")}
               type="time"
-              defaultValue={startTime}
+              defaultValue={startTime.toFormat("HH:mm")}
             />
           </TableCell>
           <TableCell align="center">{truck?.name ?? ""}</TableCell>
@@ -111,7 +111,7 @@ const WorkEventRow = ({ type, startTime, truck, duration, distance }: Props) => 
             <CellInput
               aria-label={t("workingHours.workingDays.workShiftDialog.time")}
               type="time"
-              defaultValue={startTime}
+              defaultValue={startTime.toFormat("HH:mm")}
             />
           </TableCell>
           <TableCell align="center">{truck?.name ?? ""}</TableCell>

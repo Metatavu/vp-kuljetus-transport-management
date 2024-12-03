@@ -1,3 +1,4 @@
+import { useQueries, useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { api } from "api/index";
 import WorkShiftDialog from "components/working-hours/work-shift-dialog";
@@ -6,6 +7,7 @@ import { t } from "i18next";
 import { DateTime } from "luxon";
 import { queryClient } from "src/main";
 import { Breadcrumb } from "src/types";
+import DataValidation from "src/utils/data-validation-utils";
 
 export const Route = createFileRoute("/working-hours_/$employeeId/work-shifts/$workShiftId/details")({
   component: WorkShiftDetails,
@@ -20,41 +22,53 @@ export const Route = createFileRoute("/working-hours_/$employeeId/work-shifts/$w
           workShiftId,
         }),
     });
-    const { workEvents } = await queryClient.ensureQueryData(
-      getListEmployeeWorkEventsQueryOptions({
-        employeeId,
-        employeeWorkShiftId: workShiftId,
-        first: 0,
-        max: 100000,
-      }),
-    );
-    workEvents.reverse();
-    const trucks = await Promise.all(
-      (workShift.truckIds ?? []).map((truckId) => queryClient.ensureQueryData(getFindTruckQueryOptions({ truckId }))),
-    );
     const breadcrumbs: Breadcrumb[] = [
       { label: t("workingHours.title") },
       { label: t("workingHours.workingDays.title") },
     ];
-    return { breadcrumbs, workEvents, trucks, workShift };
+    return { breadcrumbs, workShift };
   },
 });
 
 function WorkShiftDetails() {
   const navigate = useNavigate();
-  const { workEvents, trucks, workShift } = Route.useLoaderData();
+  const { employeeId, workShiftId } = Route.useParams();
+  const { workShift } = Route.useLoaderData();
   const selectedDate = Route.useSearch({ select: (search) => search.date });
   const { startedAt } = workShift;
 
   if (!startedAt) return null;
+  const workEventsQuery = useQuery({
+    ...getListEmployeeWorkEventsQueryOptions({
+      employeeId,
+      employeeWorkShiftId: workShiftId,
+      first: 0,
+      max: 100000,
+    }),
+    select: ({ workEvents, totalResults }) => ({ workEvents: workEvents.reverse(), totalResults }),
+  });
+
+  const trucksQuery = useQueries({
+    queries: (workShift.truckIds ?? []).map((truckId) => ({
+      ...getFindTruckQueryOptions({ truckId }),
+    })),
+    combine: (results) =>
+      results.map((result) => result.data).filter(DataValidation.validateValueIsNotUndefinedNorNull),
+  });
 
   return (
     <WorkShiftDialog
-      workEvents={workEvents}
-      trucks={trucks}
+      workEvents={workEventsQuery.data?.workEvents ?? []}
+      trucks={trucksQuery}
       workShift={workShift}
       shiftStartedAt={DateTime.fromJSDate(startedAt)}
-      onClose={() => navigate({ to: "..", search: { date: selectedDate } })}
+      onClose={() =>
+        navigate({
+          to: "../..",
+          from: "/working-hours/$employeeId/work-shifts/$workShiftId/details",
+          search: { date: selectedDate },
+        })
+      }
     />
   );
 }
