@@ -32,6 +32,7 @@ import { useCallback } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import { queryClient } from "src/main";
 import { Breadcrumb, EmployeeWorkHoursForm, EmployeeWorkHoursFormRow } from "src/types";
 import DataValidation from "src/utils/data-validation-utils";
 import TimeUtils from "src/utils/time-utils";
@@ -44,12 +45,24 @@ export const workShiftSearchSchema = z.object({
 
 export const Route = createFileRoute("/working-hours_/$employeeId/work-shifts")({
   component: WorkShifts,
-  loader: () => {
+  loader: async ({ params }) => {
+    const { employeeId } = params;
     const breadcrumbs: Breadcrumb[] = [
       { label: t("workingHours.title") },
       { label: t("workingHours.workingDays.title") },
     ];
-    return { breadcrumbs };
+
+    const [[workShift]] = await queryClient.ensureQueryData({
+      queryKey: [QUERY_KEYS.WORK_SHIFTS, employeeId],
+      queryFn: async () =>
+        await api.employeeWorkShifts.listEmployeeWorkShiftsWithHeaders({
+          employeeId,
+          max: 1,
+          first: 0,
+        }),
+    });
+
+    return { breadcrumbs, workShift };
   },
   validateSearch: workShiftSearchSchema,
 });
@@ -474,7 +487,8 @@ function WorkShifts() {
                   {workShiftsDataWithWorkingPeriodDates.map((workShiftFormRow, index) => (
                     <WorkShiftRow
                       key={`${index}_${workShiftFormRow.workShift.id}`}
-                      onClick={() => navigate({ to: "work-shift-details", search: { date: selectedDate } })}
+                      workShiftId={workShiftFormRow.workShift.id}
+                      date={selectedDate}
                       index={index}
                       trucks={trucks ?? []}
                     />

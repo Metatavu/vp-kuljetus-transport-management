@@ -1,4 +1,5 @@
 import { Button, Checkbox, Link, MenuItem, Stack, TextField, Tooltip, Typography, styled } from "@mui/material";
+import { useNavigate, useParams } from "@tanstack/react-router";
 import {
   AbsenceType,
   EmployeeWorkShift,
@@ -8,15 +9,17 @@ import {
   WorkType,
 } from "generated/client";
 import { DateTime } from "luxon";
+import { useCallback, useMemo } from "react";
 import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { EmployeeWorkHoursForm } from "src/types";
 import LocalizationUtils from "src/utils/localization-utils";
 
 type Props = {
-  onClick: () => void;
+  date: DateTime;
   index: number;
   trucks: Truck[];
+  workShiftId?: string;
 };
 
 // Styled work shift row
@@ -47,53 +50,65 @@ const Cell = styled(Stack, {
   },
 }));
 
-function WorkShiftRow({ onClick, index, trucks }: Props) {
+function WorkShiftRow({ index, trucks, date, workShiftId }: Props) {
   const { t } = useTranslation();
+  const { employeeId } = useParams({ from: "/working-hours_/$employeeId/work-shifts" });
+  const navigate = useNavigate();
   const { watch, setValue } = useFormContext<EmployeeWorkHoursForm>();
   const workShift = watch(`${index}.workShift`) as EmployeeWorkShift | undefined;
   const dayOffWorkAllowance = watch(`${index}.workShift.dayOffWorkAllowance`);
   const approved = watch(`${index}.workShift.approved`) as boolean | undefined;
   const workShiftHours = watch(`${index}.workShiftHours`) as Record<WorkType, WorkShiftHours> | undefined;
 
-  const getTruckById = (truckId: string) => {
-    return truckId ? trucks.find((truck) => truck.id === truckId)?.name : undefined;
-  };
+  const hasDetails = useMemo(() => {
+    const { startedAt } = workShift ?? {};
+    return workShiftId && startedAt;
+  }, [workShiftId, workShift]);
 
-  const renderWorkHourInput = (title: string, workType: WorkType) => {
-    const calculatedHoursTooltipText = `${t("workingHours.workingDays.table.calculatedHours")}: ${
-      workShiftHours?.[workType].calculatedHours?.toString() ?? title
-    } `;
-    return (
-      <Tooltip title={calculatedHoursTooltipText} placement="bottom">
-        <TextField
-          className="cell-input"
-          size="small"
-          aria-label={title}
-          fullWidth
-          variant="outlined"
-          placeholder={workShiftHours?.[workType].calculatedHours?.toString()}
-          value={workShiftHours?.[workType].actualHours || ""}
-          onChange={(event) =>
-            setValue(`${index}.workShiftHours.${workType}.actualHours`, parseFloat(event.target.value), {
-              shouldDirty: true,
-              shouldValidate: true,
-              shouldTouch: true,
-            })
-          }
-        />
-      </Tooltip>
-    );
-  };
+  const getTruckById = useCallback(
+    (truckId: string) => {
+      return truckId ? trucks.find((truck) => truck.id === truckId)?.name : undefined;
+    },
+    [trucks],
+  );
 
-  const renderPerDiemAllowanceSelectInput = () => {
-    const label = t("workingHours.workingDays.table.dailyAllowance");
-    return (
+  const renderWorkHourInput = useCallback(
+    (title: string, workType: WorkType) => {
+      const calculatedHoursTooltipText = `${t("workingHours.workingDays.table.calculatedHours")}: ${
+        workShiftHours?.[workType].calculatedHours?.toString() ?? title
+      } `;
+      return (
+        <Tooltip title={calculatedHoursTooltipText} placement="bottom">
+          <TextField
+            className="cell-input"
+            size="small"
+            aria-label={title}
+            fullWidth
+            variant="outlined"
+            placeholder={workShiftHours?.[workType].calculatedHours?.toString()}
+            value={workShiftHours?.[workType].actualHours || ""}
+            onChange={(event) =>
+              setValue(`${index}.workShiftHours.${workType}.actualHours`, parseFloat(event.target.value), {
+                shouldDirty: true,
+                shouldValidate: true,
+                shouldTouch: true,
+              })
+            }
+          />
+        </Tooltip>
+      );
+    },
+    [setValue, index, workShiftHours, t],
+  );
+
+  const renderPerDiemAllowanceSelectInput = useCallback(
+    () => (
       <TextField
         select
         className="cell-input"
         size="small"
-        aria-label={label}
-        title={label}
+        aria-label={t("workingHours.workingDays.table.dailyAllowance")}
+        title={t("workingHours.workingDays.table.dailyAllowance")}
         fullWidth
         variant="outlined"
         value={workShift?.perDiemAllowance || ""}
@@ -118,18 +133,18 @@ function WorkShiftRow({ onClick, index, trucks }: Props) {
           </MenuItem>
         ))}
       </TextField>
-    );
-  };
+    ),
+    [setValue, index, workShift, t],
+  );
 
-  const renderAbsenceTypeSelectInput = () => {
-    const label = t("workingHours.workingDays.table.absence");
-    return (
+  const renderAbsenceTypeSelectInput = useCallback(
+    () => (
       <TextField
         select
         className="cell-input"
         size="small"
-        aria-label={label}
-        title={label}
+        aria-label={t("workingHours.workingDays.table.absence")}
+        title={t("workingHours.workingDays.table.absence")}
         fullWidth
         variant="outlined"
         value={workShift?.absence || ""}
@@ -150,13 +165,26 @@ function WorkShiftRow({ onClick, index, trucks }: Props) {
           </MenuItem>
         ))}
       </TextField>
-    );
-  };
+    ),
+    [setValue, index, workShift, t],
+  );
 
   return (
-    <Row>
+    <Row key={workShiftId}>
       <Cell width={90}>
-        <Link variant="body2" title={t("workingHours.workingHourBalances.toWorkHourDetails")} onClick={onClick}>
+        <Link
+          underline={hasDetails ? "always" : "none"}
+          sx={{ cursor: hasDetails ? "pointer" : "default" }}
+          title={t("workingHours.workingHourBalances.toWorkHourDetails")}
+          onClick={() => {
+            if (!hasDetails || !workShiftId) return null;
+            navigate({
+              to: "/working-hours/$employeeId/work-shifts/$workShiftId/details",
+              params: { employeeId, workShiftId },
+              search: { date },
+            });
+          }}
+        >
           {workShift?.date && DateTime.fromJSDate(workShift.date).toFormat("dd.MM")}
         </Link>
       </Cell>
@@ -254,12 +282,7 @@ function WorkShiftRow({ onClick, index, trucks }: Props) {
         />
       </Cell>
       <Cell width={75}>
-        <Button
-          variant="text"
-          color="primary"
-          title={t("workingHours.workingHourBalances.toWorkHourDetails")}
-          onClick={onClick}
-        >
+        <Button variant="text" color="primary" title={t("workingHours.workingHourBalances.toWorkHourDetails")}>
           {t("open")}
         </Button>
       </Cell>

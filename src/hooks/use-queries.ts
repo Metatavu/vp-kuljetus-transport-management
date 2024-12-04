@@ -1,9 +1,11 @@
 import { queryOptions } from "@tanstack/react-query";
 import { api } from "api/index";
 import {
+  FindEmployeeWorkShiftRequest,
   FindTowableRequest,
   FindTruckRequest,
   ListClientAppsRequest,
+  ListEmployeeWorkEventsRequest,
   ListEmployeeWorkShiftsRequest,
   ListEmployeesRequest,
   ListFreightUnitsRequest,
@@ -27,10 +29,11 @@ export const QUERY_KEYS = {
   FREIGHTS: "freights",
   FREIGHT_UNITS_BY_FREIGHT: "freight-units-by-freight",
   EMPLOYEES: "employees",
-  WORK_SHIFTS: "work-shifts",
   WORK_SHIFT_HOURS: "work-shift-hours",
   HOLIDAYS: "holidays",
   CLIENT_APPS: "clientApps",
+  WORK_SHIFTS: "work-shifts",
+  EMPLOYEE_WORK_EVENTS: "employee-work-events",
 } as const;
 
 export const getListSitesQueryOptions = (requestParams: ListSitesRequest = {}, enabled = true) =>
@@ -231,6 +234,23 @@ export const getFindClientAppQueryOptions = (clientAppId: string) =>
   queryOptions({
     queryKey: [QUERY_KEYS.CLIENT_APPS, clientAppId],
     queryFn: () => api.clientApps.findClientApp({ clientAppId }),
+  });
+
+export const getListEmployeeWorkEventsQueryOptions = (params: ListEmployeeWorkEventsRequest) =>
+  queryOptions({
+    queryKey: [QUERY_KEYS.EMPLOYEE_WORK_EVENTS, params],
+    queryFn: async () => {
+      const [workEvents, headers] = await api.workEvents.listEmployeeWorkEventsWithHeaders(params);
+      const totalResults = getTotalResultsFromHeaders(headers);
+
+      return { workEvents, totalResults };
+    },
+  });
+
+export const getFindEmployeeWorkShiftQueryOptions = (params: FindEmployeeWorkShiftRequest) =>
+  queryOptions({
+    queryKey: [QUERY_KEYS.WORK_SHIFTS, params],
+    queryFn: () => api.employeeWorkShifts.findEmployeeWorkShift(params),
   });
 
 /**
