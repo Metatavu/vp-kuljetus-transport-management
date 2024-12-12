@@ -444,6 +444,10 @@
         "event": "Event",
         "duration": "Duration",
         "distance": "Distance",
+        "telematicsPopup": {
+          "speed": "Speed: {{speed}} km/h",
+          "odometer": "Odometer reading: {{odometer}} km"
+        },
         "eventTypes": {
           "vegetable": "Vegetable",
           "dry": "Dry",
