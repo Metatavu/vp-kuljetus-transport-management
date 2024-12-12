@@ -1,16 +1,33 @@
+import { Stack, Typography, styled } from "@mui/material";
 import config from "app/config";
-import { TruckLocation } from "generated/client";
+import { TruckLocation, TruckOdometerReading, TruckSpeed } from "generated/client";
 import { LatLng, LatLngBounds, LatLngTuple, Map as LeafletMap, latLng } from "leaflet";
 import { useCallback, useEffect, useRef } from "react";
-import { MapContainer, Polyline, TileLayer } from "react-leaflet";
+import { useTranslation } from "react-i18next";
+import { MapContainer, Marker, Polyline, Popup, TileLayer } from "react-leaflet";
 
 const DEFAULT_MAP_CENTER = latLng(61.1621924, 28.65865865);
 
+const StyledPopup = styled(Popup)(({ theme }) => ({
+  ".leaflet-popup-content-wrapper": {
+    borderRadius: 0,
+    padding: theme.spacing(1),
+    width: 300,
+    height: 100,
+  },
+}));
+
 type Props = {
   truckLocations: TruckLocation[][];
+  selectedWorkEventTelematics?: {
+    truckLocation?: TruckLocation;
+    truckSpeed?: TruckSpeed;
+    truckOdometerReading?: TruckOdometerReading;
+  };
 };
 
-const WorkShiftMap = ({ truckLocations }: Props) => {
+const WorkShiftMap = ({ truckLocations, selectedWorkEventTelematics }: Props) => {
+  const { t } = useTranslation();
   const {
     mapbox: { baseUrl, publicApiKey },
   } = config;
@@ -25,7 +42,7 @@ const WorkShiftMap = ({ truckLocations }: Props) => {
 
   const renderTruckLine = useCallback(
     (truckLocations: TruckLocation[]) => (
-      <Polyline key={truckLocations[0].id} positions={getTruckPoints(truckLocations)} />
+      <Polyline key={truckLocations[0]?.id} positions={getTruckPoints(truckLocations)} />
     ),
     [getTruckPoints],
   );
@@ -42,6 +59,38 @@ const WorkShiftMap = ({ truckLocations }: Props) => {
     mapRef.current.fitBounds(bounds, { padding: [10, 10] });
   }, [truckLocations]);
 
+  const renderSelectedWorkEventTelematicsMarker = useCallback(() => {
+    if (!selectedWorkEventTelematics) return null;
+
+    const { truckLocation } = selectedWorkEventTelematics;
+    if (!truckLocation) return null;
+    const truckSpeed = selectedWorkEventTelematics.truckSpeed?.speed;
+    const truckOdometerReading = selectedWorkEventTelematics.truckOdometerReading?.odometerReading;
+
+    if (truckSpeed === undefined && truckOdometerReading === undefined) return null;
+
+    return (
+      <Marker position={new LatLng(truckLocation.latitude, truckLocation.longitude)}>
+        <StyledPopup>
+          <Stack direction="column">
+            {truckSpeed !== undefined && (
+              <Typography variant="caption">
+                {t("workingHours.workingDays.workShiftDialog.telematicsPopup.speed", { speed: truckSpeed })}
+              </Typography>
+            )}
+            {truckOdometerReading !== undefined && (
+              <Typography variant="caption">
+                {t("workingHours.workingDays.workShiftDialog.telematicsPopup.odometer", {
+                  odometer: Intl.NumberFormat("fi-FI").format(truckOdometerReading / 1000),
+                })}
+              </Typography>
+            )}
+          </Stack>
+        </StyledPopup>
+      </Marker>
+    );
+  }, [selectedWorkEventTelematics, t]);
+
   return (
     <MapContainer ref={mapRef} style={{ height: 600, display: "flex", flex: 1 }} center={DEFAULT_MAP_CENTER} zoom={13}>
       <TileLayer
@@ -49,6 +98,7 @@ const WorkShiftMap = ({ truckLocations }: Props) => {
         url={`${baseUrl}/styles/v1/metatavu/clsszigf302jx01qy0e4q0c7e/tiles/{z}/{x}/{y}?access_token=${publicApiKey}`}
       />
       {renderTruckLines()}
+      {renderSelectedWorkEventTelematicsMarker()}
     </MapContainer>
   );
 };

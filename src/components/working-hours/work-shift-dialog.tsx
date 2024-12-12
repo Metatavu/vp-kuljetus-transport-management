@@ -18,7 +18,7 @@ import { api } from "api/index";
 import DialogHeader from "components/generic/dialog-header";
 import { EmployeeWorkShift, Truck, WorkEvent } from "generated/client";
 import { DateTime } from "luxon";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import DataValidation from "src/utils/data-validation-utils";
 import WorkEventRow from "./work-event-row";
@@ -34,6 +34,8 @@ type Props = {
 
 const WorkShiftDialog = ({ workEvents, trucks, workShift, loading, onClose }: Props) => {
   const { t } = useTranslation();
+
+  const [selectedWorkEvent, setSelectedWorkEvent] = useState<WorkEvent>();
 
   const workShiftStartedAt = useMemo(
     () => DateTime.fromJSDate(workShift?.startedAt ?? new Date(Date.now())),
@@ -65,9 +67,57 @@ const WorkShiftDialog = ({ workEvents, trucks, workShift, loading, onClose }: Pr
             : null,
       })) ?? [],
     combine: (results) => ({
-      data: results.map((result) => result.data).filter(DataValidation.validateValueIsNotUndefinedNorNull),
+      data: results
+        .map((result) => {
+          const maxTimestamp =
+            result.data?.locations === undefined
+              ? 0
+              : Math.max(...result.data.locations.map((location) => location.timestamp));
+          const minTimestamp =
+            result.data?.locations === undefined
+              ? 0
+              : Math.min(...result.data.locations.map((location) => location.timestamp));
+          return {
+            ...result.data,
+            locations: result.data?.locations ?? [].filter(DataValidation.validateValueIsNotUndefinedNorNull),
+            maxTimestamp: DateTime.fromSeconds(maxTimestamp).toJSDate(),
+            minTimestamp: DateTime.fromSeconds(minTimestamp).toJSDate(),
+          };
+        })
+        .filter(DataValidation.validateValueIsNotUndefinedNorNull),
     }),
   });
+
+  const truckOdometerReadings = useQueries({
+    queries: truckLocationsQuery.data.flatMap(({ truckId, maxTimestamp, minTimestamp }) => ({
+      queryKey: ["truckOdometerReading", { truckId, maxTimestamp, minTimestamp }],
+      queryFn: () =>
+        truckId ? api.trucks.listTruckOdometerReadings({ truckId, after: minTimestamp, before: maxTimestamp }) : null,
+    })),
+    combine: (result) => result.flatMap((res) => res.data).filter(DataValidation.validateValueIsNotUndefinedNorNull),
+  });
+
+  const truckSpeeds = useQueries({
+    queries: truckLocationsQuery.data.flatMap(({ truckId, maxTimestamp, minTimestamp }) => ({
+      queryKey: ["truckSpeed", { truckId, maxTimestamp, minTimestamp }],
+      queryFn: () =>
+        truckId ? api.trucks.listTruckSpeeds({ truckId, after: minTimestamp, before: maxTimestamp }) : null,
+    })),
+    combine: (result) => result.flatMap((res) => res.data).filter(DataValidation.validateValueIsNotUndefinedNorNull),
+  });
+
+  const selectedWorkEventTelematics = useMemo(() => {
+    if (!selectedWorkEvent) return;
+    const { time } = selectedWorkEvent;
+    const timestamp = time.getTime() / 1000;
+    return {
+      truckOdometerReading: truckOdometerReadings.find((reading) => reading.timestamp === timestamp),
+      truckSpeed: truckSpeeds.find((speed) => speed.timestamp === timestamp),
+      truckLocation: truckLocationsQuery.data
+        .flatMap(({ locations }) => locations)
+        .find((location) => location.timestamp === timestamp),
+    };
+  }, [selectedWorkEvent, truckOdometerReadings, truckSpeeds, truckLocationsQuery]);
 
   const calculateDuration = useCallback((currentWorkEvent: WorkEvent, index: number, allWorkEvents: WorkEvent[]) => {
     if (index === allWorkEvents.length - 1) {
@@ -82,6 +132,30 @@ const WorkShiftDialog = ({ workEvents, trucks, workShift, loading, onClose }: Pr
     return duration.toFormat("hh:mm.ss");
   }, []);
 
+  const calculateDistance = useCallback(
+    (currentWorkEvent: WorkEvent, index: number, allWorkEvents: WorkEvent[]) => {
+      if (index === allWorkEvents.length - 1 || currentWorkEvent.workEventType !== "DRIVE") {
+        return "";
+      }
+      const timestamp = currentWorkEvent.time.getTime() / 1000;
+      const nextWorkEventTimestamp = allWorkEvents[index + 1].time.getTime() / 1000;
+
+      const truckOdometerReading = truckOdometerReadings.find((reading) => reading.timestamp === timestamp);
+      const nextTruckOdometerReading = truckOdometerReadings.find(
+        (reading) => reading.timestamp === nextWorkEventTimestamp,
+      );
+
+      if (!truckOdometerReading || !nextTruckOdometerReading) {
+        return "";
+      }
+
+      const distance = nextTruckOdometerReading.odometerReading - truckOdometerReading.odometerReading;
+
+      return `${distance} m`;
+    },
+    [truckOdometerReadings],
+  );
+
   const renderWorkEventRow = useCallback(
     (workEvent: WorkEvent, index: number, workEvents: WorkEvent[]) => (
       <WorkEventRow
@@ -90,9 +164,12 @@ const WorkShiftDialog = ({ workEvents, trucks, workShift, loading, onClose }: Pr
         startTime={DateTime.fromJSDate(workEvent.time)}
         truck={trucks.find((truck) => truck.id === workEvent.truckId)}
         duration={calculateDuration(workEvent, index, workEvents)}
+        distance={calculateDistance(workEvent, index, workEvents)}
+        selected={selectedWorkEvent?.id === workEvent.id}
+        onClick={() => setSelectedWorkEvent(workEvent)}
       />
     ),
-    [trucks, calculateDuration],
+    [selectedWorkEvent, trucks, calculateDuration, calculateDistance],
   );
 
   const renderWorkEventRows = useCallback(
@@ -100,12 +177,12 @@ const WorkShiftDialog = ({ workEvents, trucks, workShift, loading, onClose }: Pr
       loading
         ? Array(15)
             .fill(null)
-            .map(() => (
-              <TableRow>
+            .map((_, rowIdx: number) => (
+              <TableRow key={`skeleton-work-event-row-${rowIdx}`}>
                 {Array(5)
                   .fill(null)
-                  .map(() => (
-                    <TableCell sx={{ border: "none" }}>
+                  .map((_, cellIdx: number) => (
+                    <TableCell sx={{ border: "none" }} key={`skeleton-work-event-cell-${rowIdx}-${cellIdx}`}>
                       <Skeleton />
                     </TableCell>
                   ))}
@@ -124,7 +201,10 @@ const WorkShiftDialog = ({ workEvents, trucks, workShift, loading, onClose }: Pr
       />
       <DialogContent sx={{ p: 0 }}>
         <Stack direction="row">
-          <WorkShiftMap truckLocations={(truckLocationsQuery.data ?? []).map(({ locations }) => locations)} />
+          <WorkShiftMap
+            truckLocations={(truckLocationsQuery.data ?? []).map(({ locations }) => locations)}
+            selectedWorkEventTelematics={selectedWorkEventTelematics}
+          />
           <Box display="flex" flex={1} maxHeight={600}>
             <TableContainer>
               <Table stickyHeader>
