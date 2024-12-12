@@ -151,7 +151,7 @@ const WorkShiftDialog = ({ workEvents, trucks, workShift, loading, onClose }: Pr
 
       const distance = nextTruckOdometerReading.odometerReading - truckOdometerReading.odometerReading;
 
-      return `${distance} m`;
+      return `${(distance / 1000).toFixed(2)} km`;
     },
     [truckOdometerReadings],
   );
