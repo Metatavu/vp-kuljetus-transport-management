@@ -156,6 +156,18 @@ const WorkShiftDialog = ({ workEvents, trucks, workShift, loading, onClose }: Pr
     [truckOdometerReadings],
   );
 
+  const getIsSelectable = useCallback(
+    (workEvent: WorkEvent) => {
+      const timestamp = workEvent.time.getTime() / 1000;
+      const truckLocation = truckLocationsQuery.data
+        .flatMap(({ locations }) => locations)
+        .find((location) => location.timestamp === timestamp);
+
+      return truckLocation !== undefined;
+    },
+    [truckLocationsQuery],
+  );
+
   const renderWorkEventRow = useCallback(
     (workEvent: WorkEvent, index: number, workEvents: WorkEvent[]) => (
       <WorkEventRow
@@ -165,11 +177,12 @@ const WorkShiftDialog = ({ workEvents, trucks, workShift, loading, onClose }: Pr
         truck={trucks.find((truck) => truck.id === workEvent.truckId)}
         duration={calculateDuration(workEvent, index, workEvents)}
         distance={calculateDistance(workEvent, index, workEvents)}
+        selectable={getIsSelectable(workEvent)}
         selected={selectedWorkEvent?.id === workEvent.id}
         onClick={() => setSelectedWorkEvent(workEvent)}
       />
     ),
-    [selectedWorkEvent, trucks, calculateDuration, calculateDistance],
+    [selectedWorkEvent, trucks, calculateDuration, calculateDistance, getIsSelectable],
   );
 
   const renderWorkEventRows = useCallback(

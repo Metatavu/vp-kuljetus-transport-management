@@ -2,7 +2,7 @@ import { MenuItem, TableCell, TableRow, TextField, styled } from "@mui/material"
 import { Truck, WorkEventType } from "generated/client";
 import { TFunction } from "i18next";
 import { DateTime } from "luxon";
-import { Key, useCallback } from "react";
+import { Key, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import LocalizationUtils from "src/utils/localization-utils";
 
@@ -13,6 +13,7 @@ type Props = {
   truck?: Truck;
   duration: string;
   distance?: string;
+  selectable: boolean;
   onClick: () => void;
 };
 
@@ -32,7 +33,7 @@ const CellInput = styled(TextField, {
   },
 }));
 
-const WorkEventRow = ({ selected, type, startTime, truck, duration, distance, onClick }: Props) => {
+const WorkEventRow = ({ selected, type, startTime, truck, duration, distance, selectable, onClick }: Props) => {
   const { t } = useTranslation();
 
   const renderLocalizedMenuItem = useCallback(
@@ -50,10 +51,18 @@ const WorkEventRow = ({ selected, type, startTime, truck, duration, distance, on
     [renderLocalizedMenuItem],
   );
 
+  const rowStyle = useMemo(
+    () => ({
+      backgroundColor: selectable ? (selected ? "rgba(0, 255, 0, 0.1)" : undefined) : "rgba(0, 0, 0, 0.1)",
+      cursor: selectable ? "pointer" : "default",
+    }),
+    [selectable, selected],
+  );
+
   switch (type) {
     case WorkEventType.ShiftStart:
       return (
-        <TableRow onClick={onClick} sx={{ backgroundColor: selected ? "rgba(0, 255, 0, 0.1)" : undefined }}>
+        <TableRow onClick={onClick} sx={rowStyle}>
           <TableCell sx={{ p: 0.5 }} width={100}>
             <CellInput
               aria-label={t("workingHours.workingDays.workShiftDialog.time")}
@@ -72,7 +81,7 @@ const WorkEventRow = ({ selected, type, startTime, truck, duration, distance, on
       );
     case WorkEventType.ShiftEnd:
       return (
-        <TableRow onClick={onClick} sx={{ backgroundColor: selected ? "rgba(0, 255, 0, 0.1)" : undefined }}>
+        <TableRow onClick={onClick} sx={rowStyle}>
           <TableCell sx={{ p: 0.5 }} width={100}>
             <CellInput
               aria-label={t("workingHours.workingDays.workShiftDialog.time")}
@@ -88,7 +97,7 @@ const WorkEventRow = ({ selected, type, startTime, truck, duration, distance, on
       );
     case WorkEventType.Logout:
       return (
-        <TableRow onClick={onClick} sx={{ backgroundColor: selected ? "rgba(0, 255, 0, 0.1)" : undefined }}>
+        <TableRow onClick={onClick} sx={rowStyle}>
           <TableCell width={100}>{startTime.toFormat("HH:mm")}</TableCell>
           <TableCell align="center">{truck?.name ?? ""}</TableCell>
           <TableCell>{LocalizationUtils.getLocalizedWorkEventType(type, t)}</TableCell>
@@ -98,7 +107,7 @@ const WorkEventRow = ({ selected, type, startTime, truck, duration, distance, on
       );
     case WorkEventType.Login:
       return (
-        <TableRow onClick={onClick} sx={{ backgroundColor: selected ? "rgba(0, 255, 0, 0.1)" : undefined }}>
+        <TableRow onClick={onClick} sx={rowStyle}>
           <TableCell width={100}>{startTime.toFormat("HH:mm")}</TableCell>
           <TableCell align="center">{truck?.name ?? ""}</TableCell>
           <TableCell>{LocalizationUtils.getLocalizedWorkEventType(type, t)}</TableCell>
@@ -108,7 +117,7 @@ const WorkEventRow = ({ selected, type, startTime, truck, duration, distance, on
       );
     case WorkEventType.Unknown:
       return (
-        <TableRow onClick={onClick} sx={{ backgroundColor: selected ? "rgba(0, 255, 0, 0.1)" : undefined }}>
+        <TableRow onClick={onClick} sx={rowStyle}>
           <TableCell sx={{ p: 0.5 }} width={100}>
             <CellInput
               aria-label={t("workingHours.workingDays.workShiftDialog.time")}
@@ -124,7 +133,7 @@ const WorkEventRow = ({ selected, type, startTime, truck, duration, distance, on
       );
     default:
       return (
-        <TableRow onClick={onClick} sx={{ backgroundColor: selected ? "rgba(0, 255, 0, 0.1)" : undefined }}>
+        <TableRow onClick={onClick} sx={rowStyle}>
           <TableCell width={100}>{startTime.toFormat("HH:mm")}</TableCell>
           <TableCell align="center">{truck?.name ?? ""}</TableCell>
           <TableCell sx={{ p: 0.5 }}>

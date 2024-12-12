@@ -67,26 +67,28 @@ const WorkShiftMap = ({ truckLocations, selectedWorkEventTelematics }: Props) =>
     const truckSpeed = selectedWorkEventTelematics.truckSpeed?.speed;
     const truckOdometerReading = selectedWorkEventTelematics.truckOdometerReading?.odometerReading;
 
-    if (truckSpeed === undefined && truckOdometerReading === undefined) return null;
+    const hasTelematics = truckSpeed === undefined && truckOdometerReading === undefined;
 
     return (
       <Marker position={new LatLng(truckLocation.latitude, truckLocation.longitude)}>
-        <StyledPopup>
-          <Stack direction="column">
-            {truckSpeed !== undefined && (
-              <Typography variant="caption">
-                {t("workingHours.workingDays.workShiftDialog.telematicsPopup.speed", { speed: truckSpeed })}
-              </Typography>
-            )}
-            {truckOdometerReading !== undefined && (
-              <Typography variant="caption">
-                {t("workingHours.workingDays.workShiftDialog.telematicsPopup.odometer", {
-                  odometer: Intl.NumberFormat("fi-FI").format(truckOdometerReading / 1000),
-                })}
-              </Typography>
-            )}
-          </Stack>
-        </StyledPopup>
+        {hasTelematics && (
+          <StyledPopup>
+            <Stack direction="column">
+              {truckSpeed !== undefined && (
+                <Typography variant="caption">
+                  {t("workingHours.workingDays.workShiftDialog.telematicsPopup.speed", { speed: truckSpeed })}
+                </Typography>
+              )}
+              {truckOdometerReading !== undefined && (
+                <Typography variant="caption">
+                  {t("workingHours.workingDays.workShiftDialog.telematicsPopup.odometer", {
+                    odometer: Intl.NumberFormat("fi-FI").format(truckOdometerReading / 1000),
+                  })}
+                </Typography>
+              )}
+            </Stack>
+          </StyledPopup>
+        )}
       </Marker>
     );
   }, [selectedWorkEventTelematics, t]);
