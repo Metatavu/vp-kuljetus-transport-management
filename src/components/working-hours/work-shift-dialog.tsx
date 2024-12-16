@@ -20,6 +20,7 @@ import { EmployeeWorkShift, Truck, WorkEvent } from "generated/client";
 import { DateTime } from "luxon";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { WorkShiftDialogWorkEventRow } from "src/types";
 import DataValidation from "src/utils/data-validation-utils";
 import WorkEventRow from "./work-event-row";
 import WorkShiftMap from "./work-shift-map";
@@ -121,7 +122,7 @@ const WorkShiftDialog = ({ workEvents, trucks, workShift, loading, onClose }: Pr
 
   const calculateDuration = useCallback((currentWorkEvent: WorkEvent, index: number, allWorkEvents: WorkEvent[]) => {
     if (index === allWorkEvents.length - 1) {
-      return "";
+      return 0;
     }
 
     const nextWorkEvent = allWorkEvents[index + 1];
@@ -129,13 +130,13 @@ const WorkShiftDialog = ({ workEvents, trucks, workShift, loading, onClose }: Pr
       DateTime.fromJSDate(currentWorkEvent.time),
       "seconds",
     );
-    return duration.toFormat("hh:mm.ss");
+    return duration.toMillis();
   }, []);
 
   const calculateDistance = useCallback(
     (currentWorkEvent: WorkEvent, index: number, allWorkEvents: WorkEvent[]) => {
       if (index === allWorkEvents.length - 1 || currentWorkEvent.workEventType !== "DRIVE") {
-        return "";
+        return 0;
       }
       const timestamp = currentWorkEvent.time.getTime() / 1000;
       const nextWorkEventTimestamp = allWorkEvents[index + 1].time.getTime() / 1000;
@@ -146,15 +147,38 @@ const WorkShiftDialog = ({ workEvents, trucks, workShift, loading, onClose }: Pr
       );
 
       if (!truckOdometerReading || !nextTruckOdometerReading) {
-        return "";
+        return 0;
       }
 
       const distance = nextTruckOdometerReading.odometerReading - truckOdometerReading.odometerReading;
-
-      return `${(distance / 1000).toFixed(2)} km`;
+      return distance;
     },
     [truckOdometerReadings],
   );
+
+  const workEventRows = useMemo(() => {
+    return workEvents.reduce((rows: WorkShiftDialogWorkEventRow[], workEvent, index, array) => {
+      const { truckId, workEventType } = workEvent;
+      const duration = calculateDuration(workEvent, index, array);
+      const distance = calculateDistance(workEvent, index, array);
+      const truck = trucks.find((truck) => truck.id === truckId);
+      const previousRow = rows[rows.length - 1];
+
+      if (rows.length === 0 || previousRow.workEvent.workEventType !== workEventType) {
+        rows.push({
+          workEvent,
+          truck,
+          duration,
+          distance,
+        });
+      } else {
+        previousRow.duration += duration;
+        previousRow.distance += distance;
+      }
+
+      return rows;
+    }, []);
+  }, [workEvents, trucks, calculateDuration, calculateDistance]);
 
   const getIsSelectable = useCallback(
     (workEvent: WorkEvent) => {
@@ -169,20 +193,17 @@ const WorkShiftDialog = ({ workEvents, trucks, workShift, loading, onClose }: Pr
   );
 
   const renderWorkEventRow = useCallback(
-    (workEvent: WorkEvent, index: number, workEvents: WorkEvent[]) => (
+    (workEventRow: WorkShiftDialogWorkEventRow) => (
       <WorkEventRow
-        key={workEvent.id}
-        type={workEvent.workEventType}
-        startTime={DateTime.fromJSDate(workEvent.time)}
-        truck={trucks.find((truck) => truck.id === workEvent.truckId)}
-        duration={calculateDuration(workEvent, index, workEvents)}
-        distance={calculateDistance(workEvent, index, workEvents)}
-        selectable={getIsSelectable(workEvent)}
-        selected={selectedWorkEvent?.id === workEvent.id}
-        onClick={() => setSelectedWorkEvent(workEvent)}
+        key={workEventRow.workEvent.id}
+        row={workEventRow}
+        truck={workEventRow.truck}
+        selectable={getIsSelectable(workEventRow.workEvent)}
+        selected={selectedWorkEvent?.id === workEventRow.workEvent.id}
+        onClick={() => setSelectedWorkEvent(workEventRow.workEvent)}
       />
     ),
-    [selectedWorkEvent, trucks, calculateDuration, calculateDistance, getIsSelectable],
+    [selectedWorkEvent, getIsSelectable],
   );
 
   const renderWorkEventRows = useCallback(
@@ -201,15 +222,15 @@ const WorkShiftDialog = ({ workEvents, trucks, workShift, loading, onClose }: Pr
                   ))}
               </TableRow>
             ))
-        : workEvents.map(renderWorkEventRow),
-    [loading, workEvents, renderWorkEventRow],
+        : workEventRows.map(renderWorkEventRow),
+    [loading, workEventRows, renderWorkEventRow],
   );
 
   return (
     <Dialog fullWidth={true} maxWidth="lg" open={true} onClose={onClose} PaperProps={{ sx: { m: 0, borderRadius: 0 } }}>
       <DialogHeader
         closeTooltip={t("tooltips.closeDialog")}
-        title={t("workingHours.workingDays.workShiftDialog.title")}
+        title={t("workingHours.workingDays.workShiftDialog.title", { date: workShiftStartedAt.toFormat("dd.MM.yyyy") })}
         onClose={onClose}
       />
       <DialogContent sx={{ p: 0 }}>

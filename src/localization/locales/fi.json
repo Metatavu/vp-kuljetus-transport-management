@@ -526,7 +526,7 @@
         "explanation": "Selite"
       },
       "workShiftDialog": {
-        "title": "Työajan erittely",
+        "title": "Työajan erittely {{date}}",
         "time": "Aika",
         "vehicle": "Auto",
         "event": "Tapahtuma",

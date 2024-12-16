@@ -438,7 +438,7 @@
         "explanation": "Explanation"
       },
       "workShiftDialog": {
-        "title": "Work shift events",
+        "title": "Work shift events {{date}}",
         "time": "Time",
         "vehicle": "Vehicle",
         "event": "Event",
