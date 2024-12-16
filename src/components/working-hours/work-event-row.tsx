@@ -76,7 +76,7 @@ const WorkEventRow = ({ selected, type, startTime, truck, duration, distance, se
           <TableCell align="center">{truck?.name ?? ""}</TableCell>
           <TableCell>{LocalizationUtils.getLocalizedWorkEventType(type, t)}</TableCell>
           <TableCell align="center">{duration}</TableCell>
-          <TableCell align="center">{distance}</TableCell>
+          <TableCell align="center" />
         </TableRow>
       );
     case WorkEventType.ShiftEnd:
@@ -92,7 +92,7 @@ const WorkEventRow = ({ selected, type, startTime, truck, duration, distance, se
           <TableCell align="center">{truck?.name ?? ""}</TableCell>
           <TableCell>{LocalizationUtils.getLocalizedWorkEventType(type, t)}</TableCell>
           <TableCell align="center">{duration}</TableCell>
-          <TableCell align="center">{distance}</TableCell>
+          <TableCell align="center" />
         </TableRow>
       );
     case WorkEventType.Logout:
@@ -102,7 +102,7 @@ const WorkEventRow = ({ selected, type, startTime, truck, duration, distance, se
           <TableCell align="center">{truck?.name ?? ""}</TableCell>
           <TableCell>{LocalizationUtils.getLocalizedWorkEventType(type, t)}</TableCell>
           <TableCell align="center">{duration}</TableCell>
-          <TableCell align="center">{distance}</TableCell>
+          <TableCell align="center" />
         </TableRow>
       );
     case WorkEventType.Login:
@@ -112,7 +112,7 @@ const WorkEventRow = ({ selected, type, startTime, truck, duration, distance, se
           <TableCell align="center">{truck?.name ?? ""}</TableCell>
           <TableCell>{LocalizationUtils.getLocalizedWorkEventType(type, t)}</TableCell>
           <TableCell align="center">{duration}</TableCell>
-          <TableCell align="center">{distance}</TableCell>
+          <TableCell align="center" />
         </TableRow>
       );
     case WorkEventType.Unknown:
@@ -128,6 +128,20 @@ const WorkEventRow = ({ selected, type, startTime, truck, duration, distance, se
           <TableCell align="center">{truck?.name ?? ""}</TableCell>
           <TableCell>{LocalizationUtils.getLocalizedWorkEventType(type, t)}</TableCell>
           <TableCell align="center">{duration}</TableCell>
+          <TableCell align="center" />
+        </TableRow>
+      );
+    case WorkEventType.Drive:
+      return (
+        <TableRow onClick={onClick} sx={rowStyle}>
+          <TableCell width={100}>{startTime.toFormat("HH:mm")}</TableCell>
+          <TableCell align="center">{truck?.name ?? ""}</TableCell>
+          <TableCell sx={{ p: 0.5 }}>
+            <CellInput select aria-label={t("workingHours.workingDays.workShiftDialog.event")} defaultValue={type}>
+              {renderLocalizedMenuItems(Object.values(WorkEventType), LocalizationUtils.getLocalizedWorkEventType)}
+            </CellInput>
+          </TableCell>
+          <TableCell align="center">{duration}</TableCell>
           <TableCell align="center">{distance}</TableCell>
         </TableRow>
       );
@@ -142,7 +156,7 @@ const WorkEventRow = ({ selected, type, startTime, truck, duration, distance, se
             </CellInput>
           </TableCell>
           <TableCell align="center">{duration}</TableCell>
-          <TableCell align="center">{distance}</TableCell>
+          <TableCell align="center" />
         </TableRow>
       );
   }

@@ -67,7 +67,7 @@ const WorkShiftMap = ({ truckLocations, selectedWorkEventTelematics }: Props) =>
     const truckSpeed = selectedWorkEventTelematics.truckSpeed?.speed;
     const truckOdometerReading = selectedWorkEventTelematics.truckOdometerReading?.odometerReading;
 
-    const hasTelematics = truckSpeed === undefined && truckOdometerReading === undefined;
+    const hasTelematics = !truckSpeed === undefined && !truckOdometerReading === undefined;
 
     return (
       <Marker position={new LatLng(truckLocation.latitude, truckLocation.longitude)}>
