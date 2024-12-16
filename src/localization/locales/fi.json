@@ -532,6 +532,10 @@
         "event": "Tapahtuma",
         "duration": "Kesto",
         "distance": "Matka",
+        "telematicsPopup": {
+          "speed": "Nopeus: {{speed}} km/h",
+          "odometer": "Matkamittarin lukema: {{odometer}} km"
+        },
         "eventTypes": {
           "vegetable": "Vihannes",
           "dry": "Kuiva",

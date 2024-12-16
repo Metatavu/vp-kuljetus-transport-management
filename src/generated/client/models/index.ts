@@ -27,6 +27,7 @@ export * from './Truck';
 export * from './TruckDriveState';
 export * from './TruckDriveStateEnum';
 export * from './TruckLocation';
+export * from './TruckOdometerReading';
 export * from './TruckSortByField';
 export * from './TruckSpeed';
 export * from './Vehicle';
