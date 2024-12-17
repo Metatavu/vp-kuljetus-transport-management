@@ -40,7 +40,8 @@ function AggregationsTable({ workShiftsData, employee }: Props) {
     const paidWorkHours = parseFloat(getSumOfWorktHours(WorkType.PaidWork));
     const standByHours = parseFloat(getSumOfWorktHours(WorkType.Standby));
     if (paidWorkHours < regularWorkingHours) {
-      return (regularWorkingHours - paidWorkHours - standByHours).toFixed(2);
+      const fillingHours = regularWorkingHours - paidWorkHours - standByHours;
+      return fillingHours > 0 ? fillingHours.toFixed(2) : 0;
     }
     return 0;
   };
@@ -68,7 +69,7 @@ function AggregationsTable({ workShiftsData, employee }: Props) {
     return workShiftsData
       .filter((row) => row.workShift?.absence === absence)
       .reduce((acc, row) => {
-        const workShiftHours = row.workShiftHours[WorkType.PaidWork] as WorkShiftHours;
+        const workShiftHours = row.workShiftHours[WorkType.PaidWork];
         return acc + (workShiftHours?.actualHours ?? workShiftHours?.calculatedHours ?? 0);
       }, 0)
       .toFixed(2);
@@ -78,7 +79,7 @@ function AggregationsTable({ workShiftsData, employee }: Props) {
     return workShiftsData
       .filter((row) => row.workShift?.dayOffWorkAllowance)
       .reduce((acc, row) => {
-        const workShiftHours = row.workShiftHours[WorkType.PaidWork] as WorkShiftHours;
+        const workShiftHours = row.workShiftHours[WorkType.PaidWork];
         return acc + (workShiftHours?.actualHours ?? workShiftHours?.calculatedHours ?? 0);
       }, 0)
       .toFixed(2);
