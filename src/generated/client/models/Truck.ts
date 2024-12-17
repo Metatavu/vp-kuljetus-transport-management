@@ -33,6 +33,12 @@ export interface Truck {
      */
     name?: string;
     /**
+     * The unique IMEI of the truck, used to identify it when associating with a thermometer.
+     * @type {string}
+     * @memberof Truck
+     */
+    imei: string;
+    /**
      * 
      * @type {string}
      * @memberof Truck
@@ -107,6 +113,7 @@ export type TruckTypeEnum = typeof TruckTypeEnum[keyof typeof TruckTypeEnum];
  */
 export function instanceOfTruck(value: object): boolean {
     let isInstance = true;
+    isInstance = isInstance && "imei" in value;
     isInstance = isInstance && "plateNumber" in value;
     isInstance = isInstance && "type" in value;
     isInstance = isInstance && "vin" in value;
@@ -126,6 +133,7 @@ export function TruckFromJSONTyped(json: any, ignoreDiscriminator: boolean): Tru
         
         'id': !exists(json, 'id') ? undefined : json['id'],
         'name': !exists(json, 'name') ? undefined : json['name'],
+        'imei': json['imei'],
         'plateNumber': json['plateNumber'],
         'type': json['type'],
         'vin': json['vin'],
@@ -148,6 +156,7 @@ export function TruckToJSON(value?: Truck | null): any {
     return {
         
         'name': value.name,
+        'imei': value.imei,
         'plateNumber': value.plateNumber,
         'type': value.type,
         'vin': value.vin,

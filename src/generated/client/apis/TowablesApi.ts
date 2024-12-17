@@ -16,6 +16,9 @@
 
 import * as runtime from '../runtime';
 import {
+    Temperature,
+    TemperatureFromJSON,
+    TemperatureToJSON,
     Towable,
     TowableFromJSON,
     TowableToJSON,
@@ -27,6 +30,13 @@ export interface CreateTowableRequest {
 
 export interface FindTowableRequest {
     towableId: string;
+}
+
+export interface ListTowableTemperaturesRequest {
+    towableId: string;
+    includeArchived?: boolean;
+    first?: number;
+    max?: number;
 }
 
 export interface ListTowablesRequest {
@@ -128,6 +138,57 @@ export class TowablesApi extends runtime.BaseAPI {
      */
     async findTowableWithHeaders(requestParameters: FindTowableRequest): Promise<[ Towable, Headers ]> {
         const response = await this.findTowableRaw(requestParameters);
+        const value = await response.value(); 
+        return [ value, response.raw.headers ];
+    }
+    /**
+     * Retrieve all temperatures from all thermometers related to a specific towable, possibly including data from thermometers that have been archived.
+     * List temperature readings by towable, including archived thermometers
+     */
+    async listTowableTemperaturesRaw(requestParameters: ListTowableTemperaturesRequest): Promise<runtime.ApiResponse<Array<Temperature>>> {
+        if (requestParameters.towableId === null || requestParameters.towableId === undefined) {
+            throw new runtime.RequiredError('towableId','Required parameter requestParameters.towableId was null or undefined when calling listTowableTemperatures.');
+        }
+        const queryParameters: any = {};
+        if (requestParameters.includeArchived !== undefined) {
+            queryParameters['includeArchived'] = requestParameters.includeArchived;
+        }
+        if (requestParameters.first !== undefined) {
+            queryParameters['first'] = requestParameters.first;
+        }
+        if (requestParameters.max !== undefined) {
+            queryParameters['max'] = requestParameters.max;
+        }
+        const headerParameters: runtime.HTTPHeaders = {};
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("BearerAuth", ["manager"]);
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/vehicle-management/v1/towables/{towableId}/temperatures`.replace(`{${"towableId"}}`, encodeURIComponent(String(requestParameters.towableId))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        });
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(TemperatureFromJSON));
+    }
+    /**
+     * Retrieve all temperatures from all thermometers related to a specific towable, possibly including data from thermometers that have been archived.
+     * List temperature readings by towable, including archived thermometers
+     */
+    async listTowableTemperatures(requestParameters: ListTowableTemperaturesRequest): Promise<Array<Temperature>> {
+        const response = await this.listTowableTemperaturesRaw(requestParameters);
+        return await response.value();
+    }
+    /**
+     * Retrieve all temperatures from all thermometers related to a specific towable, possibly including data from thermometers that have been archived.
+     * List temperature readings by towable, including archived thermometers
+     */
+    async listTowableTemperaturesWithHeaders(requestParameters: ListTowableTemperaturesRequest): Promise<[ Array<Temperature>, Headers ]> {
+        const response = await this.listTowableTemperaturesRaw(requestParameters);
         const value = await response.value(); 
         return [ value, response.raw.headers ];
     }

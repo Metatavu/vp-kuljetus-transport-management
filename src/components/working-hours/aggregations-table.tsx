@@ -21,12 +21,13 @@ function AggregationsTable({ workShiftsData, employee }: Props) {
   const { t } = useTranslation();
 
   const getSumOfWorktHours = (workType: WorkType) => {
-    return workShiftsData
+    const aggregatedHours = workShiftsData
       .reduce((acc, row) => {
         const workShiftHours = row.workShiftHours[workType] as WorkShiftHours;
         return acc + (workShiftHours?.actualHours ?? workShiftHours?.calculatedHours ?? 0);
       }, 0)
       .toFixed(2);
+    return aggregatedHours;
   };
 
   const getPerDiemAllowanceCount = (perDiemAllowance: PerDiemAllowanceType) => {
@@ -37,8 +38,9 @@ function AggregationsTable({ workShiftsData, employee }: Props) {
     if (!employee?.regularWorkingHours) return 0;
     const regularWorkingHours = employee?.regularWorkingHours;
     const paidWorkHours = parseFloat(getSumOfWorktHours(WorkType.PaidWork));
+    const standByHours = parseFloat(getSumOfWorktHours(WorkType.Standby));
     if (paidWorkHours < regularWorkingHours) {
-      return (regularWorkingHours - paidWorkHours).toFixed(2);
+      return (regularWorkingHours - paidWorkHours - standByHours).toFixed(2);
     }
     return 0;
   };
@@ -65,6 +67,16 @@ function AggregationsTable({ workShiftsData, employee }: Props) {
   const getAbsenceHours = (absence: AbsenceType) => {
     return workShiftsData
       .filter((row) => row.workShift?.absence === absence)
+      .reduce((acc, row) => {
+        const workShiftHours = row.workShiftHours[WorkType.PaidWork] as WorkShiftHours;
+        return acc + (workShiftHours?.actualHours ?? workShiftHours?.calculatedHours ?? 0);
+      }, 0)
+      .toFixed(2);
+  };
+
+  const getDayOffWorkAllowanceHours = () => {
+    return workShiftsData
+      .filter((row) => row.workShift?.dayOffWorkAllowance)
       .reduce((acc, row) => {
         const workShiftHours = row.workShiftHours[WorkType.PaidWork] as WorkShiftHours;
         return acc + (workShiftHours?.actualHours ?? workShiftHours?.calculatedHours ?? 0);
@@ -163,7 +175,7 @@ function AggregationsTable({ workShiftsData, employee }: Props) {
           </TableCell>
           <TableCell>{t("workingHours.workingDays.aggregationsTable.dayOffBonus")}</TableCell>
           <TableCell align="right">
-            <Typography variant="h6">{`${getSumOfWorktHours(WorkType.HolidayAllowance)} h`}</Typography>
+            <Typography variant="h6">{`${getDayOffWorkAllowanceHours()} h`}</Typography>
           </TableCell>
           <EmptyCell />
           <EmptyCell />

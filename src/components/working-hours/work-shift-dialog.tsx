@@ -4,25 +4,116 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
+  Skeleton,
   Stack,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
+  TableRow,
 } from "@mui/material";
+import { useQueries } from "@tanstack/react-query";
+import { api } from "api/index";
 import DialogHeader from "components/generic/dialog-header";
-import { WorkEventType } from "generated/client";
+import { EmployeeWorkShift, Truck, WorkEvent } from "generated/client";
+import { DateTime } from "luxon";
+import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import DataValidation from "src/utils/data-validation-utils";
 import WorkEventRow from "./work-event-row";
 import WorkShiftMap from "./work-shift-map";
 
 type Props = {
+  workEvents: WorkEvent[];
+  trucks: Truck[];
+  workShift?: EmployeeWorkShift;
+  loading: boolean;
   onClose: () => void;
 };
 
-const WorkShiftDialog = ({ onClose }: Props) => {
+const WorkShiftDialog = ({ workEvents, trucks, workShift, loading, onClose }: Props) => {
   const { t } = useTranslation();
+
+  const workShiftStartedAt = useMemo(
+    () => DateTime.fromJSDate(workShift?.startedAt ?? new Date(Date.now())),
+    [workShift],
+  );
+
+  /**
+   * It is illegal to do workshifts over 15 hours, so if the workshift has not received ended at time, we assume it has ended after 15 hours.
+   */
+  const workShiftEndedAt = useMemo(
+    () => workShift?.endedAt ?? workShiftStartedAt.plus({ hours: 15 }).toJSDate(),
+    [workShift, workShift],
+  );
+
+  const truckLocationsQuery = useQueries({
+    queries:
+      trucks.map(({ id }) => ({
+        queryKey: ["truckLocations"],
+        queryFn: async () =>
+          id
+            ? {
+                truckId: id,
+                locations: await api.trucks.listTruckLocations({
+                  truckId: id,
+                  after: workShift?.startedAt,
+                  before: workShiftEndedAt,
+                }),
+              }
+            : null,
+      })) ?? [],
+    combine: (results) => ({
+      data: results.map((result) => result.data).filter(DataValidation.validateValueIsNotUndefinedNorNull),
+    }),
+  });
+
+  const calculateDuration = useCallback((currentWorkEvent: WorkEvent, index: number, allWorkEvents: WorkEvent[]) => {
+    if (index === allWorkEvents.length - 1) {
+      return "";
+    }
+
+    const nextWorkEvent = allWorkEvents[index + 1];
+    const duration = DateTime.fromJSDate(nextWorkEvent.time).diff(
+      DateTime.fromJSDate(currentWorkEvent.time),
+      "seconds",
+    );
+    return duration.toFormat("hh:mm.ss");
+  }, []);
+
+  const renderWorkEventRow = useCallback(
+    (workEvent: WorkEvent, index: number, workEvents: WorkEvent[]) => (
+      <WorkEventRow
+        key={workEvent.id}
+        type={workEvent.workEventType}
+        startTime={DateTime.fromJSDate(workEvent.time)}
+        truck={trucks.find((truck) => truck.id === workEvent.truckId)}
+        duration={calculateDuration(workEvent, index, workEvents)}
+      />
+    ),
+    [trucks, calculateDuration],
+  );
+
+  const renderWorkEventRows = useCallback(
+    () =>
+      loading
+        ? Array(15)
+            .fill(null)
+            .map(() => (
+              <TableRow>
+                {Array(5)
+                  .fill(null)
+                  .map(() => (
+                    <TableCell sx={{ border: "none" }}>
+                      <Skeleton />
+                    </TableCell>
+                  ))}
+              </TableRow>
+            ))
+        : workEvents.map(renderWorkEventRow),
+    [loading, workEvents, renderWorkEventRow],
+  );
 
   return (
     <Dialog fullWidth={true} maxWidth="lg" open={true} onClose={onClose} PaperProps={{ sx: { m: 0, borderRadius: 0 } }}>
@@ -33,7 +124,7 @@ const WorkShiftDialog = ({ onClose }: Props) => {
       />
       <DialogContent sx={{ p: 0 }}>
         <Stack direction="row">
-          <WorkShiftMap />
+          <WorkShiftMap truckLocations={(truckLocationsQuery.data ?? []).map(({ locations }) => locations)} />
           <Box display="flex" flex={1} maxHeight={600}>
             <TableContainer>
               <Table stickyHeader>
@@ -44,65 +135,7 @@ const WorkShiftDialog = ({ onClose }: Props) => {
                   <TableCell align="center">{t("workingHours.workingDays.workShiftDialog.duration")}</TableCell>
                   <TableCell align="center">{t("workingHours.workingDays.workShiftDialog.distance")}</TableCell>
                 </TableHead>
-                <TableBody>
-                  {/* TODO: Render corresponding work events */}
-                  <WorkEventRow
-                    type={WorkEventType.ShiftStart}
-                    startTime="07.30"
-                    vehicle={null}
-                    duration=""
-                    distance={null}
-                  />
-                  <WorkEventRow
-                    type={WorkEventType.OtherWork}
-                    startTime="07.30"
-                    vehicle={21}
-                    duration="00:20"
-                    distance={null}
-                  />
-                  <WorkEventRow
-                    type={WorkEventType.Drive}
-                    startTime="07.50"
-                    vehicle={21}
-                    duration="00:20"
-                    distance="0,5 km"
-                  />
-                  <WorkEventRow
-                    type={WorkEventType.Logout}
-                    startTime="07.50"
-                    vehicle={21}
-                    duration="00:20"
-                    distance={null}
-                  />
-                  <WorkEventRow
-                    type={WorkEventType.Unknown}
-                    startTime="07.50"
-                    vehicle={null}
-                    duration="00:20"
-                    distance={null}
-                  />
-                  <WorkEventRow
-                    type={WorkEventType.Login}
-                    startTime="07.50"
-                    vehicle={21}
-                    duration="00:20"
-                    distance={null}
-                  />
-                  <WorkEventRow
-                    type={WorkEventType.Drive}
-                    startTime="07.50"
-                    vehicle={21}
-                    duration="00:20"
-                    distance="0,5 km"
-                  />
-                  <WorkEventRow
-                    type={WorkEventType.ShiftEnd}
-                    startTime="07.30"
-                    vehicle={null}
-                    duration=""
-                    distance={null}
-                  />
-                </TableBody>
+                <TableBody>{renderWorkEventRows()}</TableBody>
               </Table>
             </TableContainer>
           </Box>

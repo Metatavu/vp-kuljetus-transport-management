@@ -69,8 +69,6 @@ const AuthenticationProvider = ({ children }: Props) => {
   }, []);
 
   useEffect(() => {
-    if (!keycloak.token) return;
-
     const interval = setInterval(async () => {
       if (await keycloak.updateToken(70)) updateAuthData();
     }, 1000);
