@@ -80,7 +80,7 @@ const WorkShiftDialog = ({ workEvents, trucks, workShift, loading, onClose }: Pr
               : Math.min(...result.data.locations.map((location) => location.timestamp));
           return {
             ...result.data,
-            locations: result.data?.locations ?? [].filter(DataValidation.validateValueIsNotUndefinedNorNull),
+            locations: (result.data?.locations ?? []).filter(DataValidation.validateValueIsNotUndefinedNorNull),
             maxTimestamp: DateTime.fromSeconds(maxTimestamp).toJSDate(),
             minTimestamp: DateTime.fromSeconds(minTimestamp).toJSDate(),
           };
