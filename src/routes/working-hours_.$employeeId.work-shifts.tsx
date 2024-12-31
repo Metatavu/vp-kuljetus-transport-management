@@ -250,6 +250,9 @@ function WorkShifts() {
     mode: "onChange",
   });
 
+  const watchWorkShifts = methods.watch("0.workShift.absence");
+  console.log("ASDF", watchWorkShifts);
+
   const getUpdatedWorkShiftsAndWorkShiftHours = (): [
     updatedWorkShifts: EmployeeWorkShift[],
     updatedWorkShiftHours: WorkShiftHours[],

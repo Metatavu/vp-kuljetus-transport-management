@@ -1,6 +1,7 @@
 import { Stack, Table, TableBody, TableCell, TableRow, Typography, styled } from "@mui/material";
 import { TimePicker } from "@mui/x-date-pickers";
 import { AbsenceType, Employee, PerDiemAllowanceType, WorkShiftHours, WorkType } from "generated/client";
+import { DateTime } from "luxon";
 import { useTranslation } from "react-i18next";
 import { EmployeeWorkHoursFormRow } from "src/types";
 
@@ -23,7 +24,7 @@ function AggregationsTable({ workShiftsData, employee }: Props) {
   const getSumOfWorktHours = (workType: WorkType) => {
     const aggregatedHours = workShiftsData
       .reduce((acc, row) => {
-        const workShiftHours = row.workShiftHours[workType] as WorkShiftHours;
+        const workShiftHours = row.workShiftHours[workType];
         return acc + (workShiftHours?.actualHours ?? workShiftHours?.calculatedHours ?? 0);
       }, 0)
       .toFixed(2);
@@ -38,9 +39,8 @@ function AggregationsTable({ workShiftsData, employee }: Props) {
     if (!employee?.regularWorkingHours) return 0;
     const regularWorkingHours = employee?.regularWorkingHours;
     const paidWorkHours = parseFloat(getSumOfWorktHours(WorkType.PaidWork));
-    const standByHours = parseFloat(getSumOfWorktHours(WorkType.Standby));
     if (paidWorkHours < regularWorkingHours) {
-      const fillingHours = regularWorkingHours - paidWorkHours - standByHours;
+      const fillingHours = regularWorkingHours - paidWorkHours;
       return fillingHours > 0 ? fillingHours.toFixed(2) : 0;
     }
     return 0;
@@ -77,10 +77,25 @@ function AggregationsTable({ workShiftsData, employee }: Props) {
 
   const getDayOffWorkAllowanceHours = () => {
     return workShiftsData
-      .filter((row) => row.workShift?.dayOffWorkAllowance)
+      .filter((row) => {
+        return row.workShift?.dayOffWorkAllowance;
+      })
       .reduce((acc, row) => {
-        const workShiftHours = row.workShiftHours[WorkType.PaidWork];
-        return acc + (workShiftHours?.actualHours ?? workShiftHours?.calculatedHours ?? 0);
+        const startedAt = row.workShift.startedAt
+          ? DateTime.fromJSDate(row.workShift.startedAt)
+          : DateTime.fromJSDate(row.workShift.date).startOf("day");
+        const endedAt = row.workShift?.endedAt ? DateTime.fromJSDate(row.workShift.endedAt) : DateTime.now();
+
+        // Check if the shift is on the same day or if the shift was added manually (no start time)
+        if (startedAt.hasSame(endedAt, "day") || !row.workShift.startedAt) {
+          const workShiftHours = row.workShiftHours[WorkType.PaidWork];
+          return acc + (workShiftHours?.actualHours ?? workShiftHours?.calculatedHours ?? 0);
+        }
+
+        // Calculate hours for the first day of the shift
+        const hoursOnFirstDay = startedAt.endOf("day").diff(startedAt, "hours").hours;
+
+        return acc + hoursOnFirstDay;
       }, 0)
       .toFixed(2);
   };
@@ -137,13 +152,8 @@ function AggregationsTable({ workShiftsData, employee }: Props) {
           <TableCell align="right">
             <Typography variant="h6">{`${getSumOfWorktHours(WorkType.NightAllowance)} h`}</Typography>
           </TableCell>
-          <TableCell>{t("workingHours.workingDays.aggregationsTable.unpaid")}</TableCell>
-          <EmptyCell>
-            <Stack direction="row" gap={1} alignItems="center" p={0.25}>
-              {renderTimeInput(t("workingHours.workingDays.aggregationsTable.unpaid"))}
-              <Typography variant="h6">h</Typography>
-            </Stack>
-          </EmptyCell>
+          <EmptyCell />
+          <EmptyCell />
           <TableCell>{t("workingHours.workingDays.aggregationsTable.sickHours")}</TableCell>
           <TableCell align="right">
             <Typography variant="h6">{`${getAbsenceHours(AbsenceType.SickLeave)} h`}</Typography>
