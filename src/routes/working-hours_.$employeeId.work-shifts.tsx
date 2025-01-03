@@ -19,7 +19,8 @@ import { BlobProvider } from "@react-pdf/renderer";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Outlet, createFileRoute } from "@tanstack/react-router";
 import { api } from "api/index";
-import AggregationsTable from "components/working-hours/aggregations-table";
+import AggregationsTableForDriver from "components/working-hours/aggregations-table-driver";
+import AggregationsTableForOffice from "components/working-hours/aggregations-table-office";
 import ChangeLog from "components/working-hours/change-log";
 import WorkShiftRow from "components/working-hours/work-shift-row";
 import WorkShiftsTableHeader from "components/working-hours/work-shifts-table-header";
@@ -250,9 +251,6 @@ function WorkShifts() {
     mode: "onChange",
   });
 
-  const watchWorkShifts = methods.watch("0.workShift.absence");
-  console.log("ASDF", watchWorkShifts);
-
   const getUpdatedWorkShiftsAndWorkShiftHours = (): [
     updatedWorkShifts: EmployeeWorkShift[],
     updatedWorkShiftHours: WorkShiftHours[],
@@ -391,7 +389,10 @@ function WorkShifts() {
     return (
       <Stack direction="row" justifyContent="space-between">
         <ToolbarContainer>
-          <IconButton onClick={() => navigate({ to: "../.." })} title={t("tooltips.backToWorkingHours")}>
+          <IconButton
+            onClick={() => navigate({ to: "../..", search: { date: DateTime.now() } })}
+            title={t("tooltips.backToWorkingHours")}
+          >
             <ArrowBack />
           </IconButton>
           {employees?.length ? (
@@ -428,7 +429,7 @@ function WorkShifts() {
             {({ loading, url }) => (
               <LoadingButton
                 loading={loading}
-                href={url || ""}
+                href={url ?? ""}
                 target="_blank"
                 size="small"
                 variant="outlined"
@@ -542,10 +543,17 @@ function WorkShifts() {
               <Paper elevation={0} sx={{ display: "flex", flex: 2 }}>
                 <Stack flex={1}>
                   <TableHeader>{renderAggregationsTableTitle()}</TableHeader>
-                  <AggregationsTable
-                    workShiftsData={workShiftsDataForFormRows.data ?? []}
-                    employee={employee ?? undefined}
-                  />
+                  {employeeSalaryGroup === SalaryGroup.Driver || employeeSalaryGroup === SalaryGroup.Vplogistics ? (
+                    <AggregationsTableForDriver
+                      workShiftsData={workShiftsDataForFormRows.data ?? []}
+                      employee={employee ?? undefined}
+                    />
+                  ) : (
+                    <AggregationsTableForOffice
+                      workShiftsData={workShiftsDataForFormRows.data ?? []}
+                      employee={employee ?? undefined}
+                    />
+                  )}
                 </Stack>
               </Paper>
               <Paper elevation={0} sx={{ display: "flex", flex: 1 }}>
@@ -560,7 +568,6 @@ function WorkShifts() {
           </form>
         </FormProvider>
       </Root>
-
       <Outlet />
     </>
   );

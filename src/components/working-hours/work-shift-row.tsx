@@ -60,7 +60,6 @@ function WorkShiftRow({ index, trucks, date, workShiftId }: Props) {
   const approved = watch(`${index}.workShift.approved`) as boolean | undefined;
   const workShiftHours = watch(`${index}.workShiftHours`) as Record<WorkType, WorkShiftHours> | undefined;
   const [isFocused, setIsFocused] = useState(false);
-
   const hasDetails = useMemo(() => {
     const { startedAt } = workShift ?? {};
     return workShiftId && startedAt;

@@ -4,6 +4,7 @@ import { useMatches, useNavigate } from "@tanstack/react-router";
 import logo from "assets/vp-kuljetus-logo.jpeg";
 import { authAtom } from "atoms/auth";
 import { useAtomValue } from "jotai";
+import { DateTime } from "luxon";
 import { bindMenu, bindTrigger, usePopupState } from "material-ui-popup-state/hooks";
 import { useTranslation } from "react-i18next";
 import { NavigationItem } from "src/types";
@@ -19,7 +20,7 @@ const TopNavigation = () => {
   const routeLinks: readonly NavigationItem[] = [
     { route: "/vehicles/list", label: "vehicles.title" },
     { route: "/drive-planning/routes", label: "drivePlanning.title" },
-    { route: "/working-hours", label: "workingHours.title" },
+    { route: "/working-hours", label: "workingHours.title", date: DateTime.now() },
     { route: "/management/customer-sites", label: "management.title" },
   ];
 
@@ -34,12 +35,12 @@ const TopNavigation = () => {
 
         <Stack direction="row" gap={3} sx={{ ml: 8, flexGrow: 1 }}>
           <Tabs value={selectedRouteIndex}>
-            {routeLinks.map(({ route: path, label }, routeIndex) => (
+            {routeLinks.map(({ route: path, label, date }, routeIndex) => (
               <Tab
                 key={path}
                 label={t(label)}
                 value={routeIndex}
-                onClick={() => navigate({ to: path, params: {}, search: {} })}
+                onClick={() => navigate({ to: path, params: {}, search: { date: date } })}
               />
             ))}
           </Tabs>
