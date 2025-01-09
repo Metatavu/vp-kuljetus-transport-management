@@ -94,7 +94,7 @@ function AggregationsTableForOffice({ workShiftsData, employee }: Props) {
           <TableCell>{t("workingHours.workingDays.aggregationsTable.overtimeHalf")}</TableCell>
           <TableCell align="right">
             <Typography variant="h6">{`${
-              WorkShiftsUtils.getOverTimeHoursForDriver(workShiftsData, employee).overTimeHalf
+              WorkShiftsUtils.getOverTimeHoursForOfficeAndTerminalWorkers(workShiftsData).overTimeHalf
             } h`}</Typography>
           </TableCell>
           <TableCell>{t("workingHours.workingDays.aggregationsTable.holiday")}</TableCell>
@@ -118,7 +118,7 @@ function AggregationsTableForOffice({ workShiftsData, employee }: Props) {
           <TableCell>{t("workingHours.workingDays.aggregationsTable.overtimeFull")}</TableCell>
           <TableCell align="right">
             <Typography variant="h6">{`${
-              WorkShiftsUtils.getOverTimeHoursForDriver(workShiftsData, employee).overTimeFull
+              WorkShiftsUtils.getOverTimeHoursForOfficeAndTerminalWorkers(workShiftsData).overTimeFull
             } h`}</Typography>
           </TableCell>
           <TableCell>{t("workingHours.workingDays.aggregationsTable.dayOffBonus")}</TableCell>
@@ -147,10 +147,6 @@ function AggregationsTableForOffice({ workShiftsData, employee }: Props) {
           <EmptyCell />
           <EmptyCell />
           <EmptyCell />
-          <TableCell>{t("workingHours.workingDays.aggregationsTable.absenceHours")}</TableCell>
-          <TableCell align="right">
-            <Typography variant="h6">0.00 h</Typography>
-          </TableCell>
           <TableCell>{t("workingHours.workingDays.aggregationsTable.fillingHours")}</TableCell>
           <TableCell align="right">
             <Typography variant="h6">{`${WorkShiftsUtils.getFillingHours(workShiftsData, employee)} h`}</Typography>

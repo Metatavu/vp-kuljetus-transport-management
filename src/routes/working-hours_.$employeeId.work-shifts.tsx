@@ -362,21 +362,32 @@ function WorkShifts() {
     },
   });
 
+  const handleFormUnregister = async () => {
+    const formRowsCount = Object.values(methods.getValues()).length;
+    for (let rowNumber = 0; rowNumber < formRowsCount; rowNumber++) {
+      methods.unregister(`${rowNumber}`, { keepValue: false });
+    }
+  };
+
   const onChangeDate = useCallback(
-    (newDate: DateTime | null) => navigate({ search: (prev) => ({ ...prev, date: newDate ?? DateTime.now() }) }),
-    [navigate],
+    (newDate: DateTime | null) => {
+      handleFormUnregister();
+      navigate({ search: (prev) => ({ ...prev, date: newDate ?? DateTime.now() }) });
+    },
+    [navigate, handleFormUnregister],
   );
 
   const renderEmployeeMenuItems = () => {
     return employees?.map((employee) => (
       <MenuItem
-        onClick={() =>
+        onClick={() => {
+          handleFormUnregister();
           navigate({
             to: "/working-hours/$employeeId/work-shifts",
             params: { employeeId: employee.id },
             search: { date: selectedDate },
-          })
-        }
+          });
+        }}
         key={employee.id}
         value={employee.id}
       >

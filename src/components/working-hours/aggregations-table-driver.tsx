@@ -147,10 +147,6 @@ function AggregationsTableForDriver({ workShiftsData, employee }: Props) {
           <EmptyCell />
           <EmptyCell />
           <EmptyCell />
-          <TableCell>{t("workingHours.workingDays.aggregationsTable.absenceHours")}</TableCell>
-          <TableCell align="right">
-            <Typography variant="h6">0.00 h</Typography>
-          </TableCell>
           <TableCell>{t("workingHours.workingDays.aggregationsTable.fillingHours")}</TableCell>
           <TableCell align="right">
             <Typography variant="h6">{`${WorkShiftsUtils.getFillingHours(workShiftsData, employee)} h`}</Typography>

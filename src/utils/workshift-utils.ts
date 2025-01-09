@@ -35,7 +35,11 @@ namespace WorkShiftsUtils {
     const regularWorkingHours = employee?.regularWorkingHours;
     const paidWorkHours = parseFloat(getSumOfWorkHoursFromWorkPeriod(workShiftsData, WorkType.PaidWork));
     if (paidWorkHours < regularWorkingHours) {
-      const fillingHours = regularWorkingHours - paidWorkHours;
+      const vacationHours = parseFloat(getAbsenceHours(workShiftsData, AbsenceType.Vacation));
+      const compensatoryLeaveHours = parseFloat(getAbsenceHours(workShiftsData, AbsenceType.CompensatoryLeave));
+      const sickLeaveHours = parseFloat(getAbsenceHours(workShiftsData, AbsenceType.SickLeave));
+      const fillingHours =
+        regularWorkingHours - paidWorkHours - vacationHours - compensatoryLeaveHours - sickLeaveHours;
       return fillingHours > 0 ? fillingHours.toFixed(2) : 0;
     }
     return 0;
@@ -47,7 +51,10 @@ namespace WorkShiftsUtils {
     // Check if the employee has more than 40 hours of vacation in work period and adjust the limit for full overtime
     const overTimeFullLimit = vacationHours > 40 ? 10 : 12;
     const regularWorkingHours = employee?.regularWorkingHours;
-    const paidWorkHours = parseFloat(getSumOfWorkHoursFromWorkPeriod(workShiftsData, WorkType.PaidWork));
+    // Calculate paid work hours without training hours (training hours does not cumulate overtime)
+    const paidWorkHours =
+      parseFloat(getSumOfWorkHoursFromWorkPeriod(workShiftsData, WorkType.PaidWork)) -
+      parseFloat(getAbsenceHours(workShiftsData, AbsenceType.Training));
     if (paidWorkHours <= regularWorkingHours) {
       return { overTimeHalf: 0, overTimeFull: 0 };
     }
@@ -66,12 +73,35 @@ namespace WorkShiftsUtils {
     return { overTimeHalf: 0, overTimeFull: 0 };
   };
 
-  // TODO: Needs better description before implementing
-  // export const getOverTimeHoursForOfficeAndTerminal = (workShiftsData: EmployeeWorkHoursFormRow[], employee: Employee) => {
-  //   if (!employee?.regularWorkingHours) return { overTimeHalf: 0, overTimeFull: 0 };
+  export const getOverTimeHoursForOfficeAndTerminalWorkers = (workShiftsData: EmployeeWorkHoursFormRow[]) => {
+    const overTimeResult = { overTimeHalf: 0, overTimeFull: 0 };
 
-  //   return { overTimeHalf: 0, overTimeFull: 0 };
-  // };
+    // Iterate over each work shift to calculate overtime on a daily basis
+    for (const shift of workShiftsData) {
+      const dailyWorkHours =
+        shift.workShiftHours[WorkType.PaidWork]?.actualHours ??
+        shift.workShiftHours[WorkType.PaidWork]?.actualHours ??
+        0;
+      const regularWorkLimit = 8; // Regular worktime per shift
+      const halfOverTimeLimit = 2; // First 2 hours after regular time are half overtime
+
+      if (dailyWorkHours > regularWorkLimit) {
+        const overTimeHours = dailyWorkHours - regularWorkLimit;
+
+        if (overTimeHours <= halfOverTimeLimit) {
+          overTimeResult.overTimeHalf += overTimeHours;
+        } else {
+          overTimeResult.overTimeHalf += halfOverTimeLimit;
+          overTimeResult.overTimeFull += overTimeHours - halfOverTimeLimit;
+        }
+      }
+    }
+
+    return {
+      overTimeHalf: overTimeResult.overTimeHalf.toFixed(2),
+      overTimeFull: overTimeResult.overTimeFull.toFixed(2),
+    };
+  };
 
   export const getAbsenceHours = (workShiftsData: EmployeeWorkHoursFormRow[], absence: AbsenceType) => {
     return workShiftsData
