@@ -438,12 +438,16 @@
         "explanation": "Explanation"
       },
       "workShiftDialog": {
-        "title": "Work shift events",
+        "title": "Work shift events {{date}}",
         "time": "Time",
         "vehicle": "Vehicle",
         "event": "Event",
         "duration": "Duration",
         "distance": "Distance",
+        "telematicsPopup": {
+          "speed": "Speed: {{speed}} km/h",
+          "odometer": "Odometer reading: {{odometer}} km"
+        },
         "eventTypes": {
           "vegetable": "Vegetable",
           "dry": "Dry",

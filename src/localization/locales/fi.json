@@ -526,12 +526,16 @@
         "explanation": "Selite"
       },
       "workShiftDialog": {
-        "title": "Työajan erittely",
+        "title": "Työajan erittely {{date}}",
         "time": "Aika",
         "vehicle": "Auto",
         "event": "Tapahtuma",
         "duration": "Kesto",
         "distance": "Matka",
+        "telematicsPopup": {
+          "speed": "Nopeus: {{speed}} km/h",
+          "odometer": "Matkamittarin lukema: {{odometer}} km"
+        },
         "eventTypes": {
           "vegetable": "Vihannes",
           "dry": "Kuiva",
