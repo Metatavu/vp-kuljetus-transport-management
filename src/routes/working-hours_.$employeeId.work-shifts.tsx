@@ -150,7 +150,7 @@ function WorkShifts() {
   const trucks = useQuery(getListTrucksQueryOptions({})).data?.trucks;
   const employees = useQuery(getListEmployeesQueryOptions({})).data?.employees;
 
-  const employee = employees?.find((employee) => employee.id === employeeId);
+  const employee = useMemo(() => employees?.find((employee) => employee.id === employeeId), [employees, employeeId]);
 
   const employeeSalaryGroup =
     employees?.find((employee) => employee.id === employeeId)?.salaryGroup ?? SalaryGroup.Driver;
