@@ -80,7 +80,7 @@ namespace WorkShiftsUtils {
     for (const shift of workShiftsData) {
       const dailyWorkHours =
         shift.workShiftHours[WorkType.PaidWork]?.actualHours ??
-        shift.workShiftHours[WorkType.PaidWork]?.actualHours ??
+        shift.workShiftHours[WorkType.PaidWork]?.calculatedHours ??
         0;
       const regularWorkLimit = 8; // Regular worktime per shift
       const halfOverTimeLimit = 2; // First 2 hours after regular time are half overtime
