@@ -109,7 +109,7 @@ namespace WorkShiftsUtils {
     return shiftsInWorkPeriod
       .filter((row) => row.workShift?.absence === absence)
       .reduce((acc, row) => {
-        // Compensatory leave (pekkanen) is 8 hours per day
+        // Compensatory leave is 8 hours per day
         if (absence === AbsenceType.CompensatoryLeave) {
           return acc + 8;
         }
