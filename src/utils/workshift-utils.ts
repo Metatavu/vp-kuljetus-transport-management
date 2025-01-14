@@ -13,8 +13,8 @@ namespace WorkShiftsUtils {
     );
   };
 
-  export const getSumOfWorkHoursFromWorkPeriod = (workShiftsData: EmployeeWorkHoursFormRow[], workType: WorkType) => {
-    const aggregatedHours = workShiftsData
+  export const getTotalWorkHoursByType = (shiftsInWorkPeriod: EmployeeWorkHoursFormRow[], workType: WorkType) => {
+    const aggregatedHours = shiftsInWorkPeriod
       .reduce((acc, row) => {
         const workShiftHours = row.workShiftHours[workType];
         return acc + (workShiftHours?.actualHours ?? workShiftHours?.calculatedHours ?? 0);
@@ -24,37 +24,39 @@ namespace WorkShiftsUtils {
   };
 
   export const getPerDiemAllowanceCount = (
-    workShiftsData: EmployeeWorkHoursFormRow[],
+    shiftsInWorkPeriod: EmployeeWorkHoursFormRow[],
     perDiemAllowance: PerDiemAllowanceType,
   ) => {
-    return workShiftsData.filter((row) => row.workShift?.perDiemAllowance === perDiemAllowance).length.toString();
+    return shiftsInWorkPeriod.filter((row) => row.workShift?.perDiemAllowance === perDiemAllowance).length.toString();
   };
 
-  export const getFillingHours = (workShiftsData: EmployeeWorkHoursFormRow[], employee: Employee) => {
-    const regularWorkingHours = employee?.regularWorkingHours;
-    if (regularWorkingHours === undefined) return 0;
-    const paidWorkHours = parseFloat(getSumOfWorkHoursFromWorkPeriod(workShiftsData, WorkType.PaidWork));
-    if (paidWorkHours < regularWorkingHours) {
-      const vacationHours = parseFloat(getAbsenceHours(workShiftsData, AbsenceType.Vacation));
-      const compensatoryLeaveHours = parseFloat(getAbsenceHours(workShiftsData, AbsenceType.CompensatoryLeave));
-      const sickLeaveHours = parseFloat(getAbsenceHours(workShiftsData, AbsenceType.SickLeave));
-      const fillingHours =
-        regularWorkingHours - paidWorkHours - vacationHours - compensatoryLeaveHours - sickLeaveHours;
-      return fillingHours > 0 ? fillingHours.toFixed(2) : 0;
-    }
-    return 0;
+  export const getFillingHours = (shiftsInWorkPeriod: EmployeeWorkHoursFormRow[], employee: Employee) => {
+    const regularWorkingHours = employee?.regularWorkingHours ?? 0;
+    if (!regularWorkingHours) return 0;
+
+    const paidWorkHours = parseFloat(getTotalWorkHoursByType(shiftsInWorkPeriod, WorkType.PaidWork));
+    if (paidWorkHours >= regularWorkingHours) return 0;
+
+    // Absence types that are included in the calculation
+    const absenceTypes: (keyof typeof AbsenceType)[] = ["Vacation", "CompensatoryLeave", "SickLeave"];
+    const totalAbsenceHours = absenceTypes
+      .map((type) => parseFloat(getTotalHoursByAbsenseType(shiftsInWorkPeriod, AbsenceType[type])))
+      .reduce((sum, hours) => sum + hours, 0);
+
+    const fillingHours = regularWorkingHours - paidWorkHours - totalAbsenceHours;
+    return fillingHours > 0 ? fillingHours.toFixed(2) : 0;
   };
 
-  export const getOverTimeHoursForDriver = (workShiftsData: EmployeeWorkHoursFormRow[], employee: Employee) => {
+  export const getOverTimeHoursForDriver = (shiftsInWorkPeriod: EmployeeWorkHoursFormRow[], employee: Employee) => {
     if (!employee?.regularWorkingHours) return { overTimeHalf: 0, overTimeFull: 0 };
-    const vacationHours = parseFloat(getAbsenceHours(workShiftsData, AbsenceType.Vacation));
+    const vacationHours = parseFloat(getTotalHoursByAbsenseType(shiftsInWorkPeriod, AbsenceType.Vacation));
     // Check if the employee has more than 40 hours of vacation in work period and adjust the limit for full overtime
     const overTimeFullLimit = vacationHours > 40 ? 10 : 12;
     const regularWorkingHours = employee?.regularWorkingHours;
     // Calculate paid work hours without training hours (training hours does not cumulate overtime)
     const paidWorkHours =
-      parseFloat(getSumOfWorkHoursFromWorkPeriod(workShiftsData, WorkType.PaidWork)) -
-      parseFloat(getAbsenceHours(workShiftsData, AbsenceType.Training));
+      parseFloat(getTotalWorkHoursByType(shiftsInWorkPeriod, WorkType.PaidWork)) -
+      parseFloat(getTotalHoursByAbsenseType(shiftsInWorkPeriod, AbsenceType.Training));
     if (paidWorkHours <= regularWorkingHours) {
       return { overTimeHalf: 0, overTimeFull: 0 };
     }
@@ -73,11 +75,11 @@ namespace WorkShiftsUtils {
     return { overTimeHalf: 0, overTimeFull: 0 };
   };
 
-  export const getOverTimeHoursForOfficeAndTerminalWorkers = (workShiftsData: EmployeeWorkHoursFormRow[]) => {
+  export const getOverTimeHoursForOfficeAndTerminalWorkers = (shiftsInWorkPeriod: EmployeeWorkHoursFormRow[]) => {
     const overTimeResult = { overTimeHalf: 0, overTimeFull: 0 };
 
     // Iterate over each work shift to calculate overtime on a daily basis
-    for (const shift of workShiftsData) {
+    for (const shift of shiftsInWorkPeriod) {
       const dailyWorkHours =
         shift.workShiftHours[WorkType.PaidWork]?.actualHours ??
         shift.workShiftHours[WorkType.PaidWork]?.calculatedHours ??
@@ -103,8 +105,8 @@ namespace WorkShiftsUtils {
     };
   };
 
-  export const getAbsenceHours = (workShiftsData: EmployeeWorkHoursFormRow[], absence: AbsenceType) => {
-    return workShiftsData
+  export const getTotalHoursByAbsenseType = (shiftsInWorkPeriod: EmployeeWorkHoursFormRow[], absence: AbsenceType) => {
+    return shiftsInWorkPeriod
       .filter((row) => row.workShift?.absence === absence)
       .reduce((acc, row) => {
         // Compensatory leave is 8 hours per day
@@ -122,8 +124,8 @@ namespace WorkShiftsUtils {
   };
 
   // Get day off work allowance hours are calculated for the shift start date, not the whole shift.
-  export const getDayOffWorkAllowanceHours = (workShiftsData: EmployeeWorkHoursFormRow[]) => {
-    return workShiftsData
+  export const getDayOffWorkAllowanceHours = (shiftsInWorkPeriod: EmployeeWorkHoursFormRow[]) => {
+    return shiftsInWorkPeriod
       .filter((row) => {
         return row.workShift?.dayOffWorkAllowance;
       })

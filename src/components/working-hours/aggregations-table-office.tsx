@@ -27,28 +27,28 @@ function AggregationsTableForOffice({ workShiftsData, employee }: Props) {
         <TableRow>
           <TableCell>{t("workingHours.workingDays.aggregationsTable.workingHours")}</TableCell>
           <TableCell align="right">
-            <Typography variant="h6">{`${WorkShiftsUtils.getSumOfWorkHoursFromWorkPeriod(
+            <Typography variant="h6">{`${WorkShiftsUtils.getTotalWorkHoursByType(
               workShiftsData,
               WorkType.PaidWork,
             )} h`}</Typography>
           </TableCell>
           <TableCell>{t("workingHours.workingDays.aggregationsTable.eveningWork")}</TableCell>
           <TableCell align="right">
-            <Typography variant="h6">{`${WorkShiftsUtils.getSumOfWorkHoursFromWorkPeriod(
+            <Typography variant="h6">{`${WorkShiftsUtils.getTotalWorkHoursByType(
               workShiftsData,
               WorkType.EveningAllowance,
             )} h`}</Typography>
           </TableCell>
           <TableCell>{t("workingHours.workingDays.aggregationsTable.vacation")}</TableCell>
           <TableCell>
-            <Typography variant="h6">{`${WorkShiftsUtils.getAbsenceHours(
+            <Typography variant="h6">{`${WorkShiftsUtils.getTotalHoursByAbsenseType(
               workShiftsData,
               AbsenceType.Vacation,
             )} h`}</Typography>
           </TableCell>
           <TableCell>{t("workingHours.workingDays.aggregationsTable.pekkanens")}</TableCell>
           <TableCell align="right">
-            <Typography variant="h6">{`${WorkShiftsUtils.getAbsenceHours(
+            <Typography variant="h6">{`${WorkShiftsUtils.getTotalHoursByAbsenseType(
               workShiftsData,
               AbsenceType.CompensatoryLeave,
             )} h`}</Typography>
@@ -68,7 +68,7 @@ function AggregationsTableForOffice({ workShiftsData, employee }: Props) {
           </TableCell>
           <TableCell>{t("workingHours.workingDays.aggregationsTable.nightWork")}</TableCell>
           <TableCell align="right">
-            <Typography variant="h6">{`${WorkShiftsUtils.getSumOfWorkHoursFromWorkPeriod(
+            <Typography variant="h6">{`${WorkShiftsUtils.getTotalWorkHoursByType(
               workShiftsData,
               WorkType.NightAllowance,
             )} h`}</Typography>
@@ -77,7 +77,7 @@ function AggregationsTableForOffice({ workShiftsData, employee }: Props) {
           <EmptyCell />
           <TableCell>{t("workingHours.workingDays.aggregationsTable.sickHours")}</TableCell>
           <TableCell align="right">
-            <Typography variant="h6">{`${WorkShiftsUtils.getAbsenceHours(
+            <Typography variant="h6">{`${WorkShiftsUtils.getTotalHoursByAbsenseType(
               workShiftsData,
               AbsenceType.SickLeave,
             )} h`}</Typography>
@@ -99,7 +99,7 @@ function AggregationsTableForOffice({ workShiftsData, employee }: Props) {
           </TableCell>
           <TableCell>{t("workingHours.workingDays.aggregationsTable.holiday")}</TableCell>
           <TableCell align="right">
-            <Typography variant="h6">{`${WorkShiftsUtils.getSumOfWorkHoursFromWorkPeriod(
+            <Typography variant="h6">{`${WorkShiftsUtils.getTotalWorkHoursByType(
               workShiftsData,
               WorkType.HolidayAllowance,
             )} h`}</Typography>
@@ -108,7 +108,7 @@ function AggregationsTableForOffice({ workShiftsData, employee }: Props) {
           <EmptyCell />
           <TableCell>{t("workingHours.workingDays.aggregationsTable.responsibilities")}</TableCell>
           <TableCell align="right">
-            <Typography variant="h6">{`${WorkShiftsUtils.getAbsenceHours(
+            <Typography variant="h6">{`${WorkShiftsUtils.getTotalHoursByAbsenseType(
               workShiftsData,
               AbsenceType.OfficialDuties,
             )} h`}</Typography>
@@ -129,7 +129,7 @@ function AggregationsTableForOffice({ workShiftsData, employee }: Props) {
           <EmptyCell />
           <TableCell>{t("workingHours.workingDays.aggregationsTable.trainingDuringWorkTime")}</TableCell>
           <TableCell align="right">
-            <Typography variant="h6">{`${WorkShiftsUtils.getAbsenceHours(
+            <Typography variant="h6">{`${WorkShiftsUtils.getTotalHoursByAbsenseType(
               workShiftsData,
               AbsenceType.Training,
             )} h`}</Typography>
@@ -138,7 +138,7 @@ function AggregationsTableForOffice({ workShiftsData, employee }: Props) {
         <TableRow>
           <TableCell>{t("workingHours.workingDays.aggregationsTable.waitingTime")}</TableCell>
           <TableCell align="right">
-            <Typography variant="h6">{`${WorkShiftsUtils.getSumOfWorkHoursFromWorkPeriod(
+            <Typography variant="h6">{`${WorkShiftsUtils.getTotalWorkHoursByType(
               workShiftsData,
               WorkType.Standby,
             )} h`}</Typography>

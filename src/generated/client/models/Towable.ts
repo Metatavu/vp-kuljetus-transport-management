@@ -37,7 +37,7 @@ export interface Towable {
      * @type {string}
      * @memberof Towable
      */
-    imei: string;
+    imei?: string;
     /**
      * 
      * @type {string}
@@ -107,7 +107,6 @@ export type TowableTypeEnum = typeof TowableTypeEnum[keyof typeof TowableTypeEnu
  */
 export function instanceOfTowable(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "imei" in value;
     isInstance = isInstance && "plateNumber" in value;
     isInstance = isInstance && "type" in value;
     isInstance = isInstance && "vin" in value;
@@ -127,7 +126,7 @@ export function TowableFromJSONTyped(json: any, ignoreDiscriminator: boolean): T
         
         'id': !exists(json, 'id') ? undefined : json['id'],
         'name': !exists(json, 'name') ? undefined : json['name'],
-        'imei': json['imei'],
+        'imei': !exists(json, 'imei') ? undefined : json['imei'],
         'plateNumber': json['plateNumber'],
         'type': json['type'],
         'vin': json['vin'],

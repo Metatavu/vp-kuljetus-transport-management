@@ -29,7 +29,7 @@ import { EmployeeWorkShift, SalaryGroup, WorkShiftHours, WorkType } from "genera
 import { QUERY_KEYS, getListEmployeesQueryOptions, getListTrucksQueryOptions } from "hooks/use-queries";
 import { t } from "i18next";
 import { DateTime } from "luxon";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";

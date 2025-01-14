@@ -15,7 +15,7 @@
 
 import { exists, mapValues } from '../runtime';
 /**
- * Represents a single temperature reading from a thermometer
+ * Represents a single temperature reading record
  * @export
  * @interface Temperature
  */
@@ -33,7 +33,7 @@ export interface Temperature {
      */
     thermometerId: string;
     /**
-     * The temperature reading in Celsius or Fahrenheit (based on your requirement)
+     * The temperature value in Celsius
      * @type {number}
      * @memberof Temperature
      */
