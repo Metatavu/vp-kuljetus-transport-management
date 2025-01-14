@@ -31,8 +31,8 @@ namespace WorkShiftsUtils {
   };
 
   export const getFillingHours = (workShiftsData: EmployeeWorkHoursFormRow[], employee: Employee) => {
-    if (!employee?.regularWorkingHours) return 0;
     const regularWorkingHours = employee?.regularWorkingHours;
+    if (regularWorkingHours === undefined) return 0;
     const paidWorkHours = parseFloat(getSumOfWorkHoursFromWorkPeriod(workShiftsData, WorkType.PaidWork));
     if (paidWorkHours < regularWorkingHours) {
       const vacationHours = parseFloat(getAbsenceHours(workShiftsData, AbsenceType.Vacation));
