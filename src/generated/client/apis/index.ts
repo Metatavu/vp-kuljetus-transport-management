@@ -7,6 +7,7 @@ export * from './EmployeesApi';
 export * from './FreightUnitsApi';
 export * from './FreightsApi';
 export * from './HolidaysApi';
+export * from './PayrollExportsApi';
 export * from './RoutesApi';
 export * from './SitesApi';
 export * from './TasksApi';

@@ -98,6 +98,7 @@
       "modify": "Modify customer site {{siteName}}",
       "type": "Type",
       "name": "Name",
+      "sensors": "Sensors",
       "address": "Address",
       "postalCode": "Postal code",
       "municipality": "Municipality",

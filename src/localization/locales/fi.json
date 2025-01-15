@@ -120,6 +120,7 @@
       "open": "Avaa",
       "modify": "Muokkaa kalustoa {{equipmentName}}",
       "type": "Tyyppi",
+      "sensors": "Anturit",
       "name": "Nimi",
       "licensePlate": "Rekisterinumero",
       "number": "Tunnus",
@@ -131,8 +132,8 @@
         "numberMissing": "Tunnus on pakollinen"
       },
       "archiveDialog": {
-        "title": "Arkistoi ajoneuvo",
-        "description": "Haluatko varmasti arkistoida ajoneuvon {{name}}?"
+        "title": "Arkistoi kalusto",
+        "description": "Haluatko varmasti arkistoida kaluston {{name}}?"
       },
       "successToast": "Kalusto tallennettu!",
       "errorToast": "Kaluston tallennus epäonnistui!"
