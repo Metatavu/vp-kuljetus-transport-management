@@ -1,17 +1,18 @@
 import { MenuItem, TableCell, TableRow, TextField, styled } from "@mui/material";
 import { Truck, WorkEventType } from "generated/client";
 import { TFunction } from "i18next";
-import { DateTime } from "luxon";
-import { Key, useCallback } from "react";
+import { DateTime, Duration } from "luxon";
+import { Key, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { WorkShiftDialogWorkEventRow } from "src/types";
 import LocalizationUtils from "src/utils/localization-utils";
 
 type Props = {
-  type: WorkEventType;
-  startTime: DateTime;
+  selected: boolean;
+  row: WorkShiftDialogWorkEventRow;
   truck?: Truck;
-  duration: string;
-  distance?: string;
+  selectable: boolean;
+  onClick: () => void;
 };
 
 // Styled work event TextField
@@ -30,8 +31,22 @@ const CellInput = styled(TextField, {
   },
 }));
 
-const WorkEventRow = ({ type, startTime, truck, duration, distance }: Props) => {
+const WorkEventRow = ({ selected, row, truck, selectable, onClick }: Props) => {
   const { t } = useTranslation();
+
+  const { workEventType, startTime, duration, distance } = useMemo(() => {
+    const {
+      workEvent: { workEventType, time },
+      duration,
+      distance,
+    } = row;
+    return {
+      workEventType: workEventType,
+      startTime: DateTime.fromJSDate(time),
+      duration: Duration.fromMillis(duration).toFormat("hh:mm.ss"),
+      distance: `${(distance / 1000).toFixed(2)} km`,
+    };
+  }, [row]);
 
   const renderLocalizedMenuItem = useCallback(
     <T extends string>(value: T, labelResolver: (value: T, t: TFunction) => string) => (
@@ -48,10 +63,18 @@ const WorkEventRow = ({ type, startTime, truck, duration, distance }: Props) => 
     [renderLocalizedMenuItem],
   );
 
-  switch (type) {
+  const rowStyle = useMemo(
+    () => ({
+      backgroundColor: selectable ? (selected ? "rgba(0, 255, 0, 0.1)" : undefined) : "rgba(0, 0, 0, 0.1)",
+      cursor: selectable ? "pointer" : "default",
+    }),
+    [selectable, selected],
+  );
+
+  switch (workEventType) {
     case WorkEventType.ShiftStart:
       return (
-        <TableRow>
+        <TableRow onClick={onClick} sx={rowStyle}>
           <TableCell sx={{ p: 0.5 }} width={100}>
             <CellInput
               aria-label={t("workingHours.workingDays.workShiftDialog.time")}
@@ -63,14 +86,14 @@ const WorkEventRow = ({ type, startTime, truck, duration, distance }: Props) => 
             />
           </TableCell>
           <TableCell align="center">{truck?.name ?? ""}</TableCell>
-          <TableCell>{LocalizationUtils.getLocalizedWorkEventType(type, t)}</TableCell>
+          <TableCell>{LocalizationUtils.getLocalizedWorkEventType(workEventType, t)}</TableCell>
           <TableCell align="center">{duration}</TableCell>
-          <TableCell align="center">{distance}</TableCell>
+          <TableCell align="center" />
         </TableRow>
       );
     case WorkEventType.ShiftEnd:
       return (
-        <TableRow>
+        <TableRow onClick={onClick} sx={rowStyle}>
           <TableCell sx={{ p: 0.5 }} width={100}>
             <CellInput
               aria-label={t("workingHours.workingDays.workShiftDialog.time")}
@@ -79,34 +102,34 @@ const WorkEventRow = ({ type, startTime, truck, duration, distance }: Props) => 
             />
           </TableCell>
           <TableCell align="center">{truck?.name ?? ""}</TableCell>
-          <TableCell>{LocalizationUtils.getLocalizedWorkEventType(type, t)}</TableCell>
+          <TableCell>{LocalizationUtils.getLocalizedWorkEventType(workEventType, t)}</TableCell>
           <TableCell align="center">{duration}</TableCell>
-          <TableCell align="center">{distance}</TableCell>
+          <TableCell align="center" />
         </TableRow>
       );
     case WorkEventType.Logout:
       return (
-        <TableRow>
+        <TableRow onClick={onClick} sx={rowStyle}>
           <TableCell width={100}>{startTime.toFormat("HH:mm")}</TableCell>
           <TableCell align="center">{truck?.name ?? ""}</TableCell>
-          <TableCell>{LocalizationUtils.getLocalizedWorkEventType(type, t)}</TableCell>
+          <TableCell>{LocalizationUtils.getLocalizedWorkEventType(workEventType, t)}</TableCell>
           <TableCell align="center">{duration}</TableCell>
-          <TableCell align="center">{distance}</TableCell>
+          <TableCell align="center" />
         </TableRow>
       );
     case WorkEventType.Login:
       return (
-        <TableRow>
+        <TableRow onClick={onClick} sx={rowStyle}>
           <TableCell width={100}>{startTime.toFormat("HH:mm")}</TableCell>
           <TableCell align="center">{truck?.name ?? ""}</TableCell>
-          <TableCell>{LocalizationUtils.getLocalizedWorkEventType(type, t)}</TableCell>
+          <TableCell>{LocalizationUtils.getLocalizedWorkEventType(workEventType, t)}</TableCell>
           <TableCell align="center">{duration}</TableCell>
-          <TableCell align="center">{distance}</TableCell>
+          <TableCell align="center" />
         </TableRow>
       );
     case WorkEventType.Unknown:
       return (
-        <TableRow>
+        <TableRow onClick={onClick} sx={rowStyle}>
           <TableCell sx={{ p: 0.5 }} width={100}>
             <CellInput
               aria-label={t("workingHours.workingDays.workShiftDialog.time")}
@@ -115,23 +138,45 @@ const WorkEventRow = ({ type, startTime, truck, duration, distance }: Props) => 
             />
           </TableCell>
           <TableCell align="center">{truck?.name ?? ""}</TableCell>
-          <TableCell>{LocalizationUtils.getLocalizedWorkEventType(type, t)}</TableCell>
+          <TableCell>{LocalizationUtils.getLocalizedWorkEventType(workEventType, t)}</TableCell>
+          <TableCell align="center">{duration}</TableCell>
+          <TableCell align="center" />
+        </TableRow>
+      );
+    case WorkEventType.Drive:
+      return (
+        <TableRow onClick={onClick} sx={rowStyle}>
+          <TableCell width={100}>{startTime.toFormat("HH:mm")}</TableCell>
+          <TableCell align="center">{truck?.name ?? ""}</TableCell>
+          <TableCell sx={{ p: 0.5 }}>
+            <CellInput
+              select
+              aria-label={t("workingHours.workingDays.workShiftDialog.event")}
+              defaultValue={workEventType}
+            >
+              {renderLocalizedMenuItems(Object.values(WorkEventType), LocalizationUtils.getLocalizedWorkEventType)}
+            </CellInput>
+          </TableCell>
           <TableCell align="center">{duration}</TableCell>
           <TableCell align="center">{distance}</TableCell>
         </TableRow>
       );
     default:
       return (
-        <TableRow>
+        <TableRow onClick={onClick} sx={rowStyle}>
           <TableCell width={100}>{startTime.toFormat("HH:mm")}</TableCell>
           <TableCell align="center">{truck?.name ?? ""}</TableCell>
           <TableCell sx={{ p: 0.5 }}>
-            <CellInput select aria-label={t("workingHours.workingDays.workShiftDialog.event")} defaultValue={type}>
+            <CellInput
+              select
+              aria-label={t("workingHours.workingDays.workShiftDialog.event")}
+              defaultValue={workEventType}
+            >
               {renderLocalizedMenuItems(Object.values(WorkEventType), LocalizationUtils.getLocalizedWorkEventType)}
             </CellInput>
           </TableCell>
           <TableCell align="center">{duration}</TableCell>
-          <TableCell align="center">{distance}</TableCell>
+          <TableCell align="center" />
         </TableRow>
       );
   }
