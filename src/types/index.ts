@@ -4,6 +4,7 @@ import { SvgIcon } from "@mui/material";
 import { RegisteredRouter, RoutePaths } from "@tanstack/react-router";
 import { EmployeeWorkShift, Site, Task, TaskType, Truck, WorkEvent, WorkShiftHours, WorkType } from "generated/client";
 import { DefaultNamespace, ParseKeys } from "i18next";
+import { DateTime } from "luxon";
 
 export type LocalizedLabelKey = ParseKeys<DefaultNamespace> | TemplateStringsArray;
 
@@ -16,6 +17,7 @@ export type NavigationItem = {
   route?: RoutePaths<RegisteredRouter["routeTree"]>;
   label: LocalizedLabelKey;
   Icon?: typeof SvgIcon;
+  date?: DateTime<true>;
 };
 
 type UnallocatedTasksRowDragHandle = {

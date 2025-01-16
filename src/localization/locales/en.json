@@ -397,6 +397,7 @@
         "calculatedHours": "Calculated hours"
       },
       "aggregationsTable": {
+        "title": "{{year}} Working period {{start}} - {{end}} aggregated working hours",
         "workingHours": "Working Hours",
         "eveningWork": "Evening Work 15%",
         "nightWork": "Night Work 20%",
