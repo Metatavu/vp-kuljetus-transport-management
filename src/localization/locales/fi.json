@@ -484,6 +484,7 @@
         "calculatedHours": "Laskettu työaika"
       },
       "aggregationsTable": {
+        "title": "{{year}} Jakson {{start}} - {{end}} tunnit yhteensä",
         "workingHours": "Työtunnit",
         "eveningWork": "Iltatyö 15%",
         "nightWork": "Yötyö 20%",

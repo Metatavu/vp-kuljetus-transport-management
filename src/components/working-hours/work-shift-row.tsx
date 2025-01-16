@@ -1,4 +1,4 @@
-import { Button, Checkbox, Link, MenuItem, Stack, TextField, Tooltip, Typography, styled } from "@mui/material";
+import { Checkbox, Link, MenuItem, Stack, TextField, Tooltip, Typography, styled } from "@mui/material";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import {
   AbsenceType,
@@ -9,9 +9,10 @@ import {
   WorkType,
 } from "generated/client";
 import { DateTime } from "luxon";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
+import { theme } from "src/theme";
 import { EmployeeWorkHoursForm } from "src/types";
 import LocalizationUtils from "src/utils/localization-utils";
 
@@ -27,7 +28,6 @@ const Row = styled(Stack, {
   label: "work-shift-row",
 })(({ theme }) => ({
   flexDirection: "row",
-  backgroundColor: theme.palette.background.paper,
   borderBottom: `1px solid ${theme.palette.divider}`,
 }));
 
@@ -59,23 +59,16 @@ function WorkShiftRow({ index, trucks, date, workShiftId }: Props) {
   const dayOffWorkAllowance = watch(`${index}.workShift.dayOffWorkAllowance`);
   const approved = watch(`${index}.workShift.approved`) as boolean | undefined;
   const workShiftHours = watch(`${index}.workShiftHours`) as Record<WorkType, WorkShiftHours> | undefined;
-
+  const [isFocused, setIsFocused] = useState(false);
   const hasDetails = useMemo(() => {
     const { startedAt } = workShift ?? {};
     return workShiftId && startedAt;
   }, [workShiftId, workShift]);
 
-  const getTruckById = useCallback(
-    (truckId: string) => {
-      return truckId ? trucks.find((truck) => truck.id === truckId)?.name : undefined;
-    },
-    [trucks],
-  );
-
   const renderWorkHourInput = useCallback(
     (title: string, workType: WorkType) => {
       const calculatedHoursTooltipText = `${t("workingHours.workingDays.table.calculatedHours")}: ${
-        workShiftHours?.[workType].calculatedHours?.toString() ?? title
+        workShiftHours?.[workType].calculatedHours?.toFixed(2).toString() ?? title
       } `;
       return (
         <Tooltip title={calculatedHoursTooltipText} placement="bottom">
@@ -84,22 +77,66 @@ function WorkShiftRow({ index, trucks, date, workShiftId }: Props) {
             size="small"
             aria-label={title}
             fullWidth
+            disabled={workShift?.approved}
             variant="outlined"
-            placeholder={workShiftHours?.[workType].calculatedHours?.toString()}
-            value={workShiftHours?.[workType].actualHours || ""}
+            placeholder={workShiftHours?.[workType].calculatedHours?.toFixed(2).toString()}
+            value={workShiftHours?.[workType].actualHours ?? null}
             onChange={(event) =>
-              setValue(`${index}.workShiftHours.${workType}.actualHours`, parseFloat(event.target.value), {
-                shouldDirty: true,
-                shouldValidate: true,
-                shouldTouch: true,
-              })
+              setValue(
+                `${index}.workShiftHours.${workType}.actualHours`,
+                Number.isNaN(parseFloat(event.target.value)) ? 0 : parseFloat(event.target.value),
+                {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                  shouldTouch: true,
+                },
+              )
             }
           />
         </Tooltip>
       );
     },
-    [setValue, index, workShiftHours, t],
+    [setValue, index, workShiftHours, t, workShift?.approved],
   );
+
+  // TODO: Needs api support and approval from designer
+  const renderTruckTextOrSelectInput = useCallback(() => {
+    const recordedTruckIds = workShift?.truckIds
+      ?.map((truckId) => trucks.find((truck) => truck.id === truckId)?.name)
+      .join(", ");
+    return (
+      <TextField
+        select
+        className="cell-input"
+        size="small"
+        aria-label={t("workingHours.workingDays.table.vehicle")}
+        title={t("workingHours.workingDays.table.vehicle")}
+        fullWidth
+        disabled={workShift?.approved}
+        variant="outlined"
+        value={workShift?.truckIds?.[0] ?? ""}
+        onChange={(event) =>
+          setValue(`${index}.workShift.truckIds`, [event.target.value], {
+            shouldDirty: true,
+            shouldValidate: true,
+            shouldTouch: true,
+          })
+        }
+      >
+        {/* TODO: Check design and usability */}
+        {recordedTruckIds && (
+          <MenuItem disabled style={{ minHeight: 30 }} key={recordedTruckIds} value={recordedTruckIds}>
+            {`${recordedTruckIds} (Valittu)`}
+          </MenuItem>
+        )}
+        {trucks.map((truck) => (
+          <MenuItem style={{ minHeight: 30 }} key={truck.id} value={truck.id}>
+            {truck.name}
+          </MenuItem>
+        ))}
+      </TextField>
+    );
+  }, [setValue, index, workShift, trucks, t]);
 
   const renderPerDiemAllowanceSelectInput = useCallback(
     () => (
@@ -110,12 +147,13 @@ function WorkShiftRow({ index, trucks, date, workShiftId }: Props) {
         aria-label={t("workingHours.workingDays.table.dailyAllowance")}
         title={t("workingHours.workingDays.table.dailyAllowance")}
         fullWidth
+        disabled={workShift?.approved}
         variant="outlined"
-        value={workShift?.perDiemAllowance || ""}
+        value={workShift?.perDiemAllowance ?? ""}
         onChange={(event) =>
           setValue(
             `${index}.workShift.perDiemAllowance`,
-            (event.target.value || undefined) as PerDiemAllowanceType | undefined,
+            (event.target.value || null) as PerDiemAllowanceType | undefined,
             {
               shouldDirty: true,
               shouldValidate: true,
@@ -146,10 +184,11 @@ function WorkShiftRow({ index, trucks, date, workShiftId }: Props) {
         aria-label={t("workingHours.workingDays.table.absence")}
         title={t("workingHours.workingDays.table.absence")}
         fullWidth
+        disabled={workShift?.approved}
         variant="outlined"
-        value={workShift?.absence || ""}
+        value={workShift?.absence ?? ""}
         onChange={(event) =>
-          setValue(`${index}.workShift.absence`, (event.target.value || undefined) as AbsenceType | undefined, {
+          setValue(`${index}.workShift.absence`, (event.target.value || null) as AbsenceType | undefined, {
             shouldDirty: true,
             shouldValidate: true,
             shouldTouch: true,
@@ -159,23 +198,37 @@ function WorkShiftRow({ index, trucks, date, workShiftId }: Props) {
         <MenuItem style={{ minHeight: 30 }} key="EMPTY" value="">
           {""}
         </MenuItem>
-        {Object.values(AbsenceType).map((option) => (
-          <MenuItem style={{ minHeight: 30 }} key={option} value={option}>
-            {LocalizationUtils.getLocalizedAbsenceType(option, t)}
-          </MenuItem>
-        ))}
+        <MenuItem style={{ minHeight: 30 }} key={AbsenceType.Vacation} value={AbsenceType.Vacation}>
+          {LocalizationUtils.getLocalizedAbsenceType(AbsenceType.Vacation, t)}
+        </MenuItem>
+        <MenuItem style={{ minHeight: 30 }} key={AbsenceType.CompensatoryLeave} value={AbsenceType.CompensatoryLeave}>
+          {LocalizationUtils.getLocalizedAbsenceType(AbsenceType.CompensatoryLeave, t)}
+        </MenuItem>
       </TextField>
     ),
     [setValue, index, workShift, t],
   );
 
   return (
-    <Row key={workShiftId}>
+    <Row
+      key={workShiftId}
+      style={{
+        backgroundColor:
+          workShift?.date && DateTime.fromJSDate(workShift.date) < DateTime.now().startOf("day")
+            ? theme.palette.background.paper
+            : theme.palette.background.default,
+      }}
+    >
       <Cell width={90}>
         <Link
           underline={hasDetails ? "always" : "none"}
           sx={{ cursor: hasDetails ? "pointer" : "default" }}
           title={t("workingHours.workingHourBalances.toWorkHourDetails")}
+          // use bold font style if date is today
+          style={{
+            fontWeight:
+              workShift && DateTime.fromJSDate(workShift.date).hasSame(DateTime.now(), "day") ? "bold" : "normal",
+          }}
           onClick={() => {
             if (!hasDetails || !workShiftId) return null;
             navigate({
@@ -185,7 +238,7 @@ function WorkShiftRow({ index, trucks, date, workShiftId }: Props) {
             });
           }}
         >
-          {workShift?.date && DateTime.fromJSDate(workShift.date).toFormat("dd.MM")}
+          {workShift?.date && DateTime.fromJSDate(workShift.date).toFormat("EEE dd.MM")}
         </Link>
       </Cell>
       <Cell minWidth={75} flex={1}>
@@ -223,6 +276,18 @@ function WorkShiftRow({ index, trucks, date, workShiftId }: Props) {
       <Cell flex={1}>
         {renderWorkHourInput(t("workingHours.workingDays.table.freezerBonus"), WorkType.FrozenAllowance)}
       </Cell>
+      <Cell flex={1}>
+        {/* {renderWorkHourInput(t("workingHours.workingDays.aggregationsTable.absenceTypes.officialDuties"), AbsenceType.OfficialDuties)} */}
+      </Cell>
+      <Cell flex={1}>
+        {/* {renderWorkHourInput(t("workingHours.workingDays.aggregationsTable.absenceTypes.sickLeave"), AbsenceType.SickLeave)} */}
+      </Cell>
+      <Cell flex={1}>
+        {/* {renderWorkHourInput(t("workingHours.workingDays.aggregationsTable.absenceTypes.training"), AbsenceType.Training)} */}
+      </Cell>
+      <Cell flex={1}>
+        {/* {renderWorkHourInput(t("workingHours.workingDays.aggregationsTable.unpaid"), AbsenceType.UnPaid)} */}
+      </Cell>
       <Cell minWidth={115} flex={1}>
         <Stack gap={0.5} direction="row" width="100%">
           <Checkbox
@@ -230,6 +295,7 @@ function WorkShiftRow({ index, trucks, date, workShiftId }: Props) {
             className="cell-checkbox"
             title={t("workingHours.workingHourBalances.dayOffBonus")}
             aria-label={t("workingHours.workingHourBalances.dayOffBonus")}
+            disabled={workShift?.approved}
             checked={dayOffWorkAllowance ?? false}
             onChange={(_, checked) =>
               setValue(`${index}.workShift.dayOffWorkAllowance`, checked, {
@@ -242,11 +308,7 @@ function WorkShiftRow({ index, trucks, date, workShiftId }: Props) {
           {renderAbsenceTypeSelectInput()}
         </Stack>
       </Cell>
-      <Cell width={90}>
-        <Typography variant="body2">
-          {workShift?.truckIds?.map((truckId) => getTruckById(truckId)).join(", ")}
-        </Typography>
-      </Cell>
+      <Cell width={90}>{renderTruckTextOrSelectInput()}</Cell>
       <Cell width={90}>{renderPerDiemAllowanceSelectInput()}</Cell>
       <Cell width={90}>
         <Checkbox
@@ -264,14 +326,20 @@ function WorkShiftRow({ index, trucks, date, workShiftId }: Props) {
           }
         />
       </Cell>
-      <Cell minWidth={275} flex={1}>
+      <Cell minWidth={120} flex={1}>
+        {/* TODO: Finalize styling */}
         <TextField
           className="cell-input align-left"
           size="small"
           aria-label={t("workingHours.workingDays.table.remarks")}
           fullWidth
+          disabled={!!workShift?.approved}
           variant="outlined"
-          value={workShift?.notes || ""}
+          value={workShift?.notes ?? ""}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          rows={isFocused ? 4 : 1}
+          multiline
           onChange={(event) =>
             setValue(`${index}.workShift.notes`, event.target.value || undefined, {
               shouldDirty: true,
@@ -279,12 +347,14 @@ function WorkShiftRow({ index, trucks, date, workShiftId }: Props) {
               shouldTouch: true,
             })
           }
+          sx={{
+            transition: "all 0.3s ease-in-out",
+            height: isFocused ? "100px" : "40px",
+            "& .MuiOutlinedInput-root": {
+              transition: "all 0.3s ease-in-out",
+            },
+          }}
         />
-      </Cell>
-      <Cell width={75}>
-        <Button variant="text" color="primary" title={t("workingHours.workingHourBalances.toWorkHourDetails")}>
-          {t("open")}
-        </Button>
       </Cell>
     </Row>
   );

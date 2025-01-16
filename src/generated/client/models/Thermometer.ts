@@ -15,77 +15,70 @@
 
 import { exists, mapValues } from '../runtime';
 /**
- * Represent single towable
+ * Represents a thermometer attached to a truck or towable
  * @export
- * @interface Towable
+ * @interface Thermometer
  */
-export interface Towable {
+export interface Thermometer {
     /**
-     * 
+     * Unique identifier for the thermometer
      * @type {string}
-     * @memberof Towable
+     * @memberof Thermometer
      */
     readonly id?: string;
     /**
-     * 
+     * Name of the thermometer
      * @type {string}
-     * @memberof Towable
+     * @memberof Thermometer
      */
     name?: string;
     /**
-     * The unique IMEI of the towable, used to identify it when associating with a thermometer.
+     * MAC address of the thermometer. It is unique and stays with the device.
      * @type {string}
-     * @memberof Towable
+     * @memberof Thermometer
      */
-    imei?: string;
+    macAddress: string;
+    /**
+     * The ID of the entity currently associated with the thermometer.
+     * @type {string}
+     * @memberof Thermometer
+     */
+    entityId: string;
+    /**
+     * The type of the entity to which the thermometer is attached (e.g., "towable", "truck", etc.)
+     * @type {string}
+     * @memberof Thermometer
+     */
+    entityType: ThermometerEntityTypeEnum;
     /**
      * 
      * @type {string}
-     * @memberof Towable
-     */
-    plateNumber: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof Towable
-     */
-    type: TowableTypeEnum;
-    /**
-     * Towable identification number. This is unique for each towable and should be used as a hardware identifier for this specific towable.
-     * 
-     * @type {string}
-     * @memberof Towable
-     */
-    vin: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof Towable
+     * @memberof Thermometer
      */
     readonly creatorId?: string;
     /**
      * 
      * @type {Date}
-     * @memberof Towable
+     * @memberof Thermometer
      */
     readonly createdAt?: Date;
     /**
      * 
      * @type {string}
-     * @memberof Towable
+     * @memberof Thermometer
      */
     readonly lastModifierId?: string;
     /**
      * 
      * @type {Date}
-     * @memberof Towable
+     * @memberof Thermometer
      */
     readonly modifiedAt?: Date;
     /**
-     * Setting the archivedAt time marks the towable as archived. Towables marked as archived will not appear in list requests unless archived filter is set to true. Archived towable cannot be updated, unless archivedAt is first set to null.
+     * Setting the archivedAt time marks the thermometer as archived. Thermometers marked as archived will not appear in list requests unless includeArchived filter is set to true. Archived thermometer cannot be updated, unless archivedAt is first set to null.
      * 
      * @type {Date}
-     * @memberof Towable
+     * @memberof Thermometer
      */
     archivedAt?: Date;
 }
@@ -94,31 +87,30 @@ export interface Towable {
 /**
  * @export
  */
-export const TowableTypeEnum = {
-    Trailer: 'TRAILER',
-    SemiTrailer: 'SEMI_TRAILER',
-    Dolly: 'DOLLY'
+export const ThermometerEntityTypeEnum = {
+    Truck: 'truck',
+    Towable: 'towable'
 } as const;
-export type TowableTypeEnum = typeof TowableTypeEnum[keyof typeof TowableTypeEnum];
+export type ThermometerEntityTypeEnum = typeof ThermometerEntityTypeEnum[keyof typeof ThermometerEntityTypeEnum];
 
 
 /**
- * Check if a given object implements the Towable interface.
+ * Check if a given object implements the Thermometer interface.
  */
-export function instanceOfTowable(value: object): boolean {
+export function instanceOfThermometer(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "plateNumber" in value;
-    isInstance = isInstance && "type" in value;
-    isInstance = isInstance && "vin" in value;
+    isInstance = isInstance && "macAddress" in value;
+    isInstance = isInstance && "entityId" in value;
+    isInstance = isInstance && "entityType" in value;
 
     return isInstance;
 }
 
-export function TowableFromJSON(json: any): Towable {
-    return TowableFromJSONTyped(json, false);
+export function ThermometerFromJSON(json: any): Thermometer {
+    return ThermometerFromJSONTyped(json, false);
 }
 
-export function TowableFromJSONTyped(json: any, ignoreDiscriminator: boolean): Towable {
+export function ThermometerFromJSONTyped(json: any, ignoreDiscriminator: boolean): Thermometer {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -126,10 +118,9 @@ export function TowableFromJSONTyped(json: any, ignoreDiscriminator: boolean): T
         
         'id': !exists(json, 'id') ? undefined : json['id'],
         'name': !exists(json, 'name') ? undefined : json['name'],
-        'imei': !exists(json, 'imei') ? undefined : json['imei'],
-        'plateNumber': json['plateNumber'],
-        'type': json['type'],
-        'vin': json['vin'],
+        'macAddress': json['macAddress'],
+        'entityId': json['entityId'],
+        'entityType': json['entityType'],
         'creatorId': !exists(json, 'creatorId') ? undefined : json['creatorId'],
         'createdAt': !exists(json, 'createdAt') ? undefined : (new Date(json['createdAt'])),
         'lastModifierId': !exists(json, 'lastModifierId') ? undefined : json['lastModifierId'],
@@ -138,7 +129,7 @@ export function TowableFromJSONTyped(json: any, ignoreDiscriminator: boolean): T
     };
 }
 
-export function TowableToJSON(value?: Towable | null): any {
+export function ThermometerToJSON(value?: Thermometer | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -148,10 +139,9 @@ export function TowableToJSON(value?: Towable | null): any {
     return {
         
         'name': value.name,
-        'imei': value.imei,
-        'plateNumber': value.plateNumber,
-        'type': value.type,
-        'vin': value.vin,
+        'macAddress': value.macAddress,
+        'entityId': value.entityId,
+        'entityType': value.entityType,
         'archivedAt': value.archivedAt === undefined ? undefined : (value.archivedAt.toISOString()),
     };
 }
