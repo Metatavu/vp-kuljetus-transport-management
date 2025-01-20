@@ -40,10 +40,10 @@ export interface Temperature {
     value: number;
     /**
      * The timestamp when the temperature was recorded
-     * @type {Date}
+     * @type {number}
      * @memberof Temperature
      */
-    timestamp: Date;
+    timestamp: number;
 }
 
 /**
@@ -71,7 +71,7 @@ export function TemperatureFromJSONTyped(json: any, ignoreDiscriminator: boolean
         'id': !exists(json, 'id') ? undefined : json['id'],
         'thermometerId': json['thermometerId'],
         'value': json['value'],
-        'timestamp': (new Date(json['timestamp'])),
+        'timestamp': json['timestamp'],
     };
 }
 
@@ -86,7 +86,7 @@ export function TemperatureToJSON(value?: Temperature | null): any {
         
         'thermometerId': value.thermometerId,
         'value': value.value,
-        'timestamp': (value.timestamp.toISOString()),
+        'timestamp': value.timestamp,
     };
 }
 

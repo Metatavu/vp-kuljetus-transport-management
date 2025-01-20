@@ -5,10 +5,11 @@ import { useNavigate } from "@tanstack/react-router";
 import { api } from "api/index";
 import ToolbarRow from "components/generic/toolbar-row";
 import { useConfirmDialog } from "components/providers/confirm-dialog-provider";
-import { Towable, Truck, TruckTypeEnum } from "generated/client";
+import { Towable, Truck } from "generated/client";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { getEquipmentDisplayName } from "src/utils/format-utils";
+import DataValidation from "../../../utils/data-validation-utils";
 import Sensors from "../sensors";
 import EquipmentForm from "./equipment-form";
 
@@ -47,10 +48,10 @@ function EquipmentComponent({ formType, initialData, onSave }: Props) {
   });
 
   const onArchiveEquipment = async (equipment: Truck | Towable) => {
-    if (Object.values(TruckTypeEnum).includes(equipment.type as TruckTypeEnum)) {
-      archiveTruck.mutate(equipment as Truck);
+    if (DataValidation.isTruck(equipment)) {
+      archiveTruck.mutate(equipment);
     } else {
-      archiveTowable.mutate(equipment as Towable);
+      archiveTowable.mutate(equipment);
     }
   };
 
@@ -103,6 +104,8 @@ function EquipmentComponent({ formType, initialData, onSave }: Props) {
     </Stack>
   );
 
+  if (!initialData?.id) return null;
+
   return (
     <Paper sx={{ height: "100%", width: "100%" }}>
       <ToolbarRow
@@ -117,7 +120,7 @@ function EquipmentComponent({ formType, initialData, onSave }: Props) {
       <Stack direction="row" height="calc(100% - 52px)">
         <EquipmentForm errors={errors} register={register} equipment={initialData} setFormValue={setValue} />
         <ScrollContainer>
-          <Sensors />
+          <Sensors entityType={DataValidation.isTruck(initialData) ? "truck" : "towable"} entityId={initialData.id} />
         </ScrollContainer>
       </Stack>
     </Paper>

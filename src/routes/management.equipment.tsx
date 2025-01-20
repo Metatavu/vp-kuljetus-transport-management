@@ -162,6 +162,21 @@ function ManagementEquipment() {
       <ToolbarRow title={t("management.equipment.title")} toolbarButtons={renderToolbarButtons()} />
       <Stack flex={1} sx={{ height: "100%", overflowY: "auto" }}>
         <GenericDataGrid
+          onCellClick={({ row: { id, type } }) => {
+            if (!id) return;
+            const equipmentType = type === "TRUCK" || type === "SEMI_TRUCK" ? "truck" : "towable";
+            navigate(
+              equipmentType === "truck"
+                ? {
+                    to: "/management/equipment/truck/$truckId/modify",
+                    params: { truckId: id },
+                  }
+                : {
+                    to: "/management/equipment/towable/$towableId/modify",
+                    params: { towableId: id },
+                  },
+            );
+          }}
           fullScreen
           autoHeight={false}
           rows={equipment}

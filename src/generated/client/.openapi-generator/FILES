@@ -9,6 +9,7 @@ apis/PayrollExportsApi.ts
 apis/RoutesApi.ts
 apis/SitesApi.ts
 apis/TasksApi.ts
+apis/ThermometersApi.ts
 apis/TowablesApi.ts
 apis/TrucksApi.ts
 apis/VehiclesApi.ts
@@ -35,6 +36,7 @@ models/PerDiemAllowanceType.ts
 models/Route.ts
 models/SalaryGroup.ts
 models/Site.ts
+models/SiteType.ts
 models/SortOrder.ts
 models/Task.ts
 models/TaskStatus.ts

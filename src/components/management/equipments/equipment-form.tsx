@@ -65,6 +65,7 @@ const EquipmentForm = ({ errors, register, equipment }: Props) => {
           helperText={errors.vin?.message}
           {...register("vin", { required: t("management.equipment.errorMessages.vinNumberMissing") })}
         />
+        <TextField label={t("management.equipment.imei")} {...register("imei")} />
       </Stack>
     </Root>
   );

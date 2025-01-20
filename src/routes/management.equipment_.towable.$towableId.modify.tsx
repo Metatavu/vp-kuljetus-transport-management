@@ -39,11 +39,11 @@ function TowableModify() {
   const updateTowable = useMutation({
     mutationFn: (towable: Towable) => api.towables.updateTowable({ towableId, towable }),
     onSuccess: () => {
-      toast.success("management.equipment.successToast");
+      toast.success(t("management.equipment.successToast"));
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.TOWABLES] });
       navigate({ to: "/management/equipment" });
     },
-    onError: () => toast.error("management.equipment.errorToast"),
+    onError: () => toast.error(t("management.equipment.errorToast")),
   });
 
   return (
