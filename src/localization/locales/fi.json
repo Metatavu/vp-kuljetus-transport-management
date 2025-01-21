@@ -67,7 +67,11 @@
       "event": "Tapahtuma",
       "duration": "Kesto",
       "location": "Sijainti",
-      "driver": "Kuljettaja"
+      "noLocationAvailable": "Sijaintitietoa ei saatavilla",
+      "noUpdateInformation": "Ei päivitystietoja",
+      "driver": "Kuljettaja",
+      "temperature": "Lämpötila:",
+      "noTemperatureAvailable": "Lämpötilatietoa ei saatavilla"
     },
     "truckDriveState": {
       "rest": "Tauko",
@@ -85,6 +89,16 @@
     "truckEventType": {
       "load": "Lastaus",
       "unload": "Purku"
+    },
+    "tooltips": {
+      "dataConnection": {
+        "connected": "Yhteys ajoneuvoon muodostettu",
+        "disconnected": "Yhteyttä ajoneuvoon ei ole muodostettu"
+      },
+      "gps": {
+        "available": "GPS saatavilla",
+        "notAvailable": "GPS ei saatavilla"
+      }
     }
   },
   "management": {
@@ -118,12 +132,14 @@
       "title": "Kalustoluettelo",
       "new": "Uusi kalusto",
       "open": "Avaa",
-      "modify": "Muokkaa kalustoa {{equipmentName}}",
+      "modify": "{{equipmentName}}",
       "type": "Tyyppi",
+      "sensors": "Anturit",
       "name": "Nimi",
       "licensePlate": "Rekisterinumero",
       "number": "Tunnus",
       "vin": "Runkonumero",
+      "imei": "Laitetunnus",
       "errorMessages": {
         "licensePlateMissing": "Rekisterinumero on pakollinen",
         "typeMissing": "Tyyppi on pakollinen",
@@ -131,11 +147,17 @@
         "numberMissing": "Tunnus on pakollinen"
       },
       "archiveDialog": {
-        "title": "Arkistoi ajoneuvo",
-        "description": "Haluatko varmasti arkistoida ajoneuvon {{name}}?"
+        "title": "Arkistoi kalusto",
+        "description": "Haluatko varmasti arkistoida kaluston {{name}}?"
       },
       "successToast": "Kalusto tallennettu!",
       "errorToast": "Kaluston tallennus epäonnistui!"
+    },
+    "sensors": {
+      "name": "Nimi",
+      "temperature": "Lämpötila",
+      "lastAlarm": "Viimeisin hälytys",
+      "alarmSetting": "Hälytysasetus"
     },
     "clientApps": {
       "title": "Päätelaitteet",

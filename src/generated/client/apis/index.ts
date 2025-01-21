@@ -11,6 +11,7 @@ export * from './PayrollExportsApi';
 export * from './RoutesApi';
 export * from './SitesApi';
 export * from './TasksApi';
+export * from './ThermometersApi';
 export * from './TowablesApi';
 export * from './TrucksApi';
 export * from './VehiclesApi';

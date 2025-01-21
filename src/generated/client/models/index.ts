@@ -19,6 +19,7 @@ export * from './PerDiemAllowanceType';
 export * from './Route';
 export * from './SalaryGroup';
 export * from './Site';
+export * from './SiteType';
 export * from './SortOrder';
 export * from './Task';
 export * from './TaskStatus';

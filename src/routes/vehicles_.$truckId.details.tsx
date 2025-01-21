@@ -1,4 +1,4 @@
-import { Box, Stack } from "@mui/material";
+import { Box, Divider, Stack } from "@mui/material";
 import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
@@ -316,11 +316,14 @@ function VehicleInfo() {
           return "";
         },
         renderCell: ({ row }) => (
-          <Stack direction="row" justifyContent="space-between" width="100%" textAlign="center">
-            <Stack width="50%" borderRight="1px solid rgba(0, 0, 0, 0.5)">
+          <Stack direction="row" width="100%" height="100%">
+            <Box flex={1} alignItems="center" display="flex" justifyContent="center">
               {LocalizationUtils.getLocalizedDriveStateStatus(row.state, t)}
-            </Stack>
-            <Stack width="50%">{row.event ?? ""}</Stack>
+            </Box>
+            <Divider orientation="vertical" flexItem />
+            <Box flex={1} alignItems="center" display="flex" justifyContent="center">
+              {row.event ?? ""}
+            </Box>
           </Stack>
         ),
       },
@@ -358,7 +361,7 @@ function VehicleInfo() {
         width: "100%",
         bgcolor: "background.paper",
         "& .driveState.drive": {
-          backgroundColor: "rgba(157, 255, 118, 0.49)",
+          backgroundColor: "#B9F6CA",
         },
       }}
     >
@@ -369,7 +372,7 @@ function VehicleInfo() {
         title={false}
         navigateBack={() => navigate({ to: "/vehicles/list" })}
       />
-      <Box borderTop="1px solid rgba(0, 0, 0, 0.1)" p={1} pl={2}>
+      <Box borderTop="1px solid rgba(0, 0, 0, 0.1)" px={3} py={1}>
         <DatePickerWithArrows
           date={selectedDate}
           buttonsWithText

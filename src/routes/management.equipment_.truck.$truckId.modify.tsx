@@ -40,10 +40,10 @@ function TruckModify() {
   const updateTruck = useMutation({
     mutationFn: (truck: Truck) => api.trucks.updateTruck({ truckId, truck }),
     onSuccess: () => {
-      toast.success("management.equipment.successToast");
+      toast.success(t("management.equipment.successToast"));
       queryClient.invalidateQueries({ queryKey: ["trucks"] });
     },
-    onError: () => toast.error("management.equipment.errorToast"),
+    onError: () => toast.error(t("management.equipment.errorToast")),
   });
 
   return (

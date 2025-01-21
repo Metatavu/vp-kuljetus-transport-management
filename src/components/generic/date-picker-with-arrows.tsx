@@ -35,7 +35,13 @@ const DatePickerWithArrows = ({ date, labelVisible, buttonsWithText, setDate }: 
       );
 
     return (
-      <Button variant="text" startIcon={<ArrowBack />} size="small" onClick={() => setDate(minusOneDay(date))}>
+      <Button
+        variant="text"
+        color="primary"
+        startIcon={<ArrowBack />}
+        size="small"
+        onClick={() => setDate(minusOneDay(date))}
+      >
         {t("previousDay")}
       </Button>
     );
@@ -50,7 +56,13 @@ const DatePickerWithArrows = ({ date, labelVisible, buttonsWithText, setDate }: 
       );
 
     return (
-      <Button variant="text" endIcon={<ArrowForward />} size="small" onClick={() => setDate(plusOneDay(date))}>
+      <Button
+        variant="text"
+        color="primary"
+        endIcon={<ArrowForward />}
+        size="small"
+        onClick={() => setDate(plusOneDay(date))}
+      >
         {t("nextDay")}
       </Button>
     );

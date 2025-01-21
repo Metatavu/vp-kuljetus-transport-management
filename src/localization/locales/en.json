@@ -70,7 +70,11 @@
       "event": "Event",
       "duration": "Duration",
       "location": "Location",
-      "driver": "Driver"
+      "noLocationAvailable": "Location not available",
+      "noUpdateInformation": "No last update information",
+      "driver": "Driver",
+      "temperature": "Temperature:",
+      "noTemperatureAvailable": "Temperature not available"
     },
     "truckDriveState": {
       "rest": "Rest",
@@ -88,6 +92,16 @@
     "truckEventType": {
       "load": "Load",
       "unload": "Unload"
+    },
+    "tooltips": {
+      "dataConnection": {
+        "connected": "Connection to vehicle established",
+        "disconnected": "Connection to vehicle lost"
+      },
+      "gps": {
+        "connected": "GPS signal found",
+        "notConnected": "No GPS signal"
+      }
     }
   },
   "management": {
@@ -98,6 +112,7 @@
       "modify": "Modify customer site {{siteName}}",
       "type": "Type",
       "name": "Name",
+      "sensors": "Sensors",
       "address": "Address",
       "postalCode": "Postal code",
       "municipality": "Municipality",
@@ -127,10 +142,12 @@
       "licensePlate": "License plate",
       "number": "Number",
       "vin": "VIN number",
+      "imei": "Device ID",
       "errorMessages": {
         "typeMissing": "Type is required",
         "licensePlateMissing": "License plate is required",
         "vinNumberMissing": "Vin number is required",
+        "imeiMissing": "Device ID is required",
         "numberMissing": "Number is required"
       },
       "archiveDialog": {
@@ -139,6 +156,12 @@
       },
       "successToast": "Equipment saved!",
       "errorToast": "Failed to save equipment!"
+    },
+    "sensors": {
+      "name": "Name",
+      "temperature": "Temperature",
+      "lastAlarm": "Last alarm",
+      "alarmSetting": "Alarm setting"
     },
     "clientApps": {
       "title": "Devices",

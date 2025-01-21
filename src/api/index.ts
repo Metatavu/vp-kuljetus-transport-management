@@ -12,6 +12,7 @@ import {
   RoutesApi,
   SitesApi,
   TasksApi,
+  ThermometersApi,
   TowablesApi,
   TrucksApi,
   VehiclesApi,
@@ -44,4 +45,5 @@ export const api = {
   clientApps: new ClientAppsApi(configuration),
   employeeWorkShifts: new EmployeeWorkShiftsApi(configuration),
   workEvents: new WorkEventsApi(configuration),
+  thermometers: new ThermometersApi(configuration),
 };
