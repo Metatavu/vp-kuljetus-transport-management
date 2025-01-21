@@ -33,6 +33,12 @@ export interface Towable {
      */
     name?: string;
     /**
+     * The unique IMEI of the towable, used to identify it when associating with a thermometer.
+     * @type {string}
+     * @memberof Towable
+     */
+    imei?: string;
+    /**
      * 
      * @type {string}
      * @memberof Towable
@@ -120,6 +126,7 @@ export function TowableFromJSONTyped(json: any, ignoreDiscriminator: boolean): T
         
         'id': !exists(json, 'id') ? undefined : json['id'],
         'name': !exists(json, 'name') ? undefined : json['name'],
+        'imei': !exists(json, 'imei') ? undefined : json['imei'],
         'plateNumber': json['plateNumber'],
         'type': json['type'],
         'vin': json['vin'],
@@ -141,6 +148,7 @@ export function TowableToJSON(value?: Towable | null): any {
     return {
         
         'name': value.name,
+        'imei': value.imei,
         'plateNumber': value.plateNumber,
         'type': value.type,
         'vin': value.vin,

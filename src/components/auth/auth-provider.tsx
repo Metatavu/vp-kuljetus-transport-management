@@ -1,8 +1,8 @@
-import { ReactNode, useCallback, useEffect } from "react";
-import Keycloak from "keycloak-js";
 import { useAtom, useSetAtom } from "jotai";
-import { authAtom, userProfileAtom } from "../../atoms/auth";
+import Keycloak from "keycloak-js";
+import { ReactNode, useCallback, useEffect } from "react";
 import config from "../../app/config";
+import { authAtom, userProfileAtom } from "../../atoms/auth";
 
 type Props = {
   children: ReactNode;
@@ -33,11 +33,8 @@ const AuthenticationProvider = ({ children }: Props) => {
 
   const initAuth = useCallback(async () => {
     try {
-      keycloak.onTokenExpired = () => keycloak.updateToken(5);
-
       keycloak.onAuthRefreshError = () => keycloak.login();
       keycloak.onAuthRefreshSuccess = () => updateAuthData();
-
       keycloak.onAuthError = (error) => console.error(error);
       keycloak.onAuthSuccess = async () => {
         try {
@@ -70,6 +67,14 @@ const AuthenticationProvider = ({ children }: Props) => {
   useEffect(() => {
     if (keycloak.authenticated === undefined) initAuth();
   }, []);
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      if (await keycloak.updateToken(70)) updateAuthData();
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [updateAuthData]);
 
   if (!auth) return null;
 

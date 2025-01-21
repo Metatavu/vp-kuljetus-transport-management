@@ -8,6 +8,7 @@
   "logout": "Kirjaudu ulos",
   "edit": "Muokkaa",
   "delete": "Poista",
+  "approve": "Hyväksy",
   "archive": "Arkistoi",
   "open": "Avaa",
   "yes": "Kyllä",
@@ -66,7 +67,11 @@
       "event": "Tapahtuma",
       "duration": "Kesto",
       "location": "Sijainti",
-      "driver": "Kuljettaja"
+      "noLocationAvailable": "Sijaintitietoa ei saatavilla",
+      "noUpdateInformation": "Ei päivitystietoja",
+      "driver": "Kuljettaja",
+      "temperature": "Lämpötila:",
+      "noTemperatureAvailable": "Lämpötilatietoa ei saatavilla"
     },
     "truckDriveState": {
       "rest": "Tauko",
@@ -84,6 +89,16 @@
     "truckEventType": {
       "load": "Lastaus",
       "unload": "Purku"
+    },
+    "tooltips": {
+      "dataConnection": {
+        "connected": "Yhteys ajoneuvoon muodostettu",
+        "disconnected": "Yhteyttä ajoneuvoon ei ole muodostettu"
+      },
+      "gps": {
+        "available": "GPS saatavilla",
+        "notAvailable": "GPS ei saatavilla"
+      }
     }
   },
   "management": {
@@ -117,12 +132,14 @@
       "title": "Kalustoluettelo",
       "new": "Uusi kalusto",
       "open": "Avaa",
-      "modify": "Muokkaa kalustoa {{equipmentName}}",
+      "modify": "{{equipmentName}}",
       "type": "Tyyppi",
+      "sensors": "Anturit",
       "name": "Nimi",
       "licensePlate": "Rekisterinumero",
       "number": "Tunnus",
       "vin": "Runkonumero",
+      "imei": "Laitetunnus",
       "errorMessages": {
         "licensePlateMissing": "Rekisterinumero on pakollinen",
         "typeMissing": "Tyyppi on pakollinen",
@@ -130,11 +147,41 @@
         "numberMissing": "Tunnus on pakollinen"
       },
       "archiveDialog": {
-        "title": "Arkistoi ajoneuvo",
-        "description": "Haluatko varmasti arkistoida ajoneuvon {{name}}?"
+        "title": "Arkistoi kalusto",
+        "description": "Haluatko varmasti arkistoida kaluston {{name}}?"
       },
       "successToast": "Kalusto tallennettu!",
       "errorToast": "Kaluston tallennus epäonnistui!"
+    },
+    "sensors": {
+      "name": "Nimi",
+      "temperature": "Lämpötila",
+      "lastAlarm": "Viimeisin hälytys",
+      "alarmSetting": "Hälytysasetus"
+    },
+    "clientApps": {
+      "title": "Päätelaitteet",
+      "name": "Laitteen nimi",
+      "tag": "Tunniste",
+      "deviceId": "Laitetunnus",
+      "deviceOs": "Käyttöjärjestelmä",
+      "appVersion": "Sovellusversio",
+      "status": "Tila",
+      "createdAt": "Luotu",
+      "statuses": {
+        "WAITING_FOR_APPROVAL": "Odottaa hyväksyntää",
+        "APPROVED": "Hyväksytty"
+      },
+      "lastLoginAt": "Viimeisin kirjautuminen",
+      "confirmDeleteDevice": "Poista laite {{name}}?",
+      "confirmApproveDeviceTitle": "Hyväksy laite",
+      "approveDeviceInstructions": "Tarkista että laitteen sovelluksen tunnus täsmää ja anna laitteelle helposti tunnistettava nimi.",
+      "archiveDialog": {
+        "title": "Arkistoi laite",
+        "description": "Oletko varma että haluat arkistoida laitteen {{name}}?"
+      },
+      "successToast": "Laitteen tiedot tallennettu!",
+      "errorToast": "Virhe tallennettaessa laitteen tietoja!"
     },
     "vehicles": {
       "title": "Ajoneuvot",
@@ -426,7 +473,11 @@
       "fillHours": "Täyttötunnit",
       "halfDayAllowance": "Osapäiväraha",
       "fullDayAllowance": "Kokopäiväraha",
-      "toWorkHourDetails": "Näytä erittely"
+      "toWorkHourDetails": "Näytä erittely",
+      "approved": "Tarkastettu",
+      "markAllApproved": "Merkitse kaikki tarkastetuiksi",
+      "successToast": "Työvuoro tallennettu!",
+      "errorToast": "Työvuoron tallennus epäonnistui"
     },
     "workingDays": {
       "title": "Työpäivät",
@@ -451,9 +502,11 @@
         "vehicle": "Auto",
         "dailyAllowance": "Päiväraha",
         "inspected": "Tarkastettu",
-        "remarks": "Huomautuksia"
+        "remarks": "Huomautuksia",
+        "calculatedHours": "Laskettu työaika"
       },
       "aggregationsTable": {
+        "title": "{{year}} Jakson {{start}} - {{end}} tunnit yhteensä",
         "workingHours": "Työtunnit",
         "eveningWork": "Iltatyö 15%",
         "nightWork": "Yötyö 20%",
@@ -474,7 +527,18 @@
         "abroadAllowance": "Ulkomaan päiväraha",
         "waitingTime": "Odotus",
         "fillingHours": "Täyttötunnit",
-        "absenceHours": "Poissaolotunnit"
+        "absenceHours": "Poissaolotunnit",
+        "absenceTypes": {
+          "training": "Koulutus työajalla",
+          "vacation": "Loma",
+          "officialDuties": "Luottamustoimet",
+          "compensatoryLeave": "Pekkanen",
+          "sickLeave": "Sairausloma"
+        },
+        "perDiemAllowanceTypes": {
+          "partial": "Osapäiväraha",
+          "full": "Kokopäiväraha"
+        }
       },
       "changeLog": {
         "title": "Muutosloki",
@@ -485,12 +549,16 @@
         "explanation": "Selite"
       },
       "workShiftDialog": {
-        "title": "Työajan erittely",
+        "title": "Työajan erittely {{date}}",
         "time": "Aika",
         "vehicle": "Auto",
         "event": "Tapahtuma",
         "duration": "Kesto",
         "distance": "Matka",
+        "telematicsPopup": {
+          "speed": "Nopeus: {{speed}} km/h",
+          "odometer": "Matkamittarin lukema: {{odometer}} km"
+        },
         "eventTypes": {
           "vegetable": "Vihannes",
           "dry": "Kuiva",
@@ -506,13 +574,14 @@
           "break": "Tauko",
           "shiftStart": "Vuoron aloitus",
           "shiftEnd": "Vuoron lopetus",
-          "unknown": "Väliaika",
+          "unknown": "Tuntematon",
           "drive": "Ajo",
           "loading": "Lastaus",
           "unloading": "Purku",
           "availability": "Saatavuus",
           "driverCardInserted": "Sisäänkirjautuminen",
-          "driverCardRemoved": "Uloskirjautuminen"
+          "driverCardRemoved": "Uloskirjautuminen",
+          "office": "Toimisto"
         }
       }
     }

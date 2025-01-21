@@ -17,8 +17,15 @@ export const Route = createFileRoute("/management/equipment_/truck/$truckId/modi
     const truck = await queryClient.ensureQueryData(getFindTruckQueryOptions({ truckId }));
     const breadcrumbs: Breadcrumb[] = [
       { label: t("management.title") },
-      { label: t("management.equipment.title"), route: "/management/equipment" },
-      { label: t("management.equipment.modify", { equipmentName: getEquipmentDisplayName(truck) }) },
+      {
+        label: t("management.equipment.title"),
+        route: "/management/equipment",
+      },
+      {
+        label: t("management.equipment.modify", {
+          equipmentName: getEquipmentDisplayName(truck),
+        }),
+      },
     ];
     return { breadcrumbs, truck };
   },
@@ -33,10 +40,10 @@ function TruckModify() {
   const updateTruck = useMutation({
     mutationFn: (truck: Truck) => api.trucks.updateTruck({ truckId, truck }),
     onSuccess: () => {
-      toast.success("management.equipment.successToast");
+      toast.success(t("management.equipment.successToast"));
       queryClient.invalidateQueries({ queryKey: ["trucks"] });
     },
-    onError: () => toast.error("management.equipment.errorToast"),
+    onError: () => toast.error(t("management.equipment.errorToast")),
   });
 
   return (

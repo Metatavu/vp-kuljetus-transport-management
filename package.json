@@ -8,7 +8,9 @@
     "dev": "tsc && vite --open",
     "build": "tsc && vite build",
     "build-client": "openapi-generator-cli generate -i vp-kuljetus-transport-management-specs/specs/management.yaml -o src/generated/client -c generator-config.json -g typescript-fetch",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint:check": "biome check ./src",
+    "lint:fix": "biome check --apply ./src"
   },
   "dependencies": {
     "@dnd-kit/core": "6.1.0",
@@ -39,7 +41,7 @@
     "material-ui-popup-state": "5.0.10",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-hook-form": "7.50.0",
+    "react-hook-form": "7.53.2",
     "react-i18next": "14.0.0",
     "react-leaflet": "4.2.1",
     "react-toastify": "10.0.5",

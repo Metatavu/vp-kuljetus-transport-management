@@ -1,21 +1,24 @@
 import { queryOptions } from "@tanstack/react-query";
 import { api } from "api/index";
 import {
+  FindEmployeeWorkShiftRequest,
   FindTowableRequest,
   FindTruckRequest,
+  ListClientAppsRequest,
+  ListEmployeeWorkEventsRequest,
+  ListEmployeeWorkShiftsRequest,
   ListEmployeesRequest,
   ListFreightUnitsRequest,
   ListHolidaysRequest,
   ListRoutesRequest,
   ListSitesRequest,
   ListTasksRequest,
+  ListThermometersRequest,
+  ListTowableTemperaturesRequest,
+  ListTruckTemperaturesRequest,
   ListTrucksRequest,
   ListWorkShiftHoursRequest,
-  SalaryGroup,
 } from "generated/client";
-import { DateTime } from "luxon";
-
-const WORKING_TIME_PERIOD_START_DATE = DateTime.now().set({ day: 7, month: 1, year: 2024 });
 
 export const QUERY_KEYS = {
   SITES: "sites",
@@ -31,6 +34,12 @@ export const QUERY_KEYS = {
   EMPLOYEES: "employees",
   WORK_SHIFT_HOURS: "work-shift-hours",
   HOLIDAYS: "holidays",
+  CLIENT_APPS: "clientApps",
+  WORK_SHIFTS: "work-shifts",
+  EMPLOYEE_WORK_EVENTS: "employee-work-events",
+  THERMOMETERS: "thermometers",
+  TRUCK_TEMPERATURES: "truck-temperatures",
+  TOWABLE_TEMPERATURES: "towable-temperatures",
 } as const;
 
 export const getListSitesQueryOptions = (requestParams: ListSitesRequest = {}, enabled = true) =>
@@ -49,7 +58,7 @@ export const getFindSiteQueryOptions = (siteId: string, enabled = true) =>
   queryOptions({
     queryKey: [QUERY_KEYS.SITES, siteId],
     enabled: enabled,
-    queryFn: async () => api.sites.findSite({ siteId }),
+    queryFn: () => api.sites.findSite({ siteId }),
   });
 
 export const getListRoutesQueryOptions = (
@@ -109,6 +118,20 @@ export const getListDriversQueryOptions = (requestParams: ListTrucksRequest = {}
     },
   });
 
+export const getEmployeeWorkShiftsQueryOptions = (requestParams: ListEmployeeWorkShiftsRequest, enabled = true) => {
+  return queryOptions({
+    queryKey: [QUERY_KEYS.WORK_SHIFTS, requestParams],
+    enabled: enabled,
+    queryFn: async () => {
+      const [employeeWorkShifts, headers] =
+        await api.employeeWorkShifts.listEmployeeWorkShiftsWithHeaders(requestParams);
+      const totalResults = getTotalResultsFromHeaders(headers);
+
+      return { employeeWorkShifts, totalResults };
+    },
+  });
+};
+
 export const getListTasksQueryOptions = (requestParams: ListTasksRequest = {}, enabled = true) =>
   queryOptions({
     queryKey: [QUERY_KEYS.TASKS, requestParams],
@@ -149,7 +172,7 @@ export const getFindFreightQueryOptions = (freightId: string, enabled = true) =>
   queryOptions({
     queryKey: [QUERY_KEYS.FREIGHTS, freightId],
     enabled: enabled,
-    queryFn: async () => api.freights.findFreight({ freightId: freightId }),
+    queryFn: () => api.freights.findFreight({ freightId: freightId }),
   });
 
 export const getListEmployeesQueryOptions = (requestParams: ListEmployeesRequest = {}, enabled = true) =>
@@ -168,30 +191,18 @@ export const getFindEmployeeQueryOptions = (employeeId: string, enabled = true) 
   queryOptions({
     queryKey: [QUERY_KEYS.EMPLOYEES, employeeId],
     enabled: enabled,
-    queryFn: async () => api.employees.findEmployee({ employeeId }),
+    queryFn: () => api.employees.findEmployee({ employeeId }),
   });
 
-export const getListTimeEntriesQueryOptions = (
-  requestParams: ListWorkShiftHoursRequest,
-  useWorkingPeriod: boolean,
-  salaryGroup: SalaryGroup,
-  selectedDate?: Date,
-  enabled = true,
-) => {
-  if (useWorkingPeriod && selectedDate) {
-    const workingPeriodDates = getWorkingPeriodDates(salaryGroup, selectedDate);
-    requestParams.employeeWorkShiftStartedAfter = workingPeriodDates.start;
-    requestParams.employeeWorkShiftStartedBefore = workingPeriodDates.end;
-  }
-
+export const getListWorkShiftHoursQueryOptions = (requestParams: ListWorkShiftHoursRequest, enabled = true) => {
   return queryOptions({
     queryKey: [QUERY_KEYS.WORK_SHIFT_HOURS, requestParams],
     enabled: enabled,
     queryFn: async () => {
-      const [timeEntries, headers] = await api.workShiftHours.listWorkShiftHoursWithHeaders(requestParams);
+      const [employeeWorkShiftHours, headers] = await api.workShiftHours.listWorkShiftHoursWithHeaders(requestParams);
       const totalResults = getTotalResultsFromHeaders(headers);
 
-      return { timeEntries, totalResults };
+      return { employeeWorkShiftHours, totalResults };
     },
   });
 };
@@ -212,63 +223,59 @@ export const getFindHolidayQueryOptions = (holidayId: string, enabled = true) =>
   queryOptions({
     queryKey: [QUERY_KEYS.HOLIDAYS, holidayId],
     enabled: enabled,
-    queryFn: async () => api.holidays.findHoliday({ holidayId }),
+    queryFn: () => api.holidays.findHoliday({ holidayId }),
   });
 
-/**
- * Gets working period start and end datetime according to salary group and selected date
- *
- * @param salaryGroup Salary group of the employee
- * @param selectedDate Selected date
- * @returns Start and end date of the working period
- */
-export const getWorkingPeriodDates = (salaryGroup: SalaryGroup, selectedDate: Date) => {
-  const selectedDateTime = DateTime.fromJSDate(selectedDate);
+export const getListClientAppsQueryOptions = (params: ListClientAppsRequest = {}) =>
+  queryOptions({
+    queryKey: [QUERY_KEYS.CLIENT_APPS, params],
+    queryFn: async () => {
+      const [clientApps, headers] = await api.clientApps.listClientAppsWithHeaders(params);
+      const totalResults = getTotalResultsFromHeaders(headers);
+      return { clientApps, totalResults };
+    },
+  });
 
-  return isOfficeOrTerminalGroup(salaryGroup)
-    ? getOfficeOrTerminalPeriod(selectedDateTime)
-    : getDriverPeriod(selectedDateTime);
-};
+export const getFindClientAppQueryOptions = (clientAppId: string) =>
+  queryOptions({
+    queryKey: [QUERY_KEYS.CLIENT_APPS, clientAppId],
+    queryFn: () => api.clientApps.findClientApp({ clientAppId }),
+  });
 
-const isOfficeOrTerminalGroup = (salaryGroup: string) => {
-  return salaryGroup === SalaryGroup.Office || salaryGroup === SalaryGroup.Terminal;
-};
+export const getListEmployeeWorkEventsQueryOptions = (params: ListEmployeeWorkEventsRequest) =>
+  queryOptions({
+    queryKey: [QUERY_KEYS.EMPLOYEE_WORK_EVENTS, params],
+    queryFn: async () => {
+      const [workEvents, headers] = await api.workEvents.listEmployeeWorkEventsWithHeaders(params);
+      const totalResults = getTotalResultsFromHeaders(headers);
 
-const getOfficeOrTerminalPeriod = (selectedDateTime: DateTime) => {
-  const midMonth = 16;
+      return { workEvents, totalResults };
+    },
+  });
 
-  if (selectedDateTime.day < midMonth) {
-    const start = selectedDateTime.startOf("month").toJSDate();
-    const end = selectedDateTime.set({ day: 15 }).endOf("day").toJSDate();
-    return { start, end };
-  }
+export const getFindEmployeeWorkShiftQueryOptions = (params: FindEmployeeWorkShiftRequest) =>
+  queryOptions({
+    queryKey: [QUERY_KEYS.WORK_SHIFTS, params],
+    queryFn: () => api.employeeWorkShifts.findEmployeeWorkShift(params),
+  });
 
-  const start = selectedDateTime.set({ day: 16 }).startOf("day").toJSDate();
-  const end = selectedDateTime.endOf("month").endOf("day").toJSDate();
-  return { start, end };
-};
+export const getListThermometersQueryOptions = (params: ListThermometersRequest) =>
+  queryOptions({
+    queryKey: [QUERY_KEYS.THERMOMETERS, params],
+    queryFn: () => api.thermometers.listThermometers(params),
+  });
 
-const getDriverPeriod = (selectedDateTime: DateTime) => {
-  const fullWeeksFromStartDate = calculateFullWeeksFromStartDate(selectedDateTime);
-  const remainderRoundedUp = Math.ceil(fullWeeksFromStartDate % 2);
-  return calculatePeriod(fullWeeksFromStartDate - remainderRoundedUp);
-};
+export const getListTruckTemperaturesQueryOptions = (params: ListTruckTemperaturesRequest) =>
+  queryOptions({
+    queryKey: [QUERY_KEYS.TRUCK_TEMPERATURES, params],
+    queryFn: () => api.trucks.listTruckTemperatures(params),
+  });
 
-const calculateFullWeeksFromStartDate = (selectedDateTime: DateTime) => {
-  return Math.floor(selectedDateTime.diff(WORKING_TIME_PERIOD_START_DATE, "weeks").weeks);
-};
-
-const calculatePeriod = (startWeekOffset: number) => {
-  const start = WORKING_TIME_PERIOD_START_DATE.plus({ weeks: startWeekOffset })
-    .set({ weekday: 7 })
-    .startOf("day")
-    .toJSDate();
-  const end = WORKING_TIME_PERIOD_START_DATE.plus({ weeks: startWeekOffset + 2 })
-    .set({ weekday: 6 })
-    .endOf("day")
-    .toJSDate();
-  return { start, end };
-};
+export const getListTowableTemperaturesQueryOptions = (params: ListTowableTemperaturesRequest) =>
+  queryOptions({
+    queryKey: [QUERY_KEYS.TOWABLE_TEMPERATURES, params],
+    queryFn: () => api.towables.listTowableTemperatures(params),
+  });
 
 /**
  * Gets total results from headers

@@ -1,18 +1,26 @@
 import SearchIcon from "@mui/icons-material/Search";
 import { Link, MenuItem, Paper, Stack, TextField, Typography, styled } from "@mui/material";
 import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
+import { DatePicker } from "@mui/x-date-pickers";
 import { useQuery } from "@tanstack/react-query";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import GenericDataGrid from "components/generic/generic-data-grid";
 import { EmployeeType, Office, SalaryGroup } from "generated/client";
 import { useDebounce } from "hooks/use-debounce";
 import { getListEmployeesQueryOptions } from "hooks/use-queries";
 import { TFunction, t } from "i18next";
+import { DateTime } from "luxon";
 import { Key, ReactNode, useCallback, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Breadcrumb, LocalizedLabelKey } from "src/types";
+import DataValidation from "src/utils/data-validation-utils";
 import LocalizationUtils from "src/utils/localization-utils";
+import { z } from "zod";
+
+export const workShiftSearchSchema = z.object({
+  date: z.string().datetime({ offset: true }).transform(DataValidation.parseValidDateTime),
+});
 
 export const Route = createFileRoute("/working-hours/")({
   component: WorkingHours,
@@ -20,6 +28,7 @@ export const Route = createFileRoute("/working-hours/")({
     const breadcrumbs: Breadcrumb[] = [{ label: t("workingHours.title") }];
     return { breadcrumbs };
   },
+  validateSearch: workShiftSearchSchema,
 });
 
 type EmployeeFilters = {
@@ -63,9 +72,10 @@ const FilterContainer = styled(Stack, {
 
 function WorkingHours() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const navigate = Route.useNavigate();
   const [debouncedSearchTerm, _, setSearchTerm] = useDebounce("", 1000);
   const [{ page, pageSize }, setPaginationModel] = useState<GridPaginationModel>({ page: 0, pageSize: 25 });
+  const selectedDate = Route.useSearch({ select: (search) => search.date });
 
   const { watch, register } = useForm<EmployeeFilters>({
     mode: "onChange",
@@ -89,6 +99,11 @@ function WorkingHours() {
       salaryGroup: salaryGroupFilter ? undefined : salaryGroupFilter,
       type: employeeTypeFilter === "ALL" ? undefined : employeeTypeFilter,
     }),
+  );
+
+  const onChangeDate = useCallback(
+    (newDate: DateTime | null) => navigate({ search: (prev) => ({ ...prev, date: newDate ?? DateTime.now() }) }),
+    [navigate],
   );
 
   const columns: GridColDef[] = useMemo<GridColDef[]>(
@@ -117,6 +132,7 @@ function WorkingHours() {
                 navigate({
                   to: "/working-hours/$employeeId/work-shifts",
                   params: { employeeId: params.row.id as string },
+                  search: { date: selectedDate },
                 })
               }
             >
@@ -254,7 +270,7 @@ function WorkingHours() {
         align: "center",
       },
     ],
-    [t, navigate],
+    [t, navigate, selectedDate],
   );
 
   const renderLocalizedMenuItem = useCallback(
@@ -306,8 +322,21 @@ function WorkingHours() {
           "salaryGroup",
           renderLocalizedSalaryGroupOptions(Object.values(SalaryGroup), LocalizationUtils.getLocalizedSalaryGroup),
         )}
-        {/* TODO: implement this */}
-        <TextField variant="standard" label={t("workingHours.workingHourBalances.payPeriod")} />
+        <Stack>
+          <DatePicker
+            label={t("workingHours.workingHourBalances.payPeriod")}
+            value={selectedDate}
+            slotProps={{
+              openPickerButton: { size: "small", title: t("openCalendar") },
+              textField: {
+                size: "small",
+                InputProps: { sx: { width: 300 } },
+              },
+            }}
+            onChange={onChangeDate}
+            sx={{ width: 300 }}
+          />
+        </Stack>
         {renderSelectFilter(
           "management.employees.type",
           "employeeType",

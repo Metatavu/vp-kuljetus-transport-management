@@ -13,7 +13,10 @@ export const Route = createFileRoute("/management/equipment_/add-equipment")({
   loader: () => {
     const breadcrumbs: Breadcrumb[] = [
       { label: t("management.title") },
-      { label: t("management.equipment.title"), route: "/management/equipment" },
+      {
+        label: t("management.equipment.title"),
+        route: "/management/equipment",
+      },
       { label: t("management.equipment.new") },
     ];
     return { breadcrumbs };

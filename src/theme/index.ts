@@ -25,8 +25,8 @@ const theme = createTheme(
     typography: {
       fontFamily: ["Lato", "sans-serif"].join(","),
       h1: {
-        fontSize: "2.5rem",
-        fontWeight: 700,
+        fontSize: "2.25rem",
+        fontWeight: 300,
       },
       h2: {
         fontSize: "2rem",
@@ -255,6 +255,9 @@ const theme = createTheme(
         },
       },
       MuiFilledInput: {
+        defaultProps: {
+          disableUnderline: true,
+        },
         styleOverrides: {
           root: {
             height: "auto",

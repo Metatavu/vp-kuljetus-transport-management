@@ -14,6 +14,13 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { SiteType } from './SiteType';
+import {
+    SiteTypeFromJSON,
+    SiteTypeFromJSONTyped,
+    SiteTypeToJSON,
+} from './SiteType';
+
 /**
  * Represents a single customer site
  * @export
@@ -56,6 +63,18 @@ export interface Site {
      * @memberof Site
      */
     locality: string;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof Site
+     */
+    deviceIds: Array<string>;
+    /**
+     * 
+     * @type {SiteType}
+     * @memberof Site
+     */
+    siteType: SiteType;
     /**
      * additional information about the site, e.g. delivery instructions. This is shown in the task for the driver.
      * 
@@ -106,6 +125,8 @@ export function instanceOfSite(value: object): boolean {
     isInstance = isInstance && "address" in value;
     isInstance = isInstance && "postalCode" in value;
     isInstance = isInstance && "locality" in value;
+    isInstance = isInstance && "deviceIds" in value;
+    isInstance = isInstance && "siteType" in value;
 
     return isInstance;
 }
@@ -126,6 +147,8 @@ export function SiteFromJSONTyped(json: any, ignoreDiscriminator: boolean): Site
         'address': json['address'],
         'postalCode': json['postalCode'],
         'locality': json['locality'],
+        'deviceIds': json['deviceIds'],
+        'siteType': SiteTypeFromJSON(json['siteType']),
         'additionalInfo': !exists(json, 'additionalInfo') ? undefined : json['additionalInfo'],
         'creatorId': !exists(json, 'creatorId') ? undefined : json['creatorId'],
         'createdAt': !exists(json, 'createdAt') ? undefined : (new Date(json['createdAt'])),
@@ -149,6 +172,8 @@ export function SiteToJSON(value?: Site | null): any {
         'address': value.address,
         'postalCode': value.postalCode,
         'locality': value.locality,
+        'deviceIds': value.deviceIds,
+        'siteType': SiteTypeToJSON(value.siteType),
         'additionalInfo': value.additionalInfo,
         'archivedAt': value.archivedAt === undefined ? undefined : (value.archivedAt.toISOString()),
     };

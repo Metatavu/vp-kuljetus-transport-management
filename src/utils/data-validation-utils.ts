@@ -1,3 +1,4 @@
+import { Towable, Truck, TruckTypeEnum } from "generated/client";
 import { DateTime } from "luxon";
 
 namespace DataValidation {
@@ -19,6 +20,16 @@ namespace DataValidation {
     }
 
     return dateTime;
+  };
+
+  /**
+   * Check if a given object implements the Truck interface
+   *
+   * @param truckOrTowable truck or towable object
+   * @returns
+   */
+  export const isTruck = (truckOrTowable: Truck | Towable): truckOrTowable is Truck => {
+    return Object.values(TruckTypeEnum).includes(truckOrTowable.type as TruckTypeEnum);
   };
 }
 

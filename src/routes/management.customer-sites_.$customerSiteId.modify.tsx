@@ -17,7 +17,10 @@ export const Route = createFileRoute("/management/customer-sites_/$customerSiteI
     const site = await queryClient.ensureQueryData(getFindSiteQueryOptions(customerSiteId));
     const breadcrumbs: Breadcrumb[] = [
       { label: t("management.title") },
-      { label: t("management.customerSites.title"), route: "/management/customer-sites" },
+      {
+        label: t("management.customerSites.title"),
+        route: "/management/customer-sites",
+      },
       { label: t("management.customerSites.modify", { siteName: site.name }) },
     ];
     return { breadcrumbs, site };

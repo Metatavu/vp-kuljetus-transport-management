@@ -2,8 +2,9 @@ import { DraggableAttributes } from "@dnd-kit/core";
 import { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 import { SvgIcon } from "@mui/material";
 import { RegisteredRouter, RoutePaths } from "@tanstack/react-router";
-import { Site, Task, TaskType } from "generated/client";
+import { EmployeeWorkShift, Site, Task, TaskType, Truck, WorkEvent, WorkShiftHours, WorkType } from "generated/client";
 import { DefaultNamespace, ParseKeys } from "i18next";
+import { DateTime } from "luxon";
 
 export type LocalizedLabelKey = ParseKeys<DefaultNamespace> | TemplateStringsArray;
 
@@ -16,6 +17,7 @@ export type NavigationItem = {
   route?: RoutePaths<RegisteredRouter["routeTree"]>;
   label: LocalizedLabelKey;
   Icon?: typeof SvgIcon;
+  date?: DateTime<true>;
 };
 
 type UnallocatedTasksRowDragHandle = {
@@ -66,4 +68,18 @@ export type DraggedTaskData = {
   tasks: Task[];
   routeId: string;
   key: string;
+};
+
+export type EmployeeWorkHoursForm = EmployeeWorkHoursFormRow[];
+
+export type EmployeeWorkHoursFormRow = {
+  workShift: EmployeeWorkShift;
+  workShiftHours: Record<WorkType, WorkShiftHours>;
+};
+
+export type WorkShiftDialogWorkEventRow = {
+  workEvent: WorkEvent;
+  truck?: Truck;
+  duration: number;
+  distance: number;
 };

@@ -76,7 +76,7 @@ export interface EmployeeWorkShift {
      * @type {string}
      * @memberof EmployeeWorkShift
      */
-    readonly employeeId: string;
+    employeeId: string;
     /**
      * List of truck IDs used during the work shift. Derived from work events in the shift.
      * @type {Array<string>}
@@ -118,6 +118,14 @@ export interface EmployeeWorkShift {
      * @memberof EmployeeWorkShift
      */
     notes?: string;
+    /**
+     * Payroll export ID. This is filled when work shift is linked to a payroll export. Work shift cannot be
+     * included in another payroll export if it is already linked to one.
+     * 
+     * @type {string}
+     * @memberof EmployeeWorkShift
+     */
+    readonly payrollExportId?: string;
 }
 
 /**
@@ -150,9 +158,10 @@ export function EmployeeWorkShiftFromJSONTyped(json: any, ignoreDiscriminator: b
         'truckIds': !exists(json, 'truckIds') ? undefined : json['truckIds'],
         'dayOffWorkAllowance': !exists(json, 'dayOffWorkAllowance') ? undefined : json['dayOffWorkAllowance'],
         'absence': !exists(json, 'absence') ? undefined : AbsenceTypeFromJSON(json['absence']),
-        'perDiemAllowance': !exists(json, 'PerDiemAllowance') ? undefined : PerDiemAllowanceTypeFromJSON(json['PerDiemAllowance']),
+        'perDiemAllowance': !exists(json, 'perDiemAllowance') ? undefined : PerDiemAllowanceTypeFromJSON(json['perDiemAllowance']),
         'approved': json['approved'],
         'notes': !exists(json, 'notes') ? undefined : json['notes'],
+        'payrollExportId': !exists(json, 'payrollExportId') ? undefined : json['payrollExportId'],
     };
 }
 
@@ -166,9 +175,10 @@ export function EmployeeWorkShiftToJSON(value?: EmployeeWorkShift | null): any {
     return {
         
         'date': (value.date.toISOString().substring(0,10)),
+        'employeeId': value.employeeId,
         'dayOffWorkAllowance': value.dayOffWorkAllowance,
         'absence': AbsenceTypeToJSON(value.absence),
-        'PerDiemAllowance': PerDiemAllowanceTypeToJSON(value.perDiemAllowance),
+        'perDiemAllowance': PerDiemAllowanceTypeToJSON(value.perDiemAllowance),
         'approved': value.approved,
         'notes': value.notes,
     };

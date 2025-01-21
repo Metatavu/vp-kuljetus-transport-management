@@ -10,7 +10,7 @@ import { useState } from "react";
  * @returns cellModesModel, setCellModesModel, handleCellClick, handleCellModelsChange
  */
 export const useSingleClickCellEditMode = (onCellClick?: (params: GridCellParams) => void) => {
-  const [ cellModesModel, setCellModesModel ] = useState<GridCellModesModel>({});
+  const [cellModesModel, setCellModesModel] = useState<GridCellModesModel>({});
 
   const handleCellModelsChange = (newModel: GridCellModesModel) => setCellModesModel(newModel);
 
@@ -40,7 +40,7 @@ export const useSingleClickCellEditMode = (onCellClick?: (params: GridCellParams
             (acc, field) => ({
               // biome-ignore lint/performance/noAccumulatingSpread: <explanation>
               ...acc,
-              [field]: { mode: GridCellModes.View }
+              [field]: { mode: GridCellModes.View },
             }),
             {},
           ),
@@ -50,5 +50,5 @@ export const useSingleClickCellEditMode = (onCellClick?: (params: GridCellParams
     });
   };
 
-  return { cellModesModel, setCellModesModel, handleCellClick, handleCellModelsChange }
-}
+  return { cellModesModel, setCellModesModel, handleCellClick, handleCellModelsChange };
+};

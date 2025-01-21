@@ -1,11 +1,11 @@
-import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Box, Stack, styled } from "@mui/material";
+import { SortableContext } from "@dnd-kit/sortable";
+import { Box, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, styled } from "@mui/material";
+import { useGridApiContext } from "@mui/x-data-grid";
 import { t } from "i18next";
 import { useCallback } from "react";
-import { useGridApiContext } from "@mui/x-data-grid";
-import { SortableContext } from "@dnd-kit/sortable";
+import { theme } from "src/theme";
 import { GroupedTask } from "../../../types";
 import DraggableRoutesTasksTableRow from "./draggable-routes-tasks-table-row";
-import { theme } from "src/theme";
 
 const EmptyCell = styled(TableCell, {
   label: "styled-empty-cell",
@@ -42,7 +42,11 @@ const RoutesTasksTable = ({ routeId, groupedTasks }: Props) => {
 
   return (
     <Stack direction="row">
-      <Box width={leftOffset - 56} bgcolor={theme.palette.background.default} borderBottom="1px solid rgba(0, 0, 0, 0.12)" />
+      <Box
+        width={leftOffset - 56}
+        bgcolor={theme.palette.background.default}
+        borderBottom="1px solid rgba(0, 0, 0, 0.12)"
+      />
       <FlexTableContainer>
         <SortableContext items={Object.keys(groupedTasks).map((key) => `${key}-${routeId}`)}>
           <Table>

@@ -16,8 +16,15 @@ export const Route = createFileRoute("/management/equipment_/towable/$towableId/
     const towable = await queryClient.ensureQueryData(getFindTowableQueryOptions({ towableId }));
     const breadcrumbs: Breadcrumb[] = [
       { label: t("management.title") },
-      { label: t("management.equipment.title"), route: "/management/equipment" },
-      { label: t("management.equipment.modify", { equipmentName: getEquipmentDisplayName(towable) }) },
+      {
+        label: t("management.equipment.title"),
+        route: "/management/equipment",
+      },
+      {
+        label: t("management.equipment.modify", {
+          equipmentName: getEquipmentDisplayName(towable),
+        }),
+      },
     ];
     return { breadcrumbs, towable };
   },
@@ -32,11 +39,11 @@ function TowableModify() {
   const updateTowable = useMutation({
     mutationFn: (towable: Towable) => api.towables.updateTowable({ towableId, towable }),
     onSuccess: () => {
-      toast.success("management.equipment.successToast");
+      toast.success(t("management.equipment.successToast"));
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.TOWABLES] });
       navigate({ to: "/management/equipment" });
     },
-    onError: () => toast.error("management.equipment.errorToast"),
+    onError: () => toast.error(t("management.equipment.errorToast")),
   });
 
   return (

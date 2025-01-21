@@ -1,27 +1,28 @@
-import { Close } from "@mui/icons-material";
-import { Button, MenuItem, Stack, TextField } from "@mui/material";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "@tanstack/react-router";
-import { api } from "api/index";
-import { useConfirmDialog } from "components/providers/confirm-dialog-provider";
+import { MenuItem, Stack, TextField, styled } from "@mui/material";
 import { Towable, TowableTypeEnum, Truck, TruckTypeEnum } from "generated/client";
-import { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from "react-hook-form";
+import { FieldErrors, UseFormRegister, UseFormSetValue } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import LocalizationUtils from "utils/localization-utils";
+
+// Styled components
+const Root = styled(Stack, {
+  label: "equipment-form--root",
+})(({ theme }) => ({
+  justifyContent: "space-between",
+  height: "100%",
+  overflowY: "auto",
+  borderRight: `1px solid ${theme?.palette.divider}`,
+}));
 
 type Props = {
   errors: FieldErrors<Truck | Towable>;
   register: UseFormRegister<Truck | Towable>;
   equipment?: Truck | Towable;
   setFormValue: UseFormSetValue<Truck | Towable>;
-  watch: UseFormWatch<Truck | Towable>;
 };
 
-const EquipmentForm = ({ errors, register, equipment, watch }: Props) => {
+const EquipmentForm = ({ errors, register, equipment }: Props) => {
   const { t } = useTranslation("translation");
-  const showConfirmDialog = useConfirmDialog();
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
 
   const renderEquipmentType = (type: string) => (
     <MenuItem key={type} value={type}>
@@ -34,43 +35,9 @@ const EquipmentForm = ({ errors, register, equipment, watch }: Props) => {
       .map(renderEquipmentType)
       .concat(Object.values(TowableTypeEnum).map(renderEquipmentType));
 
-  const onArchiveEquipment = async (equipment: Truck | Towable) => {
-    if (Object.values(TruckTypeEnum).includes(equipment.type as TruckTypeEnum)) {
-      archiveTruck.mutate(equipment as Truck);
-    } else {
-      archiveTowable.mutate(equipment as Towable);
-    }
-  };
-
-  const archiveTruck = useMutation({
-    mutationKey: ["archiveTruck", watch("id")],
-    mutationFn: async (truck?: Truck) => {
-      if (!truck?.id) return;
-      return api.trucks.updateTruck({ truckId: truck.id, truck: { ...truck, archivedAt: new Date() } });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["trucks"] });
-      queryClient.invalidateQueries({ queryKey: ["trucks", equipment?.id] });
-      navigate({ to: "/management/equipment" });
-    },
-  });
-
-  const archiveTowable = useMutation({
-    mutationKey: ["archiveTowable", watch("id")],
-    mutationFn: async (towable?: Towable) => {
-      if (!towable?.id) return;
-      return api.towables.updateTowable({ towableId: towable.id, towable: { ...towable, archivedAt: new Date() } });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["towables"] });
-      queryClient.invalidateQueries({ queryKey: ["towables", equipment?.id] });
-      navigate({ to: "/management/equipment" });
-    },
-  });
-
   return (
-    <Stack justifyContent="space-between" width={356} height="calc(100% - 52px)" padding="16px">
-      <Stack width={356} padding="16px" gap="16px" minHeight="100%">
+    <Root>
+      <Stack width={356} p={2} gap={2} minHeight="100%">
         <TextField
           select
           label={t("management.equipment.type")}
@@ -98,25 +65,9 @@ const EquipmentForm = ({ errors, register, equipment, watch }: Props) => {
           helperText={errors.vin?.message}
           {...register("vin", { required: t("management.equipment.errorMessages.vinNumberMissing") })}
         />
+        <TextField label={t("management.equipment.imei")} {...register("imei")} />
       </Stack>
-      {equipment && (
-        <Stack spacing={1}>
-          <Button
-            variant="outlined"
-            startIcon={<Close />}
-            onClick={() =>
-              showConfirmDialog({
-                title: t("management.equipment.archiveDialog.title"),
-                description: t("management.equipment.archiveDialog.description", { name: equipment?.name }),
-                onPositiveClick: () => onArchiveEquipment(equipment),
-              })
-            }
-          >
-            {t("archive")}
-          </Button>
-        </Stack>
-      )}
-    </Stack>
+    </Root>
   );
 };
 

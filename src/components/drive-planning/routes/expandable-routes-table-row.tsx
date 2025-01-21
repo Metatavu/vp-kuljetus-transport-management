@@ -1,10 +1,10 @@
+import { useDroppable } from "@dnd-kit/core";
 import { Collapse } from "@mui/material";
 import { GridRow, GridRowProps } from "@mui/x-data-grid";
-import RoutesTasksTable from "./routes-tasks-table";
 import { Site, Task } from "generated/client";
-import { DroppableType, GroupedTask } from "../../../types";
 import { useMemo } from "react";
-import { useDroppable } from "@dnd-kit/core";
+import { DroppableType, GroupedTask } from "../../../types";
+import RoutesTasksTable from "./routes-tasks-table";
 
 type Props = GridRowProps & {
   expanded: boolean;

@@ -10,7 +10,7 @@ const Root = styled(Stack, {
   padding: theme?.spacing(1, 2),
   height: height ?? 46,
   flexDirection: "row",
-  backgroundColor: theme?.palette.background.default,
+  borderBottom: `1px solid ${theme?.palette.divider}`,
 }));
 
 type Props = {
