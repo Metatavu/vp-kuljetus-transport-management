@@ -68,7 +68,7 @@ function WorkShiftRow({ index, trucks, date, workShiftId }: Props) {
   const renderWorkHourInput = useCallback(
     (title: string, workType: WorkType) => {
       const calculatedHoursTooltipText = `${t("workingHours.workingDays.table.calculatedHours")}: ${
-        workShiftHours?.[workType].calculatedHours?.toFixed(2).toString() ?? title
+        workShiftHours?.[workType]?.calculatedHours?.toFixed(2).toString() ?? title
       } `;
       return (
         <Tooltip title={calculatedHoursTooltipText} placement="bottom">
@@ -79,8 +79,8 @@ function WorkShiftRow({ index, trucks, date, workShiftId }: Props) {
             fullWidth
             disabled={workShift?.approved}
             variant="outlined"
-            placeholder={workShiftHours?.[workType].calculatedHours?.toFixed(2).toString()}
-            value={workShiftHours?.[workType].actualHours ?? null}
+            placeholder={workShiftHours?.[workType]?.calculatedHours?.toFixed(2).toString() ?? ""}
+            value={workShiftHours?.[workType]?.actualHours ?? null}
             onChange={(event) =>
               setValue(
                 `${index}.workShiftHours.${workType}.actualHours`,
@@ -277,16 +277,22 @@ function WorkShiftRow({ index, trucks, date, workShiftId }: Props) {
         {renderWorkHourInput(t("workingHours.workingDays.table.freezerBonus"), WorkType.FrozenAllowance)}
       </Cell>
       <Cell flex={1}>
-        {/* {renderWorkHourInput(t("workingHours.workingDays.aggregationsTable.absenceTypes.officialDuties"), AbsenceType.OfficialDuties)} */}
+        {renderWorkHourInput(
+          t("workingHours.workingDays.aggregationsTable.absenceTypes.officialDuties"),
+          WorkType.OfficialDuties,
+        )}
       </Cell>
       <Cell flex={1}>
-        {/* {renderWorkHourInput(t("workingHours.workingDays.aggregationsTable.absenceTypes.sickLeave"), AbsenceType.SickLeave)} */}
+        {renderWorkHourInput(
+          t("workingHours.workingDays.aggregationsTable.absenceTypes.sickLeave"),
+          WorkType.SickLeave,
+        )}
       </Cell>
       <Cell flex={1}>
-        {/* {renderWorkHourInput(t("workingHours.workingDays.aggregationsTable.absenceTypes.training"), AbsenceType.Training)} */}
+        {renderWorkHourInput(t("workingHours.workingDays.aggregationsTable.absenceTypes.training"), WorkType.Training)}
       </Cell>
       <Cell flex={1}>
-        {/* {renderWorkHourInput(t("workingHours.workingDays.aggregationsTable.unpaid"), AbsenceType.UnPaid)} */}
+        {renderWorkHourInput(t("workingHours.workingDays.aggregationsTable.unpaid"), WorkType.Unpaid)}
       </Cell>
       <Cell minWidth={115} flex={1}>
         <Stack gap={0.5} direction="row" width="100%">

@@ -79,10 +79,10 @@ function VehicleInfo() {
       }, new Map<string, Site>()),
   });
 
-  const truck = useQuery({
-    queryKey: ["truck"],
-    queryFn: () => api.trucks.findTruck({ truckId: truckId }),
-  });
+  const truck = useMemo(() => {
+    const options = getFindTruckQueryOptions({ truckId });
+    return queryClient.getQueryData(options.queryKey);
+  }, [truckId]);
 
   const truckLocation = useQuery({
     queryKey: ["truckLocation"],
@@ -366,7 +366,7 @@ function VehicleInfo() {
       }}
     >
       <VehicleInfoBar
-        selectedTruck={truck.data}
+        selectedTruck={truck}
         truckSpeed={truckSpeed.data}
         selectedTruckLocation={truckLocation.data}
         title={false}
