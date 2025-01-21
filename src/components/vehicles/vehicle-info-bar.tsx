@@ -58,7 +58,7 @@ export const VehicleInfoBar = ({ selectedTruck, truckSpeed, selectedTruckLocatio
     );
   };
 
-  // TODO: Get the data connection status from the vehicle
+  // TODO: Get the data connection status from the vehicle, check issue #113 from GitHub
   const renderDataConnection = (truck: Truck | undefined) => {
     if (truck) {
       return (
