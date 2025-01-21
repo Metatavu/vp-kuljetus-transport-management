@@ -376,11 +376,7 @@ function VehicleInfo() {
         <DatePickerWithArrows
           date={selectedDate}
           buttonsWithText
-          setDate={(date) =>
-            navigate({
-              search: (search) => ({ ...search, date: date.toISODate() }),
-            })
-          }
+          setDate={(date) => navigate({ search: (prev) => ({ ...prev, date: date }) })}
         />
       </Box>
       <Stack flex={1} overflow="hidden">

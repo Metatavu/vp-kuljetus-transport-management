@@ -34,16 +34,19 @@ namespace WorkShiftsUtils {
     const regularWorkingHours = employee?.regularWorkingHours ?? 0;
     if (!regularWorkingHours) return 0;
 
-    const paidWorkHours = parseFloat(getTotalWorkHoursByType(shiftsInWorkPeriod, WorkType.PaidWork));
-    if (paidWorkHours >= regularWorkingHours) return 0;
+    const workTypes = [WorkType.PaidWork, WorkType.SickLeave];
+    const totalPaidWorkHours = workTypes
+      .map((type) => parseFloat(getTotalWorkHoursByType(shiftsInWorkPeriod, type)))
+      .reduce((sum, hours) => sum + hours, 0);
+    if (totalPaidWorkHours >= regularWorkingHours) return 0;
 
     // Absence types that are included in the calculation
-    const absenceTypes: (keyof typeof AbsenceType)[] = ["Vacation", "CompensatoryLeave", "SickLeave"];
+    const absenceTypes: (keyof typeof AbsenceType)[] = ["Vacation", "CompensatoryLeave"];
     const totalAbsenceHours = absenceTypes
       .map((type) => parseFloat(getTotalHoursByAbsenseType(shiftsInWorkPeriod, AbsenceType[type])))
       .reduce((sum, hours) => sum + hours, 0);
 
-    const fillingHours = regularWorkingHours - paidWorkHours - totalAbsenceHours;
+    const fillingHours = regularWorkingHours - totalPaidWorkHours - totalAbsenceHours;
     return fillingHours > 0 ? fillingHours.toFixed(2) : 0;
   };
 
@@ -56,7 +59,7 @@ namespace WorkShiftsUtils {
     // Calculate paid work hours without training hours (training hours does not cumulate overtime)
     const paidWorkHours =
       parseFloat(getTotalWorkHoursByType(shiftsInWorkPeriod, WorkType.PaidWork)) -
-      parseFloat(getTotalHoursByAbsenseType(shiftsInWorkPeriod, AbsenceType.Training));
+      parseFloat(getTotalWorkHoursByType(shiftsInWorkPeriod, WorkType.Training));
     if (paidWorkHours <= regularWorkingHours) {
       return { overTimeHalf: 0, overTimeFull: 0 };
     }
