@@ -8,7 +8,7 @@ import { DateTime } from "luxon";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
-export const Route = createFileRoute("/management/holidays/add-holiday")({
+export const Route = createFileRoute("/management/holidays/add")({
   component: AddHoliday,
   validateSearch: ({ date }: Record<string, unknown>) => ({
     date: date ? DateTime.fromISO(date as string) : DateTime.now(),
@@ -37,8 +37,14 @@ function AddHoliday() {
       toast.success(t("management.holidays.successToast", { count: 1 }));
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.HOLIDAYS] });
     },
-    onError: () => toast.error(t("management.holidays.errorToast", { count: 1 })),
+    onError: () =>
+      toast.error(t("management.holidays.errorToast", { count: 1 })),
   });
 
-  return <AddHolidayDialog onSave={createHoliday} onClose={() => navigate({ to: ".." })} />;
+  return (
+    <AddHolidayDialog
+      onSave={createHoliday}
+      onClose={() => navigate({ to: ".." })}
+    />
+  );
 }

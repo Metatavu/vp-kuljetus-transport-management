@@ -106,7 +106,7 @@
     "customerSites": {
       "title": "Asiakaspaikat",
       "new": "Uusi asiakaspaikka",
-      "modify": "Muokkaa asiakaspaikkaa {{siteName}}",
+      "modify": "Muokkaa asiakaspaikkaa {{name}}",
       "type": "Tyyppi",
       "name": "Nimi",
       "address": "Osoite",
@@ -125,8 +125,33 @@
         "title": "Arkistoi asiakaspaikka",
         "description": "Haluatko varmasti arkistoida asiakaspaikan {{name}}?"
       },
-      "successToast": "Asiakaspaikka tallennettu!",
-      "errorToast": "Asiakaspaikan tallennus epäonnistui!"
+      "successToast": "Asiakaspaikan tiedot tallennettu!",
+      "errorToast": "Asiakaspaikan tietojen tallennus epäonnistui!"
+    },
+    "terminals": {
+      "title": "Terminaalit",
+      "new": "Uusi terminaali",
+      "modify": "Muokkaa terminaalia {{name}}",
+      "name": "Nimi",
+      "address": "Osoite",
+      "sensors": "Anturit",
+      "postalCode": "Postinumero",
+      "municipality": "Paikkakunta",
+      "additionalInfo": "Lisätiedot",
+      "errorMessages": {
+        "nameMissing": "Nimi on pakollinen",
+        "addressMissing": "Osoite on pakollinen",
+        "postalCodeMissing": "Postinumero on pakollinen",
+        "postalCodeTooShort": "Postinumeron tulee olla 5-merkkiä pitkä",
+        "postalCodeInvalidFormat": "Postinumero saa sisältää vain numeroita",
+        "municipalityMissing": "Paikkakunta on pakollinen"
+      },
+      "archiveDialog": {
+        "title": "Arkistoi terminaali",
+        "description": "Haluatko varmasti arkistoida terminaalin {{name}}?"
+      },
+      "successToast": "Terminaalin tiedot tallennettu!",
+      "errorToast": "Terminaalin tietojen tallennus epäonnistui!"
     },
     "equipment": {
       "title": "Kalustoluettelo",

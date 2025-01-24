@@ -9,7 +9,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { Breadcrumb } from "src/types";
 
-export const Route = createFileRoute("/management/customer-sites_/add-customer-site_")({
+export const Route = createFileRoute("/management/customer-sites_/add")({
   component: CustomerSiteAdd,
   loader: () => {
     const breadcrumbs: Breadcrumb[] = [

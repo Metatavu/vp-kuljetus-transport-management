@@ -179,7 +179,7 @@ function DrivePlanningRoutes() {
           startIcon={<Add />}
           onClick={() =>
             navigate({
-              to: "add-route",
+              to: "add",
               search: { date: selectedDate ?? DateTime.now() },
             })
           }

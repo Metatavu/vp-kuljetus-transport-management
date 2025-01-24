@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { Breadcrumb } from "src/types";
 
-export const Route = createFileRoute("/management/equipment_/add-equipment")({
+export const Route = createFileRoute("/management/equipment_/add")({
   component: () => <EquipmentAdd />,
   loader: () => {
     const breadcrumbs: Breadcrumb[] = [
@@ -28,7 +28,9 @@ const EquipmentAdd = () => {
   const { t } = useTranslation();
 
   const onEquipmentSave = async (equipment: Truck | Towable) => {
-    if (Object.values(TowableTypeEnum).includes(equipment.type as TowableTypeEnum)) {
+    if (
+      Object.values(TowableTypeEnum).includes(equipment.type as TowableTypeEnum)
+    ) {
       createTowableEquipment.mutate(equipment as Towable);
     } else {
       createTruckEquipment.mutate(equipment as Truck);
@@ -45,7 +47,8 @@ const EquipmentAdd = () => {
   });
 
   const createTowableEquipment = useMutation({
-    mutationFn: async (towable: Towable) => api.towables.createTowable({ towable }),
+    mutationFn: async (towable: Towable) =>
+      api.towables.createTowable({ towable }),
     onSuccess: () => {
       toast.success(t("management.equipment.successToast"));
       queryClient.invalidateQueries({ queryKey: ["towables"] });
