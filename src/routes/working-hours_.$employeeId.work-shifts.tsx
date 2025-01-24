@@ -342,6 +342,7 @@ function WorkShifts() {
       );
 
       const allWorkShiftHoursToUpdate = [...updatedWorkShiftHours, ...newWorkShiftHoursWithUpdatedValues];
+
       await Promise.all(
         allWorkShiftHoursToUpdate.map((workShiftHours) =>
           api.workShiftHours.updateWorkShiftHours({
@@ -376,6 +377,18 @@ function WorkShifts() {
     },
     [navigate, handleFormUnregister],
   );
+
+  const disableDatesOnWorkingPeriod = (date: DateTime) => {
+    const workingPeriodDates = TimeUtils.getWorkingPeriodDates(employeeSalaryGroup, selectedDate.toJSDate());
+    if (!workingPeriodDates) return false;
+
+    const start = DateTime.fromJSDate(workingPeriodDates.start);
+    const end = DateTime.fromJSDate(workingPeriodDates.end);
+
+    const dateIsInsideWorkingPeriod = date > start && date < end;
+
+    return dateIsInsideWorkingPeriod;
+  };
 
   const renderEmployeeMenuItems = () => {
     return employees?.map((employee) => (
@@ -428,9 +441,13 @@ function WorkShifts() {
                 textField: {
                   size: "small",
                   InputProps: { sx: { width: 300 } },
+                  error: false,
                 },
               }}
               onChange={onChangeDate}
+              shouldDisableDate={disableDatesOnWorkingPeriod}
+              displayWeekNumber
+              disableHighlightToday
               sx={{ width: 300 }}
             />
           </Stack>
