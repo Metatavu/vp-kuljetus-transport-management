@@ -48,6 +48,7 @@ const GenericDataGrid = ({
   onPaginationModelChange,
   getRowId,
   processRowUpdate,
+  onRowClick,
   onCellClick,
   onCellEditStop,
   onCellModesModelChange,
@@ -82,6 +83,7 @@ const GenericDataGrid = ({
       onCellClick={onCellClick}
       onPaginationModelChange={onPaginationModelChange}
       getRowId={getRowId}
+      onRowClick={onRowClick}
     />
   );
 };

@@ -21,7 +21,7 @@ const TopNavigation = () => {
     { route: "/vehicles/list", label: "vehicles.title" },
     { route: "/drive-planning/routes", label: "drivePlanning.title" },
     { route: "/working-hours", label: "workingHours.title", date: DateTime.now() },
-    { route: "/management/customer-sites", label: "management.title" },
+    { route: "/management/terminals", label: "management.title" },
   ];
 
   const selectedRouteIndex = routeLinks.findIndex(({ route }) =>

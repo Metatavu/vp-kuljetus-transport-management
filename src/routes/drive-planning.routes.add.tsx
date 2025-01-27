@@ -9,14 +9,16 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import DataValidation from "src/utils/data-validation-utils";
 
-export const Route = createFileRoute("/drive-planning/routes/add-route")({
+export const Route = createFileRoute("/drive-planning/routes/add")({
   component: AddRoute,
 });
 
 function AddRoute() {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
-  const initialDate = Route.useSearch({ select: ({ date }) => date ?? DateTime.now() });
+  const initialDate = Route.useSearch({
+    select: ({ date }) => date ?? DateTime.now(),
+  });
   const navigate = Route.useNavigate();
 
   const createRoute = useMutation({
@@ -29,7 +31,10 @@ function AddRoute() {
           driverId: driverId === "EMPTY" ? undefined : driverId,
         },
       });
-      navigate({ to: "..", search: { date: DataValidation.parseValidDateTime(departureTime) } });
+      navigate({
+        to: "..",
+        search: { date: DataValidation.parseValidDateTime(departureTime) },
+      });
     },
     onSuccess: () => {
       toast.success(t("drivePlanning.routes.successToast"));

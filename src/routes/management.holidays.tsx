@@ -254,7 +254,7 @@ function ManagementHolidays() {
                 startIcon={<Add />}
                 onClick={() =>
                   navigate({
-                    to: "/management/holidays/add-holiday",
+                    to: "/management/holidays/add",
                     search: { date: DateTime.now() },
                   })
                 }

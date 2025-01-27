@@ -271,7 +271,7 @@ function ManagementEmployees() {
               size="small"
               variant="contained"
               startIcon={<AddIcon />}
-              onClick={() => navigate({ to: "/management/employees/add-employee" })}
+              onClick={() => navigate({ to: "/management/employees/add" })}
             >
               {t("addNew")}
             </Button>

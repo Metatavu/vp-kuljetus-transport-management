@@ -9,7 +9,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { Breadcrumb } from "src/types";
 
-export const Route = createFileRoute("/management/employees_/add-employee")({
+export const Route = createFileRoute("/management/employees_/add")({
   component: AddEmployee,
   loader: () => {
     const breadcrumbs: Breadcrumb[] = [
@@ -29,7 +29,8 @@ function AddEmployee() {
   const { t } = useTranslation();
 
   const createEmployee = useMutation({
-    mutationFn: (employee: Employee) => api.employees.createEmployee({ employee }),
+    mutationFn: (employee: Employee) =>
+      api.employees.createEmployee({ employee }),
     onSuccess: () => {
       toast.success(t("management.employees.successToast"));
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.EMPLOYEES] });
@@ -37,5 +38,10 @@ function AddEmployee() {
     onError: () => toast.error(t("management.employees.errorToast")),
   });
 
-  return <EmployeeComponent title={t("management.employees.new")} onSave={createEmployee} />;
+  return (
+    <EmployeeComponent
+      title={t("management.employees.new")}
+      onSave={createEmployee}
+    />
+  );
 }
