@@ -37,7 +37,7 @@ namespace DataValidation {
    * Check if a given string is a valid postal code length
    *
    * @param string postal code
-   * @returns
+   * @returns Error string or boolean when valid
    */
   export const validatePostalCode = (value: string) => {
     if (value.length !== 5) {
