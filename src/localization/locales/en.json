@@ -109,10 +109,9 @@
     "customerSites": {
       "title": "Customer sites",
       "new": "New customer site",
-      "modify": "Modify customer site {{siteName}}",
+      "modify": "Modify customer site {{name}}",
       "type": "Type",
       "name": "Name",
-      "sensors": "Sensors",
       "address": "Address",
       "postalCode": "Postal code",
       "municipality": "Municipality",
@@ -131,6 +130,32 @@
       },
       "successToast": "Customer site saved!",
       "errorToast": "Failed to save customer site!"
+    },
+    "terminals": {
+      "title": "Terminals",
+      "new": "New terminal",
+      "modify": "Modify terminal {{name}}",
+      "type": "Type",
+      "name": "Name",
+      "sensors": "Sensors",
+      "address": "Address",
+      "postalCode": "Postal code",
+      "municipality": "Municipality",
+      "additionalInfo": "Additional info",
+      "errorMessages": {
+        "nameMissing": "Name is required",
+        "addressMissing": "Address is required",
+        "postalCodeMissing": "Postal code is required",
+        "postalCodeTooShort": "Postal code needs to be atleast 5 characters long",
+        "postalCodeInvalidFormat": "Postal code can only contain numers",
+        "municipalityMissing": "Municipality is required"
+      },
+      "archiveDialog": {
+        "title": "Archive terminal",
+        "description": "Are you sure you want to archive terminal {{name}}?"
+      },
+      "successToast": "Terminal information saved!",
+      "errorToast": "Failed to save terminal information!"
     },
     "equipment": {
       "title": "Equipment list",

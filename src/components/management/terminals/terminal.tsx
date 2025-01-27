@@ -12,7 +12,7 @@ import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { MapContainer, Marker, TileLayer } from "react-leaflet";
 import LocationUtils from "utils/location-utils";
-import CustomerSiteForm from "./customer-site-form";
+import TerminalForm from "./terminal-form";
 
 type Props = {
   formType: "ADD" | "MODIFY";
@@ -22,7 +22,7 @@ type Props = {
 
 const DEFAULT_MAP_CENTER = latLng(61.1621924, 28.65865865);
 
-function CustomerSiteComponent({ formType, site, onSave }: Props) {
+function TerminalSiteComponent({ formType, site, onSave }: Props) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const {
@@ -54,9 +54,9 @@ function CustomerSiteComponent({ formType, site, onSave }: Props) {
 
   const isSaveDisabled = (errors && !markerPosition) || !isDirty;
 
-  const onCustomerSiteSave = async (site: Site) => {
-    await onSave.mutateAsync({ ...site, siteType: SiteType.CustomerSite, deviceIds: [] });
-    navigate({ to: "/management/customer-sites" });
+  const onTerminalSave = async (site: Site) => {
+    await onSave.mutateAsync({ ...site, siteType: SiteType.Terminal, deviceIds: [] });
+    navigate({ to: "/management/terminals" });
   };
 
   const renderToolbarButtons = () => (
@@ -70,7 +70,7 @@ function CustomerSiteComponent({ formType, site, onSave }: Props) {
         variant="contained"
         startIcon={<SaveAlt />}
         disabled={isSaveDisabled}
-        onClick={handleSubmit(onCustomerSiteSave)}
+        onClick={handleSubmit(onTerminalSave)}
       >
         {t("save")}
       </Button>
@@ -82,21 +82,13 @@ function CustomerSiteComponent({ formType, site, onSave }: Props) {
       <Paper sx={{ height: "100%" }}>
         <ToolbarRow
           title={
-            formType === "ADD"
-              ? t("management.customerSites.new")
-              : t("management.customerSites.modify", { name: site?.name })
+            formType === "ADD" ? t("management.terminals.new") : t("management.terminals.modify", { name: site?.name })
           }
-          navigateBack={() => navigate({ to: "/management/customer-sites" })}
+          navigateBack={() => navigate({ to: "/management/terminals" })}
           toolbarButtons={renderToolbarButtons()}
         />
         <Stack direction="row" height="calc(100% - 52px)">
-          <CustomerSiteForm
-            errors={errors}
-            customerSite={site}
-            register={register}
-            setFormValue={setValue}
-            watch={watch}
-          />
+          <TerminalForm errors={errors} terminal={site} register={register} setFormValue={setValue} watch={watch} />
           <Box flex={1} alignContent="center" justifyContent="center">
             <MapContainer ref={mapRef} style={{ height: "100%" }} center={DEFAULT_MAP_CENTER} zoom={13}>
               <TileLayer
@@ -112,4 +104,4 @@ function CustomerSiteComponent({ formType, site, onSave }: Props) {
   );
 }
 
-export default CustomerSiteComponent;
+export default TerminalSiteComponent;

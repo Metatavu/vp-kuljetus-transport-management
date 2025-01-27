@@ -14,20 +14,17 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Breadcrumb } from "src/types";
 
-export const Route = createFileRoute("/management/customer-sites")({
-  component: ManagementCustomerSites,
+export const Route = createFileRoute("/management/terminals")({
+  component: ManagementTerminalSites,
   loader: () => {
-    const breadcrumbs: Breadcrumb[] = [
-      { label: t("management.title") },
-      { label: t("management.customerSites.title") },
-    ];
+    const breadcrumbs: Breadcrumb[] = [{ label: t("management.title") }, { label: t("management.terminals.title") }];
     return { breadcrumbs };
   },
 });
 
 // Styled root component
 const Root = styled(Stack, {
-  label: "management-customer-sites-root",
+  label: "management-terminals-root",
 })(({ theme }) => ({
   height: "100%",
   width: "100%",
@@ -35,7 +32,7 @@ const Root = styled(Stack, {
   flexDirection: "column",
 }));
 
-function ManagementCustomerSites() {
+function ManagementTerminalSites() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -52,15 +49,18 @@ function ManagementCustomerSites() {
     }),
   );
 
-  const customerSites = useMemo(
-    () => sitesQuery.data?.sites?.filter((site) => site.siteType === SiteType.CustomerSite) ?? [],
+  const terminals = useMemo(
+    () => sitesQuery.data?.sites?.filter((site) => site.siteType === SiteType.Terminal) ?? [],
     [sitesQuery.data],
   );
 
-  const deleteCustomerSite = useMutation({
+  const deleteSite = useMutation({
     mutationFn: (site: Site) => {
       if (!site.id) return Promise.reject();
-      return api.sites.updateSite({ siteId: site.id, site: { ...site, archivedAt: new Date() } });
+      return api.sites.updateSite({
+        siteId: site.id,
+        site: { ...site, archivedAt: new Date() },
+      });
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.SITES] }),
   });
@@ -70,21 +70,21 @@ function ManagementCustomerSites() {
       {
         field: "name",
         headerAlign: "left",
-        headerName: t("management.customerSites.name"),
+        headerName: t("management.terminals.name"),
         sortable: false,
         flex: 1,
       },
       {
         field: "postalCode",
         headerAlign: "left",
-        headerName: t("management.customerSites.postalCode"),
+        headerName: t("management.terminals.postalCode"),
         sortable: false,
         width: 180,
       },
       {
         field: "locality",
         headerAlign: "left",
-        headerName: t("management.customerSites.municipality"),
+        headerName: t("management.terminals.municipality"),
         sortable: false,
         width: 180,
       },
@@ -101,7 +101,7 @@ function ManagementCustomerSites() {
               size="small"
               onClick={() =>
                 navigate({
-                  to: "/management/customer-sites/$siteId/modify",
+                  to: "/management/terminals/$siteId/modify",
                   params: { siteId: id as string },
                 })
               }
@@ -116,10 +116,10 @@ function ManagementCustomerSites() {
   );
 
   return (
-    <LoaderWrapper loading={deleteCustomerSite.isPending || sitesQuery.isLoading}>
+    <LoaderWrapper loading={deleteSite.isPending || sitesQuery.isLoading}>
       <Root>
         <ToolbarRow
-          title={t("management.customerSites.title")}
+          title={t("management.terminals.title")}
           toolbarButtons={
             <Button
               size="small"
@@ -127,7 +127,7 @@ function ManagementCustomerSites() {
               startIcon={<Add />}
               onClick={() =>
                 navigate({
-                  to: "/management/customer-sites/add",
+                  to: "/management/terminals/add",
                 })
               }
             >
@@ -138,13 +138,13 @@ function ManagementCustomerSites() {
         <GenericDataGrid
           fullScreen
           autoHeight={false}
-          rows={customerSites}
+          rows={terminals}
           columns={columns}
           rowCount={sitesQuery.data?.totalResults}
           disableRowSelectionOnClick
           onRowClick={({ row: { id } }) =>
             navigate({
-              to: "/management/customer-sites/$siteId/modify",
+              to: "/management/terminals/$siteId/modify",
               params: { siteId: id as string },
             })
           }
