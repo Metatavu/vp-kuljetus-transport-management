@@ -13,8 +13,9 @@ import {
   ListRoutesRequest,
   ListSitesRequest,
   ListTasksRequest,
-  ListThermometersRequest,
+  ListTerminalThermometersRequest,
   ListTowableTemperaturesRequest,
+  ListTruckOrTowableThermometersRequest,
   ListTruckTemperaturesRequest,
   ListTrucksRequest,
   ListWorkShiftHoursRequest,
@@ -37,7 +38,8 @@ export const QUERY_KEYS = {
   CLIENT_APPS: "clientApps",
   WORK_SHIFTS: "work-shifts",
   EMPLOYEE_WORK_EVENTS: "employee-work-events",
-  THERMOMETERS: "thermometers",
+  TRUCK_OR_TOWABLE_THERMOMETERS: "truck-or-towable-thermometers",
+  TERMINAL_THERMOMETERS: "terminal-thermometers",
   TRUCK_TEMPERATURES: "truck-temperatures",
   TOWABLE_TEMPERATURES: "towable-temperatures",
 } as const;
@@ -259,10 +261,16 @@ export const getFindEmployeeWorkShiftQueryOptions = (params: FindEmployeeWorkShi
     queryFn: () => api.employeeWorkShifts.findEmployeeWorkShift(params),
   });
 
-export const getListThermometersQueryOptions = (params: ListThermometersRequest) =>
+export const getListTerminalThermometersQueryOptions = (params: ListTerminalThermometersRequest) =>
   queryOptions({
-    queryKey: [QUERY_KEYS.THERMOMETERS, params],
-    queryFn: () => api.thermometers.listThermometers(params),
+    queryKey: [QUERY_KEYS.TERMINAL_THERMOMETERS, params],
+    queryFn: () => api.thermometers.listTerminalThermometers(params),
+  });
+
+export const getListTruckOrTowableThermometersQueryOptions = (params: ListTruckOrTowableThermometersRequest) =>
+  queryOptions({
+    queryKey: [QUERY_KEYS.TRUCK_OR_TOWABLE_THERMOMETERS, params],
+    queryFn: () => api.thermometers.listTruckOrTowableThermometers(params),
   });
 
 export const getListTruckTemperaturesQueryOptions = (params: ListTruckTemperaturesRequest) =>

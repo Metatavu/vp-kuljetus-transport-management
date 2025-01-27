@@ -140,6 +140,7 @@ const EmployeeForm = ({ employee }: Props) => {
           {renderLocalizedMenuItems(Object.values(SalaryGroup), LocalizationUtils.getLocalizedSalaryGroup)}
         </TextField>
         <TextField label={t("management.employees.regularWorkingHours")} {...register("regularWorkingHours")} />
+        <TextField label={t("management.employees.pinCode")} {...register("pinCode")} />
       </Stack>
       {employee && (
         <ArchiveButton

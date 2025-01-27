@@ -16,28 +16,47 @@
 
 import * as runtime from '../runtime';
 import {
-    Thermometer,
-    ThermometerFromJSON,
-    ThermometerToJSON,
-    UpdateThermometerRequest,
-    UpdateThermometerRequestFromJSON,
-    UpdateThermometerRequestToJSON,
+    TerminalThermometer,
+    TerminalThermometerFromJSON,
+    TerminalThermometerToJSON,
+    TruckOrTowableThermometer,
+    TruckOrTowableThermometerFromJSON,
+    TruckOrTowableThermometerToJSON,
+    UpdateTruckOrTowableThermometerRequest,
+    UpdateTruckOrTowableThermometerRequestFromJSON,
+    UpdateTruckOrTowableThermometerRequestToJSON,
 } from '../models';
 
-export interface FindThermometerRequest {
+export interface FindTerminalThermometerRequest {
     thermometerId: string;
 }
 
-export interface ListThermometersRequest {
-    entityId?: string;
-    entityType?: ListThermometersEntityTypeEnum;
+export interface FindTruckOrTowableThermometerRequest {
+    thermometerId: string;
+}
+
+export interface ListTerminalThermometersRequest {
+    siteId?: string;
     includeArchived?: boolean;
     first?: number;
     max?: number;
 }
 
-export interface UpdateThermometerOperationRequest {
-    updateThermometerRequest: UpdateThermometerRequest;
+export interface ListTruckOrTowableThermometersRequest {
+    entityId?: string;
+    entityType?: ListTruckOrTowableThermometersEntityTypeEnum;
+    includeArchived?: boolean;
+    first?: number;
+    max?: number;
+}
+
+export interface UpdateTerminalThermometerRequest {
+    updateTruckOrTowableThermometerRequest: UpdateTruckOrTowableThermometerRequest;
+    thermometerId: string;
+}
+
+export interface UpdateTruckOrTowableThermometerOperationRequest {
+    updateTruckOrTowableThermometerRequest: UpdateTruckOrTowableThermometerRequest;
     thermometerId: string;
 }
 
@@ -46,12 +65,54 @@ export interface UpdateThermometerOperationRequest {
  */
 export class ThermometersApi extends runtime.BaseAPI {
     /**
-     * Retrieve the details of a specific thermometer
-     * Find a thermometer by ID
+     * Retrieve the details of a specific terminal thermometer
+     * Find a terminal thermometer by ID
      */
-    async findThermometerRaw(requestParameters: FindThermometerRequest): Promise<runtime.ApiResponse<Thermometer>> {
+    async findTerminalThermometerRaw(requestParameters: FindTerminalThermometerRequest): Promise<runtime.ApiResponse<TerminalThermometer>> {
         if (requestParameters.thermometerId === null || requestParameters.thermometerId === undefined) {
-            throw new runtime.RequiredError('thermometerId','Required parameter requestParameters.thermometerId was null or undefined when calling findThermometer.');
+            throw new runtime.RequiredError('thermometerId','Required parameter requestParameters.thermometerId was null or undefined when calling findTerminalThermometer.');
+        }
+        const queryParameters: any = {};
+        const headerParameters: runtime.HTTPHeaders = {};
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("BearerAuth", ["manager"]);
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/delivery-info/v1/thermometers/{thermometerId}`.replace(`{${"thermometerId"}}`, encodeURIComponent(String(requestParameters.thermometerId))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        });
+        return new runtime.JSONApiResponse(response, (jsonValue) => TerminalThermometerFromJSON(jsonValue));
+    }
+    /**
+     * Retrieve the details of a specific terminal thermometer
+     * Find a terminal thermometer by ID
+     */
+    async findTerminalThermometer(requestParameters: FindTerminalThermometerRequest): Promise<TerminalThermometer> {
+        const response = await this.findTerminalThermometerRaw(requestParameters);
+        return await response.value();
+    }
+    /**
+     * Retrieve the details of a specific terminal thermometer
+     * Find a terminal thermometer by ID
+     */
+    async findTerminalThermometerWithHeaders(requestParameters: FindTerminalThermometerRequest): Promise<[ TerminalThermometer, Headers ]> {
+        const response = await this.findTerminalThermometerRaw(requestParameters);
+        const value = await response.value(); 
+        return [ value, response.raw.headers ];
+    }
+    /**
+     * Retrieve the details of a specific truck or towable thermometer
+     * Find truck or towable thermometer by ID
+     */
+    async findTruckOrTowableThermometerRaw(requestParameters: FindTruckOrTowableThermometerRequest): Promise<runtime.ApiResponse<TruckOrTowableThermometer>> {
+        if (requestParameters.thermometerId === null || requestParameters.thermometerId === undefined) {
+            throw new runtime.RequiredError('thermometerId','Required parameter requestParameters.thermometerId was null or undefined when calling findTruckOrTowableThermometer.');
         }
         const queryParameters: any = {};
         const headerParameters: runtime.HTTPHeaders = {};
@@ -68,30 +129,81 @@ export class ThermometersApi extends runtime.BaseAPI {
             headers: headerParameters,
             query: queryParameters,
         });
-        return new runtime.JSONApiResponse(response, (jsonValue) => ThermometerFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => TruckOrTowableThermometerFromJSON(jsonValue));
     }
     /**
-     * Retrieve the details of a specific thermometer
-     * Find a thermometer by ID
+     * Retrieve the details of a specific truck or towable thermometer
+     * Find truck or towable thermometer by ID
      */
-    async findThermometer(requestParameters: FindThermometerRequest): Promise<Thermometer> {
-        const response = await this.findThermometerRaw(requestParameters);
+    async findTruckOrTowableThermometer(requestParameters: FindTruckOrTowableThermometerRequest): Promise<TruckOrTowableThermometer> {
+        const response = await this.findTruckOrTowableThermometerRaw(requestParameters);
         return await response.value();
     }
     /**
-     * Retrieve the details of a specific thermometer
-     * Find a thermometer by ID
+     * Retrieve the details of a specific truck or towable thermometer
+     * Find truck or towable thermometer by ID
      */
-    async findThermometerWithHeaders(requestParameters: FindThermometerRequest): Promise<[ Thermometer, Headers ]> {
-        const response = await this.findThermometerRaw(requestParameters);
+    async findTruckOrTowableThermometerWithHeaders(requestParameters: FindTruckOrTowableThermometerRequest): Promise<[ TruckOrTowableThermometer, Headers ]> {
+        const response = await this.findTruckOrTowableThermometerRaw(requestParameters);
         const value = await response.value(); 
         return [ value, response.raw.headers ];
     }
     /**
-     * Retrieve a list of all thermometers, optionally filtered by vehicle association or archived status
-     * List thermometers
+     * Retrieve a list of all terminal thermometers.  Can optionally be filtered by site (terminal) association or archived status. 
+     * List terminal thermometers
      */
-    async listThermometersRaw(requestParameters: ListThermometersRequest): Promise<runtime.ApiResponse<Array<Thermometer>>> {
+    async listTerminalThermometersRaw(requestParameters: ListTerminalThermometersRequest): Promise<runtime.ApiResponse<Array<TerminalThermometer>>> {
+        const queryParameters: any = {};
+        if (requestParameters.siteId !== undefined) {
+            queryParameters['siteId'] = requestParameters.siteId;
+        }
+        if (requestParameters.includeArchived !== undefined) {
+            queryParameters['includeArchived'] = requestParameters.includeArchived;
+        }
+        if (requestParameters.first !== undefined) {
+            queryParameters['first'] = requestParameters.first;
+        }
+        if (requestParameters.max !== undefined) {
+            queryParameters['max'] = requestParameters.max;
+        }
+        const headerParameters: runtime.HTTPHeaders = {};
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("BearerAuth", ["manager"]);
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/delivery-info/v1/thermometers`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        });
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(TerminalThermometerFromJSON));
+    }
+    /**
+     * Retrieve a list of all terminal thermometers.  Can optionally be filtered by site (terminal) association or archived status. 
+     * List terminal thermometers
+     */
+    async listTerminalThermometers(requestParameters: ListTerminalThermometersRequest = {}): Promise<Array<TerminalThermometer>> {
+        const response = await this.listTerminalThermometersRaw(requestParameters);
+        return await response.value();
+    }
+    /**
+     * Retrieve a list of all terminal thermometers.  Can optionally be filtered by site (terminal) association or archived status. 
+     * List terminal thermometers
+     */
+    async listTerminalThermometersWithHeaders(requestParameters: ListTerminalThermometersRequest): Promise<[ Array<TerminalThermometer>, Headers ]> {
+        const response = await this.listTerminalThermometersRaw(requestParameters);
+        const value = await response.value(); 
+        return [ value, response.raw.headers ];
+    }
+    /**
+     * Retrieve a list of all truck or towable thermometers.  Can optionally be filtered by vehicle association or archived status. 
+     * List truck or towable thermometers
+     */
+    async listTruckOrTowableThermometersRaw(requestParameters: ListTruckOrTowableThermometersRequest): Promise<runtime.ApiResponse<Array<TruckOrTowableThermometer>>> {
         const queryParameters: any = {};
         if (requestParameters.entityId !== undefined) {
             queryParameters['entityId'] = requestParameters.entityId;
@@ -122,35 +234,82 @@ export class ThermometersApi extends runtime.BaseAPI {
             headers: headerParameters,
             query: queryParameters,
         });
-        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(ThermometerFromJSON));
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(TruckOrTowableThermometerFromJSON));
     }
     /**
-     * Retrieve a list of all thermometers, optionally filtered by vehicle association or archived status
-     * List thermometers
+     * Retrieve a list of all truck or towable thermometers.  Can optionally be filtered by vehicle association or archived status. 
+     * List truck or towable thermometers
      */
-    async listThermometers(requestParameters: ListThermometersRequest = {}): Promise<Array<Thermometer>> {
-        const response = await this.listThermometersRaw(requestParameters);
+    async listTruckOrTowableThermometers(requestParameters: ListTruckOrTowableThermometersRequest = {}): Promise<Array<TruckOrTowableThermometer>> {
+        const response = await this.listTruckOrTowableThermometersRaw(requestParameters);
         return await response.value();
     }
     /**
-     * Retrieve a list of all thermometers, optionally filtered by vehicle association or archived status
-     * List thermometers
+     * Retrieve a list of all truck or towable thermometers.  Can optionally be filtered by vehicle association or archived status. 
+     * List truck or towable thermometers
      */
-    async listThermometersWithHeaders(requestParameters: ListThermometersRequest): Promise<[ Array<Thermometer>, Headers ]> {
-        const response = await this.listThermometersRaw(requestParameters);
+    async listTruckOrTowableThermometersWithHeaders(requestParameters: ListTruckOrTowableThermometersRequest): Promise<[ Array<TruckOrTowableThermometer>, Headers ]> {
+        const response = await this.listTruckOrTowableThermometersRaw(requestParameters);
         const value = await response.value(); 
         return [ value, response.raw.headers ];
     }
     /**
-     * Update the details of a specific thermometer. Currently only the name can be updated.
-     * Update thermometer
+     * Update the details of a specific terminal thermometer. Currently only the name can be updated.
+     * Update terminal thermometer
      */
-    async updateThermometerRaw(requestParameters: UpdateThermometerOperationRequest): Promise<runtime.ApiResponse<Thermometer>> {
-        if (requestParameters.updateThermometerRequest === null || requestParameters.updateThermometerRequest === undefined) {
-            throw new runtime.RequiredError('updateThermometerRequest','Required parameter requestParameters.updateThermometerRequest was null or undefined when calling updateThermometer.');
+    async updateTerminalThermometerRaw(requestParameters: UpdateTerminalThermometerRequest): Promise<runtime.ApiResponse<TerminalThermometer>> {
+        if (requestParameters.updateTruckOrTowableThermometerRequest === null || requestParameters.updateTruckOrTowableThermometerRequest === undefined) {
+            throw new runtime.RequiredError('updateTruckOrTowableThermometerRequest','Required parameter requestParameters.updateTruckOrTowableThermometerRequest was null or undefined when calling updateTerminalThermometer.');
         }
         if (requestParameters.thermometerId === null || requestParameters.thermometerId === undefined) {
-            throw new runtime.RequiredError('thermometerId','Required parameter requestParameters.thermometerId was null or undefined when calling updateThermometer.');
+            throw new runtime.RequiredError('thermometerId','Required parameter requestParameters.thermometerId was null or undefined when calling updateTerminalThermometer.');
+        }
+        const queryParameters: any = {};
+        const headerParameters: runtime.HTTPHeaders = {};
+        headerParameters['Content-Type'] = 'application/json';
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("BearerAuth", ["manager"]);
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/delivery-info/v1/thermometers/{thermometerId}`.replace(`{${"thermometerId"}}`, encodeURIComponent(String(requestParameters.thermometerId))),
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+            body: UpdateTruckOrTowableThermometerRequestToJSON(requestParameters.updateTruckOrTowableThermometerRequest),
+        });
+        return new runtime.JSONApiResponse(response, (jsonValue) => TerminalThermometerFromJSON(jsonValue));
+    }
+    /**
+     * Update the details of a specific terminal thermometer. Currently only the name can be updated.
+     * Update terminal thermometer
+     */
+    async updateTerminalThermometer(requestParameters: UpdateTerminalThermometerRequest): Promise<TerminalThermometer> {
+        const response = await this.updateTerminalThermometerRaw(requestParameters);
+        return await response.value();
+    }
+    /**
+     * Update the details of a specific terminal thermometer. Currently only the name can be updated.
+     * Update terminal thermometer
+     */
+    async updateTerminalThermometerWithHeaders(requestParameters: UpdateTerminalThermometerRequest): Promise<[ TerminalThermometer, Headers ]> {
+        const response = await this.updateTerminalThermometerRaw(requestParameters);
+        const value = await response.value(); 
+        return [ value, response.raw.headers ];
+    }
+    /**
+     * Update the details of specific truck or towable thermometer. Currently only the name can be updated.
+     * Update truck or towable thermometer
+     */
+    async updateTruckOrTowableThermometerRaw(requestParameters: UpdateTruckOrTowableThermometerOperationRequest): Promise<runtime.ApiResponse<TruckOrTowableThermometer>> {
+        if (requestParameters.updateTruckOrTowableThermometerRequest === null || requestParameters.updateTruckOrTowableThermometerRequest === undefined) {
+            throw new runtime.RequiredError('updateTruckOrTowableThermometerRequest','Required parameter requestParameters.updateTruckOrTowableThermometerRequest was null or undefined when calling updateTruckOrTowableThermometer.');
+        }
+        if (requestParameters.thermometerId === null || requestParameters.thermometerId === undefined) {
+            throw new runtime.RequiredError('thermometerId','Required parameter requestParameters.thermometerId was null or undefined when calling updateTruckOrTowableThermometer.');
         }
         const queryParameters: any = {};
         const headerParameters: runtime.HTTPHeaders = {};
@@ -167,24 +326,24 @@ export class ThermometersApi extends runtime.BaseAPI {
             method: 'PUT',
             headers: headerParameters,
             query: queryParameters,
-            body: UpdateThermometerRequestToJSON(requestParameters.updateThermometerRequest),
+            body: UpdateTruckOrTowableThermometerRequestToJSON(requestParameters.updateTruckOrTowableThermometerRequest),
         });
-        return new runtime.JSONApiResponse(response, (jsonValue) => ThermometerFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => TruckOrTowableThermometerFromJSON(jsonValue));
     }
     /**
-     * Update the details of a specific thermometer. Currently only the name can be updated.
-     * Update thermometer
+     * Update the details of specific truck or towable thermometer. Currently only the name can be updated.
+     * Update truck or towable thermometer
      */
-    async updateThermometer(requestParameters: UpdateThermometerOperationRequest): Promise<Thermometer> {
-        const response = await this.updateThermometerRaw(requestParameters);
+    async updateTruckOrTowableThermometer(requestParameters: UpdateTruckOrTowableThermometerOperationRequest): Promise<TruckOrTowableThermometer> {
+        const response = await this.updateTruckOrTowableThermometerRaw(requestParameters);
         return await response.value();
     }
     /**
-     * Update the details of a specific thermometer. Currently only the name can be updated.
-     * Update thermometer
+     * Update the details of specific truck or towable thermometer. Currently only the name can be updated.
+     * Update truck or towable thermometer
      */
-    async updateThermometerWithHeaders(requestParameters: UpdateThermometerOperationRequest): Promise<[ Thermometer, Headers ]> {
-        const response = await this.updateThermometerRaw(requestParameters);
+    async updateTruckOrTowableThermometerWithHeaders(requestParameters: UpdateTruckOrTowableThermometerOperationRequest): Promise<[ TruckOrTowableThermometer, Headers ]> {
+        const response = await this.updateTruckOrTowableThermometerRaw(requestParameters);
         const value = await response.value(); 
         return [ value, response.raw.headers ];
     }
@@ -192,9 +351,9 @@ export class ThermometersApi extends runtime.BaseAPI {
 /**
  * @export
  */
-export const ListThermometersEntityTypeEnum = {
+export const ListTruckOrTowableThermometersEntityTypeEnum = {
     Truck: 'truck',
     Towable: 'towable'
 } as const;
 
-export type ListThermometersEntityTypeEnum = typeof ListThermometersEntityTypeEnum[keyof typeof ListThermometersEntityTypeEnum];
+export type ListTruckOrTowableThermometersEntityTypeEnum = typeof ListTruckOrTowableThermometersEntityTypeEnum[keyof typeof ListTruckOrTowableThermometersEntityTypeEnum];
