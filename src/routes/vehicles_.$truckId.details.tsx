@@ -285,7 +285,7 @@ function VehicleInfo() {
       return rows;
     }, []);
 
-    return tableRows;
+    return tableRows.reverse();
   }, [driveStates.data, uniqueTasks, getRowsToAdd, getTaskRows, getDriveStateInterval]);
 
   const columns: GridColDef<DriveStatesTableRow>[] = useMemo(
