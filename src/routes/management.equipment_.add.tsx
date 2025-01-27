@@ -28,9 +28,7 @@ const EquipmentAdd = () => {
   const { t } = useTranslation();
 
   const onEquipmentSave = async (equipment: Truck | Towable) => {
-    if (
-      Object.values(TowableTypeEnum).includes(equipment.type as TowableTypeEnum)
-    ) {
+    if (Object.values(TowableTypeEnum).includes(equipment.type as TowableTypeEnum)) {
       createTowableEquipment.mutate(equipment as Towable);
     } else {
       createTruckEquipment.mutate(equipment as Truck);
@@ -38,7 +36,7 @@ const EquipmentAdd = () => {
   };
 
   const createTruckEquipment = useMutation({
-    mutationFn: async (truck: Truck) => api.trucks.createTruck({ truck }),
+    mutationFn: (truck: Truck) => api.trucks.createTruck({ truck }),
     onSuccess: () => {
       toast.success(t("management.equipment.successToast"));
       queryClient.invalidateQueries({ queryKey: ["trucks"] });
@@ -47,8 +45,7 @@ const EquipmentAdd = () => {
   });
 
   const createTowableEquipment = useMutation({
-    mutationFn: async (towable: Towable) =>
-      api.towables.createTowable({ towable }),
+    mutationFn: (towable: Towable) => api.towables.createTowable({ towable }),
     onSuccess: () => {
       toast.success(t("management.equipment.successToast"));
       queryClient.invalidateQueries({ queryKey: ["towables"] });

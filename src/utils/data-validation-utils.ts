@@ -1,4 +1,5 @@
 import { Towable, Truck, TruckTypeEnum } from "generated/client";
+import { t } from "i18next";
 import { DateTime } from "luxon";
 
 namespace DataValidation {
@@ -30,6 +31,22 @@ namespace DataValidation {
    */
   export const isTruck = (truckOrTowable: Truck | Towable): truckOrTowable is Truck => {
     return Object.values(TruckTypeEnum).includes(truckOrTowable.type as TruckTypeEnum);
+  };
+
+  /**
+   * Check if a given string is a valid postal code length
+   *
+   * @param string postal code
+   * @returns
+   */
+  export const validatePostalCode = (value: string) => {
+    if (value.length !== 5) {
+      return t("management.terminals.errorMessages.postalCodeTooShort");
+    }
+    if (!/^\d+$/.test(value)) {
+      return t("management.terminals.errorMessages.postalCodeInvalidFormat");
+    }
+    return true;
   };
 }
 

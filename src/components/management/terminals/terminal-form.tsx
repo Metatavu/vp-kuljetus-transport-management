@@ -11,6 +11,7 @@ import { SyntheticEvent, useState } from "react";
 import { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { stringify } from "wellknown";
+import DataValidation from "../../../utils/data-validation-utils";
 
 // Styled components
 const FlexTextArea = styled(TextField, {
@@ -44,16 +45,6 @@ const TerminalSiteForm = ({ errors, terminal: customerSite, register, setFormVal
   const [autocompleteValue, setAutocompleteValue] = useState<AutocompleteLocationOption>({ title: watch("address") });
   const showConfirmDialog = useConfirmDialog();
   const navigate = useNavigate();
-
-  const validatePostalCode = (value: string) => {
-    if (value.length !== 5) {
-      return t("management.terminals.errorMessages.postalCodeTooShort");
-    }
-    if (!/^\d+$/.test(value)) {
-      return t("management.terminals.errorMessages.postalCodeInvalidFormat");
-    }
-    return true;
-  };
 
   const suggestions = useQuery({
     queryKey: ["suggestions", debouncedSearchTerm],
@@ -148,7 +139,7 @@ const TerminalSiteForm = ({ errors, terminal: customerSite, register, setFormVal
           label={t("management.terminals.postalCode")}
           error={!!errors.postalCode}
           helperText={errors.postalCode?.message}
-          {...register("postalCode", { validate: validatePostalCode })}
+          {...register("postalCode", { validate: DataValidation.validatePostalCode })}
         />
         <TextField
           label={t("management.terminals.municipality")}
