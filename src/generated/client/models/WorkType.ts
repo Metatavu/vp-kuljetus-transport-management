@@ -28,6 +28,10 @@
  * | HOLIDAY_ALLOWANCE      | Pyhälisä             |
  * | JOB_SPECIFIC_ALLOWANCE | Työkohtaisuuslisä    |
  * | FROZEN_ALLOWANCE       | Pakastelisä          |
+ * | OFFICIAL_DUTIES        | Virkatehtävät        |
+ * | SICK_LEAVE             | Sairasloma           |
+ * | TRAINING               | Koulutus työajalla   |
+ * | UNPAID                 | Palkaton             |
  * 
  * @export
  */
@@ -39,7 +43,11 @@ export const WorkType = {
     NightAllowance: 'NIGHT_ALLOWANCE',
     HolidayAllowance: 'HOLIDAY_ALLOWANCE',
     JobSpecificAllowance: 'JOB_SPECIFIC_ALLOWANCE',
-    FrozenAllowance: 'FROZEN_ALLOWANCE'
+    FrozenAllowance: 'FROZEN_ALLOWANCE',
+    OfficialDuties: 'OFFICIAL_DUTIES',
+    SickLeave: 'SICK_LEAVE',
+    Training: 'TRAINING',
+    Unpaid: 'UNPAID'
 } as const;
 export type WorkType = typeof WorkType[keyof typeof WorkType];
 

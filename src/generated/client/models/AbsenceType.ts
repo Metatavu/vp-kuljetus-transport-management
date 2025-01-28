@@ -23,20 +23,14 @@
  * 
  * | name               | abbreviation | finnish name       | work hours | work hours on holiday | affects allowance hours |
  * | ------------------ | ------------ | ------------------ | ---------- | --------------------- | ----------------------- |
- * | TRAINING           | KO           | Koulutus työajalla | 8h         | 8h                    | no                      |
  * | VACATION           | LO           | Loma               | 6.67h      | 0h                    | yes                     |
- * | OFFICIAL_DUTIES    | LT           | Luottamustoimet    | 8h         | 8h                    | yes                     |
  * | COMPENSATORY_LEAVE | PP           | Pekkanen           | 8h         | 8h                    | yes                     |
- * | SICK_LEAVE         | SL           | Sairausloma        | 8h         | 8h                    | yes                     |
  * 
  * @export
  */
 export const AbsenceType = {
-    Training: 'TRAINING',
     Vacation: 'VACATION',
-    OfficialDuties: 'OFFICIAL_DUTIES',
-    CompensatoryLeave: 'COMPENSATORY_LEAVE',
-    SickLeave: 'SICK_LEAVE'
+    CompensatoryLeave: 'COMPENSATORY_LEAVE'
 } as const;
 export type AbsenceType = typeof AbsenceType[keyof typeof AbsenceType];
 

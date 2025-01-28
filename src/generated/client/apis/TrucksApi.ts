@@ -19,9 +19,6 @@ import {
     SortOrder,
     SortOrderFromJSON,
     SortOrderToJSON,
-    Temperature,
-    TemperatureFromJSON,
-    TemperatureToJSON,
     Truck,
     TruckFromJSON,
     TruckToJSON,
@@ -37,6 +34,9 @@ import {
     TruckOdometerReading,
     TruckOdometerReadingFromJSON,
     TruckOdometerReadingToJSON,
+    TruckOrTowableTemperature,
+    TruckOrTowableTemperatureFromJSON,
+    TruckOrTowableTemperatureToJSON,
     TruckSortByField,
     TruckSortByFieldFromJSON,
     TruckSortByFieldToJSON,
@@ -424,7 +424,7 @@ export class TrucksApi extends runtime.BaseAPI {
      * Retrieve all temperatures from all thermometers related to a specific truck, possibly including data from archived thermometers.
      * List truck temperatures.
      */
-    async listTruckTemperaturesRaw(requestParameters: ListTruckTemperaturesRequest): Promise<runtime.ApiResponse<Array<Temperature>>> {
+    async listTruckTemperaturesRaw(requestParameters: ListTruckTemperaturesRequest): Promise<runtime.ApiResponse<Array<TruckOrTowableTemperature>>> {
         if (requestParameters.truckId === null || requestParameters.truckId === undefined) {
             throw new runtime.RequiredError('truckId','Required parameter requestParameters.truckId was null or undefined when calling listTruckTemperatures.');
         }
@@ -452,13 +452,13 @@ export class TrucksApi extends runtime.BaseAPI {
             headers: headerParameters,
             query: queryParameters,
         });
-        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(TemperatureFromJSON));
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(TruckOrTowableTemperatureFromJSON));
     }
     /**
      * Retrieve all temperatures from all thermometers related to a specific truck, possibly including data from archived thermometers.
      * List truck temperatures.
      */
-    async listTruckTemperatures(requestParameters: ListTruckTemperaturesRequest): Promise<Array<Temperature>> {
+    async listTruckTemperatures(requestParameters: ListTruckTemperaturesRequest): Promise<Array<TruckOrTowableTemperature>> {
         const response = await this.listTruckTemperaturesRaw(requestParameters);
         return await response.value();
     }
@@ -466,7 +466,7 @@ export class TrucksApi extends runtime.BaseAPI {
      * Retrieve all temperatures from all thermometers related to a specific truck, possibly including data from archived thermometers.
      * List truck temperatures.
      */
-    async listTruckTemperaturesWithHeaders(requestParameters: ListTruckTemperaturesRequest): Promise<[ Array<Temperature>, Headers ]> {
+    async listTruckTemperaturesWithHeaders(requestParameters: ListTruckTemperaturesRequest): Promise<[ Array<TruckOrTowableTemperature>, Headers ]> {
         const response = await this.listTruckTemperaturesRaw(requestParameters);
         const value = await response.value(); 
         return [ value, response.raw.headers ];

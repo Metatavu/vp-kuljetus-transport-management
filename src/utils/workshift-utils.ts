@@ -38,7 +38,7 @@ namespace WorkShiftsUtils {
     if (paidWorkHours >= regularWorkingHours) return 0;
 
     // Absence types that are included in the calculation
-    const absenceTypes: (keyof typeof AbsenceType)[] = ["Vacation", "CompensatoryLeave", "SickLeave"];
+    const absenceTypes: (keyof typeof AbsenceType)[] = ["Vacation", "CompensatoryLeave"];
     const totalAbsenceHours = absenceTypes
       .map((type) => parseFloat(getTotalHoursByAbsenseType(shiftsInWorkPeriod, AbsenceType[type])))
       .reduce((sum, hours) => sum + hours, 0);
@@ -54,9 +54,7 @@ namespace WorkShiftsUtils {
     const overTimeFullLimit = vacationHours > 40 ? 10 : 12;
     const regularWorkingHours = employee?.regularWorkingHours;
     // Calculate paid work hours without training hours (training hours does not cumulate overtime)
-    const paidWorkHours =
-      parseFloat(getTotalWorkHoursByType(shiftsInWorkPeriod, WorkType.PaidWork)) -
-      parseFloat(getTotalHoursByAbsenseType(shiftsInWorkPeriod, AbsenceType.Training));
+    const paidWorkHours = parseFloat(getTotalWorkHoursByType(shiftsInWorkPeriod, WorkType.PaidWork));
     if (paidWorkHours <= regularWorkingHours) {
       return { overTimeHalf: 0, overTimeFull: 0 };
     }
