@@ -13,7 +13,6 @@
  * Do not edit the class manually.
  */
 
-
 import * as runtime from '../runtime';
 import {
     Employee,
@@ -29,19 +28,16 @@ import {
     SalaryGroupFromJSON,
     SalaryGroupToJSON,
 } from '../models';
-
+import { DateTime } from "luxon";
 export interface CreateEmployeeRequest {
     employee: Employee;
 }
-
 export interface DeleteEmployeeRequest {
     employeeId: string;
 }
-
 export interface FindEmployeeRequest {
     employeeId: string;
 }
-
 export interface ListEmployeesRequest {
     search?: string;
     salaryGroup?: SalaryGroup;
@@ -51,12 +47,10 @@ export interface ListEmployeesRequest {
     first?: number;
     max?: number;
 }
-
 export interface UpdateEmployeeRequest {
     employee: Employee;
     employeeId: string;
 }
-
 /**
  * 
  */

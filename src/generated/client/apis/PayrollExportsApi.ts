@@ -13,22 +13,19 @@
  * Do not edit the class manually.
  */
 
-
 import * as runtime from '../runtime';
 import {
     PayrollExport,
     PayrollExportFromJSON,
     PayrollExportToJSON,
 } from '../models';
-
+import { DateTime } from "luxon";
 export interface CreatePayrollExportRequest {
     payrollExport: PayrollExport;
 }
-
 export interface FindPayrollExportRequest {
     payrollExportId: string;
 }
-
 export interface ListPayrollExportsRequest {
     employeeId?: string;
     exportedAfter?: Date;
@@ -36,7 +33,6 @@ export interface ListPayrollExportsRequest {
     first?: number;
     max?: number;
 }
-
 /**
  * 
  */
@@ -137,10 +133,10 @@ export class PayrollExportsApi extends runtime.BaseAPI {
             queryParameters['employeeId'] = requestParameters.employeeId;
         }
         if (requestParameters.exportedAfter !== undefined) {
-            queryParameters['exportedAfter'] = (requestParameters.exportedAfter as any).toISOString();
+            queryParameters['exportedAfter'] = DateTime.fromJSDate(requestParameters.exportedAfter as any).toISO();
         }
         if (requestParameters.exportedBefore !== undefined) {
-            queryParameters['exportedBefore'] = (requestParameters.exportedBefore as any).toISOString();
+            queryParameters['exportedBefore'] = DateTime.fromJSDate(requestParameters.exportedBefore as any).toISO();
         }
         if (requestParameters.first !== undefined) {
             queryParameters['first'] = requestParameters.first;

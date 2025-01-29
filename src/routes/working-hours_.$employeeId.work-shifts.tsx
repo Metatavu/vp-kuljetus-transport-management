@@ -33,7 +33,6 @@ import { useCallback, useMemo } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { queryClient } from "src/main";
 import { Breadcrumb, EmployeeWorkHoursForm, EmployeeWorkHoursFormRow } from "src/types";
 import DataValidation from "src/utils/data-validation-utils";
 import TimeUtils from "src/utils/time-utils";
@@ -46,24 +45,13 @@ export const workShiftSearchSchema = z.object({
 
 export const Route = createFileRoute("/working-hours_/$employeeId/work-shifts")({
   component: WorkShifts,
-  loader: async ({ params }) => {
-    const { employeeId } = params;
+  loader: () => {
     const breadcrumbs: Breadcrumb[] = [
       { label: t("workingHours.title") },
       { label: t("workingHours.workingDays.title") },
     ];
 
-    const [[workShift]] = await queryClient.ensureQueryData({
-      queryKey: [QUERY_KEYS.WORK_SHIFTS, employeeId],
-      queryFn: async () =>
-        await api.employeeWorkShifts.listEmployeeWorkShiftsWithHeaders({
-          employeeId,
-          max: 1,
-          first: 0,
-        }),
-    });
-
-    return { breadcrumbs, workShift };
+    return { breadcrumbs };
   },
   validateSearch: workShiftSearchSchema,
 });

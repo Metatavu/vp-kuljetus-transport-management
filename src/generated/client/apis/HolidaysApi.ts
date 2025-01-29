@@ -13,37 +13,31 @@
  * Do not edit the class manually.
  */
 
-
 import * as runtime from '../runtime';
 import {
     Holiday,
     HolidayFromJSON,
     HolidayToJSON,
 } from '../models';
-
+import { DateTime } from "luxon";
 export interface CreateHolidayRequest {
     holiday: Holiday;
 }
-
 export interface DeleteHolidayRequest {
     holidayId: string;
 }
-
 export interface FindHolidayRequest {
     holidayId: string;
 }
-
 export interface ListHolidaysRequest {
     year?: number;
     first?: number;
     max?: number;
 }
-
 export interface UpdateHolidayRequest {
     holiday: Holiday;
     holidayId: string;
 }
-
 /**
  * 
  */

@@ -13,33 +13,28 @@
  * Do not edit the class manually.
  */
 
-
 import * as runtime from '../runtime';
 import {
     Site,
     SiteFromJSON,
     SiteToJSON,
 } from '../models';
-
+import { DateTime } from "luxon";
 export interface CreateSiteRequest {
     site: Site;
 }
-
 export interface FindSiteRequest {
     siteId: string;
 }
-
 export interface ListSitesRequest {
     archived?: boolean;
     first?: number;
     max?: number;
 }
-
 export interface UpdateSiteRequest {
     site: Site;
     siteId: string;
 }
-
 /**
  * 
  */

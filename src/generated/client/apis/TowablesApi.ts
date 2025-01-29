@@ -13,7 +13,6 @@
  * Do not edit the class manually.
  */
 
-
 import * as runtime from '../runtime';
 import {
     Temperature,
@@ -23,34 +22,29 @@ import {
     TowableFromJSON,
     TowableToJSON,
 } from '../models';
-
+import { DateTime } from "luxon";
 export interface CreateTowableRequest {
     towable: Towable;
 }
-
 export interface FindTowableRequest {
     towableId: string;
 }
-
 export interface ListTowableTemperaturesRequest {
     towableId: string;
     includeArchived?: boolean;
     first?: number;
     max?: number;
 }
-
 export interface ListTowablesRequest {
     plateNumber?: string;
     archived?: boolean;
     first?: number;
     max?: number;
 }
-
 export interface UpdateTowableRequest {
     towable: Towable;
     towableId: string;
 }
-
 /**
  * 
  */

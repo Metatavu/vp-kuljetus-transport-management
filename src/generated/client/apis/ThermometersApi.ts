@@ -13,7 +13,6 @@
  * Do not edit the class manually.
  */
 
-
 import * as runtime from '../runtime';
 import {
     Thermometer,
@@ -23,11 +22,10 @@ import {
     UpdateThermometerRequestFromJSON,
     UpdateThermometerRequestToJSON,
 } from '../models';
-
+import { DateTime } from "luxon";
 export interface FindThermometerRequest {
     thermometerId: string;
 }
-
 export interface ListThermometersRequest {
     entityId?: string;
     entityType?: ListThermometersEntityTypeEnum;
@@ -35,12 +33,10 @@ export interface ListThermometersRequest {
     first?: number;
     max?: number;
 }
-
 export interface UpdateThermometerOperationRequest {
     updateThermometerRequest: UpdateThermometerRequest;
     thermometerId: string;
 }
-
 /**
  * 
  */

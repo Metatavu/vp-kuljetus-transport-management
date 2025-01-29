@@ -13,29 +13,25 @@
  * Do not edit the class manually.
  */
 
-
 import * as runtime from '../runtime';
 import {
     EmployeeWorkShift,
     EmployeeWorkShiftFromJSON,
     EmployeeWorkShiftToJSON,
 } from '../models';
-
+import { DateTime } from "luxon";
 export interface CreateEmployeeWorkShiftRequest {
     employeeWorkShift: EmployeeWorkShift;
     employeeId: string;
 }
-
 export interface DeleteEmployeeWorkShiftRequest {
     employeeId: string;
     workShiftId: string;
 }
-
 export interface FindEmployeeWorkShiftRequest {
     employeeId: string;
     workShiftId: string;
 }
-
 export interface ListEmployeeWorkShiftsRequest {
     employeeId: string;
     startedAfter?: Date;
@@ -45,13 +41,11 @@ export interface ListEmployeeWorkShiftsRequest {
     first?: number;
     max?: number;
 }
-
 export interface UpdateEmployeeWorkShiftRequest {
     employeeWorkShift: EmployeeWorkShift;
     employeeId: string;
     workShiftId: string;
 }
-
 /**
  * 
  */
@@ -201,16 +195,16 @@ export class EmployeeWorkShiftsApi extends runtime.BaseAPI {
         }
         const queryParameters: any = {};
         if (requestParameters.startedAfter !== undefined) {
-            queryParameters['startedAfter'] = (requestParameters.startedAfter as any).toISOString();
+            queryParameters['startedAfter'] = DateTime.fromJSDate(requestParameters.startedAfter as any).toISO();
         }
         if (requestParameters.startedBefore !== undefined) {
-            queryParameters['startedBefore'] = (requestParameters.startedBefore as any).toISOString();
+            queryParameters['startedBefore'] = DateTime.fromJSDate(requestParameters.startedBefore as any).toISO();
         }
         if (requestParameters.dateAfter !== undefined) {
-            queryParameters['dateAfter'] = (requestParameters.dateAfter as any).toISOString();
+            queryParameters['dateAfter'] = DateTime.fromJSDate(requestParameters.dateAfter as any).toISO();
         }
         if (requestParameters.dateBefore !== undefined) {
-            queryParameters['dateBefore'] = (requestParameters.dateBefore as any).toISOString();
+            queryParameters['dateBefore'] = DateTime.fromJSDate(requestParameters.dateBefore as any).toISO();
         }
         if (requestParameters.first !== undefined) {
             queryParameters['first'] = requestParameters.first;
