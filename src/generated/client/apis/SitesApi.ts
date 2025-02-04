@@ -19,6 +19,9 @@ import {
     Site,
     SiteFromJSON,
     SiteToJSON,
+    TerminalTemperature,
+    TerminalTemperatureFromJSON,
+    TerminalTemperatureToJSON,
 } from '../models';
 
 export interface CreateSiteRequest {
@@ -27,6 +30,13 @@ export interface CreateSiteRequest {
 
 export interface FindSiteRequest {
     siteId: string;
+}
+
+export interface ListSiteTemperaturesRequest {
+    siteId: string;
+    includeArchived?: boolean;
+    first?: number;
+    max?: number;
 }
 
 export interface ListSitesRequest {
@@ -127,6 +137,57 @@ export class SitesApi extends runtime.BaseAPI {
      */
     async findSiteWithHeaders(requestParameters: FindSiteRequest): Promise<[ Site, Headers ]> {
         const response = await this.findSiteRaw(requestParameters);
+        const value = await response.value(); 
+        return [ value, response.raw.headers ];
+    }
+    /**
+     * Retrieve all temperatures from all thermometers related to a specific site, possibly including data from thermometers that have been archived.
+     * List temperature readings by site, including archived thermometers
+     */
+    async listSiteTemperaturesRaw(requestParameters: ListSiteTemperaturesRequest): Promise<runtime.ApiResponse<Array<TerminalTemperature>>> {
+        if (requestParameters.siteId === null || requestParameters.siteId === undefined) {
+            throw new runtime.RequiredError('siteId','Required parameter requestParameters.siteId was null or undefined when calling listSiteTemperatures.');
+        }
+        const queryParameters: any = {};
+        if (requestParameters.includeArchived !== undefined) {
+            queryParameters['includeArchived'] = requestParameters.includeArchived;
+        }
+        if (requestParameters.first !== undefined) {
+            queryParameters['first'] = requestParameters.first;
+        }
+        if (requestParameters.max !== undefined) {
+            queryParameters['max'] = requestParameters.max;
+        }
+        const headerParameters: runtime.HTTPHeaders = {};
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("BearerAuth", ["manager"]);
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/delivery-info/v1/sites/{siteId}/temperatures`.replace(`{${"siteId"}}`, encodeURIComponent(String(requestParameters.siteId))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        });
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(TerminalTemperatureFromJSON));
+    }
+    /**
+     * Retrieve all temperatures from all thermometers related to a specific site, possibly including data from thermometers that have been archived.
+     * List temperature readings by site, including archived thermometers
+     */
+    async listSiteTemperatures(requestParameters: ListSiteTemperaturesRequest): Promise<Array<TerminalTemperature>> {
+        const response = await this.listSiteTemperaturesRaw(requestParameters);
+        return await response.value();
+    }
+    /**
+     * Retrieve all temperatures from all thermometers related to a specific site, possibly including data from thermometers that have been archived.
+     * List temperature readings by site, including archived thermometers
+     */
+    async listSiteTemperaturesWithHeaders(requestParameters: ListSiteTemperaturesRequest): Promise<[ Array<TerminalTemperature>, Headers ]> {
+        const response = await this.listSiteTemperaturesRaw(requestParameters);
         const value = await response.value(); 
         return [ value, response.raw.headers ];
     }

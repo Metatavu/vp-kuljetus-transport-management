@@ -15,102 +15,91 @@
 
 import { exists, mapValues } from '../runtime';
 /**
- * Represents a thermometer attached to a truck or towable
+ * Represents a thermometer attached to a terminal
  * @export
- * @interface Thermometer
+ * @interface TerminalThermometer
  */
-export interface Thermometer {
+export interface TerminalThermometer {
     /**
      * Unique identifier for the thermometer
      * @type {string}
-     * @memberof Thermometer
+     * @memberof TerminalThermometer
      */
     readonly id?: string;
     /**
      * Name of the thermometer
      * @type {string}
-     * @memberof Thermometer
+     * @memberof TerminalThermometer
      */
     name?: string;
     /**
-     * MAC address of the thermometer. It is unique and stays with the device.
+     * Hardware address of the thermometer. It is unique and stays with the device.
      * @type {string}
-     * @memberof Thermometer
+     * @memberof TerminalThermometer
      */
-    macAddress: string;
+    hardwareSensorId: string;
     /**
-     * The ID of the entity currently associated with the thermometer.
+     * Identifier of the device. It is unique and stays with the device.
      * @type {string}
-     * @memberof Thermometer
+     * @memberof TerminalThermometer
      */
-    entityId: string;
+    deviceIdentifier: string;
     /**
-     * The type of the entity to which the thermometer is attached (e.g., "towable", "truck", etc.)
+     * The ID of the site (terminal) currently associated with the thermometer.
      * @type {string}
-     * @memberof Thermometer
+     * @memberof TerminalThermometer
      */
-    entityType: ThermometerEntityTypeEnum;
+    siteId: string;
     /**
      * 
      * @type {string}
-     * @memberof Thermometer
+     * @memberof TerminalThermometer
      */
     readonly creatorId?: string;
     /**
      * 
      * @type {Date}
-     * @memberof Thermometer
+     * @memberof TerminalThermometer
      */
     readonly createdAt?: Date;
     /**
      * 
      * @type {string}
-     * @memberof Thermometer
+     * @memberof TerminalThermometer
      */
     readonly lastModifierId?: string;
     /**
      * 
      * @type {Date}
-     * @memberof Thermometer
+     * @memberof TerminalThermometer
      */
     readonly modifiedAt?: Date;
     /**
      * Setting the archivedAt time marks the thermometer as archived. Thermometers marked as archived will not appear in list requests unless includeArchived filter is set to true. Archived thermometer cannot be updated, unless archivedAt is first set to null.
      * 
      * @type {Date}
-     * @memberof Thermometer
+     * @memberof TerminalThermometer
      */
     archivedAt?: Date;
 }
 
-
 /**
- * @export
+ * Check if a given object implements the TerminalThermometer interface.
  */
-export const ThermometerEntityTypeEnum = {
-    Truck: 'truck',
-    Towable: 'towable'
-} as const;
-export type ThermometerEntityTypeEnum = typeof ThermometerEntityTypeEnum[keyof typeof ThermometerEntityTypeEnum];
-
-
-/**
- * Check if a given object implements the Thermometer interface.
- */
-export function instanceOfThermometer(value: object): boolean {
+export function instanceOfTerminalThermometer(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "macAddress" in value;
-    isInstance = isInstance && "entityId" in value;
-    isInstance = isInstance && "entityType" in value;
+    isInstance = isInstance && "hardwareSensorId" in value;
+    isInstance = isInstance && "deviceIdentifier" in value;
+    isInstance = isInstance && "siteId" in value;
 
     return isInstance;
 }
 
-export function ThermometerFromJSON(json: any): Thermometer {
-    return ThermometerFromJSONTyped(json, false);
+export function TerminalThermometerFromJSON(json: any): TerminalThermometer {
+    return TerminalThermometerFromJSONTyped(json, false);
 }
 
-export function ThermometerFromJSONTyped(json: any, ignoreDiscriminator: boolean): Thermometer {
+export function TerminalThermometerFromJSONTyped(json: any, ignoreDiscriminator: boolean): TerminalThermometer {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -118,9 +107,9 @@ export function ThermometerFromJSONTyped(json: any, ignoreDiscriminator: boolean
         
         'id': !exists(json, 'id') ? undefined : json['id'],
         'name': !exists(json, 'name') ? undefined : json['name'],
-        'macAddress': json['macAddress'],
-        'entityId': json['entityId'],
-        'entityType': json['entityType'],
+        'hardwareSensorId': json['hardwareSensorId'],
+        'deviceIdentifier': json['deviceIdentifier'],
+        'siteId': json['siteId'],
         'creatorId': !exists(json, 'creatorId') ? undefined : json['creatorId'],
         'createdAt': !exists(json, 'createdAt') ? undefined : (new Date(json['createdAt'])),
         'lastModifierId': !exists(json, 'lastModifierId') ? undefined : json['lastModifierId'],
@@ -129,7 +118,7 @@ export function ThermometerFromJSONTyped(json: any, ignoreDiscriminator: boolean
     };
 }
 
-export function ThermometerToJSON(value?: Thermometer | null): any {
+export function TerminalThermometerToJSON(value?: TerminalThermometer | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -139,9 +128,9 @@ export function ThermometerToJSON(value?: Thermometer | null): any {
     return {
         
         'name': value.name,
-        'macAddress': value.macAddress,
-        'entityId': value.entityId,
-        'entityType': value.entityType,
+        'hardwareSensorId': value.hardwareSensorId,
+        'deviceIdentifier': value.deviceIdentifier,
+        'siteId': value.siteId,
         'archivedAt': value.archivedAt === undefined ? undefined : (value.archivedAt.toISOString()),
     };
 }

@@ -3,10 +3,10 @@ import { GridColDef } from "@mui/x-data-grid";
 import { useQueries, useQuery } from "@tanstack/react-query";
 import GenericDataGrid from "components/generic/generic-data-grid";
 import ToolbarRow from "components/generic/toolbar-row";
-import { Temperature, Thermometer } from "generated/client";
+import { TruckOrTowableTemperature, TruckOrTowableThermometer } from "generated/client";
 import {
-  getListThermometersQueryOptions,
   getListTowableTemperaturesQueryOptions,
+  getListTruckOrTowableThermometersQueryOptions,
   getListTruckTemperaturesQueryOptions,
 } from "hooks/use-queries";
 import { useMemo } from "react";
@@ -20,7 +20,7 @@ type Props = {
 const Sensors = ({ entityId, entityType }: Props) => {
   const { t } = useTranslation();
 
-  const listThermometersQuery = useQuery(getListThermometersQueryOptions({ entityId, entityType }));
+  const listThermometersQuery = useQuery(getListTruckOrTowableThermometersQueryOptions({ entityId, entityType }));
   const thermometers = useMemo(() => listThermometersQuery.data ?? [], [listThermometersQuery.data]);
   const temperatures =
     entityType === "truck"
@@ -33,7 +33,7 @@ const Sensors = ({ entityId, entityType }: Props) => {
               const temperature = result.data?.at(0);
               if (temperature) map.set(temperature.thermometerId, temperature);
               return map;
-            }, new Map<string, Temperature>()),
+            }, new Map<string, TruckOrTowableTemperature>()),
         })
       : useQueries({
           queries: thermometers.map((thermometer) =>
@@ -44,10 +44,10 @@ const Sensors = ({ entityId, entityType }: Props) => {
               const temperature = result.data?.at(0);
               if (temperature) map.set(temperature.thermometerId, temperature);
               return map;
-            }, new Map<string, Temperature>()),
+            }, new Map<string, TruckOrTowableTemperature>()),
         });
 
-  const columns = useMemo<GridColDef<Thermometer>[]>(
+  const columns = useMemo<GridColDef<TruckOrTowableThermometer>[]>(
     () => [
       {
         field: "name",
