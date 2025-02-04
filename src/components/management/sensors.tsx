@@ -77,7 +77,7 @@ const Sensors = ({ entityId, entityType }: Props) => {
   return (
     <Paper>
       <ToolbarRow title={t("management.equipment.sensors")} />
-      <GenericDataGrid rows={thermometers} columns={columns} />
+      <GenericDataGrid hideFooter rows={thermometers} columns={columns} />
     </Paper>
   );
 };

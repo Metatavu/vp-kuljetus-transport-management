@@ -1,9 +1,6 @@
 import { SessionToken } from "@mapbox/search-js-core";
-import { Autocomplete, Button, ListItem, ListItemText, Stack, TextField, styled } from "@mui/material";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { useNavigate } from "@tanstack/react-router";
-import { api } from "api/index";
-import { useConfirmDialog } from "components/providers/confirm-dialog-provider";
+import { Autocomplete, ListItem, ListItemText, Stack, TextField, styled } from "@mui/material";
+import { useQuery } from "@tanstack/react-query";
 import { Site } from "generated/client";
 import { useDebounce } from "hooks/use-debounce";
 import Mapbox from "mapbox/index";
@@ -39,12 +36,10 @@ type AutocompleteLocationOption = {
 
 const mapboxSessionToken = new SessionToken();
 
-const TerminalSiteForm = ({ errors, terminal: customerSite, register, setFormValue, watch }: Props) => {
+const TerminalSiteForm = ({ errors, register, setFormValue, watch }: Props) => {
   const { t } = useTranslation();
   const [debouncedSearchTerm, _, setSearchTerm] = useDebounce("", 500);
   const [autocompleteValue, setAutocompleteValue] = useState<AutocompleteLocationOption>({ title: watch("address") });
-  const showConfirmDialog = useConfirmDialog();
-  const navigate = useNavigate();
 
   const suggestions = useQuery({
     queryKey: ["suggestions", debouncedSearchTerm],
@@ -56,15 +51,6 @@ const TerminalSiteForm = ({ errors, terminal: customerSite, register, setFormVal
         value: mapbox_id,
       })),
     enabled: !!debouncedSearchTerm,
-  });
-
-  const archiveCustomerSite = useMutation({
-    mutationKey: ["archiveSite", watch("id")],
-    mutationFn: (site?: Site) => {
-      if (!site?.id) return Promise.reject();
-      return api.sites.updateSite({ siteId: site.id, site: { ...site, archivedAt: new Date() } });
-    },
-    onSuccess: () => navigate({ to: "/management/customer-sites" }),
   });
 
   const onAutocompleteValueChange = async (_: SyntheticEvent, value: string | AutocompleteLocationOption | null) => {
@@ -155,20 +141,6 @@ const TerminalSiteForm = ({ errors, terminal: customerSite, register, setFormVal
           {...register("additionalInfo")}
           inputProps={{ style: { flex: 1, height: "100%" } }}
         />
-        {customerSite && (
-          <Button
-            variant="outlined"
-            onClick={() =>
-              showConfirmDialog({
-                title: t("management.terminals.archiveDialog.title"),
-                description: t("management.terminals.archiveDialog.description", { name: watch("name") }),
-                onPositiveClick: () => archiveCustomerSite.mutate(customerSite),
-              })
-            }
-          >
-            {t("archive")}
-          </Button>
-        )}
       </Stack>
     </Stack>
   );
