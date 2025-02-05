@@ -1,6 +1,6 @@
 import { Restore, SaveAlt } from "@mui/icons-material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
-import { Button, Card, Paper, Stack, Tab } from "@mui/material";
+import { Button, Paper, Stack, Tab } from "@mui/material";
 import { UseMutationResult, useMutation } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { api } from "api/index";
@@ -17,8 +17,8 @@ import { useTranslation } from "react-i18next";
 import { MapContainer, Marker, TileLayer } from "react-leaflet";
 import { queryClient } from "src/main";
 import LocationUtils from "utils/location-utils";
-import Sensors from "./sensors";
 import TerminalForm from "./terminal-form";
+import Thermometers from "./thermometers";
 
 type Props = {
   formType: "ADD" | "MODIFY";
@@ -86,7 +86,7 @@ function TerminalSiteComponent({ formType, site, onSave }: Props) {
       navigate({ to: "/management/terminals" });
     },
   });
-  console.log(isDirty);
+
   const renderToolbarButtons = () => (
     <Stack direction="row" spacing={1}>
       {site && (
@@ -152,9 +152,7 @@ function TerminalSiteComponent({ formType, site, onSave }: Props) {
                 </MapContainer>
               </TabPanel>
               <TabPanel value="2" sx={{ flex: 1 }}>
-                <Card>
-                  <Sensors entityId={""} />
-                </Card>
+                {site && <Thermometers siteId={site.id} />}
               </TabPanel>
             </TabContext>
           </Stack>

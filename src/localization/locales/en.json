@@ -146,6 +146,15 @@
       "deviceId": "Device ID",
       "devices": "Devices",
       "additionalInfo": "Additional info",
+      "thermometers": {
+        "thermometers": "Thermometers",
+        "name": "Name",
+        "hardwareSensorId": "Hardware sensor ID",
+        "deviceIdentifier": "Device identifier",
+        "temperature": "Temperature",
+        "lastAlarm": "Last alarm",
+        "alarmSetting": "Alarm setting"
+      },
       "errorMessages": {
         "nameMissing": "Name is required",
         "addressMissing": "Address is required",

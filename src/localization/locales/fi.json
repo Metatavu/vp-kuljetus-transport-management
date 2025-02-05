@@ -142,6 +142,15 @@
       "deviceId": "Laitetunnus",
       "devices": "Laitteet",
       "additionalInfo": "Lisätiedot",
+      "thermometers": {
+        "thermometers": "Lämpötila-anturit",
+        "name": "Nimi",
+        "hardwareSensorId": "Anturin tunniste",
+        "deviceIdentifier": "Laitetunnus",
+        "temperature": "Lämpötila",
+        "lastAlarm": "Viimeisin hälytys",
+        "alarmSetting": "Hälytysasetus"
+      },
       "errorMessages": {
         "nameMissing": "Nimi on pakollinen",
         "addressMissing": "Osoite on pakollinen",
