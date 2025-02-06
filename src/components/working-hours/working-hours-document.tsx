@@ -1,5 +1,5 @@
 import { Document, Image, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
-import { Employee, EmployeeWorkShift, Truck, WorkShiftHours, WorkType } from "generated/client";
+import { Employee, Truck, WorkType } from "generated/client";
 import { DateTime } from "luxon";
 import { useTranslation } from "react-i18next";
 import { EmployeeWorkHoursFormRow } from "src/types";
@@ -227,7 +227,9 @@ const WorkingHoursDocument = ({ employee, workShiftsData, trucks }: Props) => {
       </View>
       <View style={[styles.timeTableCell, { maxWidth: 30 }]}>
         <Text style={styles.cellText}>
-          {row.workShift.truckIds?.map((truckId) => trucks?.find((truck) => truck.id === truckId)?.name).join(", ")}
+          {row.workShift.truckIdsFromEvents
+            ?.map((truckId) => trucks?.find((truck) => truck.id === truckId)?.name)
+            .join(", ")}
         </Text>
       </View>
       <View style={[styles.timeTableCell, { maxWidth: 30 }]}>

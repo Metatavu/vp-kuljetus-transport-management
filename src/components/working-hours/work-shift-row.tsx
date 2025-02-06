@@ -100,11 +100,14 @@ function WorkShiftRow({ index, trucks, date, workShiftId }: Props) {
     [setValue, index, workShiftHours, t, workShift?.approved],
   );
 
-  // TODO: Needs api support and approval from designer
+  const getTruckName = (truckId: string | undefined) => {
+    const truck = trucks.find((truck) => truck.id === truckId);
+    return truck?.name;
+  };
+
   const renderTruckTextOrSelectInput = useCallback(() => {
-    const recordedTruckIds = workShift?.truckIdsFromEvents
-      ?.map((truckId) => trucks.find((truck) => truck.id === truckId)?.name)
-      .join(", ");
+    const recordedTruckIds = workShift?.truckIdsFromEvents?.map((truckId) => getTruckName(truckId)).join(", ") ?? "";
+
     return (
       <TextField
         select
@@ -115,19 +118,23 @@ function WorkShiftRow({ index, trucks, date, workShiftId }: Props) {
         fullWidth
         disabled={workShift?.approved}
         variant="outlined"
-        value={recordedTruckIds ?? workShift?.defaultTruckId ?? ""}
+        value={workShift?.defaultTruckId ?? recordedTruckIds}
         onChange={(event) =>
-          setValue(`${index}.workShift.truckIdsFromEvents`, [event.target.value], {
+          setValue(`${index}.workShift.defaultTruckId`, event.target.value, {
             shouldDirty: true,
             shouldValidate: true,
             shouldTouch: true,
           })
         }
       >
-        {/* TODO: Check design and usability */}
         {recordedTruckIds && (
           <MenuItem disabled style={{ minHeight: 30 }} key={recordedTruckIds} value={recordedTruckIds}>
-            {`${recordedTruckIds} (Valittu)`}
+            {`${recordedTruckIds} (Tallennetut ajoneuvot)`}
+          </MenuItem>
+        )}
+        {workShift?.defaultTruckId && (
+          <MenuItem style={{ minHeight: 30 }} key={workShift?.defaultTruckId} value={workShift?.defaultTruckId}>
+            {`${getTruckName(workShift.defaultTruckId)} (Valittu)`}
           </MenuItem>
         )}
         {trucks.map((truck) => (
@@ -137,7 +144,7 @@ function WorkShiftRow({ index, trucks, date, workShiftId }: Props) {
         ))}
       </TextField>
     );
-  }, [setValue, index, workShift, trucks, t]);
+  }, [setValue, getTruckName, index, workShift, trucks, t]);
 
   const renderPerDiemAllowanceSelectInput = useCallback(
     () => (
