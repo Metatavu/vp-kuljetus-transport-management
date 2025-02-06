@@ -101,7 +101,7 @@ function WorkShiftRow({ index, trucks, date, workShiftId }: Props) {
 
   // TODO: Needs api support and approval from designer
   const renderTruckTextOrSelectInput = useCallback(() => {
-    const recordedTruckIds = workShift?.truckIds
+    const recordedTruckIds = workShift?.truckIdsFromEvents
       ?.map((truckId) => trucks.find((truck) => truck.id === truckId)?.name)
       .join(", ");
     return (
@@ -114,9 +114,9 @@ function WorkShiftRow({ index, trucks, date, workShiftId }: Props) {
         fullWidth
         disabled={workShift?.approved}
         variant="outlined"
-        value={workShift?.truckIds?.[0] ?? ""}
+        value={workShift?.truckIdsFromEvents?.[0] ?? workShift?.defaultTruckId ?? ""}
         onChange={(event) =>
-          setValue(`${index}.workShift.truckIds`, [event.target.value], {
+          setValue(`${index}.workShift.truckIdsFromEvents`, [event.target.value], {
             shouldDirty: true,
             shouldValidate: true,
             shouldTouch: true,
