@@ -1,4 +1,10 @@
 import { Document, Image, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
+import { Employee, EmployeeWorkShift, Truck, WorkShiftHours, WorkType } from "generated/client";
+import { DateTime } from "luxon";
+import { useTranslation } from "react-i18next";
+import { EmployeeWorkHoursFormRow } from "src/types";
+import LocalizationUtils from "src/utils/localization-utils";
+import WorkShiftsUtils from "src/utils/workshift-utils";
 import logo from "../../assets/vp-kuljetus-logo.jpeg";
 
 // Define styles
@@ -81,37 +87,22 @@ const styles = StyleSheet.create({
   },
 });
 
-interface WorkingDayProps {
-  isWeekend: boolean;
-  date: string;
-  shiftStarts: string;
-  workStarted: string;
-  workEnded: string;
-  workingTime: string;
-  unpaidBreak: string;
-  payableWorkingTime: string;
-  waitingTime: string;
-  eveningWork: string;
-  nightShift: string;
-  holidayBonus: string;
-  workSpecificBonus: string;
-  freezerBonus: string;
-  dayOffBonus: boolean;
-  absence: string;
-  vehicleNumber: string;
-  dailyAllowance: string;
-  notifications: string;
+interface Props {
+  employee?: Employee;
+  workShiftsData: EmployeeWorkHoursFormRow[];
+  trucks: Truck[];
 }
 
-const WorkingHoursDocument = () => {
+const WorkingHoursDocument = ({ employee, workShiftsData, trucks }: Props) => {
+  if (!employee || !workShiftsData) {
+    return null;
+  }
+  const { t } = useTranslation();
   // Render header
   const renderHeader = () => (
     <View style={styles.tableHeader}>
       <View style={styles.timeTableCell}>
         <Text style={styles.headerCellText}>Pvm</Text>
-      </View>
-      <View style={styles.timeTableCell}>
-        <Text style={styles.headerCellText}>Vuoro alkaa</Text>
       </View>
       <View style={styles.timeTableCell}>
         <Text style={styles.headerCellText}>Työ alkoi</Text>
@@ -164,81 +155,90 @@ const WorkingHoursDocument = () => {
     </View>
   );
 
-  const renderDayRow = ({
-    isWeekend,
-    date,
-    shiftStarts,
-    workStarted,
-    workEnded,
-    workingTime,
-    unpaidBreak,
-    payableWorkingTime,
-    waitingTime,
-    eveningWork,
-    nightShift,
-    holidayBonus,
-    workSpecificBonus,
-    freezerBonus,
-    dayOffBonus,
-    absence,
-    vehicleNumber,
-    dailyAllowance,
-    notifications,
-  }: WorkingDayProps) => (
-    <View style={[styles.tableRow, { backgroundColor: isWeekend ? "#f0f0f0" : "#fff" }]}>
+  const renderDayRow = (row: EmployeeWorkHoursFormRow) => (
+    <View
+      key={row.workShift.id ?? `${row.workShift.date}`}
+      style={[
+        styles.tableRow,
+        { backgroundColor: DateTime.fromJSDate(row.workShift.date).isWeekend ? "#f0f0f0" : "#fff" },
+      ]}
+    >
       <View style={styles.timeTableCell}>
-        <Text style={styles.cellText}>{date}</Text>
+        <Text style={styles.cellText}>{DateTime.fromJSDate(row.workShift.date).toFormat("EEE dd.MM")}</Text>
       </View>
       <View style={styles.timeTableCell}>
-        <Text style={styles.cellText}>{shiftStarts}</Text>
+        <Text style={styles.cellText}>
+          {row.workShift.startedAt ? DateTime.fromJSDate(row.workShift.startedAt).toFormat("HH:mm") : ""}
+        </Text>
       </View>
       <View style={styles.timeTableCell}>
-        <Text style={styles.cellText}>{workStarted}</Text>
+        <Text style={styles.cellText}>
+          {row.workShift.endedAt ? DateTime.fromJSDate(row.workShift.endedAt).toFormat("HH:mm") : ""}
+        </Text>
       </View>
       <View style={styles.timeTableCell}>
-        <Text style={styles.cellText}>{workEnded}</Text>
+        <Text style={styles.cellText}>{WorkShiftsUtils.getTotalWorkingTimeOnWorkShift(row.workShift)}</Text>
       </View>
       <View style={styles.timeTableCell}>
-        <Text style={styles.cellText}>{workingTime}</Text>
+        <Text style={styles.cellText}>{WorkShiftsUtils.getUnpaidBreakHours(row.workShiftHours)}</Text>
       </View>
       <View style={styles.timeTableCell}>
-        <Text style={styles.cellText}>{unpaidBreak}</Text>
+        <Text style={styles.cellText}>
+          {WorkShiftsUtils.getShiftsWorkHoursByType(row.workShiftHours, WorkType.PaidWork)}
+        </Text>
       </View>
       <View style={styles.timeTableCell}>
-        <Text style={styles.cellText}>{payableWorkingTime}</Text>
+        <Text style={styles.cellText}>
+          {WorkShiftsUtils.getShiftsWorkHoursByType(row.workShiftHours, WorkType.Standby)}
+        </Text>
       </View>
       <View style={styles.timeTableCell}>
-        <Text style={styles.cellText}>{waitingTime}</Text>
+        <Text style={styles.cellText}>
+          {WorkShiftsUtils.getShiftsWorkHoursByType(row.workShiftHours, WorkType.EveningAllowance)}
+        </Text>
       </View>
       <View style={styles.timeTableCell}>
-        <Text style={styles.cellText}>{eveningWork}</Text>
+        <Text style={styles.cellText}>
+          {WorkShiftsUtils.getShiftsWorkHoursByType(row.workShiftHours, WorkType.NightAllowance)}
+        </Text>
       </View>
       <View style={styles.timeTableCell}>
-        <Text style={styles.cellText}>{nightShift}</Text>
+        <Text style={styles.cellText}>
+          {WorkShiftsUtils.getShiftsWorkHoursByType(row.workShiftHours, WorkType.HolidayAllowance)}
+        </Text>
       </View>
       <View style={styles.timeTableCell}>
-        <Text style={styles.cellText}>{holidayBonus}</Text>
+        <Text style={styles.cellText}>
+          {WorkShiftsUtils.getShiftsWorkHoursByType(row.workShiftHours, WorkType.JobSpecificAllowance)}
+        </Text>
       </View>
       <View style={styles.timeTableCell}>
-        <Text style={styles.cellText}>{workSpecificBonus}</Text>
+        <Text style={styles.cellText}>
+          {WorkShiftsUtils.getShiftsWorkHoursByType(row.workShiftHours, WorkType.FrozenAllowance)}
+        </Text>
       </View>
       <View style={styles.timeTableCell}>
-        <Text style={styles.cellText}>{freezerBonus}</Text>
+        <Text style={styles.cellText}>{row.workShift.dayOffWorkAllowance ? "kyllä" : ""}</Text>
       </View>
       <View style={styles.timeTableCell}>
-        <Text style={styles.cellText}>{dayOffBonus ? "kyllä" : ""}</Text>
-      </View>
-      <View style={styles.timeTableCell}>
-        <Text style={styles.cellText}>{absence}</Text>
+        <Text style={styles.cellText}>
+          {row.workShift.absence ? LocalizationUtils.getLocalizedAbsenceType(row.workShift.absence, t) : ""}
+        </Text>
       </View>
       <View style={[styles.timeTableCell, { maxWidth: 30 }]}>
-        <Text style={styles.cellText}>{vehicleNumber}</Text>
+        <Text style={styles.cellText}>
+          {row.workShift.truckIds?.map((truckId) => trucks?.find((truck) => truck.id === truckId)?.name).join(", ")}
+        </Text>
       </View>
       <View style={[styles.timeTableCell, { maxWidth: 30 }]}>
-        <Text style={styles.cellText}>{dailyAllowance}</Text>
+        <Text style={styles.cellText}>
+          {row.workShift.perDiemAllowance
+            ? LocalizationUtils.getPerDiemAllowanceType(row.workShift.perDiemAllowance, t)
+            : ""}
+        </Text>
       </View>
       <View style={[styles.timeTableCell, { minWidth: 70, textAlign: "left" }]}>
-        <Text style={[styles.cellText, { fontSize: 7 }]}>{notifications}</Text>
+        <Text style={[styles.cellText, { fontSize: 7 }]}>{row.workShift.notes}</Text>
       </View>
     </View>
   );
@@ -250,7 +250,9 @@ const WorkingHoursDocument = () => {
         <View style={styles.header}>
           <Image style={styles.logo} src={logo} />
           <View style={styles.headerTextContent}>
-            <Text style={styles.boldText}>Etunimi Sukunimi</Text>
+            <Text style={styles.boldText}>
+              {employee.firstName} {employee.lastName}
+            </Text>
             <View style={{ marginLeft: "2cm", flexDirection: "row", gap: "0.5cm" }}>
               <Text>Työaikaraportti vuoden 2024 jaksolta viikot 46-47</Text>
               <Text style={styles.boldText}>Su 10.11.2024 - La 23.11.2024</Text>
@@ -261,342 +263,7 @@ const WorkingHoursDocument = () => {
         <View style={styles.table}>
           {renderHeader()}
 
-          {renderDayRow({
-            isWeekend: true,
-            date: "Su 10.11.",
-            shiftStarts: "10:30",
-            workStarted: "10:41",
-            workEnded: "21:17",
-            workingTime: "09:46",
-            unpaidBreak: "00:19",
-            payableWorkingTime: "10:16",
-            waitingTime: "",
-            eveningWork: "03:17",
-            nightShift: "",
-            holidayBonus: "10:16",
-            workSpecificBonus: "",
-            freezerBonus: "",
-            dayOffBonus: false,
-            absence: "",
-            vehicleNumber: "21",
-            dailyAllowance: "Osa",
-            notifications: "",
-          })}
-          {renderDayRow({
-            isWeekend: false,
-            date: "Ma 11.11.",
-            shiftStarts: "12:30",
-            workStarted: "12:43",
-            workEnded: "23:59",
-            workingTime: "10:29",
-            unpaidBreak: "00:16",
-            payableWorkingTime: "10:59",
-            waitingTime: "",
-            eveningWork: "04:00",
-            nightShift: "01:59",
-            holidayBonus: "",
-            workSpecificBonus: "",
-            freezerBonus: "",
-            dayOffBonus: false,
-            absence: "",
-            vehicleNumber: "21",
-            dailyAllowance: "Osa",
-            notifications: "",
-          })}
-          {renderDayRow({
-            isWeekend: false,
-            date: "Ti 12.11.",
-            shiftStarts: "",
-            workStarted: "",
-            workEnded: "",
-            workingTime: "",
-            unpaidBreak: "",
-            payableWorkingTime: "",
-            waitingTime: "",
-            eveningWork: "",
-            nightShift: "",
-            holidayBonus: "",
-            workSpecificBonus: "",
-            freezerBonus: "",
-            dayOffBonus: false,
-            absence: "",
-            vehicleNumber: "",
-            dailyAllowance: "",
-            notifications: "",
-          })}
-          {renderDayRow({
-            isWeekend: false,
-            date: "Ke 13.11.",
-            shiftStarts: "",
-            workStarted: "",
-            workEnded: "",
-            workingTime: "",
-            unpaidBreak: "",
-            payableWorkingTime: "",
-            waitingTime: "",
-            eveningWork: "",
-            nightShift: "",
-            holidayBonus: "",
-            workSpecificBonus: "",
-            freezerBonus: "",
-            dayOffBonus: false,
-            absence: "",
-            vehicleNumber: "",
-            dailyAllowance: "",
-            notifications: "",
-          })}
-          {renderDayRow({
-            isWeekend: false,
-            date: "To 14.11.",
-            shiftStarts: "",
-            workStarted: "",
-            workEnded: "",
-            workingTime: "",
-            unpaidBreak: "",
-            payableWorkingTime: "",
-            waitingTime: "",
-            eveningWork: "",
-            nightShift: "",
-            holidayBonus: "",
-            workSpecificBonus: "",
-            freezerBonus: "",
-            dayOffBonus: false,
-            absence: "",
-            vehicleNumber: "",
-            dailyAllowance: "",
-            notifications: "",
-          })}
-          {renderDayRow({
-            isWeekend: false,
-            date: "Pe 15.11.",
-            shiftStarts: "",
-            workStarted: "",
-            workEnded: "",
-            workingTime: "",
-            unpaidBreak: "",
-            payableWorkingTime: "",
-            waitingTime: "",
-            eveningWork: "",
-            nightShift: "",
-            holidayBonus: "",
-            workSpecificBonus: "",
-            freezerBonus: "",
-            dayOffBonus: false,
-            absence: "",
-            vehicleNumber: "",
-            dailyAllowance: "",
-            notifications: "",
-          })}
-          {renderDayRow({
-            isWeekend: true,
-            date: "La 16.11.",
-            shiftStarts: "",
-            workStarted: "",
-            workEnded: "",
-            workingTime: "",
-            unpaidBreak: "",
-            payableWorkingTime: "",
-            waitingTime: "",
-            eveningWork: "",
-            nightShift: "",
-            holidayBonus: "",
-            workSpecificBonus: "",
-            freezerBonus: "",
-            dayOffBonus: false,
-            absence: "",
-            vehicleNumber: "",
-            dailyAllowance: "",
-            notifications: "",
-          })}
-          {renderDayRow({
-            isWeekend: true,
-            date: "Su 17.11.",
-            shiftStarts: "",
-            workStarted: "",
-            workEnded: "",
-            workingTime: "",
-            unpaidBreak: "",
-            payableWorkingTime: "",
-            waitingTime: "",
-            eveningWork: "",
-            nightShift: "",
-            holidayBonus: "",
-            workSpecificBonus: "",
-            freezerBonus: "",
-            dayOffBonus: false,
-            absence: "",
-            vehicleNumber: "",
-            dailyAllowance: "",
-            notifications: "",
-          })}
-          {renderDayRow({
-            isWeekend: false,
-            date: "Ma 18.11.",
-            shiftStarts: "",
-            workStarted: "",
-            workEnded: "",
-            workingTime: "",
-            unpaidBreak: "",
-            payableWorkingTime: "",
-            waitingTime: "",
-            eveningWork: "",
-            nightShift: "",
-            holidayBonus: "",
-            workSpecificBonus: "",
-            freezerBonus: "",
-            dayOffBonus: false,
-            absence: "",
-            vehicleNumber: "",
-            dailyAllowance: "",
-            notifications: "",
-          })}
-          {renderDayRow({
-            isWeekend: false,
-            date: "Ti 19.11.",
-            shiftStarts: "",
-            workStarted: "",
-            workEnded: "",
-            workingTime: "",
-            unpaidBreak: "",
-            payableWorkingTime: "",
-            waitingTime: "",
-            eveningWork: "",
-            nightShift: "",
-            holidayBonus: "",
-            workSpecificBonus: "",
-            freezerBonus: "",
-            dayOffBonus: false,
-            absence: "",
-            vehicleNumber: "",
-            dailyAllowance: "",
-            notifications: "",
-          })}
-          {renderDayRow({
-            isWeekend: false,
-            date: "Ke 20.11.",
-            shiftStarts: "",
-            workStarted: "",
-            workEnded: "",
-            workingTime: "",
-            unpaidBreak: "",
-            payableWorkingTime: "",
-            waitingTime: "",
-            eveningWork: "",
-            nightShift: "",
-            holidayBonus: "",
-            workSpecificBonus: "",
-            freezerBonus: "",
-            dayOffBonus: false,
-            absence: "",
-            vehicleNumber: "",
-            dailyAllowance: "",
-            notifications: "",
-          })}
-          {renderDayRow({
-            isWeekend: false,
-            date: "To 21.11.",
-            shiftStarts: "",
-            workStarted: "",
-            workEnded: "",
-            workingTime: "",
-            unpaidBreak: "",
-            payableWorkingTime: "",
-            waitingTime: "",
-            eveningWork: "",
-            nightShift: "",
-            holidayBonus: "",
-            workSpecificBonus: "",
-            freezerBonus: "",
-            dayOffBonus: false,
-            absence: "",
-            vehicleNumber: "",
-            dailyAllowance: "",
-            notifications: "",
-          })}
-          {renderDayRow({
-            isWeekend: false,
-            date: "Pe 22.11.",
-            shiftStarts: "",
-            workStarted: "",
-            workEnded: "",
-            workingTime: "",
-            unpaidBreak: "",
-            payableWorkingTime: "",
-            waitingTime: "",
-            eveningWork: "",
-            nightShift: "",
-            holidayBonus: "",
-            workSpecificBonus: "",
-            freezerBonus: "",
-            dayOffBonus: false,
-            absence: "",
-            vehicleNumber: "",
-            dailyAllowance: "",
-            notifications: "",
-          })}
-          {renderDayRow({
-            isWeekend: true,
-            date: "La 23.11.",
-            shiftStarts: "",
-            workStarted: "",
-            workEnded: "",
-            workingTime: "",
-            unpaidBreak: "",
-            payableWorkingTime: "",
-            waitingTime: "",
-            eveningWork: "",
-            nightShift: "",
-            holidayBonus: "",
-            workSpecificBonus: "",
-            freezerBonus: "",
-            dayOffBonus: false,
-            absence: "",
-            vehicleNumber: "",
-            dailyAllowance: "",
-            notifications: "",
-          })}
-          {renderDayRow({
-            isWeekend: true,
-            date: "Su 24.11.",
-            shiftStarts: "",
-            workStarted: "",
-            workEnded: "",
-            workingTime: "",
-            unpaidBreak: "",
-            payableWorkingTime: "",
-            waitingTime: "",
-            eveningWork: "",
-            nightShift: "",
-            holidayBonus: "",
-            workSpecificBonus: "",
-            freezerBonus: "",
-            dayOffBonus: false,
-            absence: "",
-            vehicleNumber: "",
-            dailyAllowance: "",
-            notifications: "",
-          })}
-          {renderDayRow({
-            isWeekend: true,
-            date: "Ma 25.11.",
-            shiftStarts: "",
-            workStarted: "",
-            workEnded: "",
-            workingTime: "",
-            unpaidBreak: "",
-            payableWorkingTime: "",
-            waitingTime: "",
-            eveningWork: "",
-            nightShift: "",
-            holidayBonus: "",
-            workSpecificBonus: "",
-            freezerBonus: "",
-            dayOffBonus: false,
-            absence: "",
-            vehicleNumber: "",
-            dailyAllowance: "",
-            notifications: "",
-          })}
+          {workShiftsData.map((row) => renderDayRow(row))}
         </View>
         <View style={{ paddingLeft: 10 }}>
           <Text style={styles.boldText}>Vuoden 2024 viikkojen 46 ja 47 tunnit yhteensä</Text>

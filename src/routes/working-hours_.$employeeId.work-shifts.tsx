@@ -441,7 +441,15 @@ function WorkShifts() {
           </Stack>
         </ToolbarContainer>
         <Stack direction="row" alignItems="end" gap={2} p={2}>
-          <BlobProvider document={<WorkingHoursDocument />}>
+          <BlobProvider
+            document={
+              <WorkingHoursDocument
+                employee={employee}
+                workShiftsData={workShiftsDataWithWorkingPeriodDates}
+                trucks={trucks ?? []}
+              />
+            }
+          >
             {({ loading, url }) => (
               <LoadingButton
                 loading={loading}

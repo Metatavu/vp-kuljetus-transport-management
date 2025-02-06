@@ -201,10 +201,10 @@ export class EmployeeWorkShiftsApi extends runtime.BaseAPI {
             queryParameters['startedBefore'] = DateTime.fromJSDate(requestParameters.startedBefore as any).toISO();
         }
         if (requestParameters.dateAfter !== undefined) {
-            queryParameters['dateAfter'] = DateTime.fromJSDate(requestParameters.dateAfter as any).toISO();
+            queryParameters['dateAfter'] = DateTime.fromJSDate(requestParameters.dateAfter as any).toISODate();
         }
         if (requestParameters.dateBefore !== undefined) {
-            queryParameters['dateBefore'] = DateTime.fromJSDate(requestParameters.dateBefore as any).toISO();
+            queryParameters['dateBefore'] = DateTime.fromJSDate(requestParameters.dateBefore as any).toISODate();
         }
         if (requestParameters.first !== undefined) {
             queryParameters['first'] = requestParameters.first;

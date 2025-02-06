@@ -15,6 +15,7 @@ import { useTranslation } from "react-i18next";
 import { theme } from "src/theme";
 import { EmployeeWorkHoursForm } from "src/types";
 import LocalizationUtils from "src/utils/localization-utils";
+import WorkShiftsUtils from "src/utils/workshift-utils";
 
 type Props = {
   date: DateTime;
@@ -252,10 +253,10 @@ function WorkShiftRow({ index, trucks, date, workShiftId }: Props) {
         </Typography>
       </Cell>
       <Cell minWidth={75} flex={1}>
-        <Typography variant="body2">{"00:00"}</Typography>
+        <Typography variant="body2">{WorkShiftsUtils.getTotalWorkingTimeOnWorkShift(workShift)}</Typography>
       </Cell>
       <Cell minWidth={75} flex={1}>
-        <Typography variant="body2">{"00:00"}</Typography>
+        <Typography variant="body2">{WorkShiftsUtils.getUnpaidBreakHours(workShiftHours)}</Typography>
       </Cell>
       <Cell flex={1}>
         {renderWorkHourInput(t("workingHours.workingDays.table.payableWorkingHours"), WorkType.PaidWork)}
