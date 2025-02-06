@@ -79,10 +79,10 @@ function VehicleInfo() {
       }, new Map<string, Site>()),
   });
 
-  const truck = useQuery({
-    queryKey: ["truck"],
-    queryFn: () => api.trucks.findTruck({ truckId: truckId }),
-  });
+  const truck = useMemo(() => {
+    const options = getFindTruckQueryOptions({ truckId });
+    return queryClient.getQueryData(options.queryKey);
+  }, [truckId]);
 
   const truckLocation = useQuery({
     queryKey: ["truckLocation"],
@@ -285,7 +285,7 @@ function VehicleInfo() {
       return rows;
     }, []);
 
-    return tableRows;
+    return tableRows.reverse();
   }, [driveStates.data, uniqueTasks, getRowsToAdd, getTaskRows, getDriveStateInterval]);
 
   const columns: GridColDef<DriveStatesTableRow>[] = useMemo(
@@ -366,7 +366,7 @@ function VehicleInfo() {
       }}
     >
       <VehicleInfoBar
-        selectedTruck={truck.data}
+        selectedTruck={truck}
         truckSpeed={truckSpeed.data}
         selectedTruckLocation={truckLocation.data}
         title={false}
@@ -376,11 +376,7 @@ function VehicleInfo() {
         <DatePickerWithArrows
           date={selectedDate}
           buttonsWithText
-          setDate={(date) =>
-            navigate({
-              search: (search) => ({ ...search, date: date.toISODate() }),
-            })
-          }
+          setDate={(date) => navigate({ search: (prev) => ({ ...prev, date: date }) })}
         />
       </Box>
       <Stack flex={1} overflow="hidden">

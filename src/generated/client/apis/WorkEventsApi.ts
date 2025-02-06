@@ -13,29 +13,25 @@
  * Do not edit the class manually.
  */
 
-
 import * as runtime from '../runtime';
 import {
     WorkEvent,
     WorkEventFromJSON,
     WorkEventToJSON,
 } from '../models';
-
+import { DateTime } from "luxon";
 export interface CreateEmployeeWorkEventRequest {
     workEvent: WorkEvent;
     employeeId: string;
 }
-
 export interface DeleteEmployeeWorkEventRequest {
     employeeId: string;
     workEventId: string;
 }
-
 export interface FindEmployeeWorkEventRequest {
     employeeId: string;
     workEventId: string;
 }
-
 export interface ListEmployeeWorkEventsRequest {
     employeeId: string;
     employeeWorkShiftId?: string;
@@ -44,13 +40,11 @@ export interface ListEmployeeWorkEventsRequest {
     first?: number;
     max?: number;
 }
-
 export interface UpdateEmployeeWorkEventRequest {
     workEvent: WorkEvent;
     employeeId: string;
     workEventId: string;
 }
-
 /**
  * 
  */
@@ -203,10 +197,10 @@ export class WorkEventsApi extends runtime.BaseAPI {
             queryParameters['employeeWorkShiftId'] = requestParameters.employeeWorkShiftId;
         }
         if (requestParameters.after !== undefined) {
-            queryParameters['after'] = (requestParameters.after as any).toISOString();
+            queryParameters['after'] = DateTime.fromJSDate(requestParameters.after as any).toISO();
         }
         if (requestParameters.before !== undefined) {
-            queryParameters['before'] = (requestParameters.before as any).toISOString();
+            queryParameters['before'] = DateTime.fromJSDate(requestParameters.before as any).toISO();
         }
         if (requestParameters.first !== undefined) {
             queryParameters['first'] = requestParameters.first;

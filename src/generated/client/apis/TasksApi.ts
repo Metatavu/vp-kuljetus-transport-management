@@ -13,7 +13,6 @@
  * Do not edit the class manually.
  */
 
-
 import * as runtime from '../runtime';
 import {
     Task,
@@ -23,19 +22,16 @@ import {
     TaskTypeFromJSON,
     TaskTypeToJSON,
 } from '../models';
-
+import { DateTime } from "luxon";
 export interface CreateTaskRequest {
     task: Task;
 }
-
 export interface DeleteTaskRequest {
     taskId: string;
 }
-
 export interface FindTaskRequest {
     taskId: string;
 }
-
 export interface ListTasksRequest {
     routeId?: string;
     assignedToRoute?: boolean;
@@ -45,12 +41,10 @@ export interface ListTasksRequest {
     first?: number;
     max?: number;
 }
-
 export interface UpdateTaskRequest {
     task: Task;
     taskId: string;
 }
-
 /**
  * 
  */

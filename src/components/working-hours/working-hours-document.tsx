@@ -106,64 +106,62 @@ interface WorkingDayProps {
 const WorkingHoursDocument = () => {
   // Render header
   const renderHeader = () => (
-    <>
-      <View style={styles.tableHeader}>
-        <View style={styles.timeTableCell}>
-          <Text style={styles.headerCellText}>Pvm</Text>
-        </View>
-        <View style={styles.timeTableCell}>
-          <Text style={styles.headerCellText}>Vuoro alkaa</Text>
-        </View>
-        <View style={styles.timeTableCell}>
-          <Text style={styles.headerCellText}>Työ alkoi</Text>
-        </View>
-        <View style={styles.timeTableCell}>
-          <Text style={styles.headerCellText}>Työ päättyi</Text>
-        </View>
-        <View style={styles.timeTableCell}>
-          <Text style={styles.headerCellText}>Työaika</Text>
-        </View>
-        <View style={styles.timeTableCell}>
-          <Text style={styles.headerCellText}>Palkaton tauko</Text>
-        </View>
-        <View style={styles.timeTableCell}>
-          <Text style={styles.headerCellText}>Maksettava työaika</Text>
-        </View>
-        <View style={styles.timeTableCell}>
-          <Text style={styles.headerCellText}>Odotus</Text>
-        </View>
-        <View style={styles.timeTableCell}>
-          <Text style={styles.headerCellText}>Iltatyö</Text>
-        </View>
-        <View style={styles.timeTableCell}>
-          <Text style={styles.headerCellText}>Yötyö</Text>
-        </View>
-        <View style={styles.timeTableCell}>
-          <Text style={styles.headerCellText}>Pyhälisä</Text>
-        </View>
-        <View style={styles.timeTableCell}>
-          <Text style={styles.headerCellText}>Työkohtaisuuslisä</Text>
-        </View>
-        <View style={styles.timeTableCell}>
-          <Text style={styles.headerCellText}>Pakastelisä</Text>
-        </View>
-        <View style={styles.timeTableCell}>
-          <Text style={styles.headerCellText}>Vapaapäivätyön lisä</Text>
-        </View>
-        <View style={styles.timeTableCell}>
-          <Text style={styles.headerCellText}>Poissaolo</Text>
-        </View>
-        <View style={[styles.timeTableCell, { maxWidth: 30 }]}>
-          <Text style={styles.headerCellText}>Auto</Text>
-        </View>
-        <View style={[styles.timeTableCell, { maxWidth: 30 }]}>
-          <Text style={styles.headerCellText}>Päiväraha</Text>
-        </View>
-        <View style={[styles.timeTableCell, { minWidth: 70 }]}>
-          <Text style={styles.headerCellText}>Huomautuksia</Text>
-        </View>
+    <View style={styles.tableHeader}>
+      <View style={styles.timeTableCell}>
+        <Text style={styles.headerCellText}>Pvm</Text>
       </View>
-    </>
+      <View style={styles.timeTableCell}>
+        <Text style={styles.headerCellText}>Vuoro alkaa</Text>
+      </View>
+      <View style={styles.timeTableCell}>
+        <Text style={styles.headerCellText}>Työ alkoi</Text>
+      </View>
+      <View style={styles.timeTableCell}>
+        <Text style={styles.headerCellText}>Työ päättyi</Text>
+      </View>
+      <View style={styles.timeTableCell}>
+        <Text style={styles.headerCellText}>Työaika</Text>
+      </View>
+      <View style={styles.timeTableCell}>
+        <Text style={styles.headerCellText}>Palkaton tauko</Text>
+      </View>
+      <View style={styles.timeTableCell}>
+        <Text style={styles.headerCellText}>Maksettava työaika</Text>
+      </View>
+      <View style={styles.timeTableCell}>
+        <Text style={styles.headerCellText}>Odotus</Text>
+      </View>
+      <View style={styles.timeTableCell}>
+        <Text style={styles.headerCellText}>Iltatyö</Text>
+      </View>
+      <View style={styles.timeTableCell}>
+        <Text style={styles.headerCellText}>Yötyö</Text>
+      </View>
+      <View style={styles.timeTableCell}>
+        <Text style={styles.headerCellText}>Pyhälisä</Text>
+      </View>
+      <View style={styles.timeTableCell}>
+        <Text style={styles.headerCellText}>Työkohtaisuuslisä</Text>
+      </View>
+      <View style={styles.timeTableCell}>
+        <Text style={styles.headerCellText}>Pakastelisä</Text>
+      </View>
+      <View style={styles.timeTableCell}>
+        <Text style={styles.headerCellText}>Vapaapäivätyön lisä</Text>
+      </View>
+      <View style={styles.timeTableCell}>
+        <Text style={styles.headerCellText}>Poissaolo</Text>
+      </View>
+      <View style={[styles.timeTableCell, { maxWidth: 30 }]}>
+        <Text style={styles.headerCellText}>Auto</Text>
+      </View>
+      <View style={[styles.timeTableCell, { maxWidth: 30 }]}>
+        <Text style={styles.headerCellText}>Päiväraha</Text>
+      </View>
+      <View style={[styles.timeTableCell, { minWidth: 70 }]}>
+        <Text style={styles.headerCellText}>Huomautuksia</Text>
+      </View>
+    </View>
   );
 
   const renderDayRow = ({
@@ -187,64 +185,62 @@ const WorkingHoursDocument = () => {
     dailyAllowance,
     notifications,
   }: WorkingDayProps) => (
-    <>
-      <View style={[styles.tableRow, { backgroundColor: isWeekend ? "#f0f0f0" : "#fff" }]}>
-        <View style={styles.timeTableCell}>
-          <Text style={styles.cellText}>{date}</Text>
-        </View>
-        <View style={styles.timeTableCell}>
-          <Text style={styles.cellText}>{shiftStarts}</Text>
-        </View>
-        <View style={styles.timeTableCell}>
-          <Text style={styles.cellText}>{workStarted}</Text>
-        </View>
-        <View style={styles.timeTableCell}>
-          <Text style={styles.cellText}>{workEnded}</Text>
-        </View>
-        <View style={styles.timeTableCell}>
-          <Text style={styles.cellText}>{workingTime}</Text>
-        </View>
-        <View style={styles.timeTableCell}>
-          <Text style={styles.cellText}>{unpaidBreak}</Text>
-        </View>
-        <View style={styles.timeTableCell}>
-          <Text style={styles.cellText}>{payableWorkingTime}</Text>
-        </View>
-        <View style={styles.timeTableCell}>
-          <Text style={styles.cellText}>{waitingTime}</Text>
-        </View>
-        <View style={styles.timeTableCell}>
-          <Text style={styles.cellText}>{eveningWork}</Text>
-        </View>
-        <View style={styles.timeTableCell}>
-          <Text style={styles.cellText}>{nightShift}</Text>
-        </View>
-        <View style={styles.timeTableCell}>
-          <Text style={styles.cellText}>{holidayBonus}</Text>
-        </View>
-        <View style={styles.timeTableCell}>
-          <Text style={styles.cellText}>{workSpecificBonus}</Text>
-        </View>
-        <View style={styles.timeTableCell}>
-          <Text style={styles.cellText}>{freezerBonus}</Text>
-        </View>
-        <View style={styles.timeTableCell}>
-          <Text style={styles.cellText}>{dayOffBonus ? "kyllä" : ""}</Text>
-        </View>
-        <View style={styles.timeTableCell}>
-          <Text style={styles.cellText}>{absence}</Text>
-        </View>
-        <View style={[styles.timeTableCell, { maxWidth: 30 }]}>
-          <Text style={styles.cellText}>{vehicleNumber}</Text>
-        </View>
-        <View style={[styles.timeTableCell, { maxWidth: 30 }]}>
-          <Text style={styles.cellText}>{dailyAllowance}</Text>
-        </View>
-        <View style={[styles.timeTableCell, { minWidth: 70, textAlign: "left" }]}>
-          <Text style={[styles.cellText, { fontSize: 7 }]}>{notifications}</Text>
-        </View>
+    <View style={[styles.tableRow, { backgroundColor: isWeekend ? "#f0f0f0" : "#fff" }]}>
+      <View style={styles.timeTableCell}>
+        <Text style={styles.cellText}>{date}</Text>
       </View>
-    </>
+      <View style={styles.timeTableCell}>
+        <Text style={styles.cellText}>{shiftStarts}</Text>
+      </View>
+      <View style={styles.timeTableCell}>
+        <Text style={styles.cellText}>{workStarted}</Text>
+      </View>
+      <View style={styles.timeTableCell}>
+        <Text style={styles.cellText}>{workEnded}</Text>
+      </View>
+      <View style={styles.timeTableCell}>
+        <Text style={styles.cellText}>{workingTime}</Text>
+      </View>
+      <View style={styles.timeTableCell}>
+        <Text style={styles.cellText}>{unpaidBreak}</Text>
+      </View>
+      <View style={styles.timeTableCell}>
+        <Text style={styles.cellText}>{payableWorkingTime}</Text>
+      </View>
+      <View style={styles.timeTableCell}>
+        <Text style={styles.cellText}>{waitingTime}</Text>
+      </View>
+      <View style={styles.timeTableCell}>
+        <Text style={styles.cellText}>{eveningWork}</Text>
+      </View>
+      <View style={styles.timeTableCell}>
+        <Text style={styles.cellText}>{nightShift}</Text>
+      </View>
+      <View style={styles.timeTableCell}>
+        <Text style={styles.cellText}>{holidayBonus}</Text>
+      </View>
+      <View style={styles.timeTableCell}>
+        <Text style={styles.cellText}>{workSpecificBonus}</Text>
+      </View>
+      <View style={styles.timeTableCell}>
+        <Text style={styles.cellText}>{freezerBonus}</Text>
+      </View>
+      <View style={styles.timeTableCell}>
+        <Text style={styles.cellText}>{dayOffBonus ? "kyllä" : ""}</Text>
+      </View>
+      <View style={styles.timeTableCell}>
+        <Text style={styles.cellText}>{absence}</Text>
+      </View>
+      <View style={[styles.timeTableCell, { maxWidth: 30 }]}>
+        <Text style={styles.cellText}>{vehicleNumber}</Text>
+      </View>
+      <View style={[styles.timeTableCell, { maxWidth: 30 }]}>
+        <Text style={styles.cellText}>{dailyAllowance}</Text>
+      </View>
+      <View style={[styles.timeTableCell, { minWidth: 70, textAlign: "left" }]}>
+        <Text style={[styles.cellText, { fontSize: 7 }]}>{notifications}</Text>
+      </View>
+    </View>
   );
 
   return (

@@ -104,8 +104,6 @@ function EquipmentComponent({ formType, initialData, onSave }: Props) {
     </Stack>
   );
 
-  if (!initialData?.id) return null;
-
   return (
     <Paper sx={{ height: "100%", width: "100%" }}>
       <ToolbarRow
@@ -120,7 +118,12 @@ function EquipmentComponent({ formType, initialData, onSave }: Props) {
       <Stack direction="row" height="calc(100% - 52px)">
         <EquipmentForm errors={errors} register={register} equipment={initialData} setFormValue={setValue} />
         <ScrollContainer>
-          <Sensors entityType={DataValidation.isTruck(initialData) ? "truck" : "towable"} entityId={initialData.id} />
+          {initialData ? (
+            <Sensors
+              entityType={DataValidation.isTruck(initialData) ? "truck" : "towable"}
+              entityId={initialData?.id ?? ""}
+            />
+          ) : null}
         </ScrollContainer>
       </Stack>
     </Paper>

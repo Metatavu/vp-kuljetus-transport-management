@@ -13,7 +13,6 @@
  * Do not edit the class manually.
  */
 
-
 import * as runtime from '../runtime';
 import {
     ClientApp,
@@ -23,30 +22,25 @@ import {
     ClientAppStatusFromJSON,
     ClientAppStatusToJSON,
 } from '../models';
-
+import { DateTime } from "luxon";
 export interface CreateClientAppRequest {
     clientApp: ClientApp;
 }
-
 export interface DeleteClientAppRequest {
     clientAppId: string;
 }
-
 export interface FindClientAppRequest {
     clientAppId: string;
 }
-
 export interface ListClientAppsRequest {
     status?: ClientAppStatus;
     first?: number;
     max?: number;
 }
-
 export interface UpdateClientAppRequest {
     clientApp: ClientApp;
     clientAppId: string;
 }
-
 /**
  * 
  */

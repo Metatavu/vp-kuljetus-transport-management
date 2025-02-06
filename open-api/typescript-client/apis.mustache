@@ -2,7 +2,6 @@
 /* eslint-disable */
 // @ts-nocheck
 {{>licenseInfo}}
-
 import * as runtime from '../runtime';
 {{#imports.0}}
 import {
@@ -15,7 +14,7 @@ import {
     {{/imports}}
 } from '../models';
 {{/imports.0}}
-
+import { DateTime } from "luxon";
 {{#operations}}
 {{#operation}}
 {{#allParams.0}}
@@ -24,7 +23,6 @@ export interface {{#prefixParameterInterfaces}}{{classname}}{{/prefixParameterIn
     {{paramName}}{{^required}}?{{/required}}: {{#isEnum}}{{{datatypeWithEnum}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}{{#isNullable}} | null{{/isNullable}}{{/isEnum}};
 {{/allParams}}
 }
-
 {{/allParams.0}}
 {{/operation}}
 {{/operations}}
@@ -114,11 +112,11 @@ export class {{classname}} extends runtime.BaseAPI {
         {{^isArray}}
         if (requestParameters.{{paramName}} !== undefined) {
             {{#isDateTime}}
-            queryParameters['{{baseName}}'] = (requestParameters.{{paramName}} as any).toISOString();
+            queryParameters['{{baseName}}'] = DateTime.fromJSDate(requestParameters.{{paramName}} as any).toISO();
             {{/isDateTime}}
             {{^isDateTime}}
             {{#isDate}}
-            queryParameters['{{baseName}}'] = (requestParameters.{{paramName}} as any).toISOString().substr(0,10);
+            queryParameters['{{baseName}}'] = DateTime.fromJSDate(requestParameters.{{paramName}} as any).toISODate();
             {{/isDate}}
             {{^isDate}}
             queryParameters['{{baseName}}'] = requestParameters.{{paramName}};

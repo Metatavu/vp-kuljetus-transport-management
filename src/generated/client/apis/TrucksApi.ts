@@ -13,7 +13,6 @@
  * Do not edit the class manually.
  */
 
-
 import * as runtime from '../runtime';
 import {
     SortOrder,
@@ -44,15 +43,13 @@ import {
     TruckSpeedFromJSON,
     TruckSpeedToJSON,
 } from '../models';
-
+import { DateTime } from "luxon";
 export interface CreateTruckRequest {
     truck: Truck;
 }
-
 export interface FindTruckRequest {
     truckId: string;
 }
-
 export interface ListDriveStatesRequest {
     truckId: string;
     driverId?: string;
@@ -62,7 +59,6 @@ export interface ListDriveStatesRequest {
     first?: number;
     max?: number;
 }
-
 export interface ListTruckLocationsRequest {
     truckId: string;
     after?: Date;
@@ -70,7 +66,6 @@ export interface ListTruckLocationsRequest {
     first?: number;
     max?: number;
 }
-
 export interface ListTruckOdometerReadingsRequest {
     truckId: string;
     after?: Date;
@@ -78,7 +73,6 @@ export interface ListTruckOdometerReadingsRequest {
     first?: number;
     max?: number;
 }
-
 export interface ListTruckSpeedsRequest {
     truckId: string;
     after?: Date;
@@ -86,14 +80,12 @@ export interface ListTruckSpeedsRequest {
     first?: number;
     max?: number;
 }
-
 export interface ListTruckTemperaturesRequest {
     truckId: string;
     includeArchived?: boolean;
     first?: number;
     max?: number;
 }
-
 export interface ListTrucksRequest {
     plateNumber?: string;
     archived?: boolean;
@@ -102,12 +94,10 @@ export interface ListTrucksRequest {
     first?: number;
     max?: number;
 }
-
 export interface UpdateTruckRequest {
     truck: Truck;
     truckId: string;
 }
-
 /**
  * 
  */
@@ -214,10 +204,10 @@ export class TrucksApi extends runtime.BaseAPI {
             queryParameters['state'] = requestParameters.state;
         }
         if (requestParameters.after !== undefined) {
-            queryParameters['after'] = (requestParameters.after as any).toISOString();
+            queryParameters['after'] = DateTime.fromJSDate(requestParameters.after as any).toISO();
         }
         if (requestParameters.before !== undefined) {
-            queryParameters['before'] = (requestParameters.before as any).toISOString();
+            queryParameters['before'] = DateTime.fromJSDate(requestParameters.before as any).toISO();
         }
         if (requestParameters.first !== undefined) {
             queryParameters['first'] = requestParameters.first;
@@ -268,10 +258,10 @@ export class TrucksApi extends runtime.BaseAPI {
         }
         const queryParameters: any = {};
         if (requestParameters.after !== undefined) {
-            queryParameters['after'] = (requestParameters.after as any).toISOString();
+            queryParameters['after'] = DateTime.fromJSDate(requestParameters.after as any).toISO();
         }
         if (requestParameters.before !== undefined) {
-            queryParameters['before'] = (requestParameters.before as any).toISOString();
+            queryParameters['before'] = DateTime.fromJSDate(requestParameters.before as any).toISO();
         }
         if (requestParameters.first !== undefined) {
             queryParameters['first'] = requestParameters.first;
@@ -322,10 +312,10 @@ export class TrucksApi extends runtime.BaseAPI {
         }
         const queryParameters: any = {};
         if (requestParameters.after !== undefined) {
-            queryParameters['after'] = (requestParameters.after as any).toISOString();
+            queryParameters['after'] = DateTime.fromJSDate(requestParameters.after as any).toISO();
         }
         if (requestParameters.before !== undefined) {
-            queryParameters['before'] = (requestParameters.before as any).toISOString();
+            queryParameters['before'] = DateTime.fromJSDate(requestParameters.before as any).toISO();
         }
         if (requestParameters.first !== undefined) {
             queryParameters['first'] = requestParameters.first;
@@ -376,10 +366,10 @@ export class TrucksApi extends runtime.BaseAPI {
         }
         const queryParameters: any = {};
         if (requestParameters.after !== undefined) {
-            queryParameters['after'] = (requestParameters.after as any).toISOString();
+            queryParameters['after'] = DateTime.fromJSDate(requestParameters.after as any).toISO();
         }
         if (requestParameters.before !== undefined) {
-            queryParameters['before'] = (requestParameters.before as any).toISOString();
+            queryParameters['before'] = DateTime.fromJSDate(requestParameters.before as any).toISO();
         }
         if (requestParameters.first !== undefined) {
             queryParameters['first'] = requestParameters.first;
