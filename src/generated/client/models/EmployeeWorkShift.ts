@@ -82,7 +82,7 @@ export interface EmployeeWorkShift {
      * @type {Array<string>}
      * @memberof EmployeeWorkShift
      */
-    readonly truckIds?: Array<string>;
+    readonly truckIdsFromEvents?: Array<string>;
     /**
      * Day off work allowance is used to mark the day when the work shift started as a day off for the employee.
      * This means that all the work hours done during that day will be also added to the HOLIDAY_ALLOWANCE work
@@ -126,6 +126,12 @@ export interface EmployeeWorkShift {
      * @memberof EmployeeWorkShift
      */
     readonly payrollExportId?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof EmployeeWorkShift
+     */
+    defaultTruckId?: string;
 }
 
 /**
@@ -155,13 +161,14 @@ export function EmployeeWorkShiftFromJSONTyped(json: any, ignoreDiscriminator: b
         'startedAt': !exists(json, 'startedAt') ? undefined : (new Date(json['startedAt'])),
         'endedAt': !exists(json, 'endedAt') ? undefined : (new Date(json['endedAt'])),
         'employeeId': json['employeeId'],
-        'truckIds': !exists(json, 'truckIds') ? undefined : json['truckIds'],
+        'truckIdsFromEvents': !exists(json, 'truckIdsFromEvents') ? undefined : json['truckIdsFromEvents'],
         'dayOffWorkAllowance': !exists(json, 'dayOffWorkAllowance') ? undefined : json['dayOffWorkAllowance'],
         'absence': !exists(json, 'absence') ? undefined : AbsenceTypeFromJSON(json['absence']),
         'perDiemAllowance': !exists(json, 'perDiemAllowance') ? undefined : PerDiemAllowanceTypeFromJSON(json['perDiemAllowance']),
         'approved': json['approved'],
         'notes': !exists(json, 'notes') ? undefined : json['notes'],
         'payrollExportId': !exists(json, 'payrollExportId') ? undefined : json['payrollExportId'],
+        'defaultTruckId': !exists(json, 'defaultTruckId') ? undefined : json['defaultTruckId'],
     };
 }
 
@@ -181,6 +188,7 @@ export function EmployeeWorkShiftToJSON(value?: EmployeeWorkShift | null): any {
         'perDiemAllowance': PerDiemAllowanceTypeToJSON(value.perDiemAllowance),
         'approved': value.approved,
         'notes': value.notes,
+        'defaultTruckId': value.defaultTruckId,
     };
 }
 

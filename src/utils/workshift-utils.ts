@@ -111,6 +111,7 @@ namespace WorkShiftsUtils {
       parseFloat(getTotalHoursByAbsenseType(shiftsInWorkPeriod, AbsenceType.Vacation)) +
       parseFloat(getTotalHoursByAbsenseType(shiftsInWorkPeriod, AbsenceType.CompensatoryLeave));
     const paidWorkHours = paidWorkHoursFromWorkTypes + paidVacationAndCompensatoryLeaveHours;
+
     if (paidWorkHours <= regularWorkingHours) {
       return { overTimeHalf: 0, overTimeFull: 0 };
     }
