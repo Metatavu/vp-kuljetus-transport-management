@@ -39,7 +39,7 @@ function WorkShiftDetails() {
   });
 
   const trucksQuery = useQueries({
-    queries: (workShiftQuery.data?.truckIds ?? []).map((truckId) => ({
+    queries: (workShiftQuery.data?.truckIdsFromEvents ?? []).map((truckId) => ({
       ...getFindTruckQueryOptions({ truckId }),
     })),
     combine: (results) =>
