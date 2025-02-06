@@ -114,7 +114,7 @@ function WorkShiftRow({ index, trucks, date, workShiftId }: Props) {
         fullWidth
         disabled={workShift?.approved}
         variant="outlined"
-        value={workShift?.truckIdsFromEvents?.[0] ?? workShift?.defaultTruckId ?? ""}
+        value={recordedTruckIds ?? workShift?.defaultTruckId ?? ""}
         onChange={(event) =>
           setValue(`${index}.workShift.truckIdsFromEvents`, [event.target.value], {
             shouldDirty: true,
