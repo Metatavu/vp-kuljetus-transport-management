@@ -133,7 +133,12 @@ function WorkShiftRow({ index, trucks, date, workShiftId }: Props) {
           </MenuItem>
         )}
         {workShift?.defaultTruckId && (
-          <MenuItem style={{ minHeight: 30 }} key={workShift?.defaultTruckId} value={workShift?.defaultTruckId}>
+          <MenuItem
+            disabled
+            style={{ minHeight: 30 }}
+            key={workShift?.defaultTruckId}
+            value={workShift?.defaultTruckId}
+          >
             {`${getTruckName(workShift.defaultTruckId)} (Valittu)`}
           </MenuItem>
         )}

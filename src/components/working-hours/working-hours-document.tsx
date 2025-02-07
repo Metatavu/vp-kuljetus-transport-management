@@ -91,13 +91,33 @@ interface Props {
   employee?: Employee;
   workShiftsData: EmployeeWorkHoursFormRow[];
   trucks: Truck[];
+  workingPeriodsForEmployee: { start: Date; end: Date };
 }
 
-const WorkingHoursDocument = ({ employee, workShiftsData, trucks }: Props) => {
+const WorkingHoursDocument = ({ employee, workShiftsData, trucks, workingPeriodsForEmployee }: Props) => {
   if (!employee || !workShiftsData) {
     return null;
   }
   const { t } = useTranslation();
+
+  const renderAggregationsTableTitle = () => {
+    if (!workingPeriodsForEmployee) return null;
+
+    const start = DateTime.fromJSDate(workingPeriodsForEmployee.start).toFormat("dd.MM");
+    const end = DateTime.fromJSDate(workingPeriodsForEmployee.end).toFormat("dd.MM");
+    return (
+      <View style={{ paddingLeft: 10 }}>
+        <Text style={styles.boldText}>
+          {t("workingHours.workingDays.aggregationsTable.title", {
+            year: workingPeriodsForEmployee.start.getFullYear(),
+            start: start,
+            end: end,
+          })}
+        </Text>
+      </View>
+    );
+  };
+
   // Render header
   const renderHeader = () => (
     <View style={styles.tableHeader}>
@@ -138,6 +158,18 @@ const WorkingHoursDocument = ({ employee, workShiftsData, trucks }: Props) => {
         <Text style={styles.headerCellText}>Pakastelisä</Text>
       </View>
       <View style={styles.timeTableCell}>
+        <Text style={styles.headerCellText}>Luottamustoimet</Text>
+      </View>
+      <View style={styles.timeTableCell}>
+        <Text style={styles.headerCellText}>Sairausloma</Text>
+      </View>
+      <View style={styles.timeTableCell}>
+        <Text style={styles.headerCellText}>Koulutus työajalla</Text>
+      </View>
+      <View style={styles.timeTableCell}>
+        <Text style={styles.headerCellText}>Palkaton</Text>
+      </View>
+      <View style={styles.timeTableCell}>
         <Text style={styles.headerCellText}>Vapaapäivätyön lisä</Text>
       </View>
       <View style={styles.timeTableCell}>
@@ -149,7 +181,7 @@ const WorkingHoursDocument = ({ employee, workShiftsData, trucks }: Props) => {
       <View style={[styles.timeTableCell, { maxWidth: 30 }]}>
         <Text style={styles.headerCellText}>Päiväraha</Text>
       </View>
-      <View style={[styles.timeTableCell, { minWidth: 70 }]}>
+      <View style={[styles.timeTableCell, { maxWidth: 20 }]}>
         <Text style={styles.headerCellText}>Huomautuksia</Text>
       </View>
     </View>
@@ -218,6 +250,26 @@ const WorkingHoursDocument = ({ employee, workShiftsData, trucks }: Props) => {
         </Text>
       </View>
       <View style={styles.timeTableCell}>
+        <Text style={styles.cellText}>
+          {WorkShiftsUtils.getShiftsWorkHoursByType(row.workShiftHours, WorkType.OfficialDuties)}
+        </Text>
+      </View>
+      <View style={styles.timeTableCell}>
+        <Text style={styles.cellText}>
+          {WorkShiftsUtils.getShiftsWorkHoursByType(row.workShiftHours, WorkType.SickLeave)}
+        </Text>
+      </View>
+      <View style={styles.timeTableCell}>
+        <Text style={styles.cellText}>
+          {WorkShiftsUtils.getShiftsWorkHoursByType(row.workShiftHours, WorkType.Training)}
+        </Text>
+      </View>
+      <View style={styles.timeTableCell}>
+        <Text style={styles.cellText}>
+          {WorkShiftsUtils.getShiftsWorkHoursByType(row.workShiftHours, WorkType.Unpaid)}
+        </Text>
+      </View>
+      <View style={styles.timeTableCell}>
         <Text style={styles.cellText}>{row.workShift.dayOffWorkAllowance ? "kyllä" : ""}</Text>
       </View>
       <View style={styles.timeTableCell}>
@@ -239,7 +291,7 @@ const WorkingHoursDocument = ({ employee, workShiftsData, trucks }: Props) => {
             : ""}
         </Text>
       </View>
-      <View style={[styles.timeTableCell, { minWidth: 70, textAlign: "left" }]}>
+      <View style={[styles.timeTableCell, { maxWidth: 20, textAlign: "left" }]}>
         <Text style={[styles.cellText, { fontSize: 7 }]}>{row.workShift.notes}</Text>
       </View>
     </View>
@@ -267,9 +319,7 @@ const WorkingHoursDocument = ({ employee, workShiftsData, trucks }: Props) => {
 
           {workShiftsData.map((row) => renderDayRow(row))}
         </View>
-        <View style={{ paddingLeft: 10 }}>
-          <Text style={styles.boldText}>Vuoden 2024 viikkojen 46 ja 47 tunnit yhteensä</Text>
-        </View>
+        {renderAggregationsTableTitle()}
 
         {/* Summary Table */}
         <View style={styles.summaryTable}>
@@ -431,7 +481,7 @@ const WorkingHoursDocument = ({ employee, workShiftsData, trucks }: Props) => {
 
         {/* Footer */}
         <View style={styles.footer}>
-          <Text>Raportti tulostettu 12.11.2024 12:54</Text>
+          <Text>Raportti tulostettu: {DateTime.now().toFormat("EEEE dd.MM")}</Text>
         </View>
       </Page>
     </Document>

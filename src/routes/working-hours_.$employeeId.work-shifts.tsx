@@ -373,7 +373,7 @@ function WorkShifts() {
     const start = DateTime.fromJSDate(workingPeriodDates.start);
     const end = DateTime.fromJSDate(workingPeriodDates.end);
 
-    const dateIsInsideWorkingPeriod = date > start && date < end;
+    const dateIsInsideWorkingPeriod = date >= start && date <= end;
 
     return dateIsInsideWorkingPeriod;
   };
@@ -447,6 +447,7 @@ function WorkShifts() {
                 employee={employee}
                 workShiftsData={workShiftsDataWithWorkingPeriodDates}
                 trucks={trucks ?? []}
+                workingPeriodsForEmployee={workingPeriodsForEmployee}
               />
             }
           >
@@ -496,11 +497,10 @@ function WorkShifts() {
   };
 
   const renderWorkingPeriodText = () => {
-    const workingPeriodDates = TimeUtils.getWorkingPeriodDates(employeeSalaryGroup, selectedDate.toJSDate());
-    if (!workingPeriodDates) return null;
+    if (!workingPeriodsForEmployee) return null;
 
-    const start = DateTime.fromJSDate(workingPeriodDates.start).toFormat("EEE dd.MM");
-    const end = DateTime.fromJSDate(workingPeriodDates.end).toFormat("EEE dd.MM");
+    const start = DateTime.fromJSDate(workingPeriodsForEmployee.start).toFormat("EEE dd.MM");
+    const end = DateTime.fromJSDate(workingPeriodsForEmployee.end).toFormat("EEE dd.MM");
 
     return (
       <Typography variant="subtitle1">
@@ -510,11 +510,10 @@ function WorkShifts() {
   };
 
   const renderAggregationsTableTitle = () => {
-    const workingPeriodDates = TimeUtils.getWorkingPeriodDates(employeeSalaryGroup, selectedDate.toJSDate());
-    if (!workingPeriodDates) return null;
+    if (!workingPeriodsForEmployee) return null;
 
-    const start = DateTime.fromJSDate(workingPeriodDates.start).toFormat("dd.MM");
-    const end = DateTime.fromJSDate(workingPeriodDates.end).toFormat("dd.MM");
+    const start = DateTime.fromJSDate(workingPeriodsForEmployee.start).toFormat("dd.MM");
+    const end = DateTime.fromJSDate(workingPeriodsForEmployee.end).toFormat("dd.MM");
     return (
       <TableHeader>
         <Typography variant="subtitle1">

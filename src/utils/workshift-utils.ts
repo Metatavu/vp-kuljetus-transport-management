@@ -24,7 +24,7 @@ namespace WorkShiftsUtils {
     if (!rowWorkHours || !workType) {
       return "";
     }
-    return rowWorkHours[workType]?.actualHours?.toFixed(2) ?? rowWorkHours[workType]?.calculatedHours?.toFixed(2) ?? 0;
+    return rowWorkHours[workType]?.actualHours?.toFixed(2) ?? rowWorkHours[workType]?.calculatedHours?.toFixed(2) ?? "";
   };
 
   export const getUnpaidBreakHours = (rowWorkHours?: Record<WorkType, WorkShiftHours>) => {
