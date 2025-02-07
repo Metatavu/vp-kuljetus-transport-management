@@ -13,15 +13,11 @@
  * Do not edit the class manually.
  */
 
-
 import * as runtime from '../runtime';
 import {
     SortOrder,
     SortOrderFromJSON,
     SortOrderToJSON,
-    Temperature,
-    TemperatureFromJSON,
-    TemperatureToJSON,
     Truck,
     TruckFromJSON,
     TruckToJSON,
@@ -37,6 +33,9 @@ import {
     TruckOdometerReading,
     TruckOdometerReadingFromJSON,
     TruckOdometerReadingToJSON,
+    TruckOrTowableTemperature,
+    TruckOrTowableTemperatureFromJSON,
+    TruckOrTowableTemperatureToJSON,
     TruckSortByField,
     TruckSortByFieldFromJSON,
     TruckSortByFieldToJSON,
@@ -44,15 +43,13 @@ import {
     TruckSpeedFromJSON,
     TruckSpeedToJSON,
 } from '../models';
-
+import { DateTime } from "luxon";
 export interface CreateTruckRequest {
     truck: Truck;
 }
-
 export interface FindTruckRequest {
     truckId: string;
 }
-
 export interface ListDriveStatesRequest {
     truckId: string;
     driverId?: string;
@@ -62,7 +59,6 @@ export interface ListDriveStatesRequest {
     first?: number;
     max?: number;
 }
-
 export interface ListTruckLocationsRequest {
     truckId: string;
     after?: Date;
@@ -70,7 +66,6 @@ export interface ListTruckLocationsRequest {
     first?: number;
     max?: number;
 }
-
 export interface ListTruckOdometerReadingsRequest {
     truckId: string;
     after?: Date;
@@ -78,7 +73,6 @@ export interface ListTruckOdometerReadingsRequest {
     first?: number;
     max?: number;
 }
-
 export interface ListTruckSpeedsRequest {
     truckId: string;
     after?: Date;
@@ -86,14 +80,12 @@ export interface ListTruckSpeedsRequest {
     first?: number;
     max?: number;
 }
-
 export interface ListTruckTemperaturesRequest {
     truckId: string;
     includeArchived?: boolean;
     first?: number;
     max?: number;
 }
-
 export interface ListTrucksRequest {
     plateNumber?: string;
     archived?: boolean;
@@ -102,12 +94,10 @@ export interface ListTrucksRequest {
     first?: number;
     max?: number;
 }
-
 export interface UpdateTruckRequest {
     truck: Truck;
     truckId: string;
 }
-
 /**
  * 
  */
@@ -214,10 +204,10 @@ export class TrucksApi extends runtime.BaseAPI {
             queryParameters['state'] = requestParameters.state;
         }
         if (requestParameters.after !== undefined) {
-            queryParameters['after'] = (requestParameters.after as any).toISOString();
+            queryParameters['after'] = DateTime.fromJSDate(requestParameters.after as any).toISO();
         }
         if (requestParameters.before !== undefined) {
-            queryParameters['before'] = (requestParameters.before as any).toISOString();
+            queryParameters['before'] = DateTime.fromJSDate(requestParameters.before as any).toISO();
         }
         if (requestParameters.first !== undefined) {
             queryParameters['first'] = requestParameters.first;
@@ -268,10 +258,10 @@ export class TrucksApi extends runtime.BaseAPI {
         }
         const queryParameters: any = {};
         if (requestParameters.after !== undefined) {
-            queryParameters['after'] = (requestParameters.after as any).toISOString();
+            queryParameters['after'] = DateTime.fromJSDate(requestParameters.after as any).toISO();
         }
         if (requestParameters.before !== undefined) {
-            queryParameters['before'] = (requestParameters.before as any).toISOString();
+            queryParameters['before'] = DateTime.fromJSDate(requestParameters.before as any).toISO();
         }
         if (requestParameters.first !== undefined) {
             queryParameters['first'] = requestParameters.first;
@@ -322,10 +312,10 @@ export class TrucksApi extends runtime.BaseAPI {
         }
         const queryParameters: any = {};
         if (requestParameters.after !== undefined) {
-            queryParameters['after'] = (requestParameters.after as any).toISOString();
+            queryParameters['after'] = DateTime.fromJSDate(requestParameters.after as any).toISO();
         }
         if (requestParameters.before !== undefined) {
-            queryParameters['before'] = (requestParameters.before as any).toISOString();
+            queryParameters['before'] = DateTime.fromJSDate(requestParameters.before as any).toISO();
         }
         if (requestParameters.first !== undefined) {
             queryParameters['first'] = requestParameters.first;
@@ -376,10 +366,10 @@ export class TrucksApi extends runtime.BaseAPI {
         }
         const queryParameters: any = {};
         if (requestParameters.after !== undefined) {
-            queryParameters['after'] = (requestParameters.after as any).toISOString();
+            queryParameters['after'] = DateTime.fromJSDate(requestParameters.after as any).toISO();
         }
         if (requestParameters.before !== undefined) {
-            queryParameters['before'] = (requestParameters.before as any).toISOString();
+            queryParameters['before'] = DateTime.fromJSDate(requestParameters.before as any).toISO();
         }
         if (requestParameters.first !== undefined) {
             queryParameters['first'] = requestParameters.first;
@@ -424,7 +414,7 @@ export class TrucksApi extends runtime.BaseAPI {
      * Retrieve all temperatures from all thermometers related to a specific truck, possibly including data from archived thermometers.
      * List truck temperatures.
      */
-    async listTruckTemperaturesRaw(requestParameters: ListTruckTemperaturesRequest): Promise<runtime.ApiResponse<Array<Temperature>>> {
+    async listTruckTemperaturesRaw(requestParameters: ListTruckTemperaturesRequest): Promise<runtime.ApiResponse<Array<TruckOrTowableTemperature>>> {
         if (requestParameters.truckId === null || requestParameters.truckId === undefined) {
             throw new runtime.RequiredError('truckId','Required parameter requestParameters.truckId was null or undefined when calling listTruckTemperatures.');
         }
@@ -452,13 +442,13 @@ export class TrucksApi extends runtime.BaseAPI {
             headers: headerParameters,
             query: queryParameters,
         });
-        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(TemperatureFromJSON));
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(TruckOrTowableTemperatureFromJSON));
     }
     /**
      * Retrieve all temperatures from all thermometers related to a specific truck, possibly including data from archived thermometers.
      * List truck temperatures.
      */
-    async listTruckTemperatures(requestParameters: ListTruckTemperaturesRequest): Promise<Array<Temperature>> {
+    async listTruckTemperatures(requestParameters: ListTruckTemperaturesRequest): Promise<Array<TruckOrTowableTemperature>> {
         const response = await this.listTruckTemperaturesRaw(requestParameters);
         return await response.value();
     }
@@ -466,7 +456,7 @@ export class TrucksApi extends runtime.BaseAPI {
      * Retrieve all temperatures from all thermometers related to a specific truck, possibly including data from archived thermometers.
      * List truck temperatures.
      */
-    async listTruckTemperaturesWithHeaders(requestParameters: ListTruckTemperaturesRequest): Promise<[ Array<Temperature>, Headers ]> {
+    async listTruckTemperaturesWithHeaders(requestParameters: ListTruckTemperaturesRequest): Promise<[ Array<TruckOrTowableTemperature>, Headers ]> {
         const response = await this.listTruckTemperaturesRaw(requestParameters);
         const value = await response.value(); 
         return [ value, response.raw.headers ];

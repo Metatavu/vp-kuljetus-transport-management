@@ -40,7 +40,7 @@ function AggregationsTableForDriver({ workShiftsData, employee }: Props) {
             )} h`}</Typography>
           </TableCell>
           <TableCell>{t("workingHours.workingDays.aggregationsTable.vacation")}</TableCell>
-          <TableCell>
+          <TableCell align="right">
             <Typography variant="h6">{`${WorkShiftsUtils.getTotalHoursByAbsenseType(
               workShiftsData,
               AbsenceType.Vacation,
@@ -64,7 +64,10 @@ function AggregationsTableForDriver({ workShiftsData, employee }: Props) {
         <TableRow>
           <TableCell>{t("workingHours.workingDays.aggregationsTable.workTime")}</TableCell>
           <TableCell align="right">
-            <Typography variant="h6">{`${employee?.regularWorkingHours ?? ""} h`}</Typography>
+            <Typography variant="h6">{`${WorkShiftsUtils.getRegularWorkingHoursOnWorkPeriod(
+              employee,
+              workShiftsData,
+            )} h`}</Typography>
           </TableCell>
           <TableCell>{t("workingHours.workingDays.aggregationsTable.nightWork")}</TableCell>
           <TableCell align="right">
@@ -73,13 +76,18 @@ function AggregationsTableForDriver({ workShiftsData, employee }: Props) {
               WorkType.NightAllowance,
             )} h`}</Typography>
           </TableCell>
-          <EmptyCell />
-          <EmptyCell />
+          <TableCell>{t("workingHours.workingDays.aggregationsTable.unpaid")}</TableCell>
+          <TableCell align="right">
+            <Typography variant="h6">{`${WorkShiftsUtils.getTotalWorkHoursByType(
+              workShiftsData,
+              WorkType.Unpaid,
+            )} h`}</Typography>
+          </TableCell>
           <TableCell>{t("workingHours.workingDays.aggregationsTable.sickHours")}</TableCell>
           <TableCell align="right">
-            <Typography variant="h6">{`${WorkShiftsUtils.getTotalHoursByAbsenseType(
+            <Typography variant="h6">{`${WorkShiftsUtils.getTotalWorkHoursByType(
               workShiftsData,
-              AbsenceType.SickLeave,
+              WorkType.SickLeave,
             )} h`}</Typography>
           </TableCell>
           <TableCell>{t("workingHours.workingDays.aggregationsTable.fullDayAllowance")}</TableCell>
@@ -108,9 +116,9 @@ function AggregationsTableForDriver({ workShiftsData, employee }: Props) {
           <EmptyCell />
           <TableCell>{t("workingHours.workingDays.aggregationsTable.responsibilities")}</TableCell>
           <TableCell align="right">
-            <Typography variant="h6">{`${WorkShiftsUtils.getTotalHoursByAbsenseType(
+            <Typography variant="h6">{`${WorkShiftsUtils.getTotalWorkHoursByType(
               workShiftsData,
-              AbsenceType.OfficialDuties,
+              WorkType.OfficialDuties,
             )} h`}</Typography>
           </TableCell>
         </TableRow>
@@ -129,9 +137,9 @@ function AggregationsTableForDriver({ workShiftsData, employee }: Props) {
           <EmptyCell />
           <TableCell>{t("workingHours.workingDays.aggregationsTable.trainingDuringWorkTime")}</TableCell>
           <TableCell align="right">
-            <Typography variant="h6">{`${WorkShiftsUtils.getTotalHoursByAbsenseType(
+            <Typography variant="h6">{`${WorkShiftsUtils.getTotalWorkHoursByType(
               workShiftsData,
-              AbsenceType.Training,
+              WorkType.Training,
             )} h`}</Typography>
           </TableCell>
         </TableRow>

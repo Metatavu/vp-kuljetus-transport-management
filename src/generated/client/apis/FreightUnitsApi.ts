@@ -13,37 +13,31 @@
  * Do not edit the class manually.
  */
 
-
 import * as runtime from '../runtime';
 import {
     FreightUnit,
     FreightUnitFromJSON,
     FreightUnitToJSON,
 } from '../models';
-
+import { DateTime } from "luxon";
 export interface CreateFreightUnitRequest {
     freightUnit: FreightUnit;
 }
-
 export interface DeleteFreightUnitRequest {
     freightUnitId: string;
 }
-
 export interface FindFreightUnitRequest {
     freightUnitId: string;
 }
-
 export interface ListFreightUnitsRequest {
     freightId?: string;
     first?: number;
     max?: number;
 }
-
 export interface UpdateFreightUnitRequest {
     freightUnit: FreightUnit;
     freightUnitId: string;
 }
-
 /**
  * 
  */

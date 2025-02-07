@@ -142,7 +142,7 @@ const UnallocatedTasksTable = ({ sites }: Props) => {
       slots={{
         row: renderRow,
       }}
-      onCellClick={({ row: { freightId } }) => {
+      onRowClick={({ row: { freightId } }) => {
         navigate({ search: { freightId, date: undefined } });
       }}
     />

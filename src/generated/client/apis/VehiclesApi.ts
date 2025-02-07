@@ -13,29 +13,25 @@
  * Do not edit the class manually.
  */
 
-
 import * as runtime from '../runtime';
 import {
     Vehicle,
     VehicleFromJSON,
     VehicleToJSON,
 } from '../models';
-
+import { DateTime } from "luxon";
 export interface CreateVehicleRequest {
     vehicle: Vehicle;
 }
-
 export interface FindVehicleRequest {
     vehicleId: string;
 }
-
 export interface ListVehiclesRequest {
     truckId?: string;
     archived?: boolean;
     first?: number;
     max?: number;
 }
-
 /**
  * 
  */

@@ -13,7 +13,6 @@
  * Do not edit the class manually.
  */
 
-
 import * as runtime from '../runtime';
 import {
     WorkShiftHours,
@@ -23,15 +22,13 @@ import {
     WorkTypeFromJSON,
     WorkTypeToJSON,
 } from '../models';
-
+import { DateTime } from "luxon";
 export interface DeleteWorkShiftHoursRequest {
     workShiftHoursId: string;
 }
-
 export interface FindWorkShiftHoursRequest {
     workShiftHoursId: string;
 }
-
 export interface ListWorkShiftHoursRequest {
     employeeId?: string;
     employeeWorkShiftId?: string;
@@ -39,12 +36,10 @@ export interface ListWorkShiftHoursRequest {
     employeeWorkShiftStartedAfter?: Date;
     employeeWorkShiftStartedBefore?: Date;
 }
-
 export interface UpdateWorkShiftHoursRequest {
     workShiftHours: WorkShiftHours;
     workShiftHoursId: string;
 }
-
 /**
  * 
  */
@@ -147,10 +142,10 @@ export class WorkShiftHoursApi extends runtime.BaseAPI {
             queryParameters['workType'] = requestParameters.workType;
         }
         if (requestParameters.employeeWorkShiftStartedAfter !== undefined) {
-            queryParameters['employeeWorkShiftStartedAfter'] = (requestParameters.employeeWorkShiftStartedAfter as any).toISOString();
+            queryParameters['employeeWorkShiftStartedAfter'] = DateTime.fromJSDate(requestParameters.employeeWorkShiftStartedAfter as any).toISO();
         }
         if (requestParameters.employeeWorkShiftStartedBefore !== undefined) {
-            queryParameters['employeeWorkShiftStartedBefore'] = (requestParameters.employeeWorkShiftStartedBefore as any).toISOString();
+            queryParameters['employeeWorkShiftStartedBefore'] = DateTime.fromJSDate(requestParameters.employeeWorkShiftStartedBefore as any).toISO();
         }
         const headerParameters: runtime.HTTPHeaders = {};
         if (this.configuration && this.configuration.accessToken) {

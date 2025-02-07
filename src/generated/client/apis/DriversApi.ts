@@ -13,25 +13,22 @@
  * Do not edit the class manually.
  */
 
-
 import * as runtime from '../runtime';
 import {
     Driver,
     DriverFromJSON,
     DriverToJSON,
 } from '../models';
-
+import { DateTime } from "luxon";
 export interface FindDriverRequest {
     driverId: string;
 }
-
 export interface ListDriversRequest {
     driverCardId?: string;
     archived?: boolean;
     first?: number;
     max?: number;
 }
-
 /**
  * 
  */

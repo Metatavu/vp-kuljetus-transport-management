@@ -13,26 +13,22 @@
  * Do not edit the class manually.
  */
 
-
 import * as runtime from '../runtime';
 import {
     Route,
     RouteFromJSON,
     RouteToJSON,
 } from '../models';
-
+import { DateTime } from "luxon";
 export interface CreateRouteRequest {
     route: Route;
 }
-
 export interface DeleteRouteRequest {
     routeId: string;
 }
-
 export interface FindRouteRequest {
     routeId: string;
 }
-
 export interface ListRoutesRequest {
     truckId?: string;
     driverId?: string;
@@ -41,12 +37,10 @@ export interface ListRoutesRequest {
     first?: number;
     max?: number;
 }
-
 export interface UpdateRouteRequest {
     route: Route;
     routeId: string;
 }
-
 /**
  * 
  */
@@ -190,10 +184,10 @@ export class RoutesApi extends runtime.BaseAPI {
             queryParameters['driverId'] = requestParameters.driverId;
         }
         if (requestParameters.departureAfter !== undefined) {
-            queryParameters['departureAfter'] = (requestParameters.departureAfter as any).toISOString();
+            queryParameters['departureAfter'] = DateTime.fromJSDate(requestParameters.departureAfter as any).toISO();
         }
         if (requestParameters.departureBefore !== undefined) {
-            queryParameters['departureBefore'] = (requestParameters.departureBefore as any).toISOString();
+            queryParameters['departureBefore'] = DateTime.fromJSDate(requestParameters.departureBefore as any).toISO();
         }
         if (requestParameters.first !== undefined) {
             queryParameters['first'] = requestParameters.first;

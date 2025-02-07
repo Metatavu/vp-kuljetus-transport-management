@@ -13,44 +13,38 @@
  * Do not edit the class manually.
  */
 
-
 import * as runtime from '../runtime';
 import {
-    Temperature,
-    TemperatureFromJSON,
-    TemperatureToJSON,
     Towable,
     TowableFromJSON,
     TowableToJSON,
+    TruckOrTowableTemperature,
+    TruckOrTowableTemperatureFromJSON,
+    TruckOrTowableTemperatureToJSON,
 } from '../models';
-
+import { DateTime } from "luxon";
 export interface CreateTowableRequest {
     towable: Towable;
 }
-
 export interface FindTowableRequest {
     towableId: string;
 }
-
 export interface ListTowableTemperaturesRequest {
     towableId: string;
     includeArchived?: boolean;
     first?: number;
     max?: number;
 }
-
 export interface ListTowablesRequest {
     plateNumber?: string;
     archived?: boolean;
     first?: number;
     max?: number;
 }
-
 export interface UpdateTowableRequest {
     towable: Towable;
     towableId: string;
 }
-
 /**
  * 
  */
@@ -145,7 +139,7 @@ export class TowablesApi extends runtime.BaseAPI {
      * Retrieve all temperatures from all thermometers related to a specific towable, possibly including data from thermometers that have been archived.
      * List temperature readings by towable, including archived thermometers
      */
-    async listTowableTemperaturesRaw(requestParameters: ListTowableTemperaturesRequest): Promise<runtime.ApiResponse<Array<Temperature>>> {
+    async listTowableTemperaturesRaw(requestParameters: ListTowableTemperaturesRequest): Promise<runtime.ApiResponse<Array<TruckOrTowableTemperature>>> {
         if (requestParameters.towableId === null || requestParameters.towableId === undefined) {
             throw new runtime.RequiredError('towableId','Required parameter requestParameters.towableId was null or undefined when calling listTowableTemperatures.');
         }
@@ -173,13 +167,13 @@ export class TowablesApi extends runtime.BaseAPI {
             headers: headerParameters,
             query: queryParameters,
         });
-        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(TemperatureFromJSON));
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(TruckOrTowableTemperatureFromJSON));
     }
     /**
      * Retrieve all temperatures from all thermometers related to a specific towable, possibly including data from thermometers that have been archived.
      * List temperature readings by towable, including archived thermometers
      */
-    async listTowableTemperatures(requestParameters: ListTowableTemperaturesRequest): Promise<Array<Temperature>> {
+    async listTowableTemperatures(requestParameters: ListTowableTemperaturesRequest): Promise<Array<TruckOrTowableTemperature>> {
         const response = await this.listTowableTemperaturesRaw(requestParameters);
         return await response.value();
     }
@@ -187,7 +181,7 @@ export class TowablesApi extends runtime.BaseAPI {
      * Retrieve all temperatures from all thermometers related to a specific towable, possibly including data from thermometers that have been archived.
      * List temperature readings by towable, including archived thermometers
      */
-    async listTowableTemperaturesWithHeaders(requestParameters: ListTowableTemperaturesRequest): Promise<[ Array<Temperature>, Headers ]> {
+    async listTowableTemperaturesWithHeaders(requestParameters: ListTowableTemperaturesRequest): Promise<[ Array<TruckOrTowableTemperature>, Headers ]> {
         const response = await this.listTowableTemperaturesRaw(requestParameters);
         const value = await response.value(); 
         return [ value, response.raw.headers ];

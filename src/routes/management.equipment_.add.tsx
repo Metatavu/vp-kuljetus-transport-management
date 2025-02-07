@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { Breadcrumb } from "src/types";
 
-export const Route = createFileRoute("/management/equipment_/add-equipment")({
+export const Route = createFileRoute("/management/equipment_/add")({
   component: () => <EquipmentAdd />,
   loader: () => {
     const breadcrumbs: Breadcrumb[] = [
@@ -36,7 +36,7 @@ const EquipmentAdd = () => {
   };
 
   const createTruckEquipment = useMutation({
-    mutationFn: async (truck: Truck) => api.trucks.createTruck({ truck }),
+    mutationFn: (truck: Truck) => api.trucks.createTruck({ truck }),
     onSuccess: () => {
       toast.success(t("management.equipment.successToast"));
       queryClient.invalidateQueries({ queryKey: ["trucks"] });
@@ -45,7 +45,7 @@ const EquipmentAdd = () => {
   });
 
   const createTowableEquipment = useMutation({
-    mutationFn: async (towable: Towable) => api.towables.createTowable({ towable }),
+    mutationFn: (towable: Towable) => api.towables.createTowable({ towable }),
     onSuccess: () => {
       toast.success(t("management.equipment.successToast"));
       queryClient.invalidateQueries({ queryKey: ["towables"] });

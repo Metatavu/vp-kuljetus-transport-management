@@ -1,6 +1,7 @@
 import { Add } from "@mui/icons-material";
 import { Button, Stack, styled } from "@mui/material";
 import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
+import { gridClasses } from "@mui/x-data-grid";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { api } from "api/index";
@@ -146,7 +147,7 @@ function ManagementEquipment() {
       <Button
         onClick={() =>
           navigate({
-            to: "/management/equipment/add-equipment",
+            to: "/management/equipment/add",
           })
         }
         variant="contained"
@@ -162,7 +163,8 @@ function ManagementEquipment() {
       <ToolbarRow title={t("management.equipment.title")} toolbarButtons={renderToolbarButtons()} />
       <Stack flex={1} sx={{ height: "100%", overflowY: "auto" }}>
         <GenericDataGrid
-          onCellClick={({ row: { id, type } }) => {
+          disableRowSelectionOnClick
+          onRowClick={({ row: { id, type } }) => {
             if (!id) return;
             const equipmentType = type === "TRUCK" || type === "SEMI_TRUCK" ? "truck" : "towable";
             navigate(
@@ -177,6 +179,7 @@ function ManagementEquipment() {
                   },
             );
           }}
+          sx={{ [`& .${gridClasses.row}`]: { cursor: "pointer" } }}
           fullScreen
           autoHeight={false}
           rows={equipment}

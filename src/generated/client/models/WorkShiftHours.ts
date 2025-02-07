@@ -52,10 +52,10 @@ import {
  * ##### Work shift hours for all of the work types are calculated as follows
  * 
  * ###### PAID_WORK
- * Everything else apart from work event type BREAK.
+ * Everything else, except the additional time over 30 minutes of work event type BREAK.
  * 
  * ###### BREAK
- * Only work event type BREAK.
+ * Only work event type BREAK. The first 30 minutes of the break are also included in the PAID_WORK.
  * 
  * ###### STANDBY
  * Not calculated at all. It can only be added manually from the management.
@@ -81,6 +81,18 @@ import {
  * 
  * ###### FROZEN_ALLOWANCE
  * All hours from the PAID_WORK that are recorded from the frozen section.
+ * 
+ * ###### OFFICIAL_DUTIES
+ * Not calculated at all. It can only be added manually from the management.
+ * 
+ * ###### SICK_LEAVE
+ * Not calculated at all. It can only be added manually from the management.
+ * 
+ * ###### TRAINING
+ * Not calculated at all. It can only be added manually from the management.
+ * 
+ * ###### UNPAID
+ * Not calculated at all. It can only be added manually from the management.
  * 
  * @export
  * @interface WorkShiftHours
