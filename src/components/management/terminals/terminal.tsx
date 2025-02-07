@@ -11,7 +11,7 @@ import { useConfirmDialog } from "components/providers/confirm-dialog-provider";
 import { Site, SiteType } from "generated/client";
 import { QUERY_KEYS } from "hooks/use-queries";
 import { Map as LeafletMap, latLng } from "leaflet";
-import React, { useEffect, useRef } from "react";
+import { SyntheticEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { MapContainer, Marker, TileLayer } from "react-leaflet";
@@ -31,9 +31,9 @@ const DEFAULT_MAP_CENTER = latLng(61.1621924, 28.65865865);
 function TerminalSiteComponent({ formType, site, onSave }: Props) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [tabValue, setTabValue] = React.useState("1");
-  const [formState] = React.useState(formType);
-  const handleTabChange = (_event: React.SyntheticEvent, newTabValue: string) => {
+  const [tabValue, setTabValue] = useState("1");
+  const formState = useMemo(() => formType, [formType]);
+  const handleTabChange = (_event: SyntheticEvent, newTabValue: string) => {
     setTabValue(newTabValue);
   };
 
