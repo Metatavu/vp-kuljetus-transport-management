@@ -170,7 +170,7 @@ const WorkingHoursDocument = ({ employee, workShiftsData, trucks, workingPeriods
         <Text style={styles.headerCellText}>Palkaton</Text>
       </View>
       <View style={styles.timeTableCell}>
-        <Text style={styles.headerCellText}>Vapaapäivätyön lisä</Text>
+        <Text style={styles.headerCellText}>VPTL</Text>
       </View>
       <View style={styles.timeTableCell}>
         <Text style={styles.headerCellText}>Poissaolo</Text>
@@ -182,7 +182,7 @@ const WorkingHoursDocument = ({ employee, workShiftsData, trucks, workingPeriods
         <Text style={styles.headerCellText}>Päiväraha</Text>
       </View>
       <View style={[styles.timeTableCell, { maxWidth: 20 }]}>
-        <Text style={styles.headerCellText}>Huomautuksia</Text>
+        <Text style={styles.headerCellText}>Huom*</Text>
       </View>
     </View>
   );
@@ -410,7 +410,7 @@ const WorkingHoursDocument = ({ employee, workShiftsData, trucks, workingPeriods
               <Text style={styles.boldText} />
             </View>
             <View style={[styles.tableCell, { alignItems: "flex-start" }]}>
-              <Text>Vapaapäivätyön lisä</Text>
+              <Text>{"Vapaapäivätyön lisä (VPTL)"}</Text>
             </View>
             <View style={[styles.tableCell, { maxWidth: 50 }]}>
               <Text style={styles.boldText} />
