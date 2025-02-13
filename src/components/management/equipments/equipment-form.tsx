@@ -1,6 +1,6 @@
 import { MenuItem, Stack, TextField, styled } from "@mui/material";
 import { Towable, TowableTypeEnum, Truck, TruckTypeEnum } from "generated/client";
-import { FieldErrors, UseFormRegister, UseFormSetValue } from "react-hook-form";
+import { useForm, useFormContext, useFormState } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import LocalizationUtils from "utils/localization-utils";
 
@@ -15,15 +15,12 @@ const Root = styled(Stack, {
 }));
 
 type Props = {
-  errors: FieldErrors<Truck | Towable>;
-  register: UseFormRegister<Truck | Towable>;
   equipment?: Truck | Towable;
-  setFormValue: UseFormSetValue<Truck | Towable>;
 };
 
-const EquipmentForm = ({ errors, register, equipment }: Props) => {
+const EquipmentForm = ({ equipment }: Props) => {
   const { t } = useTranslation("translation");
-
+  const methods = useFormContext();
   const renderEquipmentType = (type: string) => (
     <MenuItem key={type} value={type}>
       {LocalizationUtils.getLocalizedEquipmentType(type, t)}
@@ -43,35 +40,35 @@ const EquipmentForm = ({ errors, register, equipment }: Props) => {
           label={t("management.equipment.type")}
           InputProps={{ disableUnderline: false }}
           defaultValue={equipment?.type ?? ""}
-          {...register("type")}
+          {...methods.register("type")}
         >
           {renderMenuItems()}
         </TextField>
         <TextField
           label={t("management.equipment.name")}
-          error={!!errors.name}
-          helperText={errors.name?.message}
-          {...register("name", { required: t("management.equipment.errorMessages.numberMissing") })}
+          error={!!methods.formState.errors.name}
+          helperText={!!methods.formState.errors.name?.message}
+          {...methods.register("name", { required: t("management.equipment.errorMessages.numberMissing") })}
         />
-        <TextField
+        { (methods.watch("type") == "TRUCK" || methods.watch("type") == "SEMI_TRUCK") && <TextField
           label={t("management.equipment.costCenter")}
-          error={!!errors.name}
-          helperText={errors.name?.message}
-          {...register("costCenter", { required: t("management.equipment.errorMessages.numberMissing") })}
-        />
+          error={!!methods.formState.errors.name}
+          helperText={!!methods.formState.errors.name?.message}
+          {...methods.register("costCenter")}
+        /> }
         <TextField
           label={t("management.equipment.licensePlate")}
-          error={!!errors.plateNumber}
-          helperText={errors.plateNumber?.message}
-          {...register("plateNumber", { required: t("management.equipment.errorMessages.licensePlateMissing") })}
+          error={!!methods.formState.errors.plateNumber}
+          helperText={!!methods.formState.errors.plateNumber?.message}
+          {...methods.register("plateNumber", { required: t("management.equipment.errorMessages.licensePlateMissing") })}
         />
         <TextField
           label={t("management.equipment.vin")}
-          error={!!errors.vin}
-          helperText={errors.vin?.message}
-          {...register("vin", { required: t("management.equipment.errorMessages.vinNumberMissing") })}
+          error={!!methods.formState.errors.vin}
+          helperText={!!methods.formState.errors.vin?.message}
+          {...methods.register("vin", { required: t("management.equipment.errorMessages.vinNumberMissing") })}
         />
-        <TextField label={t("management.equipment.imei")} {...register("imei")} />
+        <TextField label={t("management.equipment.imei")} {...methods.register("imei")} />
       </Stack>
     </Root>
   );
