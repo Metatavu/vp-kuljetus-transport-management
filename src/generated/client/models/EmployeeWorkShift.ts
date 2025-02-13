@@ -126,12 +126,6 @@ export interface EmployeeWorkShift {
      * @memberof EmployeeWorkShift
      */
     readonly payrollExportId?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof EmployeeWorkShift
-     */
-    defaultTruckId?: string;
 }
 
 /**
@@ -168,7 +162,6 @@ export function EmployeeWorkShiftFromJSONTyped(json: any, ignoreDiscriminator: b
         'approved': json['approved'],
         'notes': !exists(json, 'notes') ? undefined : json['notes'],
         'payrollExportId': !exists(json, 'payrollExportId') ? undefined : json['payrollExportId'],
-        'defaultTruckId': !exists(json, 'defaultTruckId') ? undefined : json['defaultTruckId'],
     };
 }
 
@@ -188,7 +181,6 @@ export function EmployeeWorkShiftToJSON(value?: EmployeeWorkShift | null): any {
         'perDiemAllowance': PerDiemAllowanceTypeToJSON(value.perDiemAllowance),
         'approved': value.approved,
         'notes': value.notes,
-        'defaultTruckId': value.defaultTruckId,
     };
 }
 

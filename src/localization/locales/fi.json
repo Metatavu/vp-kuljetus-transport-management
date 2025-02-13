@@ -173,6 +173,7 @@
       "modify": "{{equipmentName}}",
       "type": "Tyyppi",
       "sensors": "Anturit",
+      "costCenter": "Kustannuspaikka",
       "name": "Nimi",
       "licensePlate": "Rekisterinumero",
       "number": "Tunnus",

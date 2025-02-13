@@ -50,7 +50,7 @@ const Cell = styled(Stack, {
   },
 }));
 
-function WorkShiftRow({ index, trucks, date, workShiftId }: Props) {
+function WorkShiftRow({ index, date, workShiftId }: Props) {
   const { t } = useTranslation();
   const { employeeId } = useParams({ from: "/working-hours_/$employeeId/work-shifts" });
   const navigate = useNavigate();
@@ -98,45 +98,6 @@ function WorkShiftRow({ index, trucks, date, workShiftId }: Props) {
     },
     [setValue, index, workShiftHours, t, workShift?.approved],
   );
-
-  // TODO: Needs api support and approval from designer
-  const renderTruckTextOrSelectInput = useCallback(() => {
-    const recordedTruckIds = workShift?.truckIdsFromEvents
-      ?.map((truckId) => trucks.find((truck) => truck.id === truckId)?.name)
-      .join(", ");
-    return (
-      <TextField
-        select
-        className="cell-input"
-        size="small"
-        aria-label={t("workingHours.workingDays.table.vehicle")}
-        title={t("workingHours.workingDays.table.vehicle")}
-        fullWidth
-        disabled={workShift?.approved}
-        variant="outlined"
-        value={recordedTruckIds ?? workShift?.defaultTruckId ?? ""}
-        onChange={(event) =>
-          setValue(`${index}.workShift.truckIdsFromEvents`, [event.target.value], {
-            shouldDirty: true,
-            shouldValidate: true,
-            shouldTouch: true,
-          })
-        }
-      >
-        {/* TODO: Check design and usability */}
-        {recordedTruckIds && (
-          <MenuItem disabled style={{ minHeight: 30 }} key={recordedTruckIds} value={recordedTruckIds}>
-            {`${recordedTruckIds} (Valittu)`}
-          </MenuItem>
-        )}
-        {trucks.map((truck) => (
-          <MenuItem style={{ minHeight: 30 }} key={truck.id} value={truck.id}>
-            {truck.name}
-          </MenuItem>
-        ))}
-      </TextField>
-    );
-  }, [setValue, index, workShift, trucks, t]);
 
   const renderPerDiemAllowanceSelectInput = useCallback(
     () => (
@@ -314,7 +275,6 @@ function WorkShiftRow({ index, trucks, date, workShiftId }: Props) {
           {renderAbsenceTypeSelectInput()}
         </Stack>
       </Cell>
-      <Cell width={90}>{renderTruckTextOrSelectInput()}</Cell>
       <Cell width={90}>{renderPerDiemAllowanceSelectInput()}</Cell>
       <Cell width={90}>
         <Checkbox
