@@ -177,6 +177,7 @@
       "modify": "Modify equipment {{equipmentName}}",
       "type": "Type",
       "name": "Name",
+      "costCenter": "Cost center",
       "licensePlate": "License plate",
       "number": "Number",
       "vin": "VIN number",

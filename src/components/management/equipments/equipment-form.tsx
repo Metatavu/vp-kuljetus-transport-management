@@ -54,6 +54,12 @@ const EquipmentForm = ({ errors, register, equipment }: Props) => {
           {...register("name", { required: t("management.equipment.errorMessages.numberMissing") })}
         />
         <TextField
+          label={t("management.equipment.costCenter")}
+          error={!!errors.name}
+          helperText={errors.name?.message}
+          {...register("costCenter", { required: t("management.equipment.errorMessages.numberMissing") })}
+        />
+        <TextField
           label={t("management.equipment.licensePlate")}
           error={!!errors.plateNumber}
           helperText={errors.plateNumber?.message}
