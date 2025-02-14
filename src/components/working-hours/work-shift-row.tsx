@@ -24,6 +24,18 @@ type Props = {
   workShiftId?: string;
 };
 
+// Styled textarea
+const Textarea = styled(TextField, {
+  label: "textarea",
+})(() => ({
+  fontSize: 13,
+  padding: "4px 0",
+  transition: "height 0.3s ease-in-out",
+  "& .MuiOutlinedInput-root": {
+    transition: "height 0.3s ease-in-out",
+  },
+}));
+
 // Styled work shift row
 const Row = styled(Stack, {
   label: "work-shift-row",
@@ -232,10 +244,14 @@ function WorkShiftRow({ index, trucks, date, workShiftId }: Props) {
             : theme.palette.background.default,
       }}
     >
-      <Cell width={90}>
+      <Cell width={70} style={{ justifyContent: "right" }}>
         <Link
           underline={hasDetails ? "always" : "none"}
-          sx={{ cursor: hasDetails ? "pointer" : "default" }}
+          sx={{
+            cursor: hasDetails ? "pointer" : "default",
+            fontSize: 13,
+            textTransform: "uppercase",
+          }}
           title={t("workingHours.workingHourBalances.toWorkHourDetails")}
           // use bold font style if date is today
           style={{
@@ -254,21 +270,21 @@ function WorkShiftRow({ index, trucks, date, workShiftId }: Props) {
           {workShift?.date && DateTime.fromJSDate(workShift.date).toFormat("EEE dd.MM")}
         </Link>
       </Cell>
-      <Cell minWidth={75} flex={1}>
-        <Typography variant="body2">
+      <Cell flex={1}>
+        <Typography variant="body1">
           {workShift?.startedAt ? DateTime.fromJSDate(workShift.startedAt).toFormat("HH:mm") : ""}
         </Typography>
       </Cell>
-      <Cell minWidth={75} flex={1}>
-        <Typography variant="body2">
+      <Cell flex={1}>
+        <Typography variant="body1">
           {workShift?.endedAt ? DateTime.fromJSDate(workShift.endedAt).toFormat("HH:mm") : ""}
         </Typography>
       </Cell>
-      <Cell minWidth={75} flex={1}>
-        <Typography variant="body2">{WorkShiftsUtils.getTotalWorkingTimeOnWorkShift(workShift)}</Typography>
+      <Cell flex={1}>
+        <Typography variant="body1">{WorkShiftsUtils.getTotalWorkingTimeOnWorkShift(workShift)}</Typography>
       </Cell>
-      <Cell minWidth={75} flex={1}>
-        <Typography variant="body2">{WorkShiftsUtils.getUnpaidBreakHours(workShiftHours)}</Typography>
+      <Cell flex={1}>
+        <Typography variant="body1">{WorkShiftsUtils.getUnpaidBreakHours(workShiftHours)}</Typography>
       </Cell>
       <Cell flex={1}>
         {renderWorkHourInput(t("workingHours.workingDays.table.payableWorkingHours"), WorkType.PaidWork)}
@@ -345,10 +361,9 @@ function WorkShiftRow({ index, trucks, date, workShiftId }: Props) {
           }
         />
       </Cell>
-      <Cell minWidth={120} flex={1}>
+      <Cell minWidth={175} flex={1} justifyContent="center" alignContent="center">
         {/* TODO: Finalize styling */}
-        <TextField
-          className="cell-input align-left"
+        <Textarea
           size="small"
           aria-label={t("workingHours.workingDays.table.remarks")}
           fullWidth
@@ -366,12 +381,9 @@ function WorkShiftRow({ index, trucks, date, workShiftId }: Props) {
               shouldTouch: true,
             })
           }
+          InputProps={{ style: { height: "100%", padding: "4px 8px", fontSize: 13 } }}
           sx={{
-            transition: "all 0.3s ease-in-out",
             height: isFocused ? "100px" : "40px",
-            "& .MuiOutlinedInput-root": {
-              transition: "all 0.3s ease-in-out",
-            },
           }}
         />
       </Cell>
