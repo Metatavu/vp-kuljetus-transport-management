@@ -136,7 +136,7 @@ function WorkShifts() {
   const selectedDate = Route.useSearch({ select: (search) => search.date });
 
   const trucks = useQuery(getListTrucksQueryOptions({})).data?.trucks;
-  const employees = useQuery(getListEmployeesQueryOptions({})).data?.employees;
+  const employees = useQuery(getListEmployeesQueryOptions({ max: 25 })).data?.employees;
 
   const employee = useMemo(() => employees?.find((employee) => employee.id === employeeId), [employees, employeeId]);
 
