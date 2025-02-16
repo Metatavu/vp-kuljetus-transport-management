@@ -23,19 +23,11 @@ function WorkShiftsTableHeader() {
 
   return (
     <Stack direction="row">
-      <HeaderCell width={90}>{t("workingHours.workingDays.table.date")}</HeaderCell>
-      <HeaderCell minWidth={75} flex={1}>
-        {t("workingHours.workingDays.table.workStarted")}
-      </HeaderCell>
-      <HeaderCell minWidth={75} flex={1}>
-        {t("workingHours.workingDays.table.workEnded")}
-      </HeaderCell>
-      <HeaderCell minWidth={75} flex={1}>
-        {t("workingHours.workingDays.table.workingHours")}
-      </HeaderCell>
-      <HeaderCell minWidth={75} flex={1}>
-        {t("workingHours.workingDays.table.unpaidBreak")}
-      </HeaderCell>
+      <HeaderCell width={70}>{t("workingHours.workingDays.table.date")}</HeaderCell>
+      <HeaderCell flex={1}>{t("workingHours.workingDays.table.workStarted")}</HeaderCell>
+      <HeaderCell flex={1}>{t("workingHours.workingDays.table.workEnded")}</HeaderCell>
+      <HeaderCell flex={1}>{t("workingHours.workingDays.table.workingHours")}</HeaderCell>
+      <HeaderCell flex={1}>{t("workingHours.workingDays.table.unpaidBreak")}</HeaderCell>
       <HeaderCell flex={1}>{t("workingHours.workingDays.table.payableWorkingHours")}</HeaderCell>
       <HeaderCell flex={1}>{t("workingHours.workingDays.table.waitingTime")}</HeaderCell>
       <HeaderCell flex={1}>{t("workingHours.workingDays.table.eveningWork")}</HeaderCell>
@@ -53,7 +45,7 @@ function WorkShiftsTableHeader() {
       <HeaderCell width={90}>{t("workingHours.workingDays.table.vehicle")}</HeaderCell>
       <HeaderCell width={90}>{t("workingHours.workingDays.table.dailyAllowance")}</HeaderCell>
       <HeaderCell width={90}>{t("workingHours.workingDays.table.inspected")}</HeaderCell>
-      <HeaderCell minWidth={120} flex={1}>
+      <HeaderCell minWidth={175} flex={1}>
         {t("workingHours.workingDays.table.remarks")}
       </HeaderCell>
     </Stack>
