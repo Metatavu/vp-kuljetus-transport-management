@@ -130,28 +130,18 @@ function WorkShiftRow({ index, trucks, date, workShiftId }: Props) {
         fullWidth
         disabled={workShift?.approved}
         variant="outlined"
-        value={workShift?.defaultTruckId ?? recordedTruckIds}
-        onChange={(event) =>
-          setValue(`${index}.workShift.defaultTruckId`, event.target.value, {
-            shouldDirty: true,
-            shouldValidate: true,
-            shouldTouch: true,
-          })
-        }
+        value={recordedTruckIds}
+        // onChange={(event) =>
+        //   setValue(`${index}.workShift.defaultTruckId`, event.target.value, {
+        //     shouldDirty: true,
+        //     shouldValidate: true,
+        //     shouldTouch: true,
+        //   })
+        // }
       >
         {recordedTruckIds && (
           <MenuItem disabled style={{ minHeight: 30 }} key={recordedTruckIds} value={recordedTruckIds}>
             {`${recordedTruckIds} (Tallennetut ajoneuvot)`}
-          </MenuItem>
-        )}
-        {workShift?.defaultTruckId && (
-          <MenuItem
-            disabled
-            style={{ minHeight: 30 }}
-            key={workShift?.defaultTruckId}
-            value={workShift?.defaultTruckId}
-          >
-            {`${getTruckName(workShift.defaultTruckId)} (Valittu)`}
           </MenuItem>
         )}
         {trucks.map((truck) => (
@@ -161,7 +151,7 @@ function WorkShiftRow({ index, trucks, date, workShiftId }: Props) {
         ))}
       </TextField>
     );
-  }, [setValue, getTruckName, index, workShift, trucks, t]);
+  }, [workShift, trucks, t, getTruckName]);
 
   const renderPerDiemAllowanceSelectInput = useCallback(
     () => (
