@@ -50,7 +50,6 @@ function WorkShiftsTableHeader() {
       <HeaderCell minWidth={115} flex={1}>
         {t("workingHours.workingDays.table.absence")}
       </HeaderCell>
-      <HeaderCell width={90}>{t("workingHours.workingDays.table.vehicle")}</HeaderCell>
       <HeaderCell width={90}>{t("workingHours.workingDays.table.dailyAllowance")}</HeaderCell>
       <HeaderCell width={90}>{t("workingHours.workingDays.table.inspected")}</HeaderCell>
       <HeaderCell minWidth={120} flex={1}>

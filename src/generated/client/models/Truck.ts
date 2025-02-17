@@ -33,6 +33,12 @@ export interface Truck {
      */
     name?: string;
     /**
+     * 
+     * @type {string}
+     * @memberof Truck
+     */
+    costCenter?: string;
+    /**
      * The unique IMEI of the truck, used to identify it when associating with a thermometer.
      * @type {string}
      * @memberof Truck
@@ -132,6 +138,7 @@ export function TruckFromJSONTyped(json: any, ignoreDiscriminator: boolean): Tru
         
         'id': !exists(json, 'id') ? undefined : json['id'],
         'name': !exists(json, 'name') ? undefined : json['name'],
+        'costCenter': !exists(json, 'costCenter') ? undefined : json['costCenter'],
         'imei': !exists(json, 'imei') ? undefined : json['imei'],
         'plateNumber': json['plateNumber'],
         'type': json['type'],
@@ -155,6 +162,7 @@ export function TruckToJSON(value?: Truck | null): any {
     return {
         
         'name': value.name,
+        'costCenter': value.costCenter,
         'imei': value.imei,
         'plateNumber': value.plateNumber,
         'type': value.type,
