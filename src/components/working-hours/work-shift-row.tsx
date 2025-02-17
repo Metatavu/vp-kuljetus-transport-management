@@ -61,7 +61,7 @@ const Cell = styled(Stack, {
   },
 }));
 
-function WorkShiftRow({ index, trucks, date, workShiftId }: Props) {
+function WorkShiftRow({ index, date, workShiftId }: Props) {
   const { t } = useTranslation();
   const { employeeId } = useParams({ from: "/working-hours_/$employeeId/work-shifts" });
   const navigate = useNavigate();
@@ -110,47 +110,6 @@ function WorkShiftRow({ index, trucks, date, workShiftId }: Props) {
     [setValue, index, workShiftHours, t, workShift?.approved],
   );
 
-  const getTruckName = (truckId: string | undefined) => {
-    const truck = trucks.find((truck) => truck.id === truckId);
-    return truck?.name;
-  };
-
-  const renderTruckTextOrSelectInput = useCallback(() => {
-    const recordedTruckIds = workShift?.truckIdsFromEvents?.map((truckId) => getTruckName(truckId)).join(", ") ?? "";
-
-    return (
-      <TextField
-        select
-        className="cell-input"
-        size="small"
-        aria-label={t("workingHours.workingDays.table.vehicle")}
-        title={t("workingHours.workingDays.table.vehicle")}
-        fullWidth
-        disabled={workShift?.approved}
-        variant="outlined"
-        value={recordedTruckIds}
-        // onChange={(event) =>
-        //   setValue(`${index}.workShift.defaultTruckId`, event.target.value, {
-        //     shouldDirty: true,
-        //     shouldValidate: true,
-        //     shouldTouch: true,
-        //   })
-        // }
-      >
-        {recordedTruckIds && (
-          <MenuItem disabled style={{ minHeight: 30 }} key={recordedTruckIds} value={recordedTruckIds}>
-            {`${recordedTruckIds} (Tallennetut ajoneuvot)`}
-          </MenuItem>
-        )}
-        {trucks.map((truck) => (
-          <MenuItem style={{ minHeight: 30 }} key={truck.id} value={truck.id}>
-            {truck.name}
-          </MenuItem>
-        ))}
-      </TextField>
-    );
-  }, [workShift, trucks, t, getTruckName]);
-
   const renderPerDiemAllowanceSelectInput = useCallback(
     () => (
       <TextField
@@ -163,6 +122,9 @@ function WorkShiftRow({ index, trucks, date, workShiftId }: Props) {
         disabled={workShift?.approved}
         variant="outlined"
         value={workShift?.perDiemAllowance ?? ""}
+        SelectProps={{
+          renderValue: (value) => LocalizationUtils.getPerDiemAllowanceAbbreviation(value as PerDiemAllowanceType, t),
+        }}
         onChange={(event) =>
           setValue(
             `${index}.workShift.perDiemAllowance`,
@@ -334,7 +296,6 @@ function WorkShiftRow({ index, trucks, date, workShiftId }: Props) {
           {renderAbsenceTypeSelectInput()}
         </Stack>
       </Cell>
-      <Cell width={90}>{renderTruckTextOrSelectInput()}</Cell>
       <Cell width={90}>{renderPerDiemAllowanceSelectInput()}</Cell>
       <Cell width={90}>
         <Checkbox

@@ -99,6 +99,13 @@ function ManagementEquipment() {
         valueGetter: ({ row: { type } }) => LocalizationUtils.getLocalizedEquipmentType(type, t),
       },
       {
+        field: "costCenter",
+        headerAlign: "left",
+        headerName: t("management.equipment.costCenter"),
+        sortable: false,
+        width: 150
+      },
+      {
         field: "vin",
         headerAlign: "left",
         headerName: t("management.equipment.vin"),

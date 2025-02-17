@@ -6,7 +6,7 @@ import { api } from "api/index";
 import ToolbarRow from "components/generic/toolbar-row";
 import { useConfirmDialog } from "components/providers/confirm-dialog-provider";
 import { Towable, Truck } from "generated/client";
-import { useForm } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { getEquipmentDisplayName } from "src/utils/format-utils";
 import DataValidation from "../../../utils/data-validation-utils";
@@ -34,19 +34,12 @@ function EquipmentComponent({ formType, initialData, onSave }: Props) {
   const navigate = useNavigate();
   const showConfirmDialog = useConfirmDialog();
   const queryClient = useQueryClient();
-
-  const {
-    setValue,
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useForm<Truck | Towable>({
+  
+  const methods = useForm<Truck | Towable>({
     mode: "onChange",
     defaultValues: initialData,
     shouldFocusError: true,
   });
-
   const onArchiveEquipment = async (equipment: Truck | Towable) => {
     if (DataValidation.isTruck(equipment)) {
       archiveTruck.mutate(equipment);
@@ -56,27 +49,27 @@ function EquipmentComponent({ formType, initialData, onSave }: Props) {
   };
 
   const archiveTruck = useMutation({
-    mutationKey: ["archiveTruck", watch("id")],
+    mutationKey: ["archiveTruck", methods.watch("id")],
     mutationFn: async (truck?: Truck) => {
       if (!truck?.id) return;
       return api.trucks.updateTruck({ truckId: truck.id, truck: { ...truck, archivedAt: new Date() } });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["trucks"] });
-      queryClient.invalidateQueries({ queryKey: ["trucks", watch("id")] });
+      queryClient.invalidateQueries({ queryKey: ["trucks", methods.watch("id")] });
       navigate({ to: "/management/equipment" });
     },
   });
 
   const archiveTowable = useMutation({
-    mutationKey: ["archiveTowable", watch("id")],
+    mutationKey: ["archiveTowable", methods.watch("id")],
     mutationFn: async (towable?: Towable) => {
       if (!towable?.id) return;
       return api.towables.updateTowable({ towableId: towable.id, towable: { ...towable, archivedAt: new Date() } });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["towables"] });
-      queryClient.invalidateQueries({ queryKey: ["towables", watch("id")] });
+      queryClient.invalidateQueries({ queryKey: ["towables", methods.watch("id")] });
       navigate({ to: "/management/equipment" });
     },
   });
@@ -90,7 +83,7 @@ function EquipmentComponent({ formType, initialData, onSave }: Props) {
           onClick={() =>
             showConfirmDialog({
               title: t("management.equipment.archiveDialog.title"),
-              description: t("management.equipment.archiveDialog.description", { name: watch("name") }),
+              description: t("management.equipment.archiveDialog.description", { name: methods.watch("name") }),
               onPositiveClick: () => onArchiveEquipment(initialData as Truck | Towable),
             })
           }
@@ -98,7 +91,7 @@ function EquipmentComponent({ formType, initialData, onSave }: Props) {
           {t("archive")}
         </Button>
       )}
-      <Button variant="contained" startIcon={<SaveAlt />} onClick={handleSubmit(onSave)}>
+      <Button variant="contained" startIcon={<SaveAlt />} onClick={methods.handleSubmit(onSave)}>
         {t("save")}
       </Button>
     </Stack>
@@ -116,7 +109,9 @@ function EquipmentComponent({ formType, initialData, onSave }: Props) {
         toolbarButtons={renderToolbarButtons()}
       />
       <Stack direction="row" height="calc(100% - 52px)">
-        <EquipmentForm errors={errors} register={register} equipment={initialData} setFormValue={setValue} />
+        <FormProvider {...methods}>
+          <EquipmentForm equipment={initialData} />
+        </FormProvider>
         <ScrollContainer>
           {initialData ? (
             <Sensors
