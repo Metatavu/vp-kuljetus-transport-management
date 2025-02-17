@@ -565,6 +565,15 @@
           "full": "Kokopäiväraha"
         }
       },
+      "abbreviations": {
+        "training": "KO",
+        "vacation": "LO",
+        "officialDuties": "LT",
+        "compensatoryLeave": "PP",
+        "sickLeave": "SL",
+        "partial": "Osa",
+        "full": "Koko"
+      },
       "changeLog": {
         "title": "Muutosloki",
         "time": "Aika",

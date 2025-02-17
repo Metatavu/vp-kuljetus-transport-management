@@ -478,6 +478,15 @@
           "full": "Full"
         }
       },
+      "abbreviations": {
+        "training": "TR",
+        "vacation": "VA",
+        "officialDuties": "OD",
+        "compensatoryLeave": "CL",
+        "sickLeave": "SL",
+        "partial": "Part",
+        "full": "Full"
+      },
       "changeLog": {
         "title": "Change log",
         "time": "Time",

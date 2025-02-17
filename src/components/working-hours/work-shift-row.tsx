@@ -12,7 +12,6 @@ import { DateTime } from "luxon";
 import { useCallback, useMemo, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { theme } from "src/theme";
 import { EmployeeWorkHoursForm } from "src/types";
 import LocalizationUtils from "src/utils/localization-utils";
 import WorkShiftsUtils from "src/utils/workshift-utils";
@@ -49,7 +48,6 @@ const Cell = styled(Stack, {
   label: "work-shift-cell",
 })(({ theme }) => ({
   borderRight: `1px solid ${theme.palette.divider}`,
-  backgroundColor: "rgba(0, 65, 79, 0.1)",
   alignContent: "center",
   justifyContent: "center",
   textAlign: "center",
@@ -202,6 +200,9 @@ function WorkShiftRow({ index, trucks, date, workShiftId }: Props) {
         disabled={workShift?.approved}
         variant="outlined"
         value={workShift?.absence ?? ""}
+        SelectProps={{
+          renderValue: (value) => LocalizationUtils.getLocalizedAbsenceAbbreviation(value as AbsenceType, t),
+        }}
         onChange={(event) =>
           setValue(`${index}.workShift.absence`, (event.target.value || null) as AbsenceType | undefined, {
             shouldDirty: true,
@@ -224,16 +225,16 @@ function WorkShiftRow({ index, trucks, date, workShiftId }: Props) {
     [setValue, index, workShift, t],
   );
 
+  const getRowBackgroundColor = () => {
+    if (!workShift?.date) return "#F5F5F5";
+    const workShiftDate = DateTime.fromJSDate(workShift.date);
+    if (workShiftDate < DateTime.now().startOf("day")) return "#E6ECED"; // Past days
+    if (workShiftDate.hasSame(DateTime.now(), "day")) return "#FFFED5"; // Current day
+    return "#F5F5F5"; // Future days
+  };
+
   return (
-    <Row
-      key={workShiftId}
-      style={{
-        backgroundColor:
-          workShift?.date && DateTime.fromJSDate(workShift.date) < DateTime.now().startOf("day")
-            ? theme.palette.background.paper
-            : theme.palette.background.default,
-      }}
-    >
+    <Row key={workShiftId} style={{ backgroundColor: getRowBackgroundColor() }}>
       <Cell width={70} style={{ justifyContent: "right" }}>
         <Link
           underline={hasDetails ? "always" : "none"}

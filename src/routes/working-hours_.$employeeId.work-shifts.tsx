@@ -62,7 +62,6 @@ const Root = styled(Stack, {
 })(({ theme }) => ({
   height: "100%",
   width: "100%",
-  overflow: "auto",
   backgroundColor: theme.palette.background.default,
   flexDirection: "column",
   // Default padding for smaller screens
@@ -527,67 +526,72 @@ function WorkShifts() {
     <>
       <Root>
         <FormProvider {...methods}>
-          <form onSubmit={methods.handleSubmit(() => updateWorkShift.mutateAsync())}>
+          <form
+            style={{ display: "flex", flexDirection: "column", flex: 1, overflow: "hidden" }}
+            onSubmit={methods.handleSubmit(() => updateWorkShift.mutateAsync())}
+          >
             {renderToolbar()}
-            <Paper elevation={0}>
-              <Stack>
-                <TableHeader>
-                  {renderWorkingPeriodText()}
-                  <Stack spacing={4} direction="row" alignItems="center">
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          onChange={handleAllApprovedChange}
-                          title={t("workingHours.workingHourBalances.markAllApproved")}
-                        />
-                      }
-                      label={t("workingHours.workingDays.table.inspected")}
-                    />
-                    <Box minWidth={245}>
-                      <Typography variant="body2">{"Tiedot tallennettu 11.5.2021 12:00"}</Typography>
-                    </Box>
-                  </Stack>
-                </TableHeader>
-                <TableContainer>
-                  <WorkShiftsTableHeader />
-                  {workShiftsDataWithWorkingPeriodDates.map((workShiftFormRow, index) => (
-                    <WorkShiftRow
-                      key={`${index}_${workShiftFormRow.workShift.id}`}
-                      workShiftId={workShiftFormRow.workShift.id}
-                      date={selectedDate}
-                      index={index}
-                      trucks={trucks ?? []}
-                    />
-                  ))}
-                </TableContainer>
-              </Stack>
-            </Paper>
-            <BottomAreaContainer>
-              <Paper elevation={0} sx={{ display: "flex", flex: 2 }}>
-                <Stack flex={1}>
-                  <TableHeader>{renderAggregationsTableTitle()}</TableHeader>
-                  {employeeSalaryGroup === SalaryGroup.Driver || employeeSalaryGroup === SalaryGroup.Vplogistics ? (
-                    <AggregationsTableForDriver
-                      workShiftsData={workShiftsDataForFormRows.data ?? []}
-                      employee={employee ?? undefined}
-                    />
-                  ) : (
-                    <AggregationsTableForOffice
-                      workShiftsData={workShiftsDataForFormRows.data ?? []}
-                      employee={employee ?? undefined}
-                    />
-                  )}
-                </Stack>
-              </Paper>
-              <Paper elevation={0} sx={{ display: "flex", flex: 1 }}>
-                <Stack flex={1}>
+            <Stack sx={{ overflow: "auto" }}>
+              <Paper elevation={0}>
+                <Stack>
                   <TableHeader>
-                    <Typography variant="subtitle1">{t("workingHours.workingDays.changeLog.title")}</Typography>
+                    {renderWorkingPeriodText()}
+                    <Stack spacing={4} direction="row" alignItems="center">
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            onChange={handleAllApprovedChange}
+                            title={t("workingHours.workingHourBalances.markAllApproved")}
+                          />
+                        }
+                        label={t("workingHours.workingDays.table.inspected")}
+                      />
+                      <Box minWidth={245}>
+                        <Typography variant="body2">{"Tiedot tallennettu 11.5.2021 12:00"}</Typography>
+                      </Box>
+                    </Stack>
                   </TableHeader>
-                  <ChangeLog />
+                  <TableContainer>
+                    <WorkShiftsTableHeader />
+                    {workShiftsDataWithWorkingPeriodDates.map((workShiftFormRow, index) => (
+                      <WorkShiftRow
+                        key={`${index}_${workShiftFormRow.workShift.id}`}
+                        workShiftId={workShiftFormRow.workShift.id}
+                        date={selectedDate}
+                        index={index}
+                        trucks={trucks ?? []}
+                      />
+                    ))}
+                  </TableContainer>
                 </Stack>
               </Paper>
-            </BottomAreaContainer>
+              <BottomAreaContainer>
+                <Paper elevation={0} sx={{ display: "flex", flex: 2 }}>
+                  <Stack flex={1}>
+                    <TableHeader>{renderAggregationsTableTitle()}</TableHeader>
+                    {employeeSalaryGroup === SalaryGroup.Driver || employeeSalaryGroup === SalaryGroup.Vplogistics ? (
+                      <AggregationsTableForDriver
+                        workShiftsData={workShiftsDataForFormRows.data ?? []}
+                        employee={employee ?? undefined}
+                      />
+                    ) : (
+                      <AggregationsTableForOffice
+                        workShiftsData={workShiftsDataForFormRows.data ?? []}
+                        employee={employee ?? undefined}
+                      />
+                    )}
+                  </Stack>
+                </Paper>
+                <Paper elevation={0} sx={{ display: "flex", flex: 1 }}>
+                  <Stack flex={1}>
+                    <TableHeader>
+                      <Typography variant="subtitle1">{t("workingHours.workingDays.changeLog.title")}</Typography>
+                    </TableHeader>
+                    <ChangeLog />
+                  </Stack>
+                </Paper>
+              </BottomAreaContainer>
+            </Stack>
           </form>
         </FormProvider>
       </Root>
