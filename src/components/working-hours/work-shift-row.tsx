@@ -1,13 +1,6 @@
 import { Checkbox, Link, MenuItem, Stack, TextField, Typography, styled } from "@mui/material";
 import { useNavigate, useParams } from "@tanstack/react-router";
-import {
-  AbsenceType,
-  EmployeeWorkShift,
-  PerDiemAllowanceType,
-  Truck,
-  WorkShiftHours,
-  WorkType,
-} from "generated/client";
+import { AbsenceType, EmployeeWorkShift, PerDiemAllowanceType, WorkShiftHours, WorkType } from "generated/client";
 import { DateTime } from "luxon";
 import { useCallback, useMemo, useState } from "react";
 import { useFormContext } from "react-hook-form";
