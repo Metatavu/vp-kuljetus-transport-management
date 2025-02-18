@@ -25,6 +25,10 @@
   "openCalendar": "Valitse päivä kalenterista",
   "showMenu": "Näytä valikko",
   "hideMenu": "Piilota valikko",
+  "notAuthorizedView": {
+    "notAuthorized": "Pääsy evätty.",
+    "description": "Sinulla ei ole tarvittavia oikeuksia sisällön katseluun."
+  },
   "equipmentType": {
     "truck": "Kuorma-auto",
     "semiTruck": "Vetoauto",

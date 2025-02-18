@@ -25,6 +25,10 @@
   "selectDate": "Select date",
   "showMenu": "Show menu",
   "hideMenu": "Hide menu",
+  "notAuthorizedView": {
+    "notAuthorized": "Access denied",
+    "description": "You don't have permission to access this content."
+  },
   "equipmentType": {
     "truck": "Truck",
     "semiTruck": "Semi truck",
