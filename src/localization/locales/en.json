@@ -426,6 +426,8 @@
       "halfDayAllowance": "Half-Day Allowance",
       "fullDayAllowance": "Full-Day Allowance",
       "toWorkHourDetails": "To Work hour details",
+      "noWorkHourDetailsAvailable": "No working hour details available",
+      "noRecords": "no records",
       "approved": "Checked",
       "markAllApproved": "Mark all checked",
       "successToast": "Working hours saved!",
@@ -451,11 +453,13 @@
         "taskSpecificBonus": "Task-Specific Bonus",
         "freezerBonus": "Freezer Bonus",
         "absence": "Absence",
+        "selectAbsence": "Select absence type",
         "vehicle": "Vehicle",
         "dailyAllowance": "Daily Allowance",
+        "selectDailyAllowance": "Select daily allowance type",
         "inspected": "Inspected",
         "remarks": "Remarks",
-        "calculatedHours": "Calculated hours"
+        "calculatedHours": "Calculated"
       },
       "aggregationsTable": {
         "title": "{{year}} Working period {{start}} - {{end}} aggregated working hours",

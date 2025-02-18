@@ -513,6 +513,8 @@
       "halfDayAllowance": "Osapäiväraha",
       "fullDayAllowance": "Kokopäiväraha",
       "toWorkHourDetails": "Näytä erittely",
+      "noWorkHourDetailsAvailable": "Työaikaerittelyä ei saatavilla",
+      "noRecords": "ei kirjauksia",
       "approved": "Tarkastettu",
       "markAllApproved": "Merkitse kaikki tarkastetuiksi",
       "successToast": "Työvuoro tallennettu!",
@@ -538,11 +540,13 @@
         "taskSpecificBonus": "Työkohtaisuuslisä",
         "freezerBonus": "Pakastelisä",
         "absence": "Poissaolo",
+        "selectAbsence": "Valitse poissaolon tyyppi",
         "vehicle": "Auto",
         "dailyAllowance": "Päiväraha",
+        "selectDailyAllowance": "Valitse päivärahan tyyppi",
         "inspected": "Tarkastettu",
         "remarks": "Huomautuksia",
-        "calculatedHours": "Laskettu työaika"
+        "calculatedHours": "Laskettu"
       },
       "aggregationsTable": {
         "title": "{{year}} Jakson {{start}} - {{end}} tunnit yhteensä",

@@ -1,4 +1,4 @@
-import { Checkbox, Link, MenuItem, Stack, TextField, Tooltip, Typography, styled } from "@mui/material";
+import { Checkbox, Link, MenuItem, Stack, TextField, Typography, styled } from "@mui/material";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import {
   AbsenceType,
@@ -78,33 +78,41 @@ function WorkShiftRow({ index, date, workShiftId }: Props) {
 
   const renderWorkHourInput = useCallback(
     (title: string, workType: WorkType) => {
-      const calculatedHoursTooltipText = `${t("workingHours.workingDays.table.calculatedHours")}: ${
-        workShiftHours?.[workType]?.calculatedHours?.toFixed(2).toString() ?? title
-      } `;
+      const calculatedHoursTooltipText = `${title} (${t("workingHours.workingDays.table.calculatedHours")} ${
+        workShiftHours?.[workType]?.calculatedHours?.toFixed(2).toString() ?? "ei kirjauksia"
+      })`;
       return (
-        <Tooltip title={calculatedHoursTooltipText} placement="bottom">
-          <TextField
-            className="cell-input"
-            size="small"
-            aria-label={title}
-            fullWidth
-            disabled={workShift?.approved}
-            variant="outlined"
-            placeholder={workShiftHours?.[workType]?.calculatedHours?.toFixed(2).toString() ?? ""}
-            value={workShiftHours?.[workType]?.actualHours ?? null}
-            onChange={(event) =>
-              setValue(
-                `${index}.workShiftHours.${workType}.actualHours`,
-                Number.isNaN(parseFloat(event.target.value)) ? 0 : parseFloat(event.target.value),
-                {
-                  shouldDirty: true,
-                  shouldValidate: true,
-                  shouldTouch: true,
-                },
-              )
-            }
-          />
-        </Tooltip>
+        <TextField
+          title={calculatedHoursTooltipText}
+          className="cell-input"
+          size="small"
+          aria-label={title}
+          fullWidth
+          disabled={workShift?.approved}
+          variant="outlined"
+          sx={{
+            "& input": {
+              fontWeight: "bold",
+              "&::placeholder": {
+                opacity: 0.75,
+                fontWeight: "normal",
+              },
+            },
+          }}
+          placeholder={workShiftHours?.[workType]?.calculatedHours?.toFixed(2).toString() ?? ""}
+          value={workShiftHours?.[workType]?.actualHours ?? null}
+          onChange={(event) =>
+            setValue(
+              `${index}.workShiftHours.${workType}.actualHours`,
+              Number.isNaN(parseFloat(event.target.value)) ? 0 : parseFloat(event.target.value),
+              {
+                shouldDirty: true,
+                shouldValidate: true,
+                shouldTouch: true,
+              },
+            )
+          }
+        />
       );
     },
     [setValue, index, workShiftHours, t, workShift?.approved],
@@ -117,7 +125,7 @@ function WorkShiftRow({ index, date, workShiftId }: Props) {
         className="cell-input"
         size="small"
         aria-label={t("workingHours.workingDays.table.dailyAllowance")}
-        title={t("workingHours.workingDays.table.dailyAllowance")}
+        title={t("workingHours.workingDays.table.selectDailyAllowance")}
         fullWidth
         disabled={workShift?.approved}
         variant="outlined"
@@ -157,7 +165,7 @@ function WorkShiftRow({ index, date, workShiftId }: Props) {
         className="cell-input"
         size="small"
         aria-label={t("workingHours.workingDays.table.absence")}
-        title={t("workingHours.workingDays.table.absence")}
+        title={t("workingHours.workingDays.table.selectAbsence")}
         fullWidth
         disabled={workShift?.approved}
         variant="outlined"
@@ -191,7 +199,7 @@ function WorkShiftRow({ index, date, workShiftId }: Props) {
     if (!workShift?.date) return "#F5F5F5";
     const workShiftDate = DateTime.fromJSDate(workShift.date);
     if (workShiftDate < DateTime.now().startOf("day")) return "#E6ECED"; // Past days
-    if (workShiftDate.hasSame(DateTime.now(), "day")) return "#FFFED5"; // Current day
+    if (workShiftDate.hasSame(DateTime.now(), "day")) return "#dde6e8"; // Current day
     return "#F5F5F5"; // Future days
   };
 
@@ -205,7 +213,11 @@ function WorkShiftRow({ index, date, workShiftId }: Props) {
             fontSize: 13,
             textTransform: "uppercase",
           }}
-          title={t("workingHours.workingHourBalances.toWorkHourDetails")}
+          title={
+            hasDetails
+              ? t("workingHours.workingHourBalances.toWorkHourDetails")
+              : t("workingHours.workingHourBalances.noWorkHourDetailsAvailable")
+          }
           // use bold font style if date is today
           style={{
             fontWeight:
