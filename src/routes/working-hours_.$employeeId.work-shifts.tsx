@@ -445,7 +445,6 @@ function WorkShifts() {
               <WorkingHoursDocument
                 employee={employee}
                 workShiftsData={workShiftsDataWithWorkingPeriodDates}
-                trucks={trucks ?? []}
                 workingPeriodsForEmployee={workingPeriodsForEmployee}
               />
             }
@@ -559,7 +558,6 @@ function WorkShifts() {
                         workShiftId={workShiftFormRow.workShift.id}
                         date={selectedDate}
                         index={index}
-                        trucks={trucks ?? []}
                       />
                     ))}
                   </TableContainer>

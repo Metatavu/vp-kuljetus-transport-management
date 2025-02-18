@@ -19,7 +19,6 @@ import WorkShiftsUtils from "src/utils/workshift-utils";
 type Props = {
   date: DateTime;
   index: number;
-  trucks: Truck[];
   workShiftId?: string;
 };
 
