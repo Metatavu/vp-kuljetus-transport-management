@@ -26,7 +26,7 @@ import WorkShiftRow from "components/working-hours/work-shift-row";
 import WorkShiftsTableHeader from "components/working-hours/work-shifts-table-header";
 import WorkingHoursDocument from "components/working-hours/working-hours-document";
 import { EmployeeWorkShift, SalaryGroup, WorkShiftHours, WorkType } from "generated/client";
-import { QUERY_KEYS, getListEmployeesQueryOptions, getListTrucksQueryOptions } from "hooks/use-queries";
+import { QUERY_KEYS, getListEmployeesQueryOptions } from "hooks/use-queries";
 import { t } from "i18next";
 import { DateTime } from "luxon";
 import { useCallback, useMemo } from "react";
