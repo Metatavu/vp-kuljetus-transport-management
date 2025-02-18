@@ -89,6 +89,7 @@ function WorkShiftRow({ index, date, workShiftId }: Props) {
           aria-label={title}
           fullWidth
           disabled={workShift?.approved}
+          type="number"
           variant="outlined"
           sx={{
             "& input": {
@@ -98,19 +99,18 @@ function WorkShiftRow({ index, date, workShiftId }: Props) {
                 fontWeight: "normal",
               },
             },
+            "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button": {
+              display: "none",
+            },
           }}
           placeholder={workShiftHours?.[workType]?.calculatedHours?.toFixed(2).toString() ?? ""}
           value={workShiftHours?.[workType]?.actualHours ?? null}
           onChange={(event) =>
-            setValue(
-              `${index}.workShiftHours.${workType}.actualHours`,
-              Number.isNaN(parseFloat(event.target.value)) ? 0 : parseFloat(event.target.value),
-              {
-                shouldDirty: true,
-                shouldValidate: true,
-                shouldTouch: true,
-              },
-            )
+            setValue(`${index}.workShiftHours.${workType}.actualHours`, parseFloat(event.target.value), {
+              shouldDirty: true,
+              shouldValidate: true,
+              shouldTouch: true,
+            })
           }
         />
       );
