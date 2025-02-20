@@ -125,7 +125,7 @@ const WorkingHoursDocument = ({ employee, workShiftsData, workingPeriodsForEmplo
         <Text style={styles.headerCellText}>Pvm</Text>
       </View>
       <View style={styles.timeTableCell}>
-        <Text style={styles.headerCellText}>Työ alkoi</Text>
+        <Text style={styles.headerCellText}>{t("workingHours.workingDays.table.workStarted")}</Text>
       </View>
       <View style={styles.timeTableCell}>
         <Text style={styles.headerCellText}>Työ päättyi</Text>
