@@ -250,7 +250,6 @@ function VehicleInfo() {
    */
   const driveStateRows = useMemo(() => {
     if (!driveStates.data) return [];
-
     const tableRows = driveStates.data.reduce<DriveStatesTableRow[]>((rows, driveState, index, driveStates) => {
       const nextState = driveStates.at(index + 1);
 
@@ -304,7 +303,7 @@ function VehicleInfo() {
         headerAlign: "center",
         headerName: t("vehicles.details.event"),
         sortable: false,
-        width: 250,
+        width: 300,
         align: "center",
         cellClassName: (params) => {
           if (params.value !== "-") {
