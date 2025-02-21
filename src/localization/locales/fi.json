@@ -552,6 +552,14 @@
         "remarks": "Huomautuksia",
         "calculatedHours": "Laskettu"
       },
+      "pdf": {
+        "costCenter": "KP",
+        "dayOffBonus": "VPTL",
+        "notes": "Huom *",
+        "reportTitle": "Työaikaraportti vuoden ",
+        "reportPrinted": "Raportti tulostettu: ",
+        "remark": "Huomautus"
+      },
       "aggregationsTable": {
         "title": "{{year}} Jakson {{start}} - {{end}} tunnit yhteensä",
         "workingHours": "Työtunnit",

@@ -465,6 +465,14 @@
         "remarks": "Remarks",
         "calculatedHours": "Calculated"
       },
+      "pdf": {
+        "costCenter": "CC",
+        "dayOffBonus": "DOB",
+        "notes": "Notes *",
+        "reportTitle": "Report from year ",
+        "reportPrinted": " Report printed: ",
+        "remark": "Remark"
+      },
       "aggregationsTable": {
         "title": "{{year}} Working period {{start}} - {{end}} aggregated working hours",
         "workingHours": "Working Hours",

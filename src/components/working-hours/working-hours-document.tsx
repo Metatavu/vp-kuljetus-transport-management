@@ -122,67 +122,73 @@ const WorkingHoursDocument = ({ employee, workShiftsData, workingPeriodsForEmplo
   const renderHeader = () => (
     <View style={styles.tableHeader}>
       <View style={styles.timeTableCell}>
-        <Text style={styles.headerCellText}>Pvm</Text>
+        <Text style={styles.headerCellText}>{t("workingHours.workingDays.table.date")}</Text>
       </View>
       <View style={styles.timeTableCell}>
         <Text style={styles.headerCellText}>{t("workingHours.workingDays.table.workStarted")}</Text>
       </View>
       <View style={styles.timeTableCell}>
-        <Text style={styles.headerCellText}>Työ päättyi</Text>
+        <Text style={styles.headerCellText}>{t("workingHours.workingDays.table.workEnded")}</Text>
       </View>
       <View style={styles.timeTableCell}>
-        <Text style={styles.headerCellText}>Työaika</Text>
+        <Text style={styles.headerCellText}>{t("workingHours.workingDays.table.workingHours")}</Text>
       </View>
       <View style={styles.timeTableCell}>
-        <Text style={styles.headerCellText}>Palkaton tauko</Text>
+        <Text style={styles.headerCellText}>{t("workingHours.workingDays.table.unpaidBreak")}</Text>
       </View>
       <View style={styles.timeTableCell}>
-        <Text style={styles.headerCellText}>Maksettava työaika</Text>
+        <Text style={styles.headerCellText}>{t("workingHours.workingDays.table.payableWorkingHours")}</Text>
       </View>
       <View style={styles.timeTableCell}>
-        <Text style={styles.headerCellText}>Odotus</Text>
+        <Text style={styles.headerCellText}>{t("workingHours.workingDays.table.waitingTime")}</Text>
       </View>
       <View style={styles.timeTableCell}>
-        <Text style={styles.headerCellText}>Iltatyö</Text>
+        <Text style={styles.headerCellText}>{t("workingHours.workingDays.table.eveningWork")}</Text>
       </View>
       <View style={styles.timeTableCell}>
-        <Text style={styles.headerCellText}>Yötyö</Text>
+        <Text style={styles.headerCellText}>{t("workingHours.workingDays.table.nightWork")}</Text>
       </View>
       <View style={styles.timeTableCell}>
-        <Text style={styles.headerCellText}>Pyhälisä</Text>
+        <Text style={styles.headerCellText}>{t("workingHours.workingDays.table.holidayBonus")}</Text>
       </View>
       <View style={styles.timeTableCell}>
-        <Text style={styles.headerCellText}>Työkohtaisuuslisä</Text>
+        <Text style={styles.headerCellText}>{t("workingHours.workingDays.table.taskSpecificBonus")}</Text>
       </View>
       <View style={styles.timeTableCell}>
-        <Text style={styles.headerCellText}>Pakastelisä</Text>
+        <Text style={styles.headerCellText}>{t("workingHours.workingDays.table.freezerBonus")}</Text>
       </View>
       <View style={styles.timeTableCell}>
-        <Text style={styles.headerCellText}>Luottamustoimet</Text>
+        <Text style={styles.headerCellText}>
+          {t("workingHours.workingDays.aggregationsTable.absenceTypes.officialDuties")}
+        </Text>
       </View>
       <View style={styles.timeTableCell}>
-        <Text style={styles.headerCellText}>Sairausloma</Text>
+        <Text style={styles.headerCellText}>
+          {t("workingHours.workingDays.aggregationsTable.absenceTypes.sickLeave")}
+        </Text>
       </View>
       <View style={styles.timeTableCell}>
-        <Text style={styles.headerCellText}>Koulutus työajalla</Text>
+        <Text style={styles.headerCellText}>
+          {t("workingHours.workingDays.aggregationsTable.trainingDuringWorkTime")}
+        </Text>
       </View>
       <View style={styles.timeTableCell}>
-        <Text style={styles.headerCellText}>Palkaton</Text>
+        <Text style={styles.headerCellText}>{t("workingHours.workingDays.aggregationsTable.unpaid")}</Text>
       </View>
       <View style={styles.timeTableCell}>
-        <Text style={styles.headerCellText}>VPTL</Text>
+        <Text style={styles.headerCellText}>{t("workingHours.workingDays.pdf.dayOffBonus")}</Text>
       </View>
       <View style={styles.timeTableCell}>
-        <Text style={styles.headerCellText}>Poissaolo</Text>
+        <Text style={styles.headerCellText}>{t("workingHours.workingDays.table.absence")}</Text>
       </View>
       <View style={[styles.timeTableCell, { maxWidth: 30 }]}>
-        <Text style={styles.headerCellText}>KP</Text>
+        <Text style={styles.headerCellText}>{t("workingHours.workingDays.pdf.costCenter")}</Text>
       </View>
       <View style={[styles.timeTableCell, { maxWidth: 30 }]}>
-        <Text style={styles.headerCellText}>Päiväraha</Text>
+        <Text style={styles.headerCellText}>{t("workingHours.workingDays.table.dailyAllowance")}</Text>
       </View>
       <View style={[styles.timeTableCell, { maxWidth: 20 }]}>
-        <Text style={styles.headerCellText}>Huom*</Text>
+        <Text style={styles.headerCellText}>{t("workingHours.workingDays.pdf.notes")}</Text>
       </View>
     </View>
   );
@@ -300,13 +306,13 @@ const WorkingHoursDocument = ({ employee, workShiftsData, workingPeriodsForEmplo
     }
     return (
       <View style={[styles.table, { marginTop: 10 }]}>
-        <Text style={styles.boldText}>Huomautukset:</Text>
+        <Text style={styles.boldText}>{t("workingHours.workingDays.table.remarks")}:</Text>
         <View style={[styles.tableHeader, { marginTop: 5 }]}>
           <View style={[styles.timeTableCell, { maxWidth: 90 }]}>
-            <Text style={styles.headerCellText}>Pvm</Text>
+            <Text style={styles.headerCellText}>{t("workingHours.workingDays.table.date")}</Text>
           </View>
           <View style={[styles.timeTableCell, { alignItems: "flex-start", paddingLeft: 10 }]}>
-            <Text style={styles.headerCellText}>Huomautus</Text>
+            <Text style={styles.headerCellText}>{t("workingHours.workingDays.pdf.remark")}</Text>
           </View>
         </View>
         {notes.map((row) => (
@@ -344,7 +350,9 @@ const WorkingHoursDocument = ({ employee, workShiftsData, workingPeriodsForEmplo
               {employee.firstName} {employee.lastName}
             </Text>
             <View style={{ marginLeft: "2cm", flexDirection: "row", gap: "0.5cm" }}>
-              <Text>Työaikaraportti vuoden {renderAggregationsTableTitle()}</Text>
+              <Text>
+                {t("workingHours.workingDays.pdf.reportTitle")} {renderAggregationsTableTitle()}
+              </Text>
             </View>
           </View>
         </View>
@@ -366,7 +374,9 @@ const WorkingHoursDocument = ({ employee, workShiftsData, workingPeriodsForEmplo
               {employee.firstName} {employee.lastName}
             </Text>
             <View style={{ marginLeft: "2cm", flexDirection: "row", gap: "0.5cm" }}>
-              <Text>Työaikaraportti vuoden {renderAggregationsTableTitle()}</Text>
+              <Text>
+                {t("workingHours.workingDays.pdf.reportTitle")} {renderAggregationsTableTitle()}
+              </Text>
             </View>
           </View>
         </View>
@@ -375,7 +385,7 @@ const WorkingHoursDocument = ({ employee, workShiftsData, workingPeriodsForEmplo
         <View style={styles.summaryTable}>
           <View style={[styles.tableRow, { borderTop: "1px solid #e0e0e0" }]}>
             <View style={[styles.tableCell, { alignItems: "flex-start" }]}>
-              <Text>Työtunnit</Text>
+              <Text>{t("workingHours.workingDays.aggregationsTable.workingHours")}</Text>
             </View>
             <View style={[styles.tableCell, { maxWidth: 50 }]}>
               <Text style={styles.boldText}>{`${WorkShiftsUtils.getWorkHoursInWorkPeriodByType(
@@ -384,7 +394,7 @@ const WorkingHoursDocument = ({ employee, workShiftsData, workingPeriodsForEmplo
               )} h`}</Text>
             </View>
             <View style={[styles.tableCell, { alignItems: "flex-start" }]}>
-              <Text>Loma</Text>
+              <Text>{t("workingHours.workingDays.aggregationsTable.vacation")}</Text>
             </View>
             <View style={[styles.tableCell, { maxWidth: 50 }]}>
               <Text style={styles.boldText}>
@@ -392,7 +402,7 @@ const WorkingHoursDocument = ({ employee, workShiftsData, workingPeriodsForEmplo
               </Text>
             </View>
             <View style={[styles.tableCell, { alignItems: "flex-start" }]}>
-              <Text>Osapäiväraha</Text>
+              <Text>{t("workingHours.workingDays.aggregationsTable.partialDailyAllowance")}</Text>
             </View>
             <View style={[styles.tableCell, { maxWidth: 50 }]}>
               <Text style={styles.boldText}>
@@ -409,7 +419,7 @@ const WorkingHoursDocument = ({ employee, workShiftsData, workingPeriodsForEmplo
           </View>
           <View style={styles.tableRow}>
             <View style={[styles.tableCell, { alignItems: "flex-start" }]}>
-              <Text>Säännöllinen työaika</Text>
+              <Text>{t("workingHours.workingDays.aggregationsTable.workTime")}</Text>
             </View>
             <View style={[styles.tableCell, { maxWidth: 50 }]}>
               <Text style={styles.boldText}>{`${WorkShiftsUtils.getRegularWorkingHoursOnWorkPeriod(
@@ -418,7 +428,7 @@ const WorkingHoursDocument = ({ employee, workShiftsData, workingPeriodsForEmplo
               )} h`}</Text>
             </View>
             <View style={[styles.tableCell, { alignItems: "flex-start" }]}>
-              <Text>Palkaton</Text>
+              <Text>{t("workingHours.workingDays.aggregationsTable.unpaid")}</Text>
             </View>
             <View style={[styles.tableCell, { maxWidth: 50 }]}>
               <Text style={styles.boldText}>{`${WorkShiftsUtils.getWorkHoursInWorkPeriodByType(
@@ -427,7 +437,7 @@ const WorkingHoursDocument = ({ employee, workShiftsData, workingPeriodsForEmplo
               )} h`}</Text>
             </View>
             <View style={[styles.tableCell, { alignItems: "flex-start" }]}>
-              <Text>Kokopäiväraha</Text>
+              <Text>{t("workingHours.workingDays.aggregationsTable.fullDayAllowance")}</Text>
             </View>
             <View style={[styles.tableCell, { maxWidth: 50 }]}>
               <Text style={styles.boldText}>
@@ -444,7 +454,7 @@ const WorkingHoursDocument = ({ employee, workShiftsData, workingPeriodsForEmplo
           </View>
           <View style={styles.tableRow}>
             <View style={[styles.tableCell, { alignItems: "flex-start" }]}>
-              <Text>50% ylityö</Text>
+              <Text>{t("workingHours.workingDays.aggregationsTable.overtimeHalf")}</Text>
             </View>
             <View style={[styles.tableCell, { maxWidth: 50 }]}>
               <Text style={styles.boldText}>
@@ -452,7 +462,7 @@ const WorkingHoursDocument = ({ employee, workShiftsData, workingPeriodsForEmplo
               </Text>
             </View>
             <View style={[styles.tableCell, { alignItems: "flex-start" }]}>
-              <Text>Pyhälisä</Text>
+              <Text>{t("workingHours.workingDays.aggregationsTable.holiday")}</Text>
             </View>
             <View style={[styles.tableCell, { maxWidth: 50 }]}>
               <Text style={styles.boldText}>{`${WorkShiftsUtils.getWorkHoursInWorkPeriodByType(
@@ -474,7 +484,7 @@ const WorkingHoursDocument = ({ employee, workShiftsData, workingPeriodsForEmplo
           </View>
           <View style={styles.tableRow}>
             <View style={[styles.tableCell, { alignItems: "flex-start" }]}>
-              <Text>100% ylityö</Text>
+              <Text>{t("workingHours.workingDays.aggregationsTable.overtimeFull")}</Text>
             </View>
             <View style={[styles.tableCell, { maxWidth: 50 }]}>
               <Text style={styles.boldText}>
@@ -488,7 +498,7 @@ const WorkingHoursDocument = ({ employee, workShiftsData, workingPeriodsForEmplo
               <Text style={styles.boldText}>{`${WorkShiftsUtils.getDayOffWorkAllowanceHours(workShiftsData)} h`}</Text>
             </View>
             <View style={[styles.tableCell, { alignItems: "flex-start" }]}>
-              <Text>Täyttötunnit</Text>
+              <Text>{t("workingHours.workingDays.aggregationsTable.fillingHours")}</Text>
             </View>
             <View style={[styles.tableCell, { maxWidth: 50 }]}>
               <Text style={styles.boldText}>{`${WorkShiftsUtils.getFillingHours(workShiftsData, employee)} h`}</Text>
@@ -501,7 +511,7 @@ const WorkingHoursDocument = ({ employee, workShiftsData, workingPeriodsForEmplo
           </View>
           <View style={styles.tableRow}>
             <View style={[styles.tableCell, { alignItems: "flex-start" }]}>
-              <Text>20% yötyö</Text>
+              <Text>{t("workingHours.workingDays.aggregationsTable.nightWork")}</Text>
             </View>
             <View style={[styles.tableCell, { maxWidth: 50 }]}>
               <Text style={styles.boldText}>
@@ -509,7 +519,7 @@ const WorkingHoursDocument = ({ employee, workShiftsData, workingPeriodsForEmplo
               </Text>
             </View>
             <View style={[styles.tableCell, { alignItems: "flex-start" }]}>
-              <Text>Pekkaset</Text>
+              <Text>{t("workingHours.workingDays.aggregationsTable.pekkanens")}</Text>
             </View>
             <View style={[styles.tableCell, { maxWidth: 50 }]}>
               <Text style={styles.boldText}>
@@ -517,7 +527,7 @@ const WorkingHoursDocument = ({ employee, workShiftsData, workingPeriodsForEmplo
               </Text>
             </View>
             <View style={[styles.tableCell, { alignItems: "flex-start" }]}>
-              <Text>Luottamustoimet</Text>
+              <Text>{t("workingHours.workingDays.aggregationsTable.absenceTypes.officialDuties")}</Text>
             </View>
             <View style={[styles.tableCell, { maxWidth: 50 }]}>
               <Text style={styles.boldText}>
@@ -532,7 +542,7 @@ const WorkingHoursDocument = ({ employee, workShiftsData, workingPeriodsForEmplo
           </View>
           <View style={styles.tableRow}>
             <View style={[styles.tableCell, { alignItems: "flex-start" }]}>
-              <Text>15% iltatyö</Text>
+              <Text>{t("workingHours.workingDays.aggregationsTable.eveningWork")}</Text>
             </View>
             <View style={[styles.tableCell, { maxWidth: 50 }]}>
               <Text style={styles.boldText}>
@@ -540,7 +550,7 @@ const WorkingHoursDocument = ({ employee, workShiftsData, workingPeriodsForEmplo
               </Text>
             </View>
             <View style={[styles.tableCell, { alignItems: "flex-start" }]}>
-              <Text>Sairastunnit</Text>
+              <Text>{t("workingHours.workingDays.aggregationsTable.sickHours")}</Text>
             </View>
             <View style={[styles.tableCell, { maxWidth: 50 }]}>
               <Text style={styles.boldText}>
@@ -548,7 +558,7 @@ const WorkingHoursDocument = ({ employee, workShiftsData, workingPeriodsForEmplo
               </Text>
             </View>
             <View style={[styles.tableCell, { alignItems: "flex-start" }]}>
-              <Text>Koulutus työajalla</Text>
+              <Text>{t("workingHours.workingDays.aggregationsTable.trainingDuringWorkTime")}</Text>
             </View>
             <View style={[styles.tableCell, { maxWidth: 50 }]}>
               <Text style={styles.boldText}>
@@ -568,7 +578,9 @@ const WorkingHoursDocument = ({ employee, workShiftsData, workingPeriodsForEmplo
 
         {/* Footer */}
         <View style={styles.footer}>
-          <Text>Raportti tulostettu: {DateTime.now().toFormat("EEEE dd.MM")}</Text>
+          <Text>
+            {t("workingHours.workingDays.pdf.reportPrinted")} {DateTime.now().toFormat("EEEE dd.MM")}
+          </Text>
         </View>
       </Page>
     </Document>
