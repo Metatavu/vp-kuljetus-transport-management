@@ -25,6 +25,10 @@
   "openCalendar": "Valitse päivä kalenterista",
   "showMenu": "Näytä valikko",
   "hideMenu": "Piilota valikko",
+  "notAuthorizedView": {
+    "notAuthorized": "Pääsy evätty.",
+    "description": "Sinulla ei ole tarvittavia oikeuksia sisällön katseluun."
+  },
   "equipmentType": {
     "truck": "Kuorma-auto",
     "semiTruck": "Vetoauto",
@@ -513,6 +517,8 @@
       "halfDayAllowance": "Osapäiväraha",
       "fullDayAllowance": "Kokopäiväraha",
       "toWorkHourDetails": "Näytä erittely",
+      "noWorkHourDetailsAvailable": "Työaikaerittelyä ei saatavilla",
+      "noRecords": "ei kirjauksia",
       "approved": "Tarkastettu",
       "markAllApproved": "Merkitse kaikki tarkastetuiksi",
       "successToast": "Työvuoro tallennettu!",
@@ -538,11 +544,21 @@
         "taskSpecificBonus": "Työkohtaisuuslisä",
         "freezerBonus": "Pakastelisä",
         "absence": "Poissaolo",
+        "selectAbsence": "Valitse poissaolon tyyppi",
         "vehicle": "Auto",
         "dailyAllowance": "Päiväraha",
+        "selectDailyAllowance": "Valitse päivärahan tyyppi",
         "inspected": "Tarkastettu",
         "remarks": "Huomautuksia",
-        "calculatedHours": "Laskettu työaika"
+        "calculatedHours": "Laskettu"
+      },
+      "pdf": {
+        "costCenter": "KP",
+        "dayOffBonus": "VPTL",
+        "notes": "Huom *",
+        "reportTitle": "Työaikaraportti vuoden ",
+        "reportPrinted": "Raportti tulostettu: ",
+        "remark": "Huomautus"
       },
       "aggregationsTable": {
         "title": "{{year}} Jakson {{start}} - {{end}} tunnit yhteensä",
@@ -578,6 +594,15 @@
           "partial": "Osapäiväraha",
           "full": "Kokopäiväraha"
         }
+      },
+      "abbreviations": {
+        "training": "KO",
+        "vacation": "LO",
+        "officialDuties": "LT",
+        "compensatoryLeave": "PP",
+        "sickLeave": "SL",
+        "partial": "Osa",
+        "full": "Koko"
       },
       "changeLog": {
         "title": "Muutosloki",

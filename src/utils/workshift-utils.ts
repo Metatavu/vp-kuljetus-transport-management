@@ -1,4 +1,11 @@
-import { AbsenceType, Employee, PerDiemAllowanceType, WorkShiftHours, WorkType } from "generated/client";
+import {
+  AbsenceType,
+  Employee,
+  EmployeeWorkShift,
+  PerDiemAllowanceType,
+  WorkShiftHours,
+  WorkType,
+} from "generated/client";
 import { DateTime } from "luxon";
 import { EmployeeWorkHoursFormRow } from "src/types";
 
@@ -13,7 +20,47 @@ namespace WorkShiftsUtils {
     );
   };
 
-  export const getTotalWorkHoursByType = (shiftsInWorkPeriod: EmployeeWorkHoursFormRow[], workType: WorkType) => {
+  export const getShiftsWorkHoursByType = (rowWorkHours?: Record<WorkType, WorkShiftHours>, workType?: WorkType) => {
+    if (!rowWorkHours || !workType) {
+      return "";
+    }
+    return rowWorkHours[workType]?.actualHours?.toFixed(2) ?? rowWorkHours[workType]?.calculatedHours?.toFixed(2) ?? "";
+  };
+
+  export const getUnpaidBreakHours = (rowWorkHours?: Record<WorkType, WorkShiftHours>) => {
+    if (!rowWorkHours) {
+      return "";
+    }
+    const breakHours = rowWorkHours[WorkType.Break]?.actualHours ?? rowWorkHours[WorkType.Break]?.calculatedHours ?? 0;
+
+    if (breakHours > 0.5) {
+      const updaidBreakHours = breakHours - 0.5;
+      const hours = Math.floor(updaidBreakHours);
+      const minutes = (updaidBreakHours - hours) * 60;
+      return `${hours}:${minutes.toFixed(0).padStart(2, "0")}`;
+    }
+    return "";
+  };
+
+  export const getTotalWorkingTimeOnWorkShift = (workShift?: EmployeeWorkShift) => {
+    if (!workShift) {
+      return "";
+    }
+    const { startedAt, endedAt } = workShift;
+    if (!startedAt || !endedAt) {
+      return "";
+    }
+    const start = DateTime.fromJSDate(startedAt);
+    const end = DateTime.fromJSDate(endedAt);
+
+    const { hours, minutes } = end.diff(start, ["hours", "minutes"]);
+    return `${hours}:${minutes.toFixed(0).padStart(2, "0")}`;
+  };
+
+  export const getWorkHoursInWorkPeriodByType = (
+    shiftsInWorkPeriod: EmployeeWorkHoursFormRow[],
+    workType: WorkType,
+  ) => {
     const aggregatedHours = shiftsInWorkPeriod
       .reduce((acc, row) => {
         const workShiftHours = row.workShiftHours[workType];
@@ -36,7 +83,7 @@ namespace WorkShiftsUtils {
 
     const workTypes = [WorkType.PaidWork, WorkType.SickLeave];
     const totalPaidWorkHours = workTypes
-      .map((type) => parseFloat(getTotalWorkHoursByType(shiftsInWorkPeriod, type)))
+      .map((type) => parseFloat(getWorkHoursInWorkPeriodByType(shiftsInWorkPeriod, type)))
       .reduce((sum, hours) => sum + hours, 0);
     if (totalPaidWorkHours >= regularWorkingHours) return 0;
 
@@ -58,8 +105,8 @@ namespace WorkShiftsUtils {
     const regularWorkingHours = getRegularWorkingHoursOnWorkPeriod(employee, shiftsInWorkPeriod);
     // Calculate paid work hours without training hours (training hours does not cumulate overtime)
     const paidWorkHoursFromWorkTypes =
-      parseFloat(getTotalWorkHoursByType(shiftsInWorkPeriod, WorkType.PaidWork)) -
-      parseFloat(getTotalWorkHoursByType(shiftsInWorkPeriod, WorkType.Training));
+      parseFloat(getWorkHoursInWorkPeriodByType(shiftsInWorkPeriod, WorkType.PaidWork)) -
+      parseFloat(getWorkHoursInWorkPeriodByType(shiftsInWorkPeriod, WorkType.Training));
     const paidVacationAndCompensatoryLeaveHours =
       parseFloat(getTotalHoursByAbsenseType(shiftsInWorkPeriod, AbsenceType.Vacation)) +
       parseFloat(getTotalHoursByAbsenseType(shiftsInWorkPeriod, AbsenceType.CompensatoryLeave));
@@ -162,7 +209,7 @@ namespace WorkShiftsUtils {
     shiftsInWorkPeriod: EmployeeWorkHoursFormRow[],
   ) => {
     if (!employee.regularWorkingHours) return 0;
-    const unpaidHours = Number(WorkShiftsUtils.getTotalWorkHoursByType(shiftsInWorkPeriod, WorkType.Unpaid));
+    const unpaidHours = Number(WorkShiftsUtils.getWorkHoursInWorkPeriodByType(shiftsInWorkPeriod, WorkType.Unpaid));
 
     return unpaidHours ? employee.regularWorkingHours - unpaidHours : employee.regularWorkingHours;
   };

@@ -1,27 +1,31 @@
-import { Checkbox, Link, MenuItem, Stack, TextField, Tooltip, Typography, styled } from "@mui/material";
+import { Checkbox, Link, MenuItem, Stack, TextField, Typography, styled } from "@mui/material";
 import { useNavigate, useParams } from "@tanstack/react-router";
-import {
-  AbsenceType,
-  EmployeeWorkShift,
-  PerDiemAllowanceType,
-  Truck,
-  WorkShiftHours,
-  WorkType,
-} from "generated/client";
+import { AbsenceType, EmployeeWorkShift, PerDiemAllowanceType, WorkShiftHours, WorkType } from "generated/client";
 import { DateTime } from "luxon";
 import { useCallback, useMemo, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { theme } from "src/theme";
 import { EmployeeWorkHoursForm } from "src/types";
 import LocalizationUtils from "src/utils/localization-utils";
+import WorkShiftsUtils from "src/utils/workshift-utils";
 
 type Props = {
   date: DateTime;
   index: number;
-  trucks: Truck[];
   workShiftId?: string;
 };
+
+// Styled textarea
+const Textarea = styled(TextField, {
+  label: "textarea",
+})(() => ({
+  fontSize: 13,
+  padding: "4px 0",
+  transition: "height 0.3s ease-in-out",
+  "& .MuiOutlinedInput-root": {
+    transition: "height 0.3s ease-in-out",
+  },
+}));
 
 // Styled work shift row
 const Row = styled(Stack, {
@@ -36,7 +40,6 @@ const Cell = styled(Stack, {
   label: "work-shift-cell",
 })(({ theme }) => ({
   borderRight: `1px solid ${theme.palette.divider}`,
-  backgroundColor: "rgba(0, 65, 79, 0.1)",
   alignContent: "center",
   justifyContent: "center",
   textAlign: "center",
@@ -67,33 +70,41 @@ function WorkShiftRow({ index, date, workShiftId }: Props) {
 
   const renderWorkHourInput = useCallback(
     (title: string, workType: WorkType) => {
-      const calculatedHoursTooltipText = `${t("workingHours.workingDays.table.calculatedHours")}: ${
-        workShiftHours?.[workType]?.calculatedHours?.toFixed(2).toString() ?? title
-      } `;
+      const calculatedHoursTooltipText = `${title} (${t("workingHours.workingDays.table.calculatedHours")} ${
+        workShiftHours?.[workType]?.calculatedHours?.toFixed(2).toString() ?? "ei kirjauksia"
+      })`;
       return (
-        <Tooltip title={calculatedHoursTooltipText} placement="bottom">
-          <TextField
-            className="cell-input"
-            size="small"
-            aria-label={title}
-            fullWidth
-            disabled={workShift?.approved}
-            variant="outlined"
-            placeholder={workShiftHours?.[workType]?.calculatedHours?.toFixed(2).toString() ?? ""}
-            value={workShiftHours?.[workType]?.actualHours ?? null}
-            onChange={(event) =>
-              setValue(
-                `${index}.workShiftHours.${workType}.actualHours`,
-                Number.isNaN(parseFloat(event.target.value)) ? 0 : parseFloat(event.target.value),
-                {
-                  shouldDirty: true,
-                  shouldValidate: true,
-                  shouldTouch: true,
-                },
-              )
-            }
-          />
-        </Tooltip>
+        <TextField
+          title={calculatedHoursTooltipText}
+          className="cell-input"
+          size="small"
+          aria-label={title}
+          fullWidth
+          disabled={workShift?.approved}
+          type="number"
+          variant="outlined"
+          sx={{
+            "& input": {
+              fontWeight: "bold",
+              "&::placeholder": {
+                opacity: 0.75,
+                fontWeight: "normal",
+              },
+            },
+            "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button": {
+              display: "none",
+            },
+          }}
+          placeholder={workShiftHours?.[workType]?.calculatedHours?.toFixed(2).toString() ?? ""}
+          value={workShiftHours?.[workType]?.actualHours ?? null}
+          onChange={(event) =>
+            setValue(`${index}.workShiftHours.${workType}.actualHours`, parseFloat(event.target.value), {
+              shouldDirty: true,
+              shouldValidate: true,
+              shouldTouch: true,
+            })
+          }
+        />
       );
     },
     [setValue, index, workShiftHours, t, workShift?.approved],
@@ -106,11 +117,14 @@ function WorkShiftRow({ index, date, workShiftId }: Props) {
         className="cell-input"
         size="small"
         aria-label={t("workingHours.workingDays.table.dailyAllowance")}
-        title={t("workingHours.workingDays.table.dailyAllowance")}
+        title={t("workingHours.workingDays.table.selectDailyAllowance")}
         fullWidth
         disabled={workShift?.approved}
         variant="outlined"
         value={workShift?.perDiemAllowance ?? ""}
+        SelectProps={{
+          renderValue: (value) => LocalizationUtils.getPerDiemAllowanceAbbreviation(value as PerDiemAllowanceType, t),
+        }}
         onChange={(event) =>
           setValue(
             `${index}.workShift.perDiemAllowance`,
@@ -143,11 +157,14 @@ function WorkShiftRow({ index, date, workShiftId }: Props) {
         className="cell-input"
         size="small"
         aria-label={t("workingHours.workingDays.table.absence")}
-        title={t("workingHours.workingDays.table.absence")}
+        title={t("workingHours.workingDays.table.selectAbsence")}
         fullWidth
         disabled={workShift?.approved}
         variant="outlined"
         value={workShift?.absence ?? ""}
+        SelectProps={{
+          renderValue: (value) => LocalizationUtils.getLocalizedAbsenceAbbreviation(value as AbsenceType, t),
+        }}
         onChange={(event) =>
           setValue(`${index}.workShift.absence`, (event.target.value || null) as AbsenceType | undefined, {
             shouldDirty: true,
@@ -170,21 +187,29 @@ function WorkShiftRow({ index, date, workShiftId }: Props) {
     [setValue, index, workShift, t],
   );
 
+  const getRowBackgroundColor = () => {
+    if (!workShift?.date) return "#F5F5F5";
+    const workShiftDate = DateTime.fromJSDate(workShift.date);
+    if (workShiftDate < DateTime.now().startOf("day")) return "#E6ECED"; // Past days
+    if (workShiftDate.hasSame(DateTime.now(), "day")) return "#dde6e8"; // Current day
+    return "#F5F5F5"; // Future days
+  };
+
   return (
-    <Row
-      key={workShiftId}
-      style={{
-        backgroundColor:
-          workShift?.date && DateTime.fromJSDate(workShift.date) < DateTime.now().startOf("day")
-            ? theme.palette.background.paper
-            : theme.palette.background.default,
-      }}
-    >
-      <Cell width={90}>
+    <Row key={workShiftId} style={{ backgroundColor: getRowBackgroundColor() }}>
+      <Cell width={70} style={{ justifyContent: "right" }}>
         <Link
           underline={hasDetails ? "always" : "none"}
-          sx={{ cursor: hasDetails ? "pointer" : "default" }}
-          title={t("workingHours.workingHourBalances.toWorkHourDetails")}
+          sx={{
+            cursor: hasDetails ? "pointer" : "default",
+            fontSize: 13,
+            textTransform: "uppercase",
+          }}
+          title={
+            hasDetails
+              ? t("workingHours.workingHourBalances.toWorkHourDetails")
+              : t("workingHours.workingHourBalances.noWorkHourDetailsAvailable")
+          }
           // use bold font style if date is today
           style={{
             fontWeight:
@@ -202,21 +227,21 @@ function WorkShiftRow({ index, date, workShiftId }: Props) {
           {workShift?.date && DateTime.fromJSDate(workShift.date).toFormat("EEE dd.MM")}
         </Link>
       </Cell>
-      <Cell minWidth={75} flex={1}>
-        <Typography variant="body2">
+      <Cell flex={1}>
+        <Typography variant="body1">
           {workShift?.startedAt ? DateTime.fromJSDate(workShift.startedAt).toFormat("HH:mm") : ""}
         </Typography>
       </Cell>
-      <Cell minWidth={75} flex={1}>
-        <Typography variant="body2">
+      <Cell flex={1}>
+        <Typography variant="body1">
           {workShift?.endedAt ? DateTime.fromJSDate(workShift.endedAt).toFormat("HH:mm") : ""}
         </Typography>
       </Cell>
-      <Cell minWidth={75} flex={1}>
-        <Typography variant="body2">{"00:00"}</Typography>
+      <Cell flex={1}>
+        <Typography variant="body1">{WorkShiftsUtils.getTotalWorkingTimeOnWorkShift(workShift)}</Typography>
       </Cell>
-      <Cell minWidth={75} flex={1}>
-        <Typography variant="body2">{"00:00"}</Typography>
+      <Cell flex={1}>
+        <Typography variant="body1">{WorkShiftsUtils.getUnpaidBreakHours(workShiftHours)}</Typography>
       </Cell>
       <Cell flex={1}>
         {renderWorkHourInput(t("workingHours.workingDays.table.payableWorkingHours"), WorkType.PaidWork)}
@@ -292,10 +317,9 @@ function WorkShiftRow({ index, date, workShiftId }: Props) {
           }
         />
       </Cell>
-      <Cell minWidth={120} flex={1}>
+      <Cell minWidth={175} flex={1} justifyContent="center" alignContent="center">
         {/* TODO: Finalize styling */}
-        <TextField
-          className="cell-input align-left"
+        <Textarea
           size="small"
           aria-label={t("workingHours.workingDays.table.remarks")}
           fullWidth
@@ -313,12 +337,9 @@ function WorkShiftRow({ index, date, workShiftId }: Props) {
               shouldTouch: true,
             })
           }
+          InputProps={{ style: { height: "100%", padding: "4px 8px", fontSize: 13 } }}
           sx={{
-            transition: "all 0.3s ease-in-out",
             height: isFocused ? "100px" : "40px",
-            "& .MuiOutlinedInput-root": {
-              transition: "all 0.3s ease-in-out",
-            },
           }}
         />
       </Cell>

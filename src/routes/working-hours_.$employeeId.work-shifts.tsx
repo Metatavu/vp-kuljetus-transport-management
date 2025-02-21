@@ -26,7 +26,7 @@ import WorkShiftRow from "components/working-hours/work-shift-row";
 import WorkShiftsTableHeader from "components/working-hours/work-shifts-table-header";
 import WorkingHoursDocument from "components/working-hours/working-hours-document";
 import { EmployeeWorkShift, SalaryGroup, WorkShiftHours, WorkType } from "generated/client";
-import { QUERY_KEYS, getListEmployeesQueryOptions, getListTrucksQueryOptions } from "hooks/use-queries";
+import { QUERY_KEYS, getListEmployeesQueryOptions } from "hooks/use-queries";
 import { t } from "i18next";
 import { DateTime } from "luxon";
 import { useCallback, useMemo } from "react";
@@ -62,7 +62,6 @@ const Root = styled(Stack, {
 })(({ theme }) => ({
   height: "100%",
   width: "100%",
-  overflow: "auto",
   backgroundColor: theme.palette.background.default,
   flexDirection: "column",
   // Default padding for smaller screens
@@ -135,8 +134,7 @@ function WorkShifts() {
   const queryClient = useQueryClient();
   const selectedDate = Route.useSearch({ select: (search) => search.date });
 
-  const trucks = useQuery(getListTrucksQueryOptions({})).data?.trucks;
-  const employees = useQuery(getListEmployeesQueryOptions({})).data?.employees;
+  const employees = useQuery(getListEmployeesQueryOptions({ max: 100 })).data?.employees;
 
   const employee = useMemo(() => employees?.find((employee) => employee.id === employeeId), [employees, employeeId]);
 
@@ -373,7 +371,7 @@ function WorkShifts() {
     const start = DateTime.fromJSDate(workingPeriodDates.start);
     const end = DateTime.fromJSDate(workingPeriodDates.end);
 
-    const dateIsInsideWorkingPeriod = date > start && date < end;
+    const dateIsInsideWorkingPeriod = date >= start && date <= end;
 
     return dateIsInsideWorkingPeriod;
   };
@@ -441,7 +439,15 @@ function WorkShifts() {
           </Stack>
         </ToolbarContainer>
         <Stack direction="row" alignItems="end" gap={2} p={2}>
-          <BlobProvider document={<WorkingHoursDocument />}>
+          <BlobProvider
+            document={
+              <WorkingHoursDocument
+                employee={employee}
+                workShiftsData={workShiftsDataWithWorkingPeriodDates}
+                workingPeriodsForEmployee={workingPeriodsForEmployee}
+              />
+            }
+          >
             {({ loading, url }) => (
               <LoadingButton
                 loading={loading}
@@ -488,11 +494,10 @@ function WorkShifts() {
   };
 
   const renderWorkingPeriodText = () => {
-    const workingPeriodDates = TimeUtils.getWorkingPeriodDates(employeeSalaryGroup, selectedDate.toJSDate());
-    if (!workingPeriodDates) return null;
+    if (!workingPeriodsForEmployee) return null;
 
-    const start = DateTime.fromJSDate(workingPeriodDates.start).toFormat("EEE dd.MM");
-    const end = DateTime.fromJSDate(workingPeriodDates.end).toFormat("EEE dd.MM");
+    const start = DateTime.fromJSDate(workingPeriodsForEmployee.start).toFormat("EEE dd.MM");
+    const end = DateTime.fromJSDate(workingPeriodsForEmployee.end).toFormat("EEE dd.MM");
 
     return (
       <Typography variant="subtitle1">
@@ -502,11 +507,10 @@ function WorkShifts() {
   };
 
   const renderAggregationsTableTitle = () => {
-    const workingPeriodDates = TimeUtils.getWorkingPeriodDates(employeeSalaryGroup, selectedDate.toJSDate());
-    if (!workingPeriodDates) return null;
+    if (!workingPeriodsForEmployee) return null;
 
-    const start = DateTime.fromJSDate(workingPeriodDates.start).toFormat("dd.MM");
-    const end = DateTime.fromJSDate(workingPeriodDates.end).toFormat("dd.MM");
+    const start = DateTime.fromJSDate(workingPeriodsForEmployee.start).toFormat("dd.MM");
+    const end = DateTime.fromJSDate(workingPeriodsForEmployee.end).toFormat("dd.MM");
     return (
       <TableHeader>
         <Typography variant="subtitle1">
@@ -520,67 +524,71 @@ function WorkShifts() {
     <>
       <Root>
         <FormProvider {...methods}>
-          <form onSubmit={methods.handleSubmit(() => updateWorkShift.mutateAsync())}>
+          <form
+            style={{ display: "flex", flexDirection: "column", flex: 1, overflow: "hidden" }}
+            onSubmit={methods.handleSubmit(() => updateWorkShift.mutateAsync())}
+          >
             {renderToolbar()}
-            <Paper elevation={0}>
-              <Stack>
-                <TableHeader>
-                  {renderWorkingPeriodText()}
-                  <Stack spacing={4} direction="row" alignItems="center">
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          onChange={handleAllApprovedChange}
-                          title={t("workingHours.workingHourBalances.markAllApproved")}
-                        />
-                      }
-                      label={t("workingHours.workingDays.table.inspected")}
-                    />
-                    <Box minWidth={245}>
-                      <Typography variant="body2">{"Tiedot tallennettu 11.5.2021 12:00"}</Typography>
-                    </Box>
-                  </Stack>
-                </TableHeader>
-                <TableContainer>
-                  <WorkShiftsTableHeader />
-                  {workShiftsDataWithWorkingPeriodDates.map((workShiftFormRow, index) => (
-                    <WorkShiftRow
-                      key={`${index}_${workShiftFormRow.workShift.id}`}
-                      workShiftId={workShiftFormRow.workShift.id}
-                      date={selectedDate}
-                      index={index}
-                      trucks={trucks ?? []}
-                    />
-                  ))}
-                </TableContainer>
-              </Stack>
-            </Paper>
-            <BottomAreaContainer>
-              <Paper elevation={0} sx={{ display: "flex", flex: 2 }}>
-                <Stack flex={1}>
-                  <TableHeader>{renderAggregationsTableTitle()}</TableHeader>
-                  {employeeSalaryGroup === SalaryGroup.Driver || employeeSalaryGroup === SalaryGroup.Vplogistics ? (
-                    <AggregationsTableForDriver
-                      workShiftsData={workShiftsDataForFormRows.data ?? []}
-                      employee={employee ?? undefined}
-                    />
-                  ) : (
-                    <AggregationsTableForOffice
-                      workShiftsData={workShiftsDataForFormRows.data ?? []}
-                      employee={employee ?? undefined}
-                    />
-                  )}
-                </Stack>
-              </Paper>
-              <Paper elevation={0} sx={{ display: "flex", flex: 1 }}>
-                <Stack flex={1}>
+            <Stack sx={{ overflow: "auto" }}>
+              <Paper elevation={0}>
+                <Stack>
                   <TableHeader>
-                    <Typography variant="subtitle1">{t("workingHours.workingDays.changeLog.title")}</Typography>
+                    {renderWorkingPeriodText()}
+                    <Stack spacing={4} direction="row" alignItems="center">
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            onChange={handleAllApprovedChange}
+                            title={t("workingHours.workingHourBalances.markAllApproved")}
+                          />
+                        }
+                        label={t("workingHours.workingDays.table.inspected")}
+                      />
+                      <Box minWidth={245}>
+                        <Typography variant="body2">{"Tiedot tallennettu 11.5.2021 12:00"}</Typography>
+                      </Box>
+                    </Stack>
                   </TableHeader>
-                  <ChangeLog />
+                  <TableContainer>
+                    <WorkShiftsTableHeader />
+                    {workShiftsDataWithWorkingPeriodDates.map((workShiftFormRow, index) => (
+                      <WorkShiftRow
+                        key={`${index}_${workShiftFormRow.workShift.id}`}
+                        workShiftId={workShiftFormRow.workShift.id}
+                        date={selectedDate}
+                        index={index}
+                      />
+                    ))}
+                  </TableContainer>
                 </Stack>
               </Paper>
-            </BottomAreaContainer>
+              <BottomAreaContainer>
+                <Paper elevation={0} sx={{ display: "flex", flex: 2 }}>
+                  <Stack flex={1}>
+                    <TableHeader>{renderAggregationsTableTitle()}</TableHeader>
+                    {employeeSalaryGroup === SalaryGroup.Driver || employeeSalaryGroup === SalaryGroup.Vplogistics ? (
+                      <AggregationsTableForDriver
+                        workShiftsData={workShiftsDataForFormRows.data ?? []}
+                        employee={employee ?? undefined}
+                      />
+                    ) : (
+                      <AggregationsTableForOffice
+                        workShiftsData={workShiftsDataForFormRows.data ?? []}
+                        employee={employee ?? undefined}
+                      />
+                    )}
+                  </Stack>
+                </Paper>
+                <Paper elevation={0} sx={{ display: "flex", flex: 1 }}>
+                  <Stack flex={1}>
+                    <TableHeader>
+                      <Typography variant="subtitle1">{t("workingHours.workingDays.changeLog.title")}</Typography>
+                    </TableHeader>
+                    <ChangeLog />
+                  </Stack>
+                </Paper>
+              </BottomAreaContainer>
+            </Stack>
           </form>
         </FormProvider>
       </Root>

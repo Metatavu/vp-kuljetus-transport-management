@@ -6,12 +6,13 @@ const HeaderCell = styled(Box, {
   label: "working-day-header-cell",
 })(({ theme }) => ({
   borderRight: `1px solid ${theme.palette.divider}`,
-  backgroundColor: "rgba(0, 65, 79, 0.1)",
+  borderBottom: `1px solid ${theme.palette.divider}`,
+  backgroundColor: "#EDF3F5",
   alignContent: "center",
   justifyContent: "center",
   textAlign: "center",
   padding: theme.spacing(1),
-  fontWeight: 500,
+  fontWeight: 600,
   fontSize: theme.typography.body2.fontSize,
   textOverflow: "ellipsis",
   overflow: "hidden",
@@ -23,19 +24,11 @@ function WorkShiftsTableHeader() {
 
   return (
     <Stack direction="row">
-      <HeaderCell width={90}>{t("workingHours.workingDays.table.date")}</HeaderCell>
-      <HeaderCell minWidth={75} flex={1}>
-        {t("workingHours.workingDays.table.workStarted")}
-      </HeaderCell>
-      <HeaderCell minWidth={75} flex={1}>
-        {t("workingHours.workingDays.table.workEnded")}
-      </HeaderCell>
-      <HeaderCell minWidth={75} flex={1}>
-        {t("workingHours.workingDays.table.workingHours")}
-      </HeaderCell>
-      <HeaderCell minWidth={75} flex={1}>
-        {t("workingHours.workingDays.table.unpaidBreak")}
-      </HeaderCell>
+      <HeaderCell width={70}>{t("workingHours.workingDays.table.date")}</HeaderCell>
+      <HeaderCell flex={1}>{t("workingHours.workingDays.table.workStarted")}</HeaderCell>
+      <HeaderCell flex={1}>{t("workingHours.workingDays.table.workEnded")}</HeaderCell>
+      <HeaderCell flex={1}>{t("workingHours.workingDays.table.workingHours")}</HeaderCell>
+      <HeaderCell flex={1}>{t("workingHours.workingDays.table.unpaidBreak")}</HeaderCell>
       <HeaderCell flex={1}>{t("workingHours.workingDays.table.payableWorkingHours")}</HeaderCell>
       <HeaderCell flex={1}>{t("workingHours.workingDays.table.waitingTime")}</HeaderCell>
       <HeaderCell flex={1}>{t("workingHours.workingDays.table.eveningWork")}</HeaderCell>
@@ -52,7 +45,7 @@ function WorkShiftsTableHeader() {
       </HeaderCell>
       <HeaderCell width={90}>{t("workingHours.workingDays.table.dailyAllowance")}</HeaderCell>
       <HeaderCell width={90}>{t("workingHours.workingDays.table.inspected")}</HeaderCell>
-      <HeaderCell minWidth={120} flex={1}>
+      <HeaderCell minWidth={175} flex={1}>
         {t("workingHours.workingDays.table.remarks")}
       </HeaderCell>
     </Stack>

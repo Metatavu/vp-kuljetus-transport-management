@@ -25,6 +25,10 @@
   "selectDate": "Select date",
   "showMenu": "Show menu",
   "hideMenu": "Hide menu",
+  "notAuthorizedView": {
+    "notAuthorized": "Access denied",
+    "description": "You don't have permission to access this content."
+  },
   "equipmentType": {
     "truck": "Truck",
     "semiTruck": "Semi truck",
@@ -426,6 +430,8 @@
       "halfDayAllowance": "Half-Day Allowance",
       "fullDayAllowance": "Full-Day Allowance",
       "toWorkHourDetails": "To Work hour details",
+      "noWorkHourDetailsAvailable": "No working hour details available",
+      "noRecords": "no records",
       "approved": "Checked",
       "markAllApproved": "Mark all checked",
       "successToast": "Working hours saved!",
@@ -451,11 +457,21 @@
         "taskSpecificBonus": "Task-Specific Bonus",
         "freezerBonus": "Freezer Bonus",
         "absence": "Absence",
+        "selectAbsence": "Select absence type",
         "vehicle": "Vehicle",
         "dailyAllowance": "Daily Allowance",
+        "selectDailyAllowance": "Select daily allowance type",
         "inspected": "Inspected",
         "remarks": "Remarks",
-        "calculatedHours": "Calculated hours"
+        "calculatedHours": "Calculated"
+      },
+      "pdf": {
+        "costCenter": "CC",
+        "dayOffBonus": "DOB",
+        "notes": "Notes *",
+        "reportTitle": "Report from year ",
+        "reportPrinted": " Report printed: ",
+        "remark": "Remark"
       },
       "aggregationsTable": {
         "title": "{{year}} Working period {{start}} - {{end}} aggregated working hours",
@@ -491,6 +507,15 @@
           "partial": "Partial",
           "full": "Full"
         }
+      },
+      "abbreviations": {
+        "training": "TR",
+        "vacation": "VA",
+        "officialDuties": "OD",
+        "compensatoryLeave": "CL",
+        "sickLeave": "SL",
+        "partial": "Part",
+        "full": "Full"
       },
       "changeLog": {
         "title": "Change log",
