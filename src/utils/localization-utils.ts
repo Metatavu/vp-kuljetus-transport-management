@@ -39,12 +39,12 @@ namespace LocalizationUtils {
 
   export const getLocalizedDriveStateStatus = (status: TruckDriveStateEnum, t: TFunction) =>
     ({
-      REST: t("vehicles.truckDriveStateStatus.working"),
-      DRIVER_AVAILABLE: t("vehicles.truckDriveStateStatus.working"),
+      REST: t("vehicles.truckDriveStateStatus.rest"),
+      DRIVER_AVAILABLE: t("vehicles.truckDriveStateStatus.driverAvailable"),
       WORK: t("vehicles.truckDriveStateStatus.working"),
       DRIVE: t("vehicles.truckDriveStateStatus.driving"),
-      ERROR: t("vehicles.truckDriveStateStatus.stopped"),
-      NOT_AVAILABLE: t("vehicles.truckDriveStateStatus.stopped"),
+      ERROR: t("vehicles.truckDriveStateStatus.error"),
+      NOT_AVAILABLE: t("vehicles.truckDriveStateStatus.notAvailable"),
     })[status];
 
   export const getLocalizedTruckEvent = (taskType: TaskType, t: TFunction) =>

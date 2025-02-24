@@ -89,7 +89,11 @@
     "truckDriveStateStatus": {
       "driving": "Ajo",
       "stopped": "Pysähdys",
-      "working": "Työ"
+      "working": "Työ",
+      "rest": "Tauko",
+      "driverAvailable": "Kuljettaja saatavilla",
+      "notAvailable": "Ei saatavilla",
+      "error": "Virhe"
     },
     "truckEventType": {
       "load": "Lastaus",
