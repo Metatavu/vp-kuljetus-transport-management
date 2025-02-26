@@ -114,12 +114,12 @@ function TerminalSiteComponent({ formType, site, onSave }: Props) {
         onClick={() =>
           reset({
             ...site,
-            name: "",
-            address: "",
-            postalCode: "",
-            locality: "",
-            additionalInfo: "",
-            location: undefined,
+            name: site?.name ?? "",
+            address: site?.address ?? "",
+            postalCode: site?.postalCode ?? "",
+            locality: site?.locality ?? "",
+            additionalInfo: site?.additionalInfo ?? "",
+            location: site?.location ?? "",
           })
         }
       >
