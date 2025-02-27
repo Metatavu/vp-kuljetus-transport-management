@@ -200,6 +200,7 @@ function WorkShifts() {
           endedAt: undefined,
           truckIds: undefined,
           employeeId,
+          costCentersFromEvents: [],
         } as EmployeeWorkShift,
         // Create empty work shift hours for each work type
         workShiftHours: Object.values(WorkType).reduce<Record<WorkType, WorkShiftHours>>(
