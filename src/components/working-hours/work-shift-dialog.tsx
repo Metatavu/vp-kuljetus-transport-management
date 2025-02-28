@@ -63,6 +63,7 @@ const WorkShiftDialog = ({ workEvents, trucks, workShift, loading, onClose }: Pr
                   truckId: id,
                   after: workShift?.startedAt,
                   before: workShiftEndedAt,
+                  max: 1000,
                 }),
               }
             : null,
@@ -93,7 +94,9 @@ const WorkShiftDialog = ({ workEvents, trucks, workShift, loading, onClose }: Pr
     queries: truckLocationsQuery.data.flatMap(({ truckId, maxTimestamp, minTimestamp }) => ({
       queryKey: ["truckOdometerReading", { truckId, maxTimestamp, minTimestamp }],
       queryFn: () =>
-        truckId ? api.trucks.listTruckOdometerReadings({ truckId, after: minTimestamp, before: maxTimestamp }) : null,
+        truckId
+          ? api.trucks.listTruckOdometerReadings({ truckId, after: minTimestamp, before: maxTimestamp, max: 1000 })
+          : null,
     })),
     combine: (result) => result.flatMap((res) => res.data).filter(DataValidation.validateValueIsNotUndefinedNorNull),
   });
@@ -102,7 +105,7 @@ const WorkShiftDialog = ({ workEvents, trucks, workShift, loading, onClose }: Pr
     queries: truckLocationsQuery.data.flatMap(({ truckId, maxTimestamp, minTimestamp }) => ({
       queryKey: ["truckSpeed", { truckId, maxTimestamp, minTimestamp }],
       queryFn: () =>
-        truckId ? api.trucks.listTruckSpeeds({ truckId, after: minTimestamp, before: maxTimestamp }) : null,
+        truckId ? api.trucks.listTruckSpeeds({ truckId, after: minTimestamp, before: maxTimestamp, max: 1000 }) : null,
     })),
     combine: (result) => result.flatMap((res) => res.data).filter(DataValidation.validateValueIsNotUndefinedNorNull),
   });

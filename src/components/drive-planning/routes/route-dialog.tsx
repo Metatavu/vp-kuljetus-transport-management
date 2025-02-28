@@ -66,12 +66,12 @@ const RouteDialog = ({ initialDate, routeId, onSave }: Props) => {
 
   const trucksQuery = useQuery({
     queryKey: [QUERY_KEYS.TRUCKS],
-    queryFn: () => api.trucks.listTrucks(),
+    queryFn: () => api.trucks.listTrucks({ max: 100 }),
   });
 
   const driversQuery = useQuery({
     queryKey: [QUERY_KEYS.DRIVERS],
-    queryFn: () => api.drivers.listDrivers(),
+    queryFn: () => api.drivers.listDrivers({ max: 100 }),
   });
 
   const onSaveClick = (form: RouteForm) =>

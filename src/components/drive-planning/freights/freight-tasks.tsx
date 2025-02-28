@@ -32,6 +32,7 @@ const FreightTasks = ({ tasks, customerSites, onEditTask }: Props) => {
     getListRoutesQueryOptions({
       departureAfter: selectedDepartureDate?.startOf("day").toJSDate(),
       departureBefore: selectedDepartureDate?.endOf("day").toJSDate(),
+      max: 100,
     }),
   );
 

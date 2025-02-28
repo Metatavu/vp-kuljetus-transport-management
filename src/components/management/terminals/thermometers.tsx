@@ -15,7 +15,7 @@ type Props = {
 const Thermometers = ({ siteId }: Props) => {
   const { t } = useTranslation();
 
-  const listThermometersQuery = useQuery(getListTerminalThermometersQueryOptions({ siteId }));
+  const listThermometersQuery = useQuery(getListTerminalThermometersQueryOptions({ siteId, max: 100 }));
   const thermometers = useMemo(() => listThermometersQuery.data ?? [], [listThermometersQuery.data]);
   const temperatures = useQueries({
     queries: thermometers.map((thermometer) =>
