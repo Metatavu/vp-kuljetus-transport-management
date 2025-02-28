@@ -24,7 +24,7 @@ const UnallocatedTasksTable = ({ sites }: Props) => {
   const navigate = useNavigate({ from: "/drive-planning/routes" });
   const [rowDragHandles, setRowDragHandles] = useState<UnallocatedTasksRowDragHandles>({});
 
-  const tasksQuery = useQuery(getListTasksQueryOptions({ assignedToRoute: false }));
+  const tasksQuery = useQuery(getListTasksQueryOptions({ assignedToRoute: false, max: 100 }));
 
   const getDistinctFreightIds = () => [...new Set((tasksQuery.data?.tasks ?? []).map((task) => task.freightId))];
 
@@ -43,7 +43,7 @@ const UnallocatedTasksTable = ({ sites }: Props) => {
     queries:
       freightsQueries.data?.map((freight) => ({
         queryKey: [QUERY_KEYS.FREIGHT_UNITS_BY_FREIGHT, freight.id],
-        queryFn: () => api.freightUnits.listFreightUnits({ freightId: freight.id }),
+        queryFn: () => api.freightUnits.listFreightUnits({ freightId: freight.id, max: 100 }),
       })) ?? [],
     combine: (results) => ({
       data: results.flatMap((result) => result.data).filter(DataValidation.validateValueIsNotUndefinedNorNull),

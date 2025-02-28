@@ -1,4 +1,4 @@
-import { Close, SaveAlt } from "@mui/icons-material";
+import { Restore, SaveAlt } from "@mui/icons-material";
 import { Box, Button, Paper, Stack } from "@mui/material";
 import { UseMutationResult } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
@@ -26,6 +26,14 @@ const EmployeeComponent = ({ title, employee, onSave }: Props) => {
     shouldFocusError: true,
   });
 
+  const {
+    reset,
+    handleSubmit,
+    formState: { dirtyFields },
+  } = form;
+
+  const isUndoChangesDisabled = Object.keys(dirtyFields).length < 1 || onSave.isPending;
+
   const onEmployeeSave = useCallback(
     async (employee: Employee) => {
       await onSave.mutateAsync(employee);
@@ -35,24 +43,37 @@ const EmployeeComponent = ({ title, employee, onSave }: Props) => {
   );
 
   const renderToolbarButtons = useCallback(() => {
-    const {
-      reset,
-      handleSubmit,
-      formState: { isDirty },
-    } = form;
     return (
       <Stack direction="row" spacing={1}>
-        {isDirty && (
-          <Button variant="text" startIcon={<Close />} onClick={() => reset(employee)}>
-            {t("cancel")}
-          </Button>
-        )}
+        <Button
+          variant="text"
+          disabled={isUndoChangesDisabled}
+          startIcon={<Restore />}
+          onClick={() =>
+            reset({
+              ...employee,
+              driverCardId: employee?.driverCardId ?? "",
+              employeeNumber: employee?.employeeNumber ?? "",
+              lastName: employee?.lastName ?? "",
+              firstName: employee?.firstName ?? "",
+              phoneNumber: employee?.phoneNumber ?? "",
+              email: employee?.email ?? "",
+              office: employee?.office ?? undefined,
+              type: employee?.type ?? undefined,
+              salaryGroup: employee?.salaryGroup ?? undefined,
+              regularWorkingHours: employee?.regularWorkingHours ?? undefined,
+              pinCode: employee?.pinCode ?? "",
+            })
+          }
+        >
+          {t("undoChanges")}
+        </Button>
         <Button variant="contained" startIcon={<SaveAlt />} onClick={handleSubmit(onEmployeeSave)}>
           {t("save")}
         </Button>
       </Stack>
     );
-  }, [form, employee, t, onEmployeeSave]);
+  }, [employee, t, isUndoChangesDisabled, onEmployeeSave, handleSubmit, reset]);
 
   return (
     <LoaderWrapper loading={onSave.isPending}>

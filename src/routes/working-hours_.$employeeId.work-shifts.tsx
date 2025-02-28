@@ -150,6 +150,7 @@ function WorkShifts() {
         employeeId,
         dateAfter: workingPeriodsForEmployee?.start,
         dateBefore: workingPeriodsForEmployee?.end,
+        max: 100,
       });
 
       return await Promise.all(
@@ -200,6 +201,7 @@ function WorkShifts() {
           endedAt: undefined,
           truckIds: undefined,
           employeeId,
+          costCentersFromEvents: [],
         } as EmployeeWorkShift,
         // Create empty work shift hours for each work type
         workShiftHours: Object.values(WorkType).reduce<Record<WorkType, WorkShiftHours>>(
@@ -551,14 +553,18 @@ function WorkShifts() {
                   </TableHeader>
                   <TableContainer>
                     <WorkShiftsTableHeader />
-                    {workShiftsDataWithWorkingPeriodDates.map((workShiftFormRow, index) => (
-                      <WorkShiftRow
-                        key={`${index}_${workShiftFormRow.workShift.id}`}
-                        workShiftId={workShiftFormRow.workShift.id}
-                        date={selectedDate}
-                        index={index}
-                      />
-                    ))}
+                    {workShiftsDataForFormRows.isLoading ? (
+                      <Skeleton variant="rectangular" height={550} />
+                    ) : (
+                      workShiftsDataWithWorkingPeriodDates.map((workShiftFormRow, index) => (
+                        <WorkShiftRow
+                          key={`${index}_${workShiftFormRow.workShift.id}`}
+                          workShiftId={workShiftFormRow.workShift.id}
+                          date={selectedDate}
+                          index={index}
+                        />
+                      ))
+                    )}
                   </TableContainer>
                 </Stack>
               </Paper>
@@ -566,7 +572,10 @@ function WorkShifts() {
                 <Paper elevation={0} sx={{ display: "flex", flex: 2 }}>
                   <Stack flex={1}>
                     <TableHeader>{renderAggregationsTableTitle()}</TableHeader>
-                    {employeeSalaryGroup === SalaryGroup.Driver || employeeSalaryGroup === SalaryGroup.Vplogistics ? (
+                    {workShiftsDataForFormRows.isLoading ? (
+                      <Skeleton variant="rectangular" height={150} />
+                    ) : employeeSalaryGroup === SalaryGroup.Driver ||
+                      employeeSalaryGroup === SalaryGroup.Vplogistics ? (
                       <AggregationsTableForDriver
                         workShiftsData={workShiftsDataForFormRows.data ?? []}
                         employee={employee ?? undefined}

@@ -126,6 +126,12 @@ export interface EmployeeWorkShift {
      * @memberof EmployeeWorkShift
      */
     readonly payrollExportId?: string;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof EmployeeWorkShift
+     */
+    costCentersFromEvents: Array<string>;
 }
 
 /**
@@ -136,6 +142,7 @@ export function instanceOfEmployeeWorkShift(value: object): boolean {
     isInstance = isInstance && "date" in value;
     isInstance = isInstance && "employeeId" in value;
     isInstance = isInstance && "approved" in value;
+    isInstance = isInstance && "costCentersFromEvents" in value;
 
     return isInstance;
 }
@@ -162,6 +169,7 @@ export function EmployeeWorkShiftFromJSONTyped(json: any, ignoreDiscriminator: b
         'approved': json['approved'],
         'notes': !exists(json, 'notes') ? undefined : json['notes'],
         'payrollExportId': !exists(json, 'payrollExportId') ? undefined : json['payrollExportId'],
+        'costCentersFromEvents': json['costCentersFromEvents'],
     };
 }
 
@@ -181,6 +189,7 @@ export function EmployeeWorkShiftToJSON(value?: EmployeeWorkShift | null): any {
         'perDiemAllowance': PerDiemAllowanceTypeToJSON(value.perDiemAllowance),
         'approved': value.approved,
         'notes': value.notes,
+        'costCentersFromEvents': value.costCentersFromEvents,
     };
 }
 

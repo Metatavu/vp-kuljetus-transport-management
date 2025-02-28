@@ -50,7 +50,7 @@ function TerminalSiteComponent({ formType, site, onSave }: Props) {
     register,
     reset,
     watch,
-    formState: { errors, isDirty },
+    formState: { errors, dirtyFields },
   } = useForm<Site>({
     mode: "onChange",
     defaultValues: site,
@@ -67,7 +67,9 @@ function TerminalSiteComponent({ formType, site, onSave }: Props) {
     }
   }, [markerPosition]);
 
-  const isSaveDisabled = (errors && !markerPosition) || !isDirty;
+  const isSaveDisabled = Object.keys(dirtyFields).length < 1 || Object.keys(errors).length > 0 || onSave.isPending;
+
+  const isUndoChangesDisabled = Object.keys(dirtyFields).length < 1 || onSave.isPending;
 
   const onTerminalSave = async (site: Site) => {
     const newSite = await onSave.mutateAsync({ ...site, siteType: SiteType.Terminal, deviceIds: [] });
@@ -106,10 +108,20 @@ function TerminalSiteComponent({ formType, site, onSave }: Props) {
       )}
       <Button
         title={t("undoFormChangesTitle")}
-        disabled={!isDirty}
+        disabled={isUndoChangesDisabled}
         variant="text"
         startIcon={<Restore />}
-        onClick={() => reset(site)}
+        onClick={() =>
+          reset({
+            ...site,
+            name: site?.name ?? "",
+            address: site?.address ?? "",
+            postalCode: site?.postalCode ?? "",
+            locality: site?.locality ?? "",
+            additionalInfo: site?.additionalInfo ?? "",
+            location: site?.location ?? "",
+          })
+        }
       >
         {t("undoChanges")}
       </Button>

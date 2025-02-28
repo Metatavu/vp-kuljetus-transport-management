@@ -55,7 +55,7 @@ const RoutesTasksTableRow = forwardRef(
     const { t } = useTranslation();
     const queryClient = useQueryClient();
     const navigate = useNavigate({ from: "/drive-planning/routes" });
-    const freightsQuery = useQuery(getListFreightsQueryOptions());
+    const freightsQuery = useQuery(getListFreightsQueryOptions({ max: 100 }));
 
     const { date: currentDate } = useSearch({ from: "/drive-planning/routes" });
 
