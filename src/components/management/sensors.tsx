@@ -20,7 +20,9 @@ type Props = {
 const Sensors = ({ entityId, entityType }: Props) => {
   const { t } = useTranslation();
 
-  const listThermometersQuery = useQuery(getListTruckOrTowableThermometersQueryOptions({ entityId, entityType }));
+  const listThermometersQuery = useQuery(
+    getListTruckOrTowableThermometersQueryOptions({ entityId, entityType, max: 100 }),
+  );
   const thermometers = useMemo(() => listThermometersQuery.data ?? [], [listThermometersQuery.data]);
   const temperatures =
     entityType === "truck"

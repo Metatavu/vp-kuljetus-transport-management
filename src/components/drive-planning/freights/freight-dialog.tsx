@@ -34,9 +34,9 @@ const FreightDialog = ({ freight, onSave, onClose }: Props) => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
-  const customerSitesQuery = useQuery(getListSitesQueryOptions());
-  const tasksQuery = useQuery(getListTasksQueryOptions({ freightId: freight?.id }, !!freight));
-  const freightUnitsQuery = useQuery(getListFreightUnitsQueryOptions({ freightId: freight?.id }, !!freight));
+  const customerSitesQuery = useQuery(getListSitesQueryOptions({ max: 100 }));
+  const tasksQuery = useQuery(getListTasksQueryOptions({ freightId: freight?.id, max: 100 }, !!freight));
+  const freightUnitsQuery = useQuery(getListFreightUnitsQueryOptions({ freightId: freight?.id, max: 100 }, !!freight));
 
   const [pendingFreightUnits, setPendingFreightUnits] = useState<FreightUnit[]>([]);
   const [pendingTasks, setPendingTasks] = useState<Task[]>([]);

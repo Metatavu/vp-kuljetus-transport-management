@@ -34,7 +34,7 @@ const Thermometers = ({ siteId }: Props) => {
     setOpenCreateNewDevice(false);
   };
 
-  const listThermometersQuery = useQuery(getListTerminalThermometersQueryOptions({ siteId }));
+  const listThermometersQuery = useQuery(getListTerminalThermometersQueryOptions({ siteId, max: 100 }));
   const thermometersByDeviceIdentifier = useMemo(() => {
     return (listThermometersQuery.data ?? []).reduce(
       (list, thermometer) => {

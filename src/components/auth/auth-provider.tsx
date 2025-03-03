@@ -84,17 +84,14 @@ const AuthenticationProvider = ({ children }: Props) => {
     return () => clearInterval(interval);
   }, [updateAuthData]);
 
-  // Loading state while checking role
   if (isAuthorized === null) {
     return null;
   }
 
-  // Unauthorized state
   if (!isAuthorized) {
     return <NotAuthorizedView logout={() => keycloak.logout({ redirectUri: `${window.location.origin}` })} />;
   }
 
-  // Authorized state (render children)
   return children;
 };
 
