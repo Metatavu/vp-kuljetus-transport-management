@@ -121,7 +121,7 @@ const ThermometersTable = ({ thermometers, name }: Props) => {
             title={name}
             toolbarButtons={
               <Button color="error" onClick={handleClickOpen}>
-                Poista
+                {t("delete")}
               </Button>
             }
           />
