@@ -34,6 +34,12 @@ const CellInput = styled(TextField, {
 const WorkEventRow = ({ selected, row, truck, selectable, onClick }: Props) => {
   const { t } = useTranslation();
 
+  // Handle work type change
+  const handleWorkEventTypeChange = useCallback((event: React.ChangeEvent<{ value: unknown }>) => {
+    const newWorkEventType = event.target.value;
+    // Handle work type change by adding
+  }, []);
+
   const { workEventType, startTime, duration, distance } = useMemo(() => {
     const {
       workEvent: { workEventType, time },
@@ -151,6 +157,8 @@ const WorkEventRow = ({ selected, row, truck, selectable, onClick }: Props) => {
           <TableCell sx={{ p: 0.5 }}>
             <CellInput
               select
+              key={row.workEvent.id}
+              onChange={handleWorkEventTypeChange} // move to upper scope
               aria-label={t("workingHours.workingDays.workShiftDialog.event")}
               defaultValue={workEventType}
             >
