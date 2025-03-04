@@ -1,12 +1,22 @@
-import { Paper } from "@mui/material";
-import { GridColDef } from "@mui/x-data-grid";
-import { useQueries, useQuery } from "@tanstack/react-query";
-import GenericDataGrid from "components/generic/generic-data-grid";
+import { Add } from "@mui/icons-material";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Paper,
+  Stack,
+  TextField,
+} from "@mui/material";
+import { useQuery } from "@tanstack/react-query";
 import ToolbarRow from "components/generic/toolbar-row";
-import { TerminalTemperature, TerminalThermometer } from "generated/client";
-import { getListTerminalTemperaturesQueryOptions, getListTerminalThermometersQueryOptions } from "hooks/use-queries";
-import { useMemo } from "react";
+import { TerminalThermometer } from "generated/client";
+import { getListTerminalThermometersQueryOptions } from "hooks/use-queries";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import ThermometersTable from "./thermometers-table";
 
 type Props = {
   siteId: string | undefined;
@@ -14,62 +24,84 @@ type Props = {
 
 const Thermometers = ({ siteId }: Props) => {
   const { t } = useTranslation();
+  const [openCreateNewDevice, setOpenCreateNewDevice] = useState(false);
+
+  const handleClickOpen = () => {
+    setOpenCreateNewDevice(true);
+  };
+
+  const handleClose = () => {
+    setOpenCreateNewDevice(false);
+  };
 
   const listThermometersQuery = useQuery(getListTerminalThermometersQueryOptions({ siteId, max: 100 }));
-  const thermometers = useMemo(() => listThermometersQuery.data ?? [], [listThermometersQuery.data]);
-  const temperatures = useQueries({
-    queries: thermometers.map((thermometer) =>
-      getListTerminalTemperaturesQueryOptions({ siteId: thermometer.siteId, first: 0, max: 1 }),
-    ),
-    combine: (results) =>
-      results.reduce((map, result) => {
-        const temperature = result.data?.at(0);
-        if (temperature) map.set(temperature.thermometerId, temperature);
-        return map;
-      }, new Map<string, TerminalTemperature>()),
-  });
+  const thermometersByDeviceIdentifier = useMemo(() => {
+    return (listThermometersQuery.data ?? []).reduce(
+      (list, thermometer) => {
+        const indexOfMatchingIdentifier = list.findIndex(
+          (item) => item.deviceIdentifier === thermometer.deviceIdentifier,
+        );
 
-  const columns = useMemo<GridColDef<TerminalThermometer>[]>(
-    () => [
-      {
-        field: "name",
-        headerName: t("management.terminals.thermometers.name"),
-        flex: 1,
+        if (indexOfMatchingIdentifier > -1) {
+          list[indexOfMatchingIdentifier].thermometers.push(thermometer);
+        } else {
+          list.push({ deviceIdentifier: thermometer.deviceIdentifier, thermometers: [thermometer] });
+        }
+
+        return list;
       },
-      {
-        field: "hardwareSensorId",
-        headerName: t("management.terminals.thermometers.hardwareSensorId"),
-        flex: 1,
-      },
-      {
-        field: "deviceIdentifier",
-        headerName: t("management.terminals.thermometers.deviceIdentifier"),
-        flex: 1,
-      },
-      {
-        field: "temperature",
-        headerName: t("management.terminals.thermometers.temperature"),
-        flex: 1,
-        valueGetter: ({ row }) => (row.id ? temperatures.get(row.id)?.value : ""),
-      },
-      {
-        field: "last-alarm-date",
-        headerName: t("management.terminals.thermometers.lastAlarm"),
-        flex: 1,
-      },
-      {
-        field: "alarm",
-        headerName: t("management.terminals.thermometers.alarmSetting"),
-        flex: 1,
-      },
-    ],
-    [t, temperatures],
+      [] as { deviceIdentifier: string; thermometers: TerminalThermometer[] }[],
+    );
+  }, [listThermometersQuery.data]);
+
+  const renderCreateNewDeviceDialog = () => (
+    <Dialog
+      open={openCreateNewDevice}
+      onClose={handleClose}
+      PaperProps={{
+        component: "form",
+      }}
+    >
+      <DialogTitle>{t("management.terminals.configureNewDevice")}</DialogTitle>
+      <DialogContent>
+        <DialogContentText>{t("management.terminals.configureNewDeviceDescription")}</DialogContentText>
+        <TextField
+          autoFocus
+          required
+          margin="dense"
+          id="deviceIdentifier"
+          name="deviceIdentifier"
+          label="MAC-osoite"
+          type="text"
+          fullWidth
+          variant="filled"
+        />
+      </DialogContent>
+      <DialogActions>
+        <Button variant="outlined" onClick={handleClose}>
+          {t("cancel")}
+        </Button>
+        <Button type="submit">{t("save")}</Button>
+      </DialogActions>
+    </Dialog>
   );
 
   return (
     <Paper>
-      <ToolbarRow title={t("management.terminals.thermometers.thermometers")} />
-      <GenericDataGrid hideFooter rows={thermometers} columns={columns} />
+      <ToolbarRow
+        title={t("management.terminals.thermometers.thermometers")}
+        toolbarButtons={
+          <Button startIcon={<Add />} onClick={handleClickOpen}>
+            {t("management.terminals.configureNewDevice")}
+          </Button>
+        }
+      />
+      <Stack p={2}>
+        {thermometersByDeviceIdentifier.map(({ deviceIdentifier, thermometers }) => (
+          <ThermometersTable key={deviceIdentifier} thermometers={thermometers} name={deviceIdentifier} />
+        ))}
+      </Stack>
+      {renderCreateNewDeviceDialog()}
     </Paper>
   );
 };

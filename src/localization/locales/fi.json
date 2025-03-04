@@ -150,14 +150,18 @@
       "deviceId": "Laitetunnus",
       "devices": "Laitteet",
       "additionalInfo": "Lisätiedot",
+      "deleteDevice": "Poista laite?",
+      "deleteDeviceDescription": "Toiminto poistaa tämän laitteen valitulta terminaalilta. Haluatko varmasti poistaa laitteen?",
+      "configureNewDevice": "Määritä uusi laite",
+      "configureNewDeviceDescription": "Syötä terminaaliin asennetun laitteen MAC-osoite. Määrityksen jälkeen voit nimetä anturit erikseen ja ne tulevat näkyviin terminaalinäkymään.",
       "thermometers": {
         "thermometers": "Lämpötila-anturit",
         "name": "Nimi",
         "hardwareSensorId": "Anturin tunniste",
-        "deviceIdentifier": "Laitetunnus",
-        "temperature": "Lämpötila",
+        "temperature": "Lämpötila °C",
+        "lastUpdate": "Viimeisin mittausaika",
         "lastAlarm": "Viimeisin hälytys",
-        "alarmSetting": "Hälytysasetus"
+        "activeMonitors": "Aktiiviset monitorit"
       },
       "errorMessages": {
         "nameMissing": "Nimi on pakollinen",

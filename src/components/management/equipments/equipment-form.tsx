@@ -50,17 +50,21 @@ const EquipmentForm = ({ equipment }: Props) => {
           helperText={!!methods.formState.errors.name?.message}
           {...methods.register("name", { required: t("management.equipment.errorMessages.numberMissing") })}
         />
-        { (methods.watch("type") == "TRUCK" || methods.watch("type") == "SEMI_TRUCK") && <TextField
-          label={t("management.equipment.costCenter")}
-          error={!!methods.formState.errors.name}
-          helperText={!!methods.formState.errors.name?.message}
-          {...methods.register("costCenter")}
-        /> }
+        {(methods.watch("type") === "TRUCK" || methods.watch("type") === "SEMI_TRUCK") && (
+          <TextField
+            label={t("management.equipment.costCenter")}
+            error={!!methods.formState.errors.name}
+            helperText={!!methods.formState.errors.name?.message}
+            {...methods.register("costCenter")}
+          />
+        )}
         <TextField
           label={t("management.equipment.licensePlate")}
           error={!!methods.formState.errors.plateNumber}
           helperText={!!methods.formState.errors.plateNumber?.message}
-          {...methods.register("plateNumber", { required: t("management.equipment.errorMessages.licensePlateMissing") })}
+          {...methods.register("plateNumber", {
+            required: t("management.equipment.errorMessages.licensePlateMissing"),
+          })}
         />
         <TextField
           label={t("management.equipment.vin")}

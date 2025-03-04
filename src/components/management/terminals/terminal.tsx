@@ -151,10 +151,13 @@ function TerminalSiteComponent({ formType, site, onSave }: Props) {
           <Stack flex={1} bgcolor={"background.default"}>
             <TabContext value={tabValue}>
               <TabList onChange={handleTabChange} aria-label="tabs" sx={{ backgroundColor: "background.paper" }}>
-                <Tab label={t("management.terminals.map")} value="1" />
-                <Tab label={t("management.terminals.devices")} value="2" />
+                <Tab label={t("management.terminals.devices")} value="1" />
+                <Tab label={t("management.terminals.map")} value="2" />
               </TabList>
               <TabPanel value="1" sx={{ flex: 1 }}>
+                {site && <Thermometers siteId={site.id} />}
+              </TabPanel>
+              <TabPanel value="2" sx={{ flex: 1 }}>
                 <MapContainer ref={mapRef} style={{ height: "100%" }} center={markerPosition} zoom={13}>
                   <TileLayer
                     attribution='<a href="https://www.mapbox.com/about/maps/">© Mapbox</a> <a href="https://www.openstreetmap.org/copyright">© OpenStreetMap</a> <a href="https://www.mapbox.com/map-feedback/">Improve this map</a>'
@@ -162,9 +165,6 @@ function TerminalSiteComponent({ formType, site, onSave }: Props) {
                   />
                   {markerPosition && <Marker position={markerPosition} />}
                 </MapContainer>
-              </TabPanel>
-              <TabPanel value="2" sx={{ flex: 1 }}>
-                {site && <Thermometers siteId={site.id} />}
               </TabPanel>
             </TabContext>
           </Stack>
