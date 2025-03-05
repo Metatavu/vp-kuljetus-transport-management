@@ -1,7 +1,8 @@
-import { useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { api } from "api/index";
 import WorkShiftDialog from "components/working-hours/work-shift-dialog";
+import { WorkEvent } from "generated/client";
 import {
   QUERY_KEYS,
   getFindEmployeeWorkShiftQueryOptions,
@@ -11,6 +12,7 @@ import {
 import { t } from "i18next";
 import { DateTime } from "luxon";
 import { useEffect, useMemo } from "react";
+import { toast } from "react-toastify";
 import { Breadcrumb } from "src/types";
 import DataValidation from "src/utils/data-validation-utils";
 
@@ -30,12 +32,14 @@ function WorkShiftDetails() {
   const queryClient = useQueryClient();
   const { employeeId, workShiftId } = Route.useParams();
   const selectedDate = Route.useSearch({ select: (search) => search.date });
+
   useEffect(() => {
     queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.EMPLOYEE_WORK_EVENTS] });
     queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.TRUCK_LOCATIONS] });
     queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.TRUCK_ODOMETER_READINGS] });
     queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.TRUCK_SPEEDS] });
   }, [queryClient]);
+
   const workShiftQuery = useQuery(getFindEmployeeWorkShiftQueryOptions({ employeeId, workShiftId }));
 
   const workEventsQuery = useQuery({
@@ -130,6 +134,23 @@ function WorkShiftDetails() {
     combine: (result) => result.flatMap((res) => res.data).filter(DataValidation.validateValueIsNotUndefinedNorNull),
   });
 
+  const updateWorkEvent = useMutation({
+    mutationFn: async (editedWorkEvents: WorkEvent[]) => {
+      await Promise.all(
+        editedWorkEvents.map((workEvent) =>
+          // biome-ignore lint/style/noNonNullAssertion: Work events are guaranteed to have an id
+          api.workEvents.updateEmployeeWorkEvent({ workEventId: workEvent.id!, employeeId: employeeId, workEvent }),
+        ),
+      );
+      await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.EMPLOYEE_WORK_EVENTS] });
+
+      toast.success(t("workingHours.workingHourBalances.successToast"));
+    },
+    onError: () => {
+      toast.error(t("workingHours.workingHourBalances.errorToast"));
+    },
+  });
+
   return (
     <WorkShiftDialog
       loading={workShiftQuery.isLoading || workEventsQuery.isLoading}
@@ -139,6 +160,7 @@ function WorkShiftDetails() {
       truckOdometerReadings={truckOdometerReadings}
       truckSpeeds={truckSpeeds}
       workShiftStartedAt={workShiftStartedAt}
+      onSave={(editedWorkEvents: WorkEvent[]) => updateWorkEvent.mutate(editedWorkEvents)}
       onClose={() =>
         navigate({
           to: "../..",

@@ -14,7 +14,7 @@ import {
   TableRow,
 } from "@mui/material";
 import DialogHeader from "components/generic/dialog-header";
-import { Truck, TruckLocation, TruckOdometerReading, TruckSpeed, WorkEvent } from "generated/client";
+import { Truck, TruckLocation, TruckOdometerReading, TruckSpeed, WorkEvent, WorkEventType } from "generated/client";
 import { DateTime } from "luxon";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -38,6 +38,7 @@ type Props = {
   truckSpeeds: TruckSpeed[];
   workShiftStartedAt: DateTime;
   onClose: () => void;
+  onSave: (editedWorkEvents: WorkEvent[]) => void;
 };
 
 const WorkShiftDialog = ({
@@ -49,10 +50,12 @@ const WorkShiftDialog = ({
   truckSpeeds,
   workShiftStartedAt,
   onClose,
+  onSave,
 }: Props) => {
   const { t } = useTranslation();
 
   const [selectedWorkEvent, setSelectedWorkEvent] = useState<WorkEvent>();
+  const [editedWorkEvents, setEditedWorkEvents] = useState<WorkEvent[]>([]);
 
   const selectedWorkEventTelematics = useMemo(() => {
     if (!selectedWorkEvent) return;
@@ -127,6 +130,25 @@ const WorkShiftDialog = ({
     [truckLocationsData],
   );
 
+  const handleWorkEventTypeChange = (workEvent: WorkEvent, type: WorkEventType) => {
+    const index = editedWorkEvents.findIndex((event) => event.id === workEvent.id);
+    // If the event is already in editedWorkEvents
+    if (index !== -1) {
+      // Check if the new type is the same as the original, if it is, remove the event from the edited list to avoid uneccessary updates
+      if (type === workEvent.workEventType) {
+        setEditedWorkEvents(editedWorkEvents.filter((event) => event.id !== workEvent.id));
+        return;
+      }
+      // Otherwise, update the event's type
+      const newEditedWorkEvents = [...editedWorkEvents];
+      newEditedWorkEvents[index] = { ...workEvent, workEventType: type };
+      setEditedWorkEvents(newEditedWorkEvents);
+      return;
+    }
+    // If the event is not in the edited list, add it
+    setEditedWorkEvents([...editedWorkEvents, { ...workEvent, workEventType: type }]);
+  };
+
   const renderWorkEventRow = useCallback(
     (workEventRow: WorkShiftDialogWorkEventRow) => (
       <WorkEventRow
@@ -136,9 +158,12 @@ const WorkShiftDialog = ({
         selectable={getIsSelectable(workEventRow.workEvent)}
         selected={selectedWorkEvent?.id === workEventRow.workEvent.id}
         onClick={() => setSelectedWorkEvent(workEventRow.workEvent)}
+        onWorkEventTypeChange={(workEvent: WorkEvent, type: WorkEventType) =>
+          handleWorkEventTypeChange(workEvent, type)
+        }
       />
     ),
-    [selectedWorkEvent, getIsSelectable],
+    [selectedWorkEvent, getIsSelectable, handleWorkEventTypeChange],
   );
 
   const renderWorkEventRows = useCallback(
@@ -191,7 +216,9 @@ const WorkShiftDialog = ({
         </Stack>
       </DialogContent>
       <DialogActions>
-        <Button disabled={true}>{t("saveChanges")}</Button>
+        <Button onClick={() => onSave(editedWorkEvents)} disabled={editedWorkEvents.length === 0}>
+          {t("saveChanges")}
+        </Button>
         <Button onClick={onClose} color="primary">
           {t("close")}
         </Button>

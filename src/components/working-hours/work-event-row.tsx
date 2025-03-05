@@ -1,5 +1,5 @@
 import { MenuItem, TableCell, TableRow, TextField, styled } from "@mui/material";
-import { Truck, WorkEventType } from "generated/client";
+import { Truck, WorkEvent, WorkEventType } from "generated/client";
 import { TFunction } from "i18next";
 import { DateTime, Duration } from "luxon";
 import { Key, useCallback, useMemo } from "react";
@@ -13,6 +13,7 @@ type Props = {
   truck?: Truck;
   selectable: boolean;
   onClick: () => void;
+  onWorkEventTypeChange: (workEvent: WorkEvent, type: WorkEventType) => void;
 };
 
 // Styled work event TextField
@@ -31,14 +32,8 @@ const CellInput = styled(TextField, {
   },
 }));
 
-const WorkEventRow = ({ selected, row, truck, selectable, onClick }: Props) => {
+const WorkEventRow = ({ selected, row, truck, selectable, onClick, onWorkEventTypeChange: onRowChange }: Props) => {
   const { t } = useTranslation();
-
-  // Handle work type change
-  const handleWorkEventTypeChange = useCallback((event: React.ChangeEvent<{ value: unknown }>) => {
-    const newWorkEventType = event.target.value;
-    // Handle work type change by adding
-  }, []);
 
   const { workEventType, startTime, duration, distance } = useMemo(() => {
     const {
@@ -89,6 +84,7 @@ const WorkEventRow = ({ selected, row, truck, selectable, onClick }: Props) => {
               InputLabelProps={{
                 shrink: true,
               }}
+              onChange={(e) => onRowChange(row.workEvent, e.target.value as WorkEventType)}
             />
           </TableCell>
           <TableCell align="center">{truck?.name ?? ""}</TableCell>
@@ -105,6 +101,7 @@ const WorkEventRow = ({ selected, row, truck, selectable, onClick }: Props) => {
               aria-label={t("workingHours.workingDays.workShiftDialog.time")}
               type="time"
               defaultValue={startTime.toFormat("HH:mm")}
+              onChange={(e) => onRowChange(row.workEvent, e.target.value as WorkEventType)}
             />
           </TableCell>
           <TableCell align="center">{truck?.name ?? ""}</TableCell>
@@ -141,6 +138,7 @@ const WorkEventRow = ({ selected, row, truck, selectable, onClick }: Props) => {
               aria-label={t("workingHours.workingDays.workShiftDialog.time")}
               type="time"
               defaultValue={startTime.toFormat("HH:mm")}
+              onChange={(e) => onRowChange(row.workEvent, e.target.value as WorkEventType)}
             />
           </TableCell>
           <TableCell align="center">{truck?.name ?? ""}</TableCell>
@@ -158,7 +156,7 @@ const WorkEventRow = ({ selected, row, truck, selectable, onClick }: Props) => {
             <CellInput
               select
               key={row.workEvent.id}
-              onChange={handleWorkEventTypeChange} // move to upper scope
+              onChange={(e) => onRowChange(row.workEvent, e.target.value as WorkEventType)}
               aria-label={t("workingHours.workingDays.workShiftDialog.event")}
               defaultValue={workEventType}
             >
@@ -179,6 +177,7 @@ const WorkEventRow = ({ selected, row, truck, selectable, onClick }: Props) => {
               select
               aria-label={t("workingHours.workingDays.workShiftDialog.event")}
               defaultValue={workEventType}
+              onChange={(e) => onRowChange(row.workEvent, e.target.value as WorkEventType)}
             >
               {renderLocalizedMenuItems(Object.values(WorkEventType), LocalizationUtils.getLocalizedWorkEventType)}
             </CellInput>
