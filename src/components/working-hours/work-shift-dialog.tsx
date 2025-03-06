@@ -37,8 +37,11 @@ type Props = {
   truckOdometerReadings: TruckOdometerReading[];
   truckSpeeds: TruckSpeed[];
   workShiftStartedAt: DateTime;
+  editedWorkEvents: WorkEvent[];
+  saving: boolean;
   onClose: () => void;
   onSave: (editedWorkEvents: WorkEvent[]) => void;
+  onRowChange: (workEvent: WorkEvent, type?: WorkEventType, value?: string) => void;
 };
 
 const WorkShiftDialog = ({
@@ -49,13 +52,15 @@ const WorkShiftDialog = ({
   truckOdometerReadings,
   truckSpeeds,
   workShiftStartedAt,
+  editedWorkEvents,
+  saving,
   onClose,
   onSave,
+  onRowChange,
 }: Props) => {
   const { t } = useTranslation();
 
   const [selectedWorkEvent, setSelectedWorkEvent] = useState<WorkEvent>();
-  const [editedWorkEvents, setEditedWorkEvents] = useState<WorkEvent[]>([]);
 
   const selectedWorkEventTelematics = useMemo(() => {
     if (!selectedWorkEvent) return;
@@ -130,40 +135,21 @@ const WorkShiftDialog = ({
     [truckLocationsData],
   );
 
-  const handleWorkEventTypeChange = (workEvent: WorkEvent, type: WorkEventType) => {
-    const index = editedWorkEvents.findIndex((event) => event.id === workEvent.id);
-    // If the event is already in editedWorkEvents
-    if (index !== -1) {
-      // Check if the new type is the same as the original, if it is, remove the event from the edited list to avoid uneccessary updates
-      if (type === workEvent.workEventType) {
-        setEditedWorkEvents(editedWorkEvents.filter((event) => event.id !== workEvent.id));
-        return;
-      }
-      // Otherwise, update the event's type
-      const newEditedWorkEvents = [...editedWorkEvents];
-      newEditedWorkEvents[index] = { ...workEvent, workEventType: type };
-      setEditedWorkEvents(newEditedWorkEvents);
-      return;
-    }
-    // If the event is not in the edited list, add it
-    setEditedWorkEvents([...editedWorkEvents, { ...workEvent, workEventType: type }]);
-  };
-
   const renderWorkEventRow = useCallback(
     (workEventRow: WorkShiftDialogWorkEventRow) => (
       <WorkEventRow
         key={workEventRow.workEvent.id}
         row={workEventRow}
-        truck={workEventRow.truck}
         selectable={getIsSelectable(workEventRow.workEvent)}
         selected={selectedWorkEvent?.id === workEventRow.workEvent.id}
         onClick={() => setSelectedWorkEvent(workEventRow.workEvent)}
-        onWorkEventTypeChange={(workEvent: WorkEvent, type: WorkEventType) =>
-          handleWorkEventTypeChange(workEvent, type)
+        onRowChange={(workEvent: WorkEvent, type?: WorkEventType, value?: string) =>
+          onRowChange(workEvent, type, value)
         }
+        isEdited={editedWorkEvents.some((event) => event.id === workEventRow.workEvent.id)}
       />
     ),
-    [selectedWorkEvent, getIsSelectable, handleWorkEventTypeChange],
+    [selectedWorkEvent, getIsSelectable, onRowChange, editedWorkEvents],
   );
 
   const renderWorkEventRows = useCallback(
@@ -204,7 +190,7 @@ const WorkShiftDialog = ({
               <Table stickyHeader>
                 <TableHead>
                   <TableCell>{t("workingHours.workingDays.workShiftDialog.time")}</TableCell>
-                  <TableCell align="center">{t("workingHours.workingDays.workShiftDialog.vehicle")}</TableCell>
+                  <TableCell align="center">{t("workingHours.workingDays.workShiftDialog.costCenter")}</TableCell>
                   <TableCell>{t("workingHours.workingDays.workShiftDialog.event")}</TableCell>
                   <TableCell align="center">{t("workingHours.workingDays.workShiftDialog.duration")}</TableCell>
                   <TableCell align="center">{t("workingHours.workingDays.workShiftDialog.distance")}</TableCell>
@@ -216,7 +202,11 @@ const WorkShiftDialog = ({
         </Stack>
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => onSave(editedWorkEvents)} disabled={editedWorkEvents.length === 0}>
+        <Button
+          onClick={() => onSave(editedWorkEvents)}
+          disabled={editedWorkEvents.length === 0 || loading || !workEventRows.length || saving}
+          color="primary"
+        >
           {t("saveChanges")}
         </Button>
         <Button onClick={onClose} color="primary">

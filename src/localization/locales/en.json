@@ -528,7 +528,7 @@
       "workShiftDialog": {
         "title": "Work shift events {{date}}",
         "time": "Time",
-        "vehicle": "Vehicle",
+        "costCenter": "Cost center",
         "event": "Event",
         "duration": "Duration",
         "distance": "Distance",
@@ -559,7 +559,14 @@
           "driverCardInserted": "Driver card inserted",
           "driverCardRemoved": "Driver card removed",
           "office": "Office"
-        }
+        },
+        "confirmDialogMessage": {
+          "title": "Note!",
+          "description": "You have unsaved changes. Are you sure you want to leave the page?",
+          "confirm": "Leave"
+        },
+        "successToast": "Changes saved!",
+        "errorToast": "Failed to save changes!"
       }
     }
   }

@@ -1,8 +1,9 @@
 import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { api } from "api/index";
+import { useConfirmDialog } from "components/providers/confirm-dialog-provider";
 import WorkShiftDialog from "components/working-hours/work-shift-dialog";
-import { WorkEvent } from "generated/client";
+import { WorkEvent, WorkEventType } from "generated/client";
 import {
   QUERY_KEYS,
   getFindEmployeeWorkShiftQueryOptions,
@@ -11,7 +12,7 @@ import {
 } from "hooks/use-queries";
 import { t } from "i18next";
 import { DateTime } from "luxon";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import { Breadcrumb } from "src/types";
 import DataValidation from "src/utils/data-validation-utils";
@@ -29,9 +30,11 @@ export const Route = createFileRoute("/working-hours_/$employeeId/work-shifts/$w
 
 function WorkShiftDetails() {
   const navigate = useNavigate();
+  const showConfirmDialog = useConfirmDialog();
   const queryClient = useQueryClient();
   const { employeeId, workShiftId } = Route.useParams();
   const selectedDate = Route.useSearch({ select: (search) => search.date });
+  const [editedWorkEvents, setEditedWorkEvents] = useState<WorkEvent[]>([]);
 
   useEffect(() => {
     queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.EMPLOYEE_WORK_EVENTS] });
@@ -143,13 +146,51 @@ function WorkShiftDetails() {
         ),
       );
       await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.EMPLOYEE_WORK_EVENTS] });
-
-      toast.success(t("workingHours.workingHourBalances.successToast"));
+      setEditedWorkEvents([]);
+      toast.success(t("workingHours.workingDays.workShiftDialog.successToast"));
     },
     onError: () => {
-      toast.error(t("workingHours.workingHourBalances.errorToast"));
+      toast.error(t("workingHours.workingDays.workShiftDialog.errorToast"));
     },
   });
+
+  const handleRowChange = (workEvent: WorkEvent, type?: WorkEventType, value?: string) => {
+    const index = editedWorkEvents.findIndex((event) => event.id === workEvent.id);
+
+    // Check if the event is already in the edited list
+    if (index !== -1) {
+      const newEditedWorkEvents = [...editedWorkEvents];
+
+      if (type !== undefined) {
+        // If the new type is the same as the original, remove the event to avoid unnecessary updates
+        if (type === workEvent.workEventType) {
+          setEditedWorkEvents(editedWorkEvents.filter((event) => event.id !== workEvent.id));
+          return;
+        }
+        newEditedWorkEvents[index] = { ...workEvent, workEventType: type };
+      } else if (value !== undefined) {
+        // If the new value is the same as the original, remove the event
+        if (value === workEvent.costCenter) {
+          setEditedWorkEvents(editedWorkEvents.filter((event) => event.id !== workEvent.id));
+          return;
+        }
+        newEditedWorkEvents[index] = { ...workEvent, costCenter: value };
+      }
+
+      setEditedWorkEvents(newEditedWorkEvents);
+      return;
+    }
+
+    // If the event is not in the edited list, add it with the correct property
+    const updatedEvent = { ...workEvent };
+    if (type !== undefined) {
+      updatedEvent.workEventType = type;
+    } else if (value !== undefined) {
+      updatedEvent.costCenter = value;
+    }
+
+    setEditedWorkEvents([...editedWorkEvents, updatedEvent]);
+  };
 
   return (
     <WorkShiftDialog
@@ -160,13 +201,29 @@ function WorkShiftDetails() {
       truckOdometerReadings={truckOdometerReadings}
       truckSpeeds={truckSpeeds}
       workShiftStartedAt={workShiftStartedAt}
+      editedWorkEvents={editedWorkEvents}
       onSave={(editedWorkEvents: WorkEvent[]) => updateWorkEvent.mutate(editedWorkEvents)}
+      saving={updateWorkEvent.isPending}
+      onRowChange={handleRowChange}
       onClose={() =>
-        navigate({
-          to: "../..",
-          from: "/working-hours/$employeeId/work-shifts/$workShiftId/details",
-          search: { date: selectedDate },
-        })
+        // Check if there are any unsaved changes
+        editedWorkEvents.length > 0
+          ? showConfirmDialog({
+              title: t("workingHours.workingDays.workShiftDialog.confirmDialogMessage.title"),
+              description: t("workingHours.workingDays.workShiftDialog.confirmDialogMessage.description"),
+              positiveButtonText: t("workingHours.workingDays.workShiftDialog.confirmDialogMessage.confirm"),
+              onPositiveClick: () =>
+                navigate({
+                  to: "../..",
+                  from: "/working-hours/$employeeId/work-shifts/$workShiftId/details",
+                  search: { date: selectedDate },
+                }),
+            })
+          : navigate({
+              to: "../..",
+              from: "/working-hours/$employeeId/work-shifts/$workShiftId/details",
+              search: { date: selectedDate },
+            })
       }
     />
   );
