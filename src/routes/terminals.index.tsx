@@ -21,7 +21,7 @@ export const Route = createFileRoute("/terminals/")({
 function TerminalsListLayoutComponent() {
   useMatches();
 
-  const sitesQuery = useQuery(getListSitesQueryOptions());
+  const sitesQuery = useQuery(getListSitesQueryOptions({ max: 100 }));
 
   const terminals = useMemo(
     () => sitesQuery.data?.sites?.filter((site) => site.siteType === SiteType.Terminal) ?? [],
