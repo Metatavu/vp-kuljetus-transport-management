@@ -43,6 +43,9 @@
     "backToVehicles": "Back to vehicles",
     "backToWorkingHours": "Back to working hours"
   },
+  "terminals": {
+    "title": "Terminals"
+  },
   "vehicles": {
     "title": "Vehicle list",
     "vehicle": {

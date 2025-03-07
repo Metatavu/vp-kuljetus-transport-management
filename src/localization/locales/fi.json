@@ -43,6 +43,9 @@
     "backToVehicles": "Takaisin ajoneuvolistaukseen",
     "backToWorkingHours": "Takaisin työaikasaldoihin"
   },
+  "terminals": {
+    "title": "Terminaalit"
+  },
   "vehicles": {
     "title": "Ajoneuvot",
     "list": {
