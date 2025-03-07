@@ -295,6 +295,7 @@ function WorkShifts() {
           const workShift = await api.employeeWorkShifts.createEmployeeWorkShift({
             employeeId,
             employeeWorkShift: { ...row.workShift, date: normalizeDateFromRow },
+            workShiftChangeSetId: "",
           });
           return { ...row, workShift: workShift };
         }),
@@ -325,6 +326,7 @@ function WorkShifts() {
             // biome-ignore lint/style/noNonNullAssertion: Work shift id is always defined
             workShiftId: workShift.id!,
             employeeWorkShift: workShift,
+            workShiftChangeSetId: "",
           }),
         ),
       );
@@ -337,6 +339,7 @@ function WorkShifts() {
             // biome-ignore lint/style/noNonNullAssertion: Work shift id is always defined
             workShiftHoursId: workShiftHours.id!,
             workShiftHours: workShiftHours,
+            workShiftChangeSetId: "",
           }),
         ),
       );

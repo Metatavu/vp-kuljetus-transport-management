@@ -10,12 +10,15 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { api } from "api/index";
 import ToolbarRow from "components/generic/toolbar-row";
 import { TerminalThermometer } from "generated/client";
 import { getListTerminalThermometersQueryOptions } from "hooks/use-queries";
+import { use } from "i18next";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { queryClient } from "src/main";
 import ThermometersTable from "./thermometers-table";
 
 type Props = {
@@ -35,6 +38,7 @@ const Thermometers = ({ siteId }: Props) => {
   };
 
   const listThermometersQuery = useQuery(getListTerminalThermometersQueryOptions({ siteId, max: 100 }));
+
   const thermometersByDeviceIdentifier = useMemo(() => {
     return (listThermometersQuery.data ?? []).reduce(
       (list, thermometer) => {
@@ -53,6 +57,14 @@ const Thermometers = ({ siteId }: Props) => {
       [] as { deviceIdentifier: string; thermometers: TerminalThermometer[] }[],
     );
   }, [listThermometersQuery.data]);
+
+  // const createNewDevice = useMutation({
+  //   mutationFn: () => api.,
+  //   onSuccess: (freightUnit) => {
+  //     queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.FREIGHT_UNITS, { freightId: freightUnit.freightId }] });
+  //     onSuccess?.(freightUnit);
+  //   },
+  // });
 
   const renderCreateNewDeviceDialog = () => (
     <Dialog

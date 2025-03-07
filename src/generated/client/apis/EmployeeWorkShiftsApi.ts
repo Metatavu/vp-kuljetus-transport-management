@@ -23,6 +23,7 @@ import { DateTime } from "luxon";
 export interface CreateEmployeeWorkShiftRequest {
     employeeWorkShift: EmployeeWorkShift;
     employeeId: string;
+    workShiftChangeSetId: string;
 }
 export interface DeleteEmployeeWorkShiftRequest {
     employeeId: string;
@@ -45,6 +46,7 @@ export interface UpdateEmployeeWorkShiftRequest {
     employeeWorkShift: EmployeeWorkShift;
     employeeId: string;
     workShiftId: string;
+    workShiftChangeSetId: string;
 }
 /**
  * 
@@ -61,9 +63,15 @@ export class EmployeeWorkShiftsApi extends runtime.BaseAPI {
         if (requestParameters.employeeId === null || requestParameters.employeeId === undefined) {
             throw new runtime.RequiredError('employeeId','Required parameter requestParameters.employeeId was null or undefined when calling createEmployeeWorkShift.');
         }
+        if (requestParameters.workShiftChangeSetId === null || requestParameters.workShiftChangeSetId === undefined) {
+            throw new runtime.RequiredError('workShiftChangeSetId','Required parameter requestParameters.workShiftChangeSetId was null or undefined when calling createEmployeeWorkShift.');
+        }
         const queryParameters: any = {};
         const headerParameters: runtime.HTTPHeaders = {};
         headerParameters['Content-Type'] = 'application/json';
+        if (requestParameters.workShiftChangeSetId !== undefined && requestParameters.workShiftChangeSetId !== null) {
+            headerParameters['WorkShiftChangeSetId'] = String(requestParameters.workShiftChangeSetId);
+        }
         if (this.configuration && this.configuration.accessToken) {
             const token = this.configuration.accessToken;
             const tokenString = await token("BearerAuth", ["manager"]);
@@ -259,9 +267,15 @@ export class EmployeeWorkShiftsApi extends runtime.BaseAPI {
         if (requestParameters.workShiftId === null || requestParameters.workShiftId === undefined) {
             throw new runtime.RequiredError('workShiftId','Required parameter requestParameters.workShiftId was null or undefined when calling updateEmployeeWorkShift.');
         }
+        if (requestParameters.workShiftChangeSetId === null || requestParameters.workShiftChangeSetId === undefined) {
+            throw new runtime.RequiredError('workShiftChangeSetId','Required parameter requestParameters.workShiftChangeSetId was null or undefined when calling updateEmployeeWorkShift.');
+        }
         const queryParameters: any = {};
         const headerParameters: runtime.HTTPHeaders = {};
         headerParameters['Content-Type'] = 'application/json';
+        if (requestParameters.workShiftChangeSetId !== undefined && requestParameters.workShiftChangeSetId !== null) {
+            headerParameters['WorkShiftChangeSetId'] = String(requestParameters.workShiftChangeSetId);
+        }
         if (this.configuration && this.configuration.accessToken) {
             const token = this.configuration.accessToken;
             const tokenString = await token("BearerAuth", ["manager"]);
