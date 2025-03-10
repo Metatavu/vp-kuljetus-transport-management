@@ -89,6 +89,19 @@ const WorkEventRow = ({ selected, row, selectable, onClick, onRowChange, isEdite
     [selectable, selected, isEdited],
   );
 
+  const getWorkEventTypesForTheRow = () => {
+    const excludedEvents = new Set<WorkEventType>([
+      WorkEventType.ShiftStart,
+      WorkEventType.ShiftEnd,
+      WorkEventType.DriverCardInserted,
+      WorkEventType.DriverCardRemoved,
+      WorkEventType.Login,
+      WorkEventType.Logout,
+    ]);
+
+    return Object.values(WorkEventType).filter((type) => !excludedEvents.has(type as WorkEventType));
+  };
+
   switch (workEventType) {
     case WorkEventType.ShiftStart:
       return (
@@ -166,7 +179,7 @@ const WorkEventRow = ({ selected, row, selectable, onClick, onRowChange, isEdite
               aria-label={t("workingHours.workingDays.workShiftDialog.event")}
               defaultValue={workEventType}
             >
-              {renderLocalizedMenuItems(Object.values(WorkEventType), LocalizationUtils.getLocalizedWorkEventType)}
+              {renderLocalizedMenuItems(getWorkEventTypesForTheRow(), LocalizationUtils.getLocalizedWorkEventType)}
             </CellInputSelect>
           </TableCell>
           <TableCell align="center">{duration}</TableCell>
@@ -193,7 +206,7 @@ const WorkEventRow = ({ selected, row, selectable, onClick, onRowChange, isEdite
               aria-label={t("workingHours.workingDays.workShiftDialog.event")}
               defaultValue={workEventType}
             >
-              {renderLocalizedMenuItems(Object.values(WorkEventType), LocalizationUtils.getLocalizedWorkEventType)}
+              {renderLocalizedMenuItems(getWorkEventTypesForTheRow(), LocalizationUtils.getLocalizedWorkEventType)}
             </CellInputSelect>
           </TableCell>
           <TableCell align="center">{duration}</TableCell>
@@ -220,7 +233,7 @@ const WorkEventRow = ({ selected, row, selectable, onClick, onRowChange, isEdite
               defaultValue={workEventType}
               onChange={(e) => onRowChange(row.workEvent, e.target.value as WorkEventType, undefined)}
             >
-              {renderLocalizedMenuItems(Object.values(WorkEventType), LocalizationUtils.getLocalizedWorkEventType)}
+              {renderLocalizedMenuItems(getWorkEventTypesForTheRow(), LocalizationUtils.getLocalizedWorkEventType)}
             </CellInputSelect>
           </TableCell>
           <TableCell align="center">{duration}</TableCell>

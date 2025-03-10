@@ -123,6 +123,10 @@ const WorkShiftDialog = ({
     });
   }, [workEvents, trucks, calculateDuration, calculateDistance]);
 
+  const calculateOverallDistance = useCallback(() => {
+    return workEventRows.reduce((acc, { distance }) => acc + distance, 0);
+  }, [workEventRows]);
+
   const getIsSelectable = useCallback(
     (workEvent: WorkEvent) => {
       const timestamp = workEvent.time.getTime() / 1000;
@@ -178,6 +182,7 @@ const WorkShiftDialog = ({
         closeTooltip={t("tooltips.closeDialog")}
         title={t("workingHours.workingDays.workShiftDialog.title", { date: workShiftStartedAt.toFormat("dd.MM.yyyy") })}
         onClose={onClose}
+        overallDistanceInMeters={calculateOverallDistance()}
       />
       <DialogContent sx={{ p: 0 }}>
         <Stack direction="row">

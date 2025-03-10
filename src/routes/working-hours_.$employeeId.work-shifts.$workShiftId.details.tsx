@@ -96,14 +96,11 @@ function WorkShiftDetails() {
     combine: (results) => ({
       data: results
         .map((result) => {
-          const maxTimestamp =
-            result.data?.locations === undefined
-              ? 0
-              : Math.max(...result.data.locations.map((location) => location.timestamp));
-          const minTimestamp =
-            result.data?.locations === undefined
-              ? 0
-              : Math.min(...result.data.locations.map((location) => location.timestamp));
+          const locationTimestamps = result.data?.locations
+            ?.map((location) => location.timestamp)
+            ?.sort((a, b) => (a ?? 0) - (b ?? 0));
+          const minTimestamp = locationTimestamps?.at(0) ?? 0;
+          const maxTimestamp = locationTimestamps?.at(-1) ?? 0;
           return {
             ...result.data,
             locations: (result.data?.locations ?? []).filter(DataValidation.validateValueIsNotUndefinedNorNull),
