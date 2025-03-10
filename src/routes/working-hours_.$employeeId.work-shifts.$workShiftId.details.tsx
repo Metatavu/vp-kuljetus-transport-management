@@ -141,8 +141,13 @@ function WorkShiftDetails() {
     mutationFn: async (editedWorkEvents: WorkEvent[]) => {
       await Promise.all(
         editedWorkEvents.map((workEvent) =>
-          // biome-ignore lint/style/noNonNullAssertion: Work events are guaranteed to have an id
-          api.workEvents.updateEmployeeWorkEvent({ workEventId: workEvent.id!, employeeId: employeeId, workEvent }),
+          api.workEvents.updateEmployeeWorkEvent({
+            // biome-ignore lint/style/noNonNullAssertion: Work events are guaranteed to have an id
+            workEventId: workEvent.id!,
+            employeeId: employeeId,
+            workEvent,
+            workShiftChangeSetId: "", // uniquer per single workshift per single save,TODO
+          }),
         ),
       );
       await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.EMPLOYEE_WORK_EVENTS] });
@@ -170,7 +175,7 @@ function WorkShiftDetails() {
         newEditedWorkEvents[index] = { ...workEvent, workEventType: type };
       } else if (value !== undefined) {
         // If the new value is the same as the original, remove the event
-        if (value === workEvent.costCenter) {
+        if (value === workEvent.costCenter || (value === "" && workEvent.costCenter === undefined)) {
           setEditedWorkEvents(editedWorkEvents.filter((event) => event.id !== workEvent.id));
           return;
         }
