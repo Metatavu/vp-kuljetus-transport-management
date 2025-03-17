@@ -16,6 +16,7 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import { Breadcrumb } from "src/types";
 import DataValidation from "src/utils/data-validation-utils";
+import { v4 as uuidv4 } from "uuid";
 
 export const Route = createFileRoute("/working-hours_/$employeeId/work-shifts/$workShiftId/details")({
   component: WorkShiftDetails,
@@ -136,6 +137,8 @@ function WorkShiftDetails() {
 
   const updateWorkEvent = useMutation({
     mutationFn: async (editedWorkEvents: WorkEvent[]) => {
+      // Create a unique change set id for the work shift to track changes
+      const uniqueChangeSetId = uuidv4();
       await Promise.all(
         editedWorkEvents.map((workEvent) =>
           api.workEvents.updateEmployeeWorkEvent({
@@ -143,7 +146,7 @@ function WorkShiftDetails() {
             workEventId: workEvent.id!,
             employeeId: employeeId,
             workEvent,
-            workShiftChangeSetId: "", // uniquer per single workshift per single save,TODO
+            workShiftChangeSetId: uniqueChangeSetId,
           }),
         ),
       );

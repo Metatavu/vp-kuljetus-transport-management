@@ -50,11 +50,11 @@ const DialogHeader = ({ title, closeTooltip, StartIcon, CloseIcon, overallDistan
         <Typography alignSelf="center" variant="h6" color={theme.palette.primary.contrastText}>
           {title}
         </Typography>
-        {overallDistanceInMeters && (
+        {
           <Typography variant="body2" color={theme.palette.primary.contrastText}>
-            {`Reitin pituus: ${(overallDistanceInMeters / 1000).toFixed(2)} km`}
+            {`Reitin pituus: ${overallDistanceInMeters ? (overallDistanceInMeters / 1000).toFixed(2) : "-"} km`}
           </Typography>
-        )}
+        }
       </StyledDialogHeaderContent>
       {renderCloseIcon()}
     </StyledDialogHeader>
