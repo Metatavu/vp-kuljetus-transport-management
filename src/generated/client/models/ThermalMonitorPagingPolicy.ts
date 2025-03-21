@@ -29,10 +29,22 @@ import {
 export interface ThermalMonitorPagingPolicy {
     /**
      * 
+     * @type {string}
+     * @memberof ThermalMonitorPagingPolicy
+     */
+    id?: string;
+    /**
+     * 
      * @type {PagingPolicyType}
      * @memberof ThermalMonitorPagingPolicy
      */
-    type?: PagingPolicyType;
+    type: PagingPolicyType;
+    /**
+     * 
+     * @type {string}
+     * @memberof ThermalMonitorPagingPolicy
+     */
+    thermalMonitorId: string;
     /**
      * 
      * @type {string}
@@ -44,13 +56,13 @@ export interface ThermalMonitorPagingPolicy {
      * @type {number}
      * @memberof ThermalMonitorPagingPolicy
      */
-    priority?: number;
+    priority: number;
     /**
      * The time in seconds after in which next paging policy is triggered if the incident is not resolved.
      * @type {number}
      * @memberof ThermalMonitorPagingPolicy
      */
-    escalationDelaySeconds?: number;
+    escalationDelaySeconds: number;
 }
 
 /**
@@ -58,7 +70,11 @@ export interface ThermalMonitorPagingPolicy {
  */
 export function instanceOfThermalMonitorPagingPolicy(value: object): boolean {
     let isInstance = true;
+    isInstance = isInstance && "type" in value;
+    isInstance = isInstance && "thermalMonitorId" in value;
     isInstance = isInstance && "contactId" in value;
+    isInstance = isInstance && "priority" in value;
+    isInstance = isInstance && "escalationDelaySeconds" in value;
 
     return isInstance;
 }
@@ -73,10 +89,12 @@ export function ThermalMonitorPagingPolicyFromJSONTyped(json: any, ignoreDiscrim
     }
     return {
         
-        'type': !exists(json, 'type') ? undefined : PagingPolicyTypeFromJSON(json['type']),
+        'id': !exists(json, 'id') ? undefined : json['id'],
+        'type': PagingPolicyTypeFromJSON(json['type']),
+        'thermalMonitorId': json['thermalMonitorId'],
         'contactId': json['contactId'],
-        'priority': !exists(json, 'priority') ? undefined : json['priority'],
-        'escalationDelaySeconds': !exists(json, 'escalationDelaySeconds') ? undefined : json['escalationDelaySeconds'],
+        'priority': json['priority'],
+        'escalationDelaySeconds': json['escalationDelaySeconds'],
     };
 }
 
@@ -89,7 +107,9 @@ export function ThermalMonitorPagingPolicyToJSON(value?: ThermalMonitorPagingPol
     }
     return {
         
+        'id': value.id,
         'type': PagingPolicyTypeToJSON(value.type),
+        'thermalMonitorId': value.thermalMonitorId,
         'contactId': value.contactId,
         'priority': value.priority,
         'escalationDelaySeconds': value.escalationDelaySeconds,

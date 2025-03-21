@@ -34,8 +34,8 @@ export interface FindPagingPolicyRequest {
 }
 export interface ListPagingPoliciesRequest {
     thermalMonitorId: string;
-    first?: number;
-    max?: number;
+    first: number;
+    max: number;
 }
 export interface UpdatePagingPolicyRequest {
     thermalMonitorPagingPolicy: ThermalMonitorPagingPolicy;
@@ -188,6 +188,12 @@ export class ThermalMonitorPagingPoliciesApi extends runtime.BaseAPI {
     async listPagingPoliciesRaw(requestParameters: ListPagingPoliciesRequest): Promise<runtime.ApiResponse<Array<ThermalMonitorPagingPolicy>>> {
         if (requestParameters.thermalMonitorId === null || requestParameters.thermalMonitorId === undefined) {
             throw new runtime.RequiredError('thermalMonitorId','Required parameter requestParameters.thermalMonitorId was null or undefined when calling listPagingPolicies.');
+        }
+        if (requestParameters.first === null || requestParameters.first === undefined) {
+            throw new runtime.RequiredError('first','Required parameter requestParameters.first was null or undefined when calling listPagingPolicies.');
+        }
+        if (requestParameters.max === null || requestParameters.max === undefined) {
+            throw new runtime.RequiredError('max','Required parameter requestParameters.max was null or undefined when calling listPagingPolicies.');
         }
         const queryParameters: any = {};
         if (requestParameters.first !== undefined) {

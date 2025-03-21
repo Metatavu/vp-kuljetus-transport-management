@@ -76,6 +76,18 @@ export interface ThermalMonitorIncident {
      */
     resolvedAt?: Date;
     /**
+     * Person that acknowledged this incident
+     * @type {string}
+     * @memberof ThermalMonitorIncident
+     */
+    acknowledgedBy?: string;
+    /**
+     * Person that resolved this incident
+     * @type {string}
+     * @memberof ThermalMonitorIncident
+     */
+    resolvedBy?: string;
+    /**
      * 
      * @type {Array<ThermalMonitorIncidentPagedPolicy>}
      * @memberof ThermalMonitorIncident
@@ -115,6 +127,8 @@ export function ThermalMonitorIncidentFromJSONTyped(json: any, ignoreDiscriminat
         'timestamp': !exists(json, 'timestamp') ? undefined : (new Date(json['timestamp'])),
         'acknowledgeAt': !exists(json, 'acknowledgeAt') ? undefined : (new Date(json['acknowledgeAt'])),
         'resolvedAt': !exists(json, 'resolvedAt') ? undefined : (new Date(json['resolvedAt'])),
+        'acknowledgedBy': !exists(json, 'acknowledgedBy') ? undefined : json['acknowledgedBy'],
+        'resolvedBy': !exists(json, 'resolvedBy') ? undefined : json['resolvedBy'],
         'pagedPolicies': !exists(json, 'pagedPolicies') ? undefined : ((json['pagedPolicies'] as Array<any>).map(ThermalMonitorIncidentPagedPolicyFromJSON)),
         'status': !exists(json, 'status') ? undefined : ThermalMonitorIncidentStatusFromJSON(json['status']),
     };
@@ -135,6 +149,8 @@ export function ThermalMonitorIncidentToJSON(value?: ThermalMonitorIncident | nu
         'timestamp': value.timestamp === undefined ? undefined : (value.timestamp.toISOString()),
         'acknowledgeAt': value.acknowledgeAt === undefined ? undefined : (value.acknowledgeAt.toISOString()),
         'resolvedAt': value.resolvedAt === undefined ? undefined : (value.resolvedAt.toISOString()),
+        'acknowledgedBy': value.acknowledgedBy,
+        'resolvedBy': value.resolvedBy,
         'pagedPolicies': value.pagedPolicies === undefined ? undefined : ((value.pagedPolicies as Array<any>).map(ThermalMonitorIncidentPagedPolicyToJSON)),
         'status': ThermalMonitorIncidentStatusToJSON(value.status),
     };

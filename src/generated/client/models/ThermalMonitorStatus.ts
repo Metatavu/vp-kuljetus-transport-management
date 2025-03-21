@@ -25,8 +25,7 @@ export const ThermalMonitorStatus = {
     Pending: 'PENDING',
     Active: 'ACTIVE',
     Paused: 'PAUSED',
-    Finished: 'FINISHED',
-    Error: 'ERROR'
+    Finished: 'FINISHED'
 } as const;
 export type ThermalMonitorStatus = typeof ThermalMonitorStatus[keyof typeof ThermalMonitorStatus];
 

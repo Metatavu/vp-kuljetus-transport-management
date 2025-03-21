@@ -32,6 +32,10 @@ export interface ListThermalMonitorIncidentsRequest {
     first?: number;
     max?: number;
 }
+export interface UpdateThermalMonitorIncidentRequest {
+    thermalMonitorIncident: ThermalMonitorIncident;
+    thermalMonitorIncidentId: string;
+}
 /**
  * 
  */
@@ -93,6 +97,53 @@ export class ThermalMonitorIncidentsApi extends runtime.BaseAPI {
      */
     async listThermalMonitorIncidentsWithHeaders(requestParameters: ListThermalMonitorIncidentsRequest): Promise<[ Array<ThermalMonitorIncident>, Headers ]> {
         const response = await this.listThermalMonitorIncidentsRaw(requestParameters);
+        const value = await response.value(); 
+        return [ value, response.raw.headers ];
+    }
+    /**
+     * Update the details of a specific incident
+     * Update thermal monitor incident
+     */
+    async updateThermalMonitorIncidentRaw(requestParameters: UpdateThermalMonitorIncidentRequest): Promise<runtime.ApiResponse<ThermalMonitorIncident>> {
+        if (requestParameters.thermalMonitorIncident === null || requestParameters.thermalMonitorIncident === undefined) {
+            throw new runtime.RequiredError('thermalMonitorIncident','Required parameter requestParameters.thermalMonitorIncident was null or undefined when calling updateThermalMonitorIncident.');
+        }
+        if (requestParameters.thermalMonitorIncidentId === null || requestParameters.thermalMonitorIncidentId === undefined) {
+            throw new runtime.RequiredError('thermalMonitorIncidentId','Required parameter requestParameters.thermalMonitorIncidentId was null or undefined when calling updateThermalMonitorIncident.');
+        }
+        const queryParameters: any = {};
+        const headerParameters: runtime.HTTPHeaders = {};
+        headerParameters['Content-Type'] = 'application/json';
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("BearerAuth", ["manager"]);
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/monitoring/v1/thermalMonitorIncidents/{thermalMonitorIncidentId}`.replace(`{${"thermalMonitorIncidentId"}}`, encodeURIComponent(String(requestParameters.thermalMonitorIncidentId))),
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+            body: ThermalMonitorIncidentToJSON(requestParameters.thermalMonitorIncident),
+        });
+        return new runtime.JSONApiResponse(response, (jsonValue) => ThermalMonitorIncidentFromJSON(jsonValue));
+    }
+    /**
+     * Update the details of a specific incident
+     * Update thermal monitor incident
+     */
+    async updateThermalMonitorIncident(requestParameters: UpdateThermalMonitorIncidentRequest): Promise<ThermalMonitorIncident> {
+        const response = await this.updateThermalMonitorIncidentRaw(requestParameters);
+        return await response.value();
+    }
+    /**
+     * Update the details of a specific incident
+     * Update thermal monitor incident
+     */
+    async updateThermalMonitorIncidentWithHeaders(requestParameters: UpdateThermalMonitorIncidentRequest): Promise<[ ThermalMonitorIncident, Headers ]> {
+        const response = await this.updateThermalMonitorIncidentRaw(requestParameters);
         const value = await response.value(); 
         return [ value, response.raw.headers ];
     }
