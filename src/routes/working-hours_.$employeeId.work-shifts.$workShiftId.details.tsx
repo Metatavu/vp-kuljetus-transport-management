@@ -163,7 +163,7 @@ function WorkShiftDetails() {
     const indexOfExistingEditedWorkEvent = editedWorkEvents.findIndex((event) => event.id === workEvent.id);
 
     // Check if the event is already in the edited list
-    if (index !== -1) {
+    if (indexOfExistingEditedWorkEvent !== -1) {
       const newEditedWorkEvents = [...editedWorkEvents];
 
       if (type !== undefined) {
@@ -172,14 +172,14 @@ function WorkShiftDetails() {
           setEditedWorkEvents(editedWorkEvents.filter((event) => event.id !== workEvent.id));
           return;
         }
-        newEditedWorkEvents[index] = { ...workEvent, workEventType: type };
+        newEditedWorkEvents[indexOfExistingEditedWorkEvent] = { ...workEvent, workEventType: type };
       } else if (value !== undefined) {
         // If the new value is the same as the original, remove the event
         if (value === workEvent.costCenter || (value === "" && workEvent.costCenter === undefined)) {
           setEditedWorkEvents(editedWorkEvents.filter((event) => event.id !== workEvent.id));
           return;
         }
-        newEditedWorkEvents[index] = { ...workEvent, costCenter: value };
+        newEditedWorkEvents[indexOfExistingEditedWorkEvent] = { ...workEvent, costCenter: value };
       }
 
       setEditedWorkEvents(newEditedWorkEvents);
@@ -197,6 +197,27 @@ function WorkShiftDetails() {
     setEditedWorkEvents([...editedWorkEvents, updatedEvent]);
   };
 
+  const handleOnClose = () => {
+    // Check if there are any unsaved changes
+    editedWorkEvents.length > 0
+      ? showConfirmDialog({
+          title: t("workingHours.workingDays.workShiftDialog.confirmDialogMessage.title"),
+          description: t("workingHours.workingDays.workShiftDialog.confirmDialogMessage.description"),
+          positiveButtonText: t("workingHours.workingDays.workShiftDialog.confirmDialogMessage.confirm"),
+          onPositiveClick: () =>
+            navigate({
+              to: "../..",
+              from: "/working-hours/$employeeId/work-shifts/$workShiftId/details",
+              search: { date: selectedDate },
+            }),
+        })
+      : navigate({
+          to: "../..",
+          from: "/working-hours/$employeeId/work-shifts/$workShiftId/details",
+          search: { date: selectedDate },
+        });
+  };
+
   return (
     <WorkShiftDialog
       loading={workShiftQuery.isLoading || workEventsQuery.isLoading}
@@ -210,26 +231,7 @@ function WorkShiftDetails() {
       onSave={(editedWorkEvents: WorkEvent[]) => updateWorkEvent.mutate(editedWorkEvents)}
       saving={updateWorkEvent.isPending}
       onRowChange={handleRowChange}
-      onClose={() =>
-        // Check if there are any unsaved changes
-        editedWorkEvents.length > 0
-          ? showConfirmDialog({
-              title: t("workingHours.workingDays.workShiftDialog.confirmDialogMessage.title"),
-              description: t("workingHours.workingDays.workShiftDialog.confirmDialogMessage.description"),
-              positiveButtonText: t("workingHours.workingDays.workShiftDialog.confirmDialogMessage.confirm"),
-              onPositiveClick: () =>
-                navigate({
-                  to: "../..",
-                  from: "/working-hours/$employeeId/work-shifts/$workShiftId/details",
-                  search: { date: selectedDate },
-                }),
-            })
-          : navigate({
-              to: "../..",
-              from: "/working-hours/$employeeId/work-shifts/$workShiftId/details",
-              search: { date: selectedDate },
-            })
-      }
+      onClose={() => handleOnClose()}
     />
   );
 }
