@@ -160,7 +160,7 @@ function WorkShiftDetails() {
   });
 
   const handleRowChange = (workEvent: WorkEvent, type?: WorkEventType, value?: string) => {
-    const index = editedWorkEvents.findIndex((event) => event.id === workEvent.id);
+    const indexOfExistingEditedWorkEvent = editedWorkEvents.findIndex((event) => event.id === workEvent.id);
 
     // Check if the event is already in the edited list
     if (index !== -1) {
