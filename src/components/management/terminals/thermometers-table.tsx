@@ -22,9 +22,13 @@ import TimeUtils from "src/utils/time-utils";
 type Props = {
   name: string;
   thermometers: TerminalThermometer[];
+  onDeleteDevice: (deviceIdentifier: string) => void;
+  setChangedTerminalThermometerNames: React.Dispatch<
+    React.SetStateAction<{ newName: string; thermometerId: string }[]>
+  >;
 };
 
-const ThermometersTable = ({ thermometers, name }: Props) => {
+const ThermometersTable = ({ thermometers, name, onDeleteDevice, setChangedTerminalThermometerNames }: Props) => {
   const { t } = useTranslation();
   const [openDeleteDeviceConfirmationDialog, setOpenDeleteDeviceConfirmationDialog] = useState(false);
 
@@ -34,6 +38,23 @@ const ThermometersTable = ({ thermometers, name }: Props) => {
 
   const handleClose = () => {
     setOpenDeleteDeviceConfirmationDialog(false);
+  };
+
+  const handleDeleteDevice = () => {
+    onDeleteDevice(name);
+    handleClose();
+  };
+
+  const handleNameChange = ({ newName, thermometerId }: { newName: string; thermometerId: string }) => {
+    setChangedTerminalThermometerNames((prev) => {
+      const index = prev.findIndex(
+        (item: { newName: string; thermometerId: string }) => item.thermometerId === thermometerId,
+      );
+      if (index === -1) return [...prev, { newName, thermometerId }];
+      const updated = [...prev];
+      updated[index] = { newName, thermometerId };
+      return updated;
+    });
   };
 
   const temperatures = useQueries({
@@ -58,10 +79,14 @@ const ThermometersTable = ({ thermometers, name }: Props) => {
         cellClassName: "clickable",
         editable: true,
         valueGetter: ({ row }) => (row.id ? row.name : ""),
-        renderEditCell: ({ id, field, value, api }) => (
+
+        renderEditCell: ({ id, field, value, api, row }) => (
           <TextField
             value={value}
-            onChange={(event) => api.setEditCellValue({ id, field, value: event.target.value })}
+            onChange={(event) => {
+              api.setEditCellValue({ id, field, value: event.target.value });
+              handleNameChange({ newName: event.target.value, thermometerId: row.id ?? "" });
+            }}
           />
         ),
       },
@@ -95,7 +120,7 @@ const ThermometersTable = ({ thermometers, name }: Props) => {
         cellClassName: "clickable",
       },
     ],
-    [t, temperatures],
+    [t, temperatures, handleNameChange],
   );
 
   const renderDeleteDeviceConfirmationDialog = () => (
@@ -108,7 +133,7 @@ const ThermometersTable = ({ thermometers, name }: Props) => {
         <Button variant="outlined" onClick={handleClose}>
           {t("cancel")}
         </Button>
-        <Button type="submit">{t("delete")}</Button>
+        <Button onClick={handleDeleteDevice}>{t("delete")}</Button>
       </DialogActions>
     </Dialog>
   );
