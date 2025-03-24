@@ -44,6 +44,9 @@ export const QUERY_KEYS = {
   TRUCK_TEMPERATURES: "truck-temperatures",
   TOWABLE_TEMPERATURES: "towable-temperatures",
   SITE_TEMPERATURES: "site-temperatures",
+  TRUCK_LOCATIONS: "truck-locations",
+  TRUCK_ODOMETER_READINGS: "truck-odometer-readings",
+  TRUCK_SPEEDS: "truck-speeds",
 } as const;
 
 export const getListSitesQueryOptions = (requestParams: ListSitesRequest = {}, enabled = true) =>
