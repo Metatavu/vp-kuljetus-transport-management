@@ -46,6 +46,7 @@ function TerminalSiteComponent({ formType, site, onSave, onUpdate }: Props) {
   const navigate = useNavigate();
   const [tabValue, setTabValue] = useState("1");
   const formState = useMemo(() => formType, [formType]);
+  const thermometersRef = useRef<{ reset: () => void } | null>(null);
   const handleTabChange = (_event: SyntheticEvent, newTabValue: string) => {
     setTabValue(newTabValue);
   };
@@ -84,11 +85,7 @@ function TerminalSiteComponent({ formType, site, onSave, onUpdate }: Props) {
   }, [markerPosition]);
 
   const isSaveDisabled =
-    Object.keys(dirtyFields).length < 1 ||
-    Object.keys(errors).length > 0 ||
-    onSave?.isPending ||
-    changedTerminalThermometerNames.length < 1 ||
-    onUpdate?.isPending;
+    Object.keys(dirtyFields).length < 1 || Object.keys(errors).length > 0 || onSave?.isPending || onUpdate?.isPending;
 
   const isUndoChangesDisabled = Object.keys(dirtyFields).length < 1 || onSave?.isPending || onUpdate?.isPending;
 
@@ -118,6 +115,19 @@ function TerminalSiteComponent({ formType, site, onSave, onUpdate }: Props) {
     },
   });
 
+  const handleReset = () => {
+    reset({
+      ...site,
+      name: site?.name ?? "",
+      address: site?.address ?? "",
+      postalCode: site?.postalCode ?? "",
+      locality: site?.locality ?? "",
+      additionalInfo: site?.additionalInfo ?? "",
+      location: site?.location ?? "",
+    });
+    thermometersRef.current?.reset();
+  };
+
   const renderToolbarButtons = () => (
     <Stack direction="row" spacing={1}>
       {site && (
@@ -137,27 +147,17 @@ function TerminalSiteComponent({ formType, site, onSave, onUpdate }: Props) {
       )}
       <Button
         title={t("undoFormChangesTitle")}
-        disabled={isUndoChangesDisabled}
+        disabled={isUndoChangesDisabled && changedTerminalThermometerNames.length < 1}
         variant="text"
         startIcon={<Restore />}
-        onClick={() =>
-          reset({
-            ...site,
-            name: site?.name ?? "",
-            address: site?.address ?? "",
-            postalCode: site?.postalCode ?? "",
-            locality: site?.locality ?? "",
-            additionalInfo: site?.additionalInfo ?? "",
-            location: site?.location ?? "",
-          })
-        }
+        onClick={() => handleReset()}
       >
         {t("undoChanges")}
       </Button>
       <Button
         variant="contained"
         startIcon={<SaveAlt />}
-        disabled={changedTerminalThermometerNames.length < 1}
+        disabled={isSaveDisabled && changedTerminalThermometerNames.length < 1}
         onClick={handleSubmit(onTerminalSave)}
       >
         {t("save")}
@@ -185,7 +185,11 @@ function TerminalSiteComponent({ formType, site, onSave, onUpdate }: Props) {
               </TabList>
               <TabPanel value="1" sx={{ flex: 1 }}>
                 {site && (
-                  <Thermometers site={site} setChangedTerminalThermometerNames={setChangedTerminalThermometerNames} />
+                  <Thermometers
+                    site={site}
+                    setChangedTerminalThermometerNames={setChangedTerminalThermometerNames}
+                    ref={thermometersRef}
+                  />
                 )}
               </TabPanel>
               <TabPanel value="2" sx={{ flex: 1 }}>

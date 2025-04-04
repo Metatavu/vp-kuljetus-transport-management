@@ -6,7 +6,6 @@ import Terminal from "components/management/terminals/terminal";
 import { Site } from "generated/client";
 import { QUERY_KEYS, getFindSiteQueryOptions } from "hooks/use-queries";
 import { t } from "i18next";
-import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { queryClient } from "src/main";
@@ -35,28 +34,6 @@ function TerminalSiteModify() {
   const { t } = useTranslation();
   const siteQuery = useQuery(getFindSiteQueryOptions(siteId));
 
-  // const updateSite = useMutation({
-  //   mutationFn: (site: Site) => api.sites.updateSite({ siteId: siteId, site }),
-  //   onSuccess: () => {
-  //     toast.success(t("management.terminals.successToast"));
-  //     queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.SITES] });
-  //   },
-  //   onError: () => toast.error(t("management.terminals.errorToast")),
-  // });
-
-  // const updateTerminalThermometer = useMutation({
-  //   mutationFn: ({ newName, thermometerId }: { newName: string; thermometerId: string }) =>
-  //     api.thermometers.updateTerminalThermometer({
-  //       thermometerId,
-  //       updateTruckOrTowableThermometerRequest: { name: newName },
-  //     }),
-  //   onSuccess: () => {
-  //     toast.success(t("management.terminals.successToast"));
-  //     queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.SITES] });
-  //   },
-  //   onError: () => toast.error(t("management.terminals.errorToast")),
-  // });
-
   const updateSiteAndThermometers = useMutation({
     mutationFn: async ({
       site,
@@ -64,17 +41,17 @@ function TerminalSiteModify() {
       changedThermometers,
     }: {
       site: Site;
-      originalSite: Site; // The original site state to compare against
+      originalSite: Site;
       changedThermometers: { newName: string; thermometerId: string }[];
     }) => {
       const siteHasChanges = JSON.stringify(site) !== JSON.stringify(originalSite);
 
-      // Step 1: Update the Site if there are changes
+      // Update the Site if there are changes
       if (siteHasChanges) {
         await api.sites.updateSite({ siteId: siteId, site });
       }
 
-      // Step 2: If there are changed thermometers, update them sequentially
+      // If there are changed thermometers, update them as well
       if (changedThermometers.length > 0) {
         await Promise.all(
           changedThermometers.map(({ newName, thermometerId }) =>
@@ -89,6 +66,8 @@ function TerminalSiteModify() {
     onSuccess: () => {
       toast.success(t("management.terminals.successToast"));
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.SITES] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.SITE_TEMPERATURES] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.TERMINAL_THERMOMETERS] });
     },
     onError: () => toast.error(t("management.terminals.errorToast")),
   });

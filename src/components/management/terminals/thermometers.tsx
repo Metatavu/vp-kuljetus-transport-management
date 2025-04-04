@@ -15,7 +15,7 @@ import { api } from "api/index";
 import ToolbarRow from "components/generic/toolbar-row";
 import { Site } from "generated/client";
 import { QUERY_KEYS, getListTerminalThermometersQueryOptions } from "hooks/use-queries";
-import { useMemo, useState } from "react";
+import { forwardRef, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { queryClient } from "src/main";
@@ -28,7 +28,7 @@ type Props = {
   >;
 };
 
-const Thermometers = ({ site, setChangedTerminalThermometerNames }: Props) => {
+const Thermometers = forwardRef(({ site, setChangedTerminalThermometerNames }: Props, ref) => {
   const { t } = useTranslation();
   const [openCreateNewDevice, setOpenCreateNewDevice] = useState(false);
   const [newDeviceIdentifier, setNewDeviceIdentifier] = useState<string>("");
@@ -137,6 +137,7 @@ const Thermometers = ({ site, setChangedTerminalThermometerNames }: Props) => {
             key={deviceIdentifier}
             thermometers={thermometers}
             name={deviceIdentifier}
+            ref={ref}
             onDeleteDevice={handleDeleteDevice}
             setChangedTerminalThermometerNames={setChangedTerminalThermometerNames}
           />
@@ -145,6 +146,6 @@ const Thermometers = ({ site, setChangedTerminalThermometerNames }: Props) => {
       {renderCreateNewDeviceDialog()}
     </Paper>
   );
-};
+});
 
 export default Thermometers;
