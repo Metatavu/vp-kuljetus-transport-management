@@ -37,6 +37,7 @@ import { Breadcrumb, EmployeeWorkHoursForm, EmployeeWorkHoursFormRow } from "src
 import DataValidation from "src/utils/data-validation-utils";
 import TimeUtils from "src/utils/time-utils";
 import WorkShiftsUtils from "src/utils/workshift-utils";
+import { v4 as uuidv4 } from "uuid";
 import { z } from "zod";
 
 export const workShiftSearchSchema = z.object({
@@ -286,6 +287,11 @@ function WorkShifts() {
 
   const updateWorkShift = useMutation({
     mutationFn: async () => {
+      // First we need to create a new work shift change set for each work shift in order to track changes
+      const newWorkShiftChangeSet = new Map<string, string>();
+      for (const workShift of workShiftsDataWithWorkingPeriodDates) {
+        newWorkShiftChangeSet.set(workShift.workShift.id ?? workShift.workShift.date.toISOString(), uuidv4());
+      }
       const [updatedWorkShifts, updatedWorkShiftHours, newRows] = getUpdatedWorkShiftsAndWorkShiftHours();
       const newRowsWithWorkShiftIds = await Promise.all(
         newRows.map(async (row) => {
@@ -295,7 +301,7 @@ function WorkShifts() {
           const workShift = await api.employeeWorkShifts.createEmployeeWorkShift({
             employeeId,
             employeeWorkShift: { ...row.workShift, date: normalizeDateFromRow },
-            workShiftChangeSetId: "",
+            workShiftChangeSetId: newWorkShiftChangeSet.get(row.workShift.id ?? row.workShift.date.toISOString()) ?? "",
           });
           return { ...row, workShift: workShift };
         }),
@@ -326,7 +332,7 @@ function WorkShifts() {
             // biome-ignore lint/style/noNonNullAssertion: Work shift id is always defined
             workShiftId: workShift.id!,
             employeeWorkShift: workShift,
-            workShiftChangeSetId: "",
+            workShiftChangeSetId: newWorkShiftChangeSet.get(workShift.id ?? workShift.date.toISOString()) ?? "",
           }),
         ),
       );
@@ -339,7 +345,7 @@ function WorkShifts() {
             // biome-ignore lint/style/noNonNullAssertion: Work shift id is always defined
             workShiftHoursId: workShiftHours.id!,
             workShiftHours: workShiftHours,
-            workShiftChangeSetId: "",
+            workShiftChangeSetId: newWorkShiftChangeSet.get(workShiftHours.employeeWorkShiftId) ?? "",
           }),
         ),
       );

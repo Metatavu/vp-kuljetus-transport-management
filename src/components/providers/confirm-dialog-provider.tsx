@@ -42,7 +42,7 @@ const ConfirmDialogProvider = ({ children }: { children: ReactNode }) => {
             {t("cancel")}
           </Button>
           <Button variant="contained" color={options?.positiveButtonColor} onClick={handleSubmit} autoFocus>
-            {options?.positiveButtonText || "OK"}
+            {options?.positiveButtonText ?? "OK"}
           </Button>
         </DialogActions>
       </Dialog>

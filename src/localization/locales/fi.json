@@ -626,7 +626,7 @@
       "workShiftDialog": {
         "title": "Työajan erittely {{date}}",
         "time": "Aika",
-        "vehicle": "Auto",
+        "costCenter": "Kustannuspaikka",
         "event": "Tapahtuma",
         "duration": "Kesto",
         "distance": "Matka",
@@ -657,7 +657,14 @@
           "driverCardInserted": "Sisäänkirjautuminen",
           "driverCardRemoved": "Uloskirjautuminen",
           "office": "Toimisto"
-        }
+        },
+        "confirmDialogMessage": {
+          "title": "Huom!",
+          "description": "Sinulla on tallentamattomia muutoksia, haluatko poistua sivulta?",
+          "confirm": "Poistu"
+        },
+        "successToast": "Muutokset tallennettu!",
+        "errorToast": "Muutosten tallennus epäonnistui!"
       }
     }
   }

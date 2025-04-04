@@ -26,9 +26,10 @@ type Props = {
   StartIcon?: ElementType;
   CloseIcon?: ElementType;
   onClose?: () => void;
+  overallDistanceInMeters?: number;
 };
 
-const DialogHeader = ({ title, closeTooltip, StartIcon, CloseIcon, onClose }: Props) => {
+const DialogHeader = ({ title, closeTooltip, StartIcon, CloseIcon, overallDistanceInMeters, onClose }: Props) => {
   const renderCloseIcon = () => {
     if (!onClose) return null;
 
@@ -49,6 +50,11 @@ const DialogHeader = ({ title, closeTooltip, StartIcon, CloseIcon, onClose }: Pr
         <Typography alignSelf="center" variant="h6" color={theme.palette.primary.contrastText}>
           {title}
         </Typography>
+        {
+          <Typography variant="body2" color={theme.palette.primary.contrastText}>
+            {`Reitin pituus: ${overallDistanceInMeters ? (overallDistanceInMeters / 1000).toFixed(2) : "-"} km`}
+          </Typography>
+        }
       </StyledDialogHeaderContent>
       {renderCloseIcon()}
     </StyledDialogHeader>
