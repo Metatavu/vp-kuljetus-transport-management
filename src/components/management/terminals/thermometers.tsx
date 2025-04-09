@@ -10,21 +10,28 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { api } from "api/index";
 import ToolbarRow from "components/generic/toolbar-row";
-import { TerminalThermometer } from "generated/client";
-import { getListTerminalThermometersQueryOptions } from "hooks/use-queries";
-import { useMemo, useState } from "react";
+import { Site } from "generated/client";
+import { QUERY_KEYS, getListTerminalThermometersQueryOptions } from "hooks/use-queries";
+import { forwardRef, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
+import { queryClient } from "src/main";
 import ThermometersTable from "./thermometers-table";
 
 type Props = {
-  siteId: string | undefined;
+  site: Site;
+  setChangedTerminalThermometerNames: React.Dispatch<
+    React.SetStateAction<{ newName: string; thermometerId: string }[]>
+  >;
 };
 
-const Thermometers = ({ siteId }: Props) => {
+const Thermometers = forwardRef(({ site, setChangedTerminalThermometerNames }: Props, ref) => {
   const { t } = useTranslation();
   const [openCreateNewDevice, setOpenCreateNewDevice] = useState(false);
+  const [newDeviceIdentifier, setNewDeviceIdentifier] = useState<string>("");
 
   const handleClickOpen = () => {
     setOpenCreateNewDevice(true);
@@ -34,25 +41,51 @@ const Thermometers = ({ siteId }: Props) => {
     setOpenCreateNewDevice(false);
   };
 
-  const listThermometersQuery = useQuery(getListTerminalThermometersQueryOptions({ siteId, max: 100 }));
+  const updateSite = useMutation({
+    mutationFn: () => {
+      if (!site?.id) return Promise.reject(new Error("Site ID is undefined"));
+      return api.sites.updateSite({
+        siteId: site.id,
+        site: { ...site, deviceIds: [...site.deviceIds, newDeviceIdentifier] },
+      });
+    },
+    onSuccess: () => {
+      toast.success(t("management.terminals.successToast"));
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.SITES] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.SITE_TEMPERATURES] });
+      handleClose();
+      setNewDeviceIdentifier("");
+    },
+    onError: () => toast.error(t("management.terminals.errorToast")),
+  });
+
+  const handleDeleteDevice = (deviceIdentifier: string) => {
+    if (!site?.id) return;
+    const updatedDeviceIds = site.deviceIds.filter((id) => id !== deviceIdentifier);
+    api.sites
+      .updateSite({
+        siteId: site.id,
+        site: { ...site, deviceIds: updatedDeviceIds },
+      })
+      .then(() => {
+        toast.success(t("management.terminals.successToast"));
+        queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.SITES] });
+      })
+      .catch(() => {
+        toast.error(t("management.terminals.errorToast"));
+      });
+  };
+
+  const listThermometersQuery = useQuery(getListTerminalThermometersQueryOptions({ siteId: site.id, max: 100 }));
+
   const thermometersByDeviceIdentifier = useMemo(() => {
-    return (listThermometersQuery.data ?? []).reduce(
-      (list, thermometer) => {
-        const indexOfMatchingIdentifier = list.findIndex(
-          (item) => item.deviceIdentifier === thermometer.deviceIdentifier,
-        );
-
-        if (indexOfMatchingIdentifier > -1) {
-          list[indexOfMatchingIdentifier].thermometers.push(thermometer);
-        } else {
-          list.push({ deviceIdentifier: thermometer.deviceIdentifier, thermometers: [thermometer] });
-        }
-
-        return list;
-      },
-      [] as { deviceIdentifier: string; thermometers: TerminalThermometer[] }[],
-    );
-  }, [listThermometersQuery.data]);
+    return (site?.deviceIds ?? []).map((deviceId) => ({
+      deviceIdentifier: deviceId,
+      thermometers: (listThermometersQuery.data ?? []).filter(
+        (thermometer) => thermometer.deviceIdentifier === deviceId,
+      ),
+    }));
+  }, [site?.deviceIds, listThermometersQuery.data]);
 
   const renderCreateNewDeviceDialog = () => (
     <Dialog
@@ -75,13 +108,15 @@ const Thermometers = ({ siteId }: Props) => {
           type="text"
           fullWidth
           variant="filled"
+          value={newDeviceIdentifier}
+          onChange={(e) => setNewDeviceIdentifier(e.target.value)}
         />
       </DialogContent>
       <DialogActions>
         <Button variant="outlined" onClick={handleClose}>
           {t("cancel")}
         </Button>
-        <Button type="submit">{t("save")}</Button>
+        <Button onClick={() => updateSite.mutate()}>{t("save")}</Button>
       </DialogActions>
     </Dialog>
   );
@@ -98,12 +133,19 @@ const Thermometers = ({ siteId }: Props) => {
       />
       <Stack p={2}>
         {thermometersByDeviceIdentifier.map(({ deviceIdentifier, thermometers }) => (
-          <ThermometersTable key={deviceIdentifier} thermometers={thermometers} name={deviceIdentifier} />
+          <ThermometersTable
+            key={deviceIdentifier}
+            thermometers={thermometers}
+            name={deviceIdentifier}
+            ref={ref}
+            onDeleteDevice={handleDeleteDevice}
+            setChangedTerminalThermometerNames={setChangedTerminalThermometerNames}
+          />
         ))}
       </Stack>
       {renderCreateNewDeviceDialog()}
     </Paper>
   );
-};
+});
 
 export default Thermometers;

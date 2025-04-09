@@ -23,19 +23,36 @@ import Thermometers from "./thermometers";
 type Props = {
   formType: "ADD" | "MODIFY";
   site?: Site;
-  onSave: UseMutationResult<Site, Error, Site, unknown>;
+  onUpdate?: UseMutationResult<
+    void,
+    Error,
+    {
+      site: Site;
+      originalSite: Site;
+      changedThermometers: {
+        newName: string;
+        thermometerId: string;
+      }[];
+    },
+    unknown
+  >;
+  onSave?: UseMutationResult<Site, Error, Site, unknown>;
 };
 
 const DEFAULT_MAP_CENTER = latLng(61.1621924, 28.65865865);
 
-function TerminalSiteComponent({ formType, site, onSave }: Props) {
+function TerminalSiteComponent({ formType, site, onSave, onUpdate }: Props) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [tabValue, setTabValue] = useState("1");
   const formState = useMemo(() => formType, [formType]);
+  const thermometersRef = useRef<{ reset: () => void } | null>(null);
   const handleTabChange = (_event: SyntheticEvent, newTabValue: string) => {
     setTabValue(newTabValue);
   };
+  const [changedTerminalThermometerNames, setChangedTerminalThermometerNames] = useState<
+    { newName: string; thermometerId: string }[]
+  >([]);
 
   const {
     mapbox: { baseUrl, publicApiKey },
@@ -67,14 +84,23 @@ function TerminalSiteComponent({ formType, site, onSave }: Props) {
     }
   }, [markerPosition]);
 
-  const isSaveDisabled = Object.keys(dirtyFields).length < 1 || Object.keys(errors).length > 0 || onSave.isPending;
+  const isSaveDisabled =
+    Object.keys(dirtyFields).length < 1 || Object.keys(errors).length > 0 || onSave?.isPending || onUpdate?.isPending;
 
-  const isUndoChangesDisabled = Object.keys(dirtyFields).length < 1 || onSave.isPending;
+  const isUndoChangesDisabled = Object.keys(dirtyFields).length < 1 || onSave?.isPending || onUpdate?.isPending;
 
-  const onTerminalSave = async (site: Site) => {
-    const newSite = await onSave.mutateAsync({ ...site, siteType: SiteType.Terminal, deviceIds: [] });
-
-    navigate({ to: `/management/terminals/${newSite.id}/modify` });
+  const onTerminalSave = async (siteData: Site) => {
+    if (formState === "ADD") {
+      const newSite = await onSave?.mutateAsync({ ...siteData, siteType: SiteType.Terminal, deviceIds: [] });
+      newSite && navigate({ to: `/management/terminals/${newSite.id}/modify` });
+    } else {
+      if (!site) return;
+      onUpdate?.mutate({
+        site: siteData,
+        originalSite: site,
+        changedThermometers: changedTerminalThermometerNames,
+      });
+    }
   };
 
   const archiveTerminal = useMutation({
@@ -88,6 +114,19 @@ function TerminalSiteComponent({ formType, site, onSave }: Props) {
       navigate({ to: "/management/terminals" });
     },
   });
+
+  const handleReset = () => {
+    reset({
+      ...site,
+      name: site?.name ?? "",
+      address: site?.address ?? "",
+      postalCode: site?.postalCode ?? "",
+      locality: site?.locality ?? "",
+      additionalInfo: site?.additionalInfo ?? "",
+      location: site?.location ?? "",
+    });
+    thermometersRef.current?.reset();
+  };
 
   const renderToolbarButtons = () => (
     <Stack direction="row" spacing={1}>
@@ -108,27 +147,17 @@ function TerminalSiteComponent({ formType, site, onSave }: Props) {
       )}
       <Button
         title={t("undoFormChangesTitle")}
-        disabled={isUndoChangesDisabled}
+        disabled={isUndoChangesDisabled && changedTerminalThermometerNames.length < 1}
         variant="text"
         startIcon={<Restore />}
-        onClick={() =>
-          reset({
-            ...site,
-            name: site?.name ?? "",
-            address: site?.address ?? "",
-            postalCode: site?.postalCode ?? "",
-            locality: site?.locality ?? "",
-            additionalInfo: site?.additionalInfo ?? "",
-            location: site?.location ?? "",
-          })
-        }
+        onClick={() => handleReset()}
       >
         {t("undoChanges")}
       </Button>
       <Button
         variant="contained"
         startIcon={<SaveAlt />}
-        disabled={isSaveDisabled}
+        disabled={isSaveDisabled && changedTerminalThermometerNames.length < 1}
         onClick={handleSubmit(onTerminalSave)}
       >
         {t("save")}
@@ -137,7 +166,7 @@ function TerminalSiteComponent({ formType, site, onSave }: Props) {
   );
 
   return (
-    <LoaderWrapper loading={onSave.isPending}>
+    <LoaderWrapper loading={(onSave?.isPending || onUpdate?.isPending) ?? false}>
       <Paper sx={{ height: "100%" }}>
         <ToolbarRow
           title={
@@ -155,7 +184,13 @@ function TerminalSiteComponent({ formType, site, onSave }: Props) {
                 <Tab label={t("management.terminals.map")} value="2" />
               </TabList>
               <TabPanel value="1" sx={{ flex: 1 }}>
-                {site && <Thermometers siteId={site.id} />}
+                {site && (
+                  <Thermometers
+                    site={site}
+                    setChangedTerminalThermometerNames={setChangedTerminalThermometerNames}
+                    ref={thermometersRef}
+                  />
+                )}
               </TabPanel>
               <TabPanel value="2" sx={{ flex: 1 }}>
                 <MapContainer ref={mapRef} style={{ height: "100%" }} center={markerPosition} zoom={13}>
