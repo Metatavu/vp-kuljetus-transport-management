@@ -25,8 +25,16 @@ import ChangeLog from "components/working-hours/change-log";
 import WorkShiftRow from "components/working-hours/work-shift-row";
 import WorkShiftsTableHeader from "components/working-hours/work-shifts-table-header";
 import WorkingHoursDocument from "components/working-hours/working-hours-document";
-import { EmployeeWorkShift, SalaryGroup, WorkShiftHours, WorkType } from "generated/client";
-import { QUERY_KEYS, getListEmployeesQueryOptions } from "hooks/use-queries";
+import {
+  EmployeeWorkShift,
+  SalaryGroup,
+  WorkEvent,
+  WorkShiftChangeReason,
+  WorkShiftChangeSet,
+  WorkShiftHours,
+  WorkType,
+} from "generated/client";
+import { QUERY_KEYS, getListEmployeesQueryOptions, getListWorkShiftChangeSetsQueryOptions } from "hooks/use-queries";
 import { t } from "i18next";
 import { DateTime } from "luxon";
 import { useCallback, useMemo } from "react";
@@ -172,6 +180,67 @@ function WorkShifts() {
     },
   });
 
+  const workShiftChangeSets = useQuery(
+    getListWorkShiftChangeSetsQueryOptions({
+      employeeId: employeeId,
+      workShiftDateAfter: workingPeriodsForEmployee.start,
+      workShiftDateBefore: workingPeriodsForEmployee.end,
+    }),
+  );
+
+  // Get every work event id from the work shift change set entries where the reason is WorkeventUpdatedType
+  const workEventIds = useMemo(() => {
+    if (!workShiftChangeSets.data) return [];
+
+    const workEventIds = workShiftChangeSets.data.workShiftChangeSets
+      .filter((changeSet) =>
+        changeSet.entries?.some((entry) => entry.reason === WorkShiftChangeReason.WorkeventUpdatedType),
+      )
+      .flatMap((changeSet) => changeSet.entries?.map((entry) => entry.workEventId))
+      .filter((id): id is string => id !== undefined);
+
+    return workEventIds;
+  }, [workShiftChangeSets.data]);
+
+  // Fetch work events based on the work event ids
+  const workEvents = useQuery({
+    queryKey: [QUERY_KEYS.EMPLOYEE_WORK_EVENTS, employeeId],
+    queryFn: async () => {
+      if (workEventIds.length === 0) return [];
+
+      return await Promise.all(
+        workEventIds.map<Promise<{ workEvent: WorkEvent }>>(async (workEventId) => {
+          const workEvent = await api.workEvents.findEmployeeWorkEvent({
+            employeeId,
+            workEventId,
+          });
+          return { workEvent };
+        }),
+      );
+    },
+    enabled: workEventIds.length > 0,
+  }).data?.map((workEvent) => workEvent.workEvent);
+
+  // Get latest change set made by the user
+  const getLatestChangeSetDateAndTime = useMemo(() => {
+    if (!workShiftChangeSets.data) return "-";
+
+    const changeSets = workShiftChangeSets.data.workShiftChangeSets;
+    if (changeSets.length === 0) return "-";
+
+    // Sort change sets by createdAt in descending order
+    changeSets.sort((a, b) => {
+      if (!a.createdAt || !b.createdAt) {
+        return 0;
+      }
+      const dateA = DateTime.fromJSDate(a.createdAt);
+      const dateB = DateTime.fromJSDate(b.createdAt);
+      return dateB.toMillis() - dateA.toMillis();
+    });
+
+    return changeSets[0].createdAt ? DateTime.fromJSDate(changeSets[0].createdAt).toFormat("dd.MM.yyyy HH:mm") : "-";
+  }, [workShiftChangeSets.data]);
+
   const addMissingWorkShiftRows = (
     employeeId: string,
     formValues: EmployeeWorkHoursFormRow[],
@@ -285,31 +354,80 @@ function WorkShifts() {
     return [workShiftsToUpdate, workShiftHoursToUpdate, newRows];
   };
 
+  const workShiftChangeSetsInWorkShifts = useMemo(() => {
+    if (!workShiftChangeSets.data) return [];
+    const workShiftChangeSetsWithWorkShifts: Record<string, WorkShiftChangeSet[]> = {};
+
+    for (const changeSet of workShiftChangeSets.data.workShiftChangeSets) {
+      const workShiftId = changeSet.entries?.[0]?.workShiftId;
+      if (workShiftId) {
+        if (!workShiftChangeSetsWithWorkShifts[workShiftId]) {
+          workShiftChangeSetsWithWorkShifts[workShiftId] = [];
+        }
+        workShiftChangeSetsWithWorkShifts[workShiftId].push(changeSet);
+      }
+    }
+    return Object.entries(workShiftChangeSetsWithWorkShifts).map(([workShiftId, changeSets]) => ({
+      workShiftId,
+      changeSets,
+    }));
+  }, [workShiftChangeSets.data]);
+
   const updateWorkShift = useMutation({
     mutationFn: async () => {
-      // First we need to create a new work shift change set for each work shift in order to track changes
-      const newWorkShiftChangeSet = new Map<string, string>();
-      for (const workShift of workShiftsDataWithWorkingPeriodDates) {
-        newWorkShiftChangeSet.set(workShift.workShift.id ?? workShift.workShift.date.toISOString(), uuidv4());
-      }
       const [updatedWorkShifts, updatedWorkShiftHours, newRows] = getUpdatedWorkShiftsAndWorkShiftHours();
+
+      // Prepare consistent keys for all shifts (ID or fallback to date)
+      const allWorkShifts = [...updatedWorkShifts, ...newRows.map((row) => row.workShift)];
+
+      // Add any work shifts referenced by updatedWorkShiftHours (in case not already included)
+      const additionalWorkShiftIds = updatedWorkShiftHours.map((h) => h.employeeWorkShiftId);
+      const additionalWorkShifts = workShiftsDataWithWorkingPeriodDates
+        .map((row) => row.workShift)
+        // biome-ignore lint/style/noNonNullAssertion: <explanation>
+        .filter((ws) => additionalWorkShiftIds.includes(ws.id!))
+        .filter((ws) => !allWorkShifts.find((existing) => existing.id === ws.id));
+
+      const fullWorkShiftList = [...allWorkShifts, ...additionalWorkShifts];
+
+      // Create and store consistent changeSetIds for each shift
+      const newWorkShiftChangeSet = new Map<string, string>();
+      for (const workShift of fullWorkShiftList) {
+        const key = workShift.id ?? workShift.date.toISOString();
+        if (!newWorkShiftChangeSet.has(key)) {
+          newWorkShiftChangeSet.set(key, uuidv4());
+        }
+      }
+
+      // Create new work shifts
       const newRowsWithWorkShiftIds = await Promise.all(
         newRows.map(async (row) => {
-          const normalizeDateFromRow = new Date(
+          const normalizedDate = new Date(
             DateTime.fromJSDate(row.workShift.date).toISODate() ?? DateTime.now().toISODate(),
           );
+
+          const fallbackKey = row.workShift.id ?? row.workShift.date.toISOString();
+          const changeSetId = newWorkShiftChangeSet.get(fallbackKey);
+          if (!changeSetId) throw new Error(`Missing changeSetId for new row ${fallbackKey}`);
+
           const workShift = await api.employeeWorkShifts.createEmployeeWorkShift({
             employeeId,
-            employeeWorkShift: { ...row.workShift, date: normalizeDateFromRow },
-            workShiftChangeSetId: newWorkShiftChangeSet.get(row.workShift.id ?? row.workShift.date.toISOString()) ?? "",
+            employeeWorkShift: { ...row.workShift, date: normalizedDate },
+            workShiftChangeSetId: changeSetId,
           });
-          return { ...row, workShift: workShift };
+
+          // Map the new ID to the same changeSetId so workShiftHours lookup works later
+          // biome-ignore lint/style/noNonNullAssertion: <explanation>
+          newWorkShiftChangeSet.set(workShift.id!, changeSetId);
+
+          return { ...row, workShift };
         }),
       );
 
+      // Fetch new work shift hours
       const newWorkShiftHours = (
         await Promise.all(
-          newRowsWithWorkShiftIds.map(async (row) =>
+          newRowsWithWorkShiftIds.map((row) =>
             api.workShiftHours.listWorkShiftHours({
               employeeId,
               employeeWorkShiftId: row.workShift.id,
@@ -321,37 +439,52 @@ function WorkShifts() {
       const newWorkShiftHoursWithUpdatedValues = newWorkShiftHours.reduce<WorkShiftHours[]>((list, hours) => {
         const matchingRow = newRowsWithWorkShiftIds.find((row) => row.workShift.id === hours.employeeWorkShiftId);
         const hoursFromRow = matchingRow?.workShiftHours[hours.workType];
-        if (hoursFromRow?.actualHours !== undefined) list.push({ ...hours, actualHours: hoursFromRow.actualHours });
+        if (hoursFromRow?.actualHours !== undefined) {
+          list.push({ ...hours, actualHours: hoursFromRow.actualHours });
+        }
         return list;
       }, []);
 
-      await Promise.all(
-        updatedWorkShifts.map((workShift) =>
-          api.employeeWorkShifts.updateEmployeeWorkShift({
-            employeeId,
-            // biome-ignore lint/style/noNonNullAssertion: Work shift id is always defined
-            workShiftId: workShift.id!,
-            employeeWorkShift: workShift,
-            workShiftChangeSetId: newWorkShiftChangeSet.get(workShift.id ?? workShift.date.toISOString()) ?? "",
-          }),
-        ),
-      );
+      // Update existing work shifts
+      for (const workShift of updatedWorkShifts) {
+        const key = workShift.id ?? workShift.date.toISOString();
+        const changeSetId = newWorkShiftChangeSet.get(key);
 
+        if (!changeSetId) {
+          throw new Error(`Missing changeSetId for updated shift ${key}`);
+        }
+
+        await api.employeeWorkShifts.updateEmployeeWorkShift({
+          employeeId,
+          // biome-ignore lint/style/noNonNullAssertion: <explanation>
+          workShiftId: workShift.id!,
+          employeeWorkShift: workShift,
+          workShiftChangeSetId: changeSetId,
+        });
+      }
+
+      // Update all work shift hours
       const allWorkShiftHoursToUpdate = [...updatedWorkShiftHours, ...newWorkShiftHoursWithUpdatedValues];
 
-      await Promise.all(
-        allWorkShiftHoursToUpdate.map((workShiftHours) =>
-          api.workShiftHours.updateWorkShiftHours({
-            // biome-ignore lint/style/noNonNullAssertion: Work shift id is always defined
-            workShiftHoursId: workShiftHours.id!,
-            workShiftHours: workShiftHours,
-            workShiftChangeSetId: newWorkShiftChangeSet.get(workShiftHours.employeeWorkShiftId) ?? "",
-          }),
-        ),
-      );
+      for (const workShiftHours of allWorkShiftHoursToUpdate) {
+        const key = workShiftHours.employeeWorkShiftId;
+        const changeSetId = newWorkShiftChangeSet.get(key);
+
+        if (!changeSetId) {
+          throw new Error(`Missing changeSetId for workShiftHours with shiftId: ${key}`);
+        }
+
+        await api.workShiftHours.updateWorkShiftHours({
+          // biome-ignore lint/style/noNonNullAssertion: Work shift id is always defined
+          workShiftHoursId: workShiftHours.id!,
+          workShiftHours,
+          workShiftChangeSetId: changeSetId,
+        });
+      }
 
       await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.WORK_SHIFTS] });
       await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.WORK_SHIFT_HOURS] });
+      await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.WORK_SHIFT_CHANGE_SETS] });
 
       toast.success(t("workingHours.workingHourBalances.successToast"));
     },
@@ -556,7 +689,7 @@ function WorkShifts() {
                         label={t("workingHours.workingDays.table.inspected")}
                       />
                       <Box minWidth={245}>
-                        <Typography variant="body2">{"Tiedot tallennettu 11.5.2021 12:00"}</Typography>
+                        <Typography variant="body2">{`Muutokset tallennettu ${getLatestChangeSetDateAndTime}`}</Typography>
                       </Box>
                     </Stack>
                   </TableHeader>
@@ -602,7 +735,29 @@ function WorkShifts() {
                     <TableHeader>
                       <Typography variant="subtitle1">{t("workingHours.workingDays.changeLog.title")}</Typography>
                     </TableHeader>
-                    <ChangeLog />
+                    {workShiftChangeSets.isLoading ? (
+                      <Skeleton variant="rectangular" height={150} />
+                    ) : (
+                      workShiftChangeSetsInWorkShifts.map(({ changeSets, workShiftId }) => (
+                        <ChangeLog
+                          key={workShiftId}
+                          changeSets={changeSets}
+                          workShiftDate={
+                            workShiftsDataForFormRows
+                              ? workShiftsDataForFormRows?.data?.find(
+                                  (workShift) => workShift.workShift.id === workShiftId,
+                                )?.workShift.date
+                              : undefined
+                          }
+                          employees={employees}
+                          workShiftHours={
+                            workShiftsDataForFormRows?.data?.find((workShift) => workShift.workShift.id === workShiftId)
+                              ?.workShiftHours
+                          }
+                          workEvents={workEvents}
+                        />
+                      ))
+                    )}
                   </Stack>
                 </Paper>
               </BottomAreaContainer>

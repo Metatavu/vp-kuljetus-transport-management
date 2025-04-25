@@ -615,13 +615,43 @@
         "partial": "Osa",
         "full": "Koko"
       },
+      "workTypes": {
+        "paidWork": "Maksettava työaika",
+        "break": "Tauko",
+        "standby": "Odotus",
+        "eveningAllowance": "Iltalisä",
+        "nightAllowance": "Yölisä",
+        "holidayAllowance": "Pyhälisä",
+        "jobSpecificAllowance": "Työkohtaisuuslisä",
+        "frozenAllowance": "Pakastelisä",
+        "officialDuties": "Luottamustoimet",
+        "sickLeave": "Sairausloma",
+        "training": "Koulutus työajalla",
+        "unpaid": "Palkaton"
+      },
       "changeLog": {
         "title": "Muutosloki",
         "time": "Aika",
         "user": "Käyttäjä",
         "reviewed": "Tarkastanut",
-        "affectedDates": "Muutetut päivämäärät",
-        "explanation": "Selite"
+        "affectedValues": "Muutetut arvot",
+        "explanation": "Selite",
+        "workShiftChangeReasons": {
+          "workShiftCreated": "Työvuoron luonti",
+          "workShiftUpdatedApproved": "Työvuoron hyväksyntä",
+          "workShiftUpdatedDayOffWorkAllowance": "Vapaapäivätyön lisän muutos",
+          "workShiftUpdatedAbsence": "Poissaolon muutos",
+          "workShiftUpdatedPerDiemAllowance": "Päivärahan muutos",
+          "workShiftUpdatedNotes": "Muistiinpanon muutos",
+          "workEventUpdatedCostCenter": "Tapahtuman kustannuspaikan muutos",
+          "workEventUpdatedType": "Tapahtumatyypin muutos",
+          "workEventUpdatedTimestamp": "Tapahtuma-ajan muutos",
+          "workShiftHoursUpdatedActualHours": "Työajan muutos"
+        },
+        "approvedStatus": {
+          "approved": "Hyväksytty",
+          "notApproved": "Ei hyväksytty"
+        }
       },
       "workShiftDialog": {
         "title": "Työajan erittely {{date}}",
