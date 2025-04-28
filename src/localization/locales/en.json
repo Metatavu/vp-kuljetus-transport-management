@@ -560,6 +560,10 @@
         "approvedStatus": {
           "approved": "Approved",
           "notApproved": "Not approved"
+        },
+        "allowanceStatus": {
+          "noDayOffWorkAllowance": "No day off work allowance",
+          "dayOffWorkAllowance": "Day off work allowance"
         }
       },
       "workShiftDialog": {

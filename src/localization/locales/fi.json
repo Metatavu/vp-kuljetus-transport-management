@@ -651,6 +651,10 @@
         "approvedStatus": {
           "approved": "Hyväksytty",
           "notApproved": "Ei hyväksytty"
+        },
+        "allowanceStatus": {
+          "noDayOffWorkAllowance": "Ei vapaapäivätyön lisää",
+          "dayOffWorkAllowance": "Vapaapäivätyön lisä"
         }
       },
       "workShiftDialog": {

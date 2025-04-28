@@ -11,7 +11,9 @@ import {
   Typography,
 } from "@mui/material";
 import {
+  AbsenceType,
   Employee,
+  PerDiemAllowanceType,
   WorkEvent,
   WorkEventType,
   WorkShiftChange,
@@ -61,28 +63,59 @@ function ChangeLog({ changeSets, workShiftDate, employees, workShiftHours, workE
     return `${employee.firstName} ${employee.lastName}`;
   };
 
+  const formatChange = (oldValue: string | undefined, newValue: string | undefined) => {
+    return `${oldValue ?? "-"} -> ${newValue ?? "-"}`;
+  };
+
   const getChangedValues = (entry: WorkShiftChange) => {
-    if (entry.reason === WorkShiftChangeReason.WorkshiftCreated) {
-      return "-";
+    switch (entry.reason) {
+      case WorkShiftChangeReason.WorkshiftCreated:
+        return "-";
+
+      case WorkShiftChangeReason.WorkshiftUpdatedDayoffworkallowance:
+        return formatChange(
+          entry.oldValue === "false"
+            ? t("workingHours.workingDays.changeLog.allowanceStatus.noDayOffWorkAllowance")
+            : t("workingHours.workingDays.changeLog.allowanceStatus.dayOffWorkAllowance"),
+          entry.newValue === "false"
+            ? t("workingHours.workingDays.changeLog.allowanceStatus.noDayOffWorkAllowance")
+            : t("workingHours.workingDays.changeLog.allowanceStatus.dayOffWorkAllowance"),
+        );
+
+      case WorkShiftChangeReason.WorkshiftUpdatedNotes:
+        return formatChange(entry.oldValue === "null" ? "-" : entry.oldValue, entry.newValue ?? "-");
+
+      case WorkShiftChangeReason.WorkshiftUpdatedApproved:
+        return formatChange(
+          entry.oldValue === "false"
+            ? t("workingHours.workingDays.changeLog.approvedStatus.notApproved")
+            : t("workingHours.workingDays.changeLog.approvedStatus.approved"),
+          entry.newValue === "false"
+            ? t("workingHours.workingDays.changeLog.approvedStatus.notApproved")
+            : t("workingHours.workingDays.changeLog.approvedStatus.approved"),
+        );
+
+      case WorkShiftChangeReason.WorkshiftUpdatedAbsence:
+        return formatChange(
+          LocalizationUtils.getLocalizedAbsenceType(entry.oldValue as AbsenceType, t) ?? "-",
+          LocalizationUtils.getLocalizedAbsenceType(entry.newValue as AbsenceType, t) ?? "-",
+        );
+
+      case WorkShiftChangeReason.WorkshiftUpdatedPerdiemallowance:
+        return formatChange(
+          LocalizationUtils.getPerDiemAllowanceType(entry.oldValue as PerDiemAllowanceType, t) ?? "-",
+          LocalizationUtils.getPerDiemAllowanceType(entry.newValue as PerDiemAllowanceType, t) ?? "-",
+        );
+
+      case WorkShiftChangeReason.WorkeventUpdatedType:
+        return formatChange(
+          LocalizationUtils.getLocalizedWorkEventType(entry.oldValue as WorkEventType, t) ?? "-",
+          LocalizationUtils.getLocalizedWorkEventType(entry.newValue as WorkEventType, t) ?? "-",
+        );
+
+      default:
+        return formatChange(entry.oldValue, entry.newValue);
     }
-    if (entry.reason === WorkShiftChangeReason.WorkshiftUpdatedApproved) {
-      return `${
-        entry.oldValue === "false"
-          ? t("workingHours.workingDays.changeLog.approvedStatus.notApproved")
-          : t("workingHours.workingDays.changeLog.approvedStatus.approved")
-      } -> ${
-        entry.newValue === "false"
-          ? t("workingHours.workingDays.changeLog.approvedStatus.notApproved")
-          : t("workingHours.workingDays.changeLog.approvedStatus.approved")
-      }`;
-    }
-    if (entry.reason === WorkShiftChangeReason.WorkeventUpdatedType) {
-      return `${LocalizationUtils.getLocalizedWorkEventType(
-        (entry.oldValue as WorkEventType) ?? "-",
-        t,
-      )} -> ${LocalizationUtils.getLocalizedWorkEventType((entry.newValue as WorkEventType) ?? "-", t)}`;
-    }
-    return `${entry.oldValue ?? 0} -> ${entry.newValue ?? 0}`;
   };
 
   const getChangeReason = (entry: WorkShiftChange) => {

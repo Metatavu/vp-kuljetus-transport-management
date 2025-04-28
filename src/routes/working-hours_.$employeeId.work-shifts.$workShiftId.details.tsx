@@ -139,18 +139,19 @@ function WorkShiftDetails() {
     mutationFn: async (editedWorkEvents: WorkEvent[]) => {
       // Create a unique change set id for the work shift to track changes
       const uniqueChangeSetId = uuidv4();
-      await Promise.all(
-        editedWorkEvents.map((workEvent) =>
-          api.workEvents.updateEmployeeWorkEvent({
-            // biome-ignore lint/style/noNonNullAssertion: Work events are guaranteed to have an id
-            workEventId: workEvent.id!,
-            employeeId: employeeId,
-            workEvent,
-            workShiftChangeSetId: uniqueChangeSetId,
-          }),
-        ),
-      );
+
+      for (const workEvent of editedWorkEvents) {
+        await api.workEvents.updateEmployeeWorkEvent({
+          // biome-ignore lint/style/noNonNullAssertion: Work events are guaranteed to have an id
+          workEventId: workEvent.id!,
+          employeeId: employeeId,
+          workEvent,
+          workShiftChangeSetId: uniqueChangeSetId,
+        });
+      }
+
       await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.EMPLOYEE_WORK_EVENTS] });
+      await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.WORK_SHIFT_CHANGE_SETS] });
       setEditedWorkEvents([]);
       toast.success(t("workingHours.workingDays.workShiftDialog.successToast"));
     },
@@ -162,39 +163,44 @@ function WorkShiftDetails() {
   const handleRowChange = (workEvent: WorkEvent, type?: WorkEventType, value?: string) => {
     const indexOfExistingEditedWorkEvent = editedWorkEvents.findIndex((event) => event.id === workEvent.id);
 
-    // Check if the event is already in the edited list
-    if (indexOfExistingEditedWorkEvent !== -1) {
-      const newEditedWorkEvents = [...editedWorkEvents];
+    const updatedEvent =
+      indexOfExistingEditedWorkEvent !== -1
+        ? { ...editedWorkEvents[indexOfExistingEditedWorkEvent] }
+        : { ...workEvent };
 
-      if (type !== undefined) {
-        // If the new type is the same as the original, remove the event to avoid unnecessary updates
-        if (type === workEvent.workEventType) {
-          setEditedWorkEvents(editedWorkEvents.filter((event) => event.id !== workEvent.id));
-          return;
-        }
-        newEditedWorkEvents[indexOfExistingEditedWorkEvent] = { ...workEvent, workEventType: type };
-      } else if (value !== undefined) {
-        // If the new value is the same as the original, remove the event
-        if (value === workEvent.costCenter || (value === "" && workEvent.costCenter === undefined)) {
-          setEditedWorkEvents(editedWorkEvents.filter((event) => event.id !== workEvent.id));
-          return;
-        }
-        newEditedWorkEvents[indexOfExistingEditedWorkEvent] = { ...workEvent, costCenter: value };
-      }
-
-      setEditedWorkEvents(newEditedWorkEvents);
-      return;
-    }
-
-    // If the event is not in the edited list, add it with the correct property
-    const updatedEvent = { ...workEvent };
     if (type !== undefined) {
-      updatedEvent.workEventType = type;
-    } else if (value !== undefined) {
-      updatedEvent.costCenter = value;
+      if (type !== workEvent.workEventType) {
+        updatedEvent.workEventType = type;
+      } else if (updatedEvent.workEventType !== workEvent.workEventType) {
+        // Reset to original if type matches original
+        updatedEvent.workEventType = workEvent.workEventType;
+      }
     }
 
-    setEditedWorkEvents([...editedWorkEvents, updatedEvent]);
+    if (value !== undefined) {
+      if (value !== workEvent.costCenter && !(value === "" && workEvent.costCenter === undefined)) {
+        updatedEvent.costCenter = value;
+      } else if (updatedEvent.costCenter !== workEvent.costCenter) {
+        // Reset to original if costCenter matches original
+        updatedEvent.costCenter = workEvent.costCenter;
+      }
+    }
+
+    // Check if event now matches original completely
+    const isSameAsOriginal =
+      updatedEvent.workEventType === workEvent.workEventType &&
+      (updatedEvent.costCenter ?? "") === (workEvent.costCenter ?? "");
+
+    if (isSameAsOriginal) {
+      // No longer edited, remove from list
+      setEditedWorkEvents(editedWorkEvents.filter((event) => event.id !== workEvent.id));
+    } else if (indexOfExistingEditedWorkEvent !== -1) {
+      const newEditedWorkEvents = [...editedWorkEvents];
+      newEditedWorkEvents[indexOfExistingEditedWorkEvent] = updatedEvent;
+      setEditedWorkEvents(newEditedWorkEvents);
+    } else {
+      setEditedWorkEvents([...editedWorkEvents, updatedEvent]);
+    }
   };
 
   const handleOnClose = () => {

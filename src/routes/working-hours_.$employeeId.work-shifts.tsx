@@ -417,7 +417,7 @@ function WorkShifts() {
           });
 
           // Map the new ID to the same changeSetId so workShiftHours lookup works later
-          // biome-ignore lint/style/noNonNullAssertion: <explanation>
+          // biome-ignore lint/style/noNonNullAssertion: Work shift ID is always defined
           newWorkShiftChangeSet.set(workShift.id!, changeSetId);
 
           return { ...row, workShift };
