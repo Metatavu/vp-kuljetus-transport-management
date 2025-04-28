@@ -636,6 +636,7 @@
         "reviewed": "Tarkastanut",
         "affectedValues": "Muutetut arvot",
         "explanation": "Selite",
+        "lastEdited": "Viimeksi muokattu",
         "workShiftChangeReasons": {
           "workShiftCreated": "Työvuoron luonti",
           "workShiftUpdatedApproved": "Työvuoron hyväksyntä",

@@ -545,6 +545,7 @@
         "reviewed": "Reviewed",
         "affectedValues": "Affected values",
         "explanation": "Explanation",
+        "lastEdited": "Last edited",
         "workShiftChangeReasons": {
           "workShiftCreated": "New work shift",
           "workShiftUpdatedApproved": "Work shift approved",

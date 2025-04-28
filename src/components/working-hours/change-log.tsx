@@ -138,9 +138,12 @@ function ChangeLog({ changeSets, workShiftDate, employees, workShiftHours, workE
   return (
     <Accordion>
       <AccordionSummary expandIcon={<ExpandMore />} sx={{ "&:hover": { backgroundColor: "#f5f5f5" } }}>
-        <Typography>{`${workShiftDate ? DateTime.fromJSDate(workShiftDate).toFormat("EEE dd.MM") : "-"} | ${
-          changeSets[0].createdAt && DateTime.fromJSDate(changeSets[0].createdAt).toFormat("dd.MM.yyyy HH:mm")
-        }`}</Typography>
+        <Typography>{`${workShiftDate ? DateTime.fromJSDate(workShiftDate).toFormat("EEE dd.MM") : "-"}`}</Typography>
+        <Typography sx={{ marginLeft: 2 }}>
+          {`${t("workingHours.workingDays.changeLog.lastEdited")}: ${
+            changeSets[0].createdAt && DateTime.fromJSDate(changeSets[0].createdAt).toFormat("dd.MM.yyyy HH:mm")
+          }`}
+        </Typography>
       </AccordionSummary>
       <AccordionDetails>
         {changeSets.map((changeSet) => (
