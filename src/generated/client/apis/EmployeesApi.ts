@@ -27,6 +27,9 @@ import {
     SalaryGroup,
     SalaryGroupFromJSON,
     SalaryGroupToJSON,
+    SalaryPeriodTotalWorkHours,
+    SalaryPeriodTotalWorkHoursFromJSON,
+    SalaryPeriodTotalWorkHoursToJSON,
 } from '../models';
 import { DateTime } from "luxon";
 export interface CreateEmployeeRequest {
@@ -37,6 +40,10 @@ export interface DeleteEmployeeRequest {
 }
 export interface FindEmployeeRequest {
     employeeId: string;
+}
+export interface GetSalaryPeriodTotalWorkHoursRequest {
+    employeeId: string;
+    dateInSalaryPeriod: Date;
 }
 export interface ListEmployeesRequest {
     search?: string;
@@ -178,6 +185,54 @@ export class EmployeesApi extends runtime.BaseAPI {
      */
     async findEmployeeWithHeaders(requestParameters: FindEmployeeRequest): Promise<[ Employee, Headers ]> {
         const response = await this.findEmployeeRaw(requestParameters);
+        const value = await response.value(); 
+        return [ value, response.raw.headers ];
+    }
+    /**
+     * Get salary period total work hours for the employee.  A salary period for an office worker can be 1st-15th or 15th-last of the month. A salary period for a driver is two weeks long, and can begin at 0:00 on Sunday. 
+     * Get salary period total work hours for employee.
+     */
+    async getSalaryPeriodTotalWorkHoursRaw(requestParameters: GetSalaryPeriodTotalWorkHoursRequest): Promise<runtime.ApiResponse<SalaryPeriodTotalWorkHours>> {
+        if (requestParameters.employeeId === null || requestParameters.employeeId === undefined) {
+            throw new runtime.RequiredError('employeeId','Required parameter requestParameters.employeeId was null or undefined when calling getSalaryPeriodTotalWorkHours.');
+        }
+        if (requestParameters.dateInSalaryPeriod === null || requestParameters.dateInSalaryPeriod === undefined) {
+            throw new runtime.RequiredError('dateInSalaryPeriod','Required parameter requestParameters.dateInSalaryPeriod was null or undefined when calling getSalaryPeriodTotalWorkHours.');
+        }
+        const queryParameters: any = {};
+        if (requestParameters.dateInSalaryPeriod !== undefined) {
+            queryParameters['dateInSalaryPeriod'] = DateTime.fromJSDate(requestParameters.dateInSalaryPeriod as any).toISO();
+        }
+        const headerParameters: runtime.HTTPHeaders = {};
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("BearerAuth", ["manager"]);
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/user-management/v1/employees/{employeeId}/salaryPeriodTotalWorkHours`.replace(`{${"employeeId"}}`, encodeURIComponent(String(requestParameters.employeeId))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        });
+        return new runtime.JSONApiResponse(response, (jsonValue) => SalaryPeriodTotalWorkHoursFromJSON(jsonValue));
+    }
+    /**
+     * Get salary period total work hours for the employee.  A salary period for an office worker can be 1st-15th or 15th-last of the month. A salary period for a driver is two weeks long, and can begin at 0:00 on Sunday. 
+     * Get salary period total work hours for employee.
+     */
+    async getSalaryPeriodTotalWorkHours(requestParameters: GetSalaryPeriodTotalWorkHoursRequest): Promise<SalaryPeriodTotalWorkHours> {
+        const response = await this.getSalaryPeriodTotalWorkHoursRaw(requestParameters);
+        return await response.value();
+    }
+    /**
+     * Get salary period total work hours for the employee.  A salary period for an office worker can be 1st-15th or 15th-last of the month. A salary period for a driver is two weeks long, and can begin at 0:00 on Sunday. 
+     * Get salary period total work hours for employee.
+     */
+    async getSalaryPeriodTotalWorkHoursWithHeaders(requestParameters: GetSalaryPeriodTotalWorkHoursRequest): Promise<[ SalaryPeriodTotalWorkHours, Headers ]> {
+        const response = await this.getSalaryPeriodTotalWorkHoursRaw(requestParameters);
         const value = await response.value(); 
         return [ value, response.raw.headers ];
     }

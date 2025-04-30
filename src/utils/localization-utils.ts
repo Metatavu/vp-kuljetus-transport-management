@@ -145,6 +145,11 @@ namespace LocalizationUtils {
       PARTIAL: t("workingHours.workingDays.abbreviations.partial"),
       FULL: t("workingHours.workingDays.abbreviations.full"),
     })[perDiemAllowanceType];
+
+  export const getLocalizedPagingPolicyType = (pagingPolicyType: string, t: TFunction) =>
+    ({
+      EMAIL: t("management.alarmContacts.alarmType.title"),
+    })[pagingPolicyType];
 }
 
 export default LocalizationUtils;

@@ -26,6 +26,7 @@ import { Route as ManagementEquipmentImport } from "./../../routes/management.eq
 import { Route as ManagementEmployeesImport } from "./../../routes/management.employees";
 import { Route as ManagementCustomerSitesImport } from "./../../routes/management.customer-sites";
 import { Route as ManagementClientAppsImport } from "./../../routes/management.client-apps";
+import { Route as ManagementAlarmContactsImport } from "./../../routes/management.alarm-contacts";
 import { Route as DrivePlanningRoutesImport } from "./../../routes/drive-planning.routes";
 import { Route as DrivePlanningFreightsImport } from "./../../routes/drive-planning.freights";
 import { Route as WorkingHoursEmployeeIdWorkShiftsImport } from "./../../routes/working-hours_.$employeeId.work-shifts";
@@ -36,6 +37,8 @@ import { Route as ManagementEquipmentAddImport } from "./../../routes/management
 import { Route as ManagementEmployeesAddImport } from "./../../routes/management.employees_.add";
 import { Route as ManagementCustomerSitesAddImport } from "./../../routes/management.customer-sites_.add";
 import { Route as ManagementClientAppsClientAppIdImport } from "./../../routes/management.client-apps_.$clientAppId";
+import { Route as ManagementAlarmContactscontactIdModifyImport } from "./../../routes/management.alarm-contacts_$contactId.modify";
+import { Route as ManagementAlarmContactsAddImport } from "./../../routes/management.alarm-contacts.add";
 import { Route as DrivePlanningRoutesAddImport } from "./../../routes/drive-planning.routes.add";
 import { Route as DrivePlanningFreightsAddFreightImport } from "./../../routes/drive-planning.freights.add-freight";
 import { Route as ManagementTerminalsSiteIdModifyImport } from "./../../routes/management.terminals_.$siteId.modify";
@@ -137,6 +140,12 @@ const ManagementClientAppsRoute = ManagementClientAppsImport.update({
   getParentRoute: () => ManagementRoute,
 } as any);
 
+const ManagementAlarmContactsRoute = ManagementAlarmContactsImport.update({
+  id: "/alarm-contacts",
+  path: "/alarm-contacts",
+  getParentRoute: () => ManagementRoute,
+} as any);
+
 const DrivePlanningRoutesRoute = DrivePlanningRoutesImport.update({
   id: "/routes",
   path: "/routes",
@@ -200,6 +209,21 @@ const ManagementClientAppsClientAppIdRoute =
     path: "/client-apps/$clientAppId",
     getParentRoute: () => ManagementRoute,
   } as any);
+
+const ManagementAlarmContactscontactIdModifyRoute =
+  ManagementAlarmContactscontactIdModifyImport.update({
+    id: "/alarm-contacts_$contactId/modify",
+    path: "/alarm-contacts_$contactId/modify",
+    getParentRoute: () => ManagementRoute,
+  } as any);
+
+const ManagementAlarmContactsAddRoute = ManagementAlarmContactsAddImport.update(
+  {
+    id: "/add",
+    path: "/add",
+    getParentRoute: () => ManagementAlarmContactsRoute,
+  } as any,
+);
 
 const DrivePlanningRoutesAddRoute = DrivePlanningRoutesAddImport.update({
   id: "/add",
@@ -302,6 +326,13 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof DrivePlanningRoutesImport;
       parentRoute: typeof DrivePlanningImport;
     };
+    "/management/alarm-contacts": {
+      id: "/management/alarm-contacts";
+      path: "/alarm-contacts";
+      fullPath: "/management/alarm-contacts";
+      preLoaderRoute: typeof ManagementAlarmContactsImport;
+      parentRoute: typeof ManagementImport;
+    };
     "/management/client-apps": {
       id: "/management/client-apps";
       path: "/client-apps";
@@ -392,6 +423,20 @@ declare module "@tanstack/react-router" {
       fullPath: "/drive-planning/routes/add";
       preLoaderRoute: typeof DrivePlanningRoutesAddImport;
       parentRoute: typeof DrivePlanningRoutesImport;
+    };
+    "/management/alarm-contacts/add": {
+      id: "/management/alarm-contacts/add";
+      path: "/add";
+      fullPath: "/management/alarm-contacts/add";
+      preLoaderRoute: typeof ManagementAlarmContactsAddImport;
+      parentRoute: typeof ManagementAlarmContactsImport;
+    };
+    "/management/alarm-contacts_$contactId/modify": {
+      id: "/management/alarm-contacts_$contactId/modify";
+      path: "/alarm-contacts_$contactId/modify";
+      fullPath: "/management/alarm-contacts_$contactId/modify";
+      preLoaderRoute: typeof ManagementAlarmContactscontactIdModifyImport;
+      parentRoute: typeof ManagementImport;
     };
     "/management/client-apps_/$clientAppId": {
       id: "/management/client-apps_/$clientAppId";
@@ -534,6 +579,20 @@ const DrivePlanningRouteWithChildren = DrivePlanningRoute._addFileChildren(
   DrivePlanningRouteChildren,
 );
 
+interface ManagementAlarmContactsRouteChildren {
+  ManagementAlarmContactsAddRoute: typeof ManagementAlarmContactsAddRoute;
+}
+
+const ManagementAlarmContactsRouteChildren: ManagementAlarmContactsRouteChildren =
+  {
+    ManagementAlarmContactsAddRoute: ManagementAlarmContactsAddRoute,
+  };
+
+const ManagementAlarmContactsRouteWithChildren =
+  ManagementAlarmContactsRoute._addFileChildren(
+    ManagementAlarmContactsRouteChildren,
+  );
+
 interface ManagementHolidaysRouteChildren {
   ManagementHolidaysAddRoute: typeof ManagementHolidaysAddRoute;
 }
@@ -546,6 +605,7 @@ const ManagementHolidaysRouteWithChildren =
   ManagementHolidaysRoute._addFileChildren(ManagementHolidaysRouteChildren);
 
 interface ManagementRouteChildren {
+  ManagementAlarmContactsRoute: typeof ManagementAlarmContactsRouteWithChildren;
   ManagementClientAppsRoute: typeof ManagementClientAppsRoute;
   ManagementCustomerSitesRoute: typeof ManagementCustomerSitesRoute;
   ManagementEmployeesRoute: typeof ManagementEmployeesRoute;
@@ -553,6 +613,7 @@ interface ManagementRouteChildren {
   ManagementHolidaysRoute: typeof ManagementHolidaysRouteWithChildren;
   ManagementTerminalsRoute: typeof ManagementTerminalsRoute;
   ManagementVehiclesRoute: typeof ManagementVehiclesRoute;
+  ManagementAlarmContactscontactIdModifyRoute: typeof ManagementAlarmContactscontactIdModifyRoute;
   ManagementClientAppsClientAppIdRoute: typeof ManagementClientAppsClientAppIdRoute;
   ManagementCustomerSitesAddRoute: typeof ManagementCustomerSitesAddRoute;
   ManagementEmployeesAddRoute: typeof ManagementEmployeesAddRoute;
@@ -566,6 +627,7 @@ interface ManagementRouteChildren {
 }
 
 const ManagementRouteChildren: ManagementRouteChildren = {
+  ManagementAlarmContactsRoute: ManagementAlarmContactsRouteWithChildren,
   ManagementClientAppsRoute: ManagementClientAppsRoute,
   ManagementCustomerSitesRoute: ManagementCustomerSitesRoute,
   ManagementEmployeesRoute: ManagementEmployeesRoute,
@@ -573,6 +635,8 @@ const ManagementRouteChildren: ManagementRouteChildren = {
   ManagementHolidaysRoute: ManagementHolidaysRouteWithChildren,
   ManagementTerminalsRoute: ManagementTerminalsRoute,
   ManagementVehiclesRoute: ManagementVehiclesRoute,
+  ManagementAlarmContactscontactIdModifyRoute:
+    ManagementAlarmContactscontactIdModifyRoute,
   ManagementClientAppsClientAppIdRoute: ManagementClientAppsClientAppIdRoute,
   ManagementCustomerSitesAddRoute: ManagementCustomerSitesAddRoute,
   ManagementEmployeesAddRoute: ManagementEmployeesAddRoute,
@@ -629,6 +693,7 @@ export interface FileRoutesByFullPath {
   "/vehicles": typeof VehiclesRouteWithChildren;
   "/drive-planning/freights": typeof DrivePlanningFreightsRouteWithChildren;
   "/drive-planning/routes": typeof DrivePlanningRoutesRouteWithChildren;
+  "/management/alarm-contacts": typeof ManagementAlarmContactsRouteWithChildren;
   "/management/client-apps": typeof ManagementClientAppsRoute;
   "/management/customer-sites": typeof ManagementCustomerSitesRoute;
   "/management/employees": typeof ManagementEmployeesRoute;
@@ -642,6 +707,8 @@ export interface FileRoutesByFullPath {
   "/working-hours": typeof WorkingHoursIndexRoute;
   "/drive-planning/freights/add-freight": typeof DrivePlanningFreightsAddFreightRoute;
   "/drive-planning/routes/add": typeof DrivePlanningRoutesAddRoute;
+  "/management/alarm-contacts/add": typeof ManagementAlarmContactsAddRoute;
+  "/management/alarm-contacts_$contactId/modify": typeof ManagementAlarmContactscontactIdModifyRoute;
   "/management/client-apps/$clientAppId": typeof ManagementClientAppsClientAppIdRoute;
   "/management/customer-sites/add": typeof ManagementCustomerSitesAddRoute;
   "/management/employees/add": typeof ManagementEmployeesAddRoute;
@@ -665,6 +732,7 @@ export interface FileRoutesByTo {
   "/vehicles": typeof VehiclesRouteWithChildren;
   "/drive-planning/freights": typeof DrivePlanningFreightsRouteWithChildren;
   "/drive-planning/routes": typeof DrivePlanningRoutesRouteWithChildren;
+  "/management/alarm-contacts": typeof ManagementAlarmContactsRouteWithChildren;
   "/management/client-apps": typeof ManagementClientAppsRoute;
   "/management/customer-sites": typeof ManagementCustomerSitesRoute;
   "/management/employees": typeof ManagementEmployeesRoute;
@@ -678,6 +746,8 @@ export interface FileRoutesByTo {
   "/working-hours": typeof WorkingHoursIndexRoute;
   "/drive-planning/freights/add-freight": typeof DrivePlanningFreightsAddFreightRoute;
   "/drive-planning/routes/add": typeof DrivePlanningRoutesAddRoute;
+  "/management/alarm-contacts/add": typeof ManagementAlarmContactsAddRoute;
+  "/management/alarm-contacts_$contactId/modify": typeof ManagementAlarmContactscontactIdModifyRoute;
   "/management/client-apps/$clientAppId": typeof ManagementClientAppsClientAppIdRoute;
   "/management/customer-sites/add": typeof ManagementCustomerSitesAddRoute;
   "/management/employees/add": typeof ManagementEmployeesAddRoute;
@@ -702,6 +772,7 @@ export interface FileRoutesById {
   "/vehicles": typeof VehiclesRouteWithChildren;
   "/drive-planning/freights": typeof DrivePlanningFreightsRouteWithChildren;
   "/drive-planning/routes": typeof DrivePlanningRoutesRouteWithChildren;
+  "/management/alarm-contacts": typeof ManagementAlarmContactsRouteWithChildren;
   "/management/client-apps": typeof ManagementClientAppsRoute;
   "/management/customer-sites": typeof ManagementCustomerSitesRoute;
   "/management/employees": typeof ManagementEmployeesRoute;
@@ -715,6 +786,8 @@ export interface FileRoutesById {
   "/working-hours/": typeof WorkingHoursIndexRoute;
   "/drive-planning/freights/add-freight": typeof DrivePlanningFreightsAddFreightRoute;
   "/drive-planning/routes/add": typeof DrivePlanningRoutesAddRoute;
+  "/management/alarm-contacts/add": typeof ManagementAlarmContactsAddRoute;
+  "/management/alarm-contacts_$contactId/modify": typeof ManagementAlarmContactscontactIdModifyRoute;
   "/management/client-apps_/$clientAppId": typeof ManagementClientAppsClientAppIdRoute;
   "/management/customer-sites_/add": typeof ManagementCustomerSitesAddRoute;
   "/management/employees_/add": typeof ManagementEmployeesAddRoute;
@@ -740,6 +813,7 @@ export interface FileRouteTypes {
     | "/vehicles"
     | "/drive-planning/freights"
     | "/drive-planning/routes"
+    | "/management/alarm-contacts"
     | "/management/client-apps"
     | "/management/customer-sites"
     | "/management/employees"
@@ -753,6 +827,8 @@ export interface FileRouteTypes {
     | "/working-hours"
     | "/drive-planning/freights/add-freight"
     | "/drive-planning/routes/add"
+    | "/management/alarm-contacts/add"
+    | "/management/alarm-contacts_$contactId/modify"
     | "/management/client-apps/$clientAppId"
     | "/management/customer-sites/add"
     | "/management/employees/add"
@@ -775,6 +851,7 @@ export interface FileRouteTypes {
     | "/vehicles"
     | "/drive-planning/freights"
     | "/drive-planning/routes"
+    | "/management/alarm-contacts"
     | "/management/client-apps"
     | "/management/customer-sites"
     | "/management/employees"
@@ -788,6 +865,8 @@ export interface FileRouteTypes {
     | "/working-hours"
     | "/drive-planning/freights/add-freight"
     | "/drive-planning/routes/add"
+    | "/management/alarm-contacts/add"
+    | "/management/alarm-contacts_$contactId/modify"
     | "/management/client-apps/$clientAppId"
     | "/management/customer-sites/add"
     | "/management/employees/add"
@@ -810,6 +889,7 @@ export interface FileRouteTypes {
     | "/vehicles"
     | "/drive-planning/freights"
     | "/drive-planning/routes"
+    | "/management/alarm-contacts"
     | "/management/client-apps"
     | "/management/customer-sites"
     | "/management/employees"
@@ -823,6 +903,8 @@ export interface FileRouteTypes {
     | "/working-hours/"
     | "/drive-planning/freights/add-freight"
     | "/drive-planning/routes/add"
+    | "/management/alarm-contacts/add"
+    | "/management/alarm-contacts_$contactId/modify"
     | "/management/client-apps_/$clientAppId"
     | "/management/customer-sites_/add"
     | "/management/employees_/add"
@@ -898,6 +980,7 @@ export const routeTree = rootRoute
     "/management": {
       "filePath": "management.tsx",
       "children": [
+        "/management/alarm-contacts",
         "/management/client-apps",
         "/management/customer-sites",
         "/management/employees",
@@ -905,6 +988,7 @@ export const routeTree = rootRoute
         "/management/holidays",
         "/management/terminals",
         "/management/vehicles",
+        "/management/alarm-contacts_$contactId/modify",
         "/management/client-apps_/$clientAppId",
         "/management/customer-sites_/add",
         "/management/employees_/add",
@@ -936,6 +1020,13 @@ export const routeTree = rootRoute
       "parent": "/drive-planning",
       "children": [
         "/drive-planning/routes/add"
+      ]
+    },
+    "/management/alarm-contacts": {
+      "filePath": "management.alarm-contacts.tsx",
+      "parent": "/management",
+      "children": [
+        "/management/alarm-contacts/add"
       ]
     },
     "/management/client-apps": {
@@ -990,6 +1081,14 @@ export const routeTree = rootRoute
     "/drive-planning/routes/add": {
       "filePath": "drive-planning.routes.add.tsx",
       "parent": "/drive-planning/routes"
+    },
+    "/management/alarm-contacts/add": {
+      "filePath": "management.alarm-contacts.add.tsx",
+      "parent": "/management/alarm-contacts"
+    },
+    "/management/alarm-contacts_$contactId/modify": {
+      "filePath": "management.alarm-contacts_$contactId.modify.tsx",
+      "parent": "/management"
     },
     "/management/client-apps_/$clientAppId": {
       "filePath": "management.client-apps_.$clientAppId.tsx",

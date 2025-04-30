@@ -10,6 +10,7 @@ import {
   ListEmployeesRequest,
   ListFreightUnitsRequest,
   ListHolidaysRequest,
+  ListPagingPolicyContactsRequest,
   ListRoutesRequest,
   ListSiteTemperaturesRequest,
   ListSitesRequest,
@@ -47,6 +48,7 @@ export const QUERY_KEYS = {
   TRUCK_LOCATIONS: "truck-locations",
   TRUCK_ODOMETER_READINGS: "truck-odometer-readings",
   TRUCK_SPEEDS: "truck-speeds",
+  ALARM_CONTACTS: "alarm-contacts",
 } as const;
 
 export const getListSitesQueryOptions = (requestParams: ListSitesRequest = {}, enabled = true) =>
@@ -294,6 +296,16 @@ export const getListTerminalTemperaturesQueryOptions = (params: ListSiteTemperat
   queryOptions({
     queryKey: [QUERY_KEYS.SITE_TEMPERATURES, params],
     queryFn: () => api.sites.listSiteTemperatures(params),
+  });
+
+export const getListPagingPolicyContactsQueryOptions = (params: ListPagingPolicyContactsRequest) =>
+  queryOptions({
+    queryKey: [QUERY_KEYS.ALARM_CONTACTS, params],
+    queryFn: async () => {
+      const [alarmContacts, headers] = await api.pagingPolicyContacts.listPagingPolicyContactsWithHeaders(params);
+      const totalResults = getTotalResultsFromHeaders(headers);
+      return { alarmContacts, totalResults };
+    },
   });
 
 /**

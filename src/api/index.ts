@@ -9,6 +9,7 @@ import {
   FreightUnitsApi,
   FreightsApi,
   HolidaysApi,
+  PagingPolicyContactsApi,
   RoutesApi,
   SitesApi,
   TasksApi,
@@ -46,4 +47,5 @@ export const api = {
   employeeWorkShifts: new EmployeeWorkShiftsApi(configuration),
   workEvents: new WorkEventsApi(configuration),
   thermometers: new ThermometersApi(configuration),
+  pagingPolicyContacts: new PagingPolicyContactsApi(configuration),
 };
