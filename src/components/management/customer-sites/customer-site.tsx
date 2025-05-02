@@ -1,4 +1,4 @@
-import { Close, SaveAlt } from "@mui/icons-material";
+import { Restore, SaveAlt } from "@mui/icons-material";
 import { Box, Button, Paper, Stack } from "@mui/material";
 import { UseMutationResult } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
@@ -37,7 +37,7 @@ function CustomerSiteComponent({ formType, site, onSave }: Props) {
     register,
     reset,
     watch,
-    formState: { errors, isDirty },
+    formState: { errors, dirtyFields },
   } = useForm<Site>({
     mode: "onChange",
     defaultValues: site,
@@ -52,7 +52,13 @@ function CustomerSiteComponent({ formType, site, onSave }: Props) {
     }
   }, [markerPosition]);
 
-  const isSaveDisabled = (errors && !markerPosition) || !isDirty;
+  const isSaveDisabled =
+    (errors && !markerPosition) ||
+    Object.keys(dirtyFields).length < 1 ||
+    Object.keys(errors).length > 0 ||
+    onSave.isPending;
+
+  const isUndoChangesDisabled = Object.keys(dirtyFields).length < 1 || onSave.isPending;
 
   const onCustomerSiteSave = async (site: Site) => {
     await onSave.mutateAsync({ ...site, siteType: SiteType.CustomerSite, deviceIds: [] });
@@ -61,11 +67,26 @@ function CustomerSiteComponent({ formType, site, onSave }: Props) {
 
   const renderToolbarButtons = () => (
     <Stack direction="row" spacing={1}>
-      {isDirty && (
-        <Button variant="text" startIcon={<Close />} onClick={() => reset(site)}>
-          {t("cancel")}
-        </Button>
-      )}
+      <Button
+        title={t("undoFormChangesTitle")}
+        variant="text"
+        disabled={isUndoChangesDisabled}
+        startIcon={<Restore />}
+        onClick={() =>
+          reset({
+            ...site,
+            name: site?.name ?? "",
+            address: site?.address ?? "",
+            postalCode: site?.postalCode ?? "",
+            locality: site?.locality ?? "",
+            additionalInfo: site?.additionalInfo ?? "",
+            location: site?.location ?? "",
+          })
+        }
+      >
+        {t("undoChanges")}
+      </Button>
+
       <Button
         variant="contained"
         startIcon={<SaveAlt />}

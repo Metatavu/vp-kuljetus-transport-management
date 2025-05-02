@@ -44,6 +44,7 @@ export interface UpdateEmployeeWorkEventRequest {
     workEvent: WorkEvent;
     employeeId: string;
     workEventId: string;
+    workShiftChangeSetId: string;
 }
 /**
  * 
@@ -255,9 +256,15 @@ export class WorkEventsApi extends runtime.BaseAPI {
         if (requestParameters.workEventId === null || requestParameters.workEventId === undefined) {
             throw new runtime.RequiredError('workEventId','Required parameter requestParameters.workEventId was null or undefined when calling updateEmployeeWorkEvent.');
         }
+        if (requestParameters.workShiftChangeSetId === null || requestParameters.workShiftChangeSetId === undefined) {
+            throw new runtime.RequiredError('workShiftChangeSetId','Required parameter requestParameters.workShiftChangeSetId was null or undefined when calling updateEmployeeWorkEvent.');
+        }
         const queryParameters: any = {};
         const headerParameters: runtime.HTTPHeaders = {};
         headerParameters['Content-Type'] = 'application/json';
+        if (requestParameters.workShiftChangeSetId !== undefined && requestParameters.workShiftChangeSetId !== null) {
+            headerParameters['WorkShiftChangeSetId'] = String(requestParameters.workShiftChangeSetId);
+        }
         if (this.configuration && this.configuration.accessToken) {
             const token = this.configuration.accessToken;
             const tokenString = await token("BearerAuth", ["manager", "employee"]);

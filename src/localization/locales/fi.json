@@ -3,6 +3,7 @@
   "save": "Tallenna",
   "saveChanges": "Tallenna muutokset",
   "undoChanges": "Peru muutokset",
+  "undoFormChangesTitle": "Peruuttaa lomakkeelle tehdyt muutokset",
   "cancel": "Peruuta",
   "close": "Sulje",
   "logout": "Kirjaudu ulos",
@@ -24,6 +25,10 @@
   "openCalendar": "Valitse päivä kalenterista",
   "showMenu": "Näytä valikko",
   "hideMenu": "Piilota valikko",
+  "notAuthorizedView": {
+    "notAuthorized": "Pääsy evätty.",
+    "description": "Sinulla ei ole tarvittavia oikeuksia sisällön katseluun."
+  },
   "equipmentType": {
     "truck": "Kuorma-auto",
     "semiTruck": "Vetoauto",
@@ -37,6 +42,9 @@
     "closeDialog": "Sulje ikkuna",
     "backToVehicles": "Takaisin ajoneuvolistaukseen",
     "backToWorkingHours": "Takaisin työaikasaldoihin"
+  },
+  "terminals": {
+    "title": "Terminaalit"
   },
   "vehicles": {
     "title": "Ajoneuvot",
@@ -84,7 +92,11 @@
     "truckDriveStateStatus": {
       "driving": "Ajo",
       "stopped": "Pysähdys",
-      "working": "Työ"
+      "working": "Työ",
+      "rest": "Tauko",
+      "driverAvailable": "Kuljettaja saatavilla",
+      "notAvailable": "Ei saatavilla",
+      "error": "Virhe"
     },
     "truckEventType": {
       "load": "Lastaus",
@@ -133,11 +145,27 @@
       "new": "Uusi terminaali",
       "modify": "Muokkaa terminaalia {{name}}",
       "name": "Nimi",
+      "map": "Kartta",
       "address": "Osoite",
       "sensors": "Anturit",
       "postalCode": "Postinumero",
       "municipality": "Paikkakunta",
+      "deviceId": "Laitetunnus",
+      "devices": "Laitteet",
       "additionalInfo": "Lisätiedot",
+      "deleteDevice": "Poista laite?",
+      "deleteDeviceDescription": "Toiminto poistaa tämän laitteen valitulta terminaalilta. Haluatko varmasti poistaa laitteen?",
+      "configureNewDevice": "Määritä uusi laite",
+      "configureNewDeviceDescription": "Syötä terminaaliin asennetun laitteen MAC-osoite. Määrityksen jälkeen voit nimetä anturit erikseen ja ne tulevat näkyviin terminaalinäkymään.",
+      "thermometers": {
+        "thermometers": "Lämpötila-anturit",
+        "name": "Nimi",
+        "hardwareSensorId": "Anturin tunniste",
+        "temperature": "Lämpötila °C",
+        "lastUpdate": "Viimeisin mittausaika",
+        "lastAlarm": "Viimeisin hälytys",
+        "activeMonitors": "Aktiiviset monitorit"
+      },
       "errorMessages": {
         "nameMissing": "Nimi on pakollinen",
         "addressMissing": "Osoite on pakollinen",
@@ -160,6 +188,7 @@
       "modify": "{{equipmentName}}",
       "type": "Tyyppi",
       "sensors": "Anturit",
+      "costCenter": "Kustannuspaikka",
       "name": "Nimi",
       "licensePlate": "Rekisterinumero",
       "number": "Tunnus",
@@ -499,6 +528,8 @@
       "halfDayAllowance": "Osapäiväraha",
       "fullDayAllowance": "Kokopäiväraha",
       "toWorkHourDetails": "Näytä erittely",
+      "noWorkHourDetailsAvailable": "Työaikaerittelyä ei saatavilla",
+      "noRecords": "ei kirjauksia",
       "approved": "Tarkastettu",
       "markAllApproved": "Merkitse kaikki tarkastetuiksi",
       "successToast": "Työvuoro tallennettu!",
@@ -524,11 +555,21 @@
         "taskSpecificBonus": "Työkohtaisuuslisä",
         "freezerBonus": "Pakastelisä",
         "absence": "Poissaolo",
+        "selectAbsence": "Valitse poissaolon tyyppi",
         "vehicle": "Auto",
         "dailyAllowance": "Päiväraha",
+        "selectDailyAllowance": "Valitse päivärahan tyyppi",
         "inspected": "Tarkastettu",
         "remarks": "Huomautuksia",
-        "calculatedHours": "Laskettu työaika"
+        "calculatedHours": "Laskettu"
+      },
+      "pdf": {
+        "costCenter": "KP",
+        "dayOffBonus": "VPTL",
+        "notes": "Huom *",
+        "reportTitle": "Työaikaraportti vuoden ",
+        "reportPrinted": "Raportti tulostettu: ",
+        "remark": "Huomautus"
       },
       "aggregationsTable": {
         "title": "{{year}} Jakson {{start}} - {{end}} tunnit yhteensä",
@@ -565,6 +606,15 @@
           "full": "Kokopäiväraha"
         }
       },
+      "abbreviations": {
+        "training": "KO",
+        "vacation": "LO",
+        "officialDuties": "LT",
+        "compensatoryLeave": "PP",
+        "sickLeave": "SL",
+        "partial": "Osa",
+        "full": "Koko"
+      },
       "changeLog": {
         "title": "Muutosloki",
         "time": "Aika",
@@ -576,7 +626,7 @@
       "workShiftDialog": {
         "title": "Työajan erittely {{date}}",
         "time": "Aika",
-        "vehicle": "Auto",
+        "costCenter": "Kustannuspaikka",
         "event": "Tapahtuma",
         "duration": "Kesto",
         "distance": "Matka",
@@ -607,7 +657,14 @@
           "driverCardInserted": "Sisäänkirjautuminen",
           "driverCardRemoved": "Uloskirjautuminen",
           "office": "Toimisto"
-        }
+        },
+        "confirmDialogMessage": {
+          "title": "Huom!",
+          "description": "Sinulla on tallentamattomia muutoksia, haluatko poistua sivulta?",
+          "confirm": "Poistu"
+        },
+        "successToast": "Muutokset tallennettu!",
+        "errorToast": "Muutosten tallennus epäonnistui!"
       }
     }
   }

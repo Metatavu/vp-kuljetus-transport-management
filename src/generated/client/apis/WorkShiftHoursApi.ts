@@ -39,6 +39,7 @@ export interface ListWorkShiftHoursRequest {
 export interface UpdateWorkShiftHoursRequest {
     workShiftHours: WorkShiftHours;
     workShiftHoursId: string;
+    workShiftChangeSetId: string;
 }
 /**
  * 
@@ -191,9 +192,15 @@ export class WorkShiftHoursApi extends runtime.BaseAPI {
         if (requestParameters.workShiftHoursId === null || requestParameters.workShiftHoursId === undefined) {
             throw new runtime.RequiredError('workShiftHoursId','Required parameter requestParameters.workShiftHoursId was null or undefined when calling updateWorkShiftHours.');
         }
+        if (requestParameters.workShiftChangeSetId === null || requestParameters.workShiftChangeSetId === undefined) {
+            throw new runtime.RequiredError('workShiftChangeSetId','Required parameter requestParameters.workShiftChangeSetId was null or undefined when calling updateWorkShiftHours.');
+        }
         const queryParameters: any = {};
         const headerParameters: runtime.HTTPHeaders = {};
         headerParameters['Content-Type'] = 'application/json';
+        if (requestParameters.workShiftChangeSetId !== undefined && requestParameters.workShiftChangeSetId !== null) {
+            headerParameters['WorkShiftChangeSetId'] = String(requestParameters.workShiftChangeSetId);
+        }
         if (this.configuration && this.configuration.accessToken) {
             const token = this.configuration.accessToken;
             const tokenString = await token("BearerAuth", ["manager"]);

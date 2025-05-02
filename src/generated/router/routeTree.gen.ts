@@ -16,6 +16,7 @@ import { Route as ManagementImport } from "./../../routes/management";
 import { Route as DrivePlanningImport } from "./../../routes/drive-planning";
 import { Route as IndexImport } from "./../../routes/index";
 import { Route as WorkingHoursIndexImport } from "./../../routes/working-hours.index";
+import { Route as TerminalsIndexImport } from "./../../routes/terminals.index";
 import { Route as VehiclesMapImport } from "./../../routes/vehicles.map";
 import { Route as VehiclesListImport } from "./../../routes/vehicles.list";
 import { Route as ManagementVehiclesImport } from "./../../routes/management.vehicles";
@@ -73,6 +74,12 @@ const IndexRoute = IndexImport.update({
 const WorkingHoursIndexRoute = WorkingHoursIndexImport.update({
   id: "/working-hours/",
   path: "/working-hours/",
+  getParentRoute: () => rootRoute,
+} as any);
+
+const TerminalsIndexRoute = TerminalsIndexImport.update({
+  id: "/terminals/",
+  path: "/terminals/",
   getParentRoute: () => rootRoute,
 } as any);
 
@@ -358,6 +365,13 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof VehiclesMapImport;
       parentRoute: typeof VehiclesImport;
     };
+    "/terminals/": {
+      id: "/terminals/";
+      path: "/terminals";
+      fullPath: "/terminals";
+      preLoaderRoute: typeof TerminalsIndexImport;
+      parentRoute: typeof rootRoute;
+    };
     "/working-hours/": {
       id: "/working-hours/";
       path: "/working-hours";
@@ -624,6 +638,7 @@ export interface FileRoutesByFullPath {
   "/management/vehicles": typeof ManagementVehiclesRoute;
   "/vehicles/list": typeof VehiclesListRoute;
   "/vehicles/map": typeof VehiclesMapRoute;
+  "/terminals": typeof TerminalsIndexRoute;
   "/working-hours": typeof WorkingHoursIndexRoute;
   "/drive-planning/freights/add-freight": typeof DrivePlanningFreightsAddFreightRoute;
   "/drive-planning/routes/add": typeof DrivePlanningRoutesAddRoute;
@@ -659,6 +674,7 @@ export interface FileRoutesByTo {
   "/management/vehicles": typeof ManagementVehiclesRoute;
   "/vehicles/list": typeof VehiclesListRoute;
   "/vehicles/map": typeof VehiclesMapRoute;
+  "/terminals": typeof TerminalsIndexRoute;
   "/working-hours": typeof WorkingHoursIndexRoute;
   "/drive-planning/freights/add-freight": typeof DrivePlanningFreightsAddFreightRoute;
   "/drive-planning/routes/add": typeof DrivePlanningRoutesAddRoute;
@@ -695,6 +711,7 @@ export interface FileRoutesById {
   "/management/vehicles": typeof ManagementVehiclesRoute;
   "/vehicles/list": typeof VehiclesListRoute;
   "/vehicles/map": typeof VehiclesMapRoute;
+  "/terminals/": typeof TerminalsIndexRoute;
   "/working-hours/": typeof WorkingHoursIndexRoute;
   "/drive-planning/freights/add-freight": typeof DrivePlanningFreightsAddFreightRoute;
   "/drive-planning/routes/add": typeof DrivePlanningRoutesAddRoute;
@@ -732,6 +749,7 @@ export interface FileRouteTypes {
     | "/management/vehicles"
     | "/vehicles/list"
     | "/vehicles/map"
+    | "/terminals"
     | "/working-hours"
     | "/drive-planning/freights/add-freight"
     | "/drive-planning/routes/add"
@@ -766,6 +784,7 @@ export interface FileRouteTypes {
     | "/management/vehicles"
     | "/vehicles/list"
     | "/vehicles/map"
+    | "/terminals"
     | "/working-hours"
     | "/drive-planning/freights/add-freight"
     | "/drive-planning/routes/add"
@@ -800,6 +819,7 @@ export interface FileRouteTypes {
     | "/management/vehicles"
     | "/vehicles/list"
     | "/vehicles/map"
+    | "/terminals/"
     | "/working-hours/"
     | "/drive-planning/freights/add-freight"
     | "/drive-planning/routes/add"
@@ -825,6 +845,7 @@ export interface RootRouteChildren {
   DrivePlanningRoute: typeof DrivePlanningRouteWithChildren;
   ManagementRoute: typeof ManagementRouteWithChildren;
   VehiclesRoute: typeof VehiclesRouteWithChildren;
+  TerminalsIndexRoute: typeof TerminalsIndexRoute;
   WorkingHoursIndexRoute: typeof WorkingHoursIndexRoute;
   VehiclesTruckIdDetailsRoute: typeof VehiclesTruckIdDetailsRoute;
   WorkingHoursEmployeeIdWorkShiftsRoute: typeof WorkingHoursEmployeeIdWorkShiftsRouteWithChildren;
@@ -835,6 +856,7 @@ const rootRouteChildren: RootRouteChildren = {
   DrivePlanningRoute: DrivePlanningRouteWithChildren,
   ManagementRoute: ManagementRouteWithChildren,
   VehiclesRoute: VehiclesRouteWithChildren,
+  TerminalsIndexRoute: TerminalsIndexRoute,
   WorkingHoursIndexRoute: WorkingHoursIndexRoute,
   VehiclesTruckIdDetailsRoute: VehiclesTruckIdDetailsRoute,
   WorkingHoursEmployeeIdWorkShiftsRoute:
@@ -857,6 +879,7 @@ export const routeTree = rootRoute
         "/drive-planning",
         "/management",
         "/vehicles",
+        "/terminals/",
         "/working-hours/",
         "/vehicles_/$truckId/details",
         "/working-hours_/$employeeId/work-shifts"
@@ -953,6 +976,9 @@ export const routeTree = rootRoute
     "/vehicles/map": {
       "filePath": "vehicles.map.tsx",
       "parent": "/vehicles"
+    },
+    "/terminals/": {
+      "filePath": "terminals.index.tsx"
     },
     "/working-hours/": {
       "filePath": "working-hours.index.tsx"

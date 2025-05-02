@@ -27,14 +27,14 @@ function AggregationsTableForDriver({ workShiftsData, employee }: Props) {
         <TableRow>
           <TableCell>{t("workingHours.workingDays.aggregationsTable.workingHours")}</TableCell>
           <TableCell align="right">
-            <Typography variant="h6">{`${WorkShiftsUtils.getTotalWorkHoursByType(
+            <Typography variant="h6">{`${WorkShiftsUtils.getWorkHoursInWorkPeriodByType(
               workShiftsData,
               WorkType.PaidWork,
             )} h`}</Typography>
           </TableCell>
           <TableCell>{t("workingHours.workingDays.aggregationsTable.eveningWork")}</TableCell>
           <TableCell align="right">
-            <Typography variant="h6">{`${WorkShiftsUtils.getTotalWorkHoursByType(
+            <Typography variant="h6">{`${WorkShiftsUtils.getWorkHoursInWorkPeriodByType(
               workShiftsData,
               WorkType.EveningAllowance,
             )} h`}</Typography>
@@ -71,21 +71,21 @@ function AggregationsTableForDriver({ workShiftsData, employee }: Props) {
           </TableCell>
           <TableCell>{t("workingHours.workingDays.aggregationsTable.nightWork")}</TableCell>
           <TableCell align="right">
-            <Typography variant="h6">{`${WorkShiftsUtils.getTotalWorkHoursByType(
+            <Typography variant="h6">{`${WorkShiftsUtils.getWorkHoursInWorkPeriodByType(
               workShiftsData,
               WorkType.NightAllowance,
             )} h`}</Typography>
           </TableCell>
           <TableCell>{t("workingHours.workingDays.aggregationsTable.unpaid")}</TableCell>
           <TableCell align="right">
-            <Typography variant="h6">{`${WorkShiftsUtils.getTotalWorkHoursByType(
+            <Typography variant="h6">{`${WorkShiftsUtils.getWorkHoursInWorkPeriodByType(
               workShiftsData,
               WorkType.Unpaid,
             )} h`}</Typography>
           </TableCell>
           <TableCell>{t("workingHours.workingDays.aggregationsTable.sickHours")}</TableCell>
           <TableCell align="right">
-            <Typography variant="h6">{`${WorkShiftsUtils.getTotalWorkHoursByType(
+            <Typography variant="h6">{`${WorkShiftsUtils.getWorkHoursInWorkPeriodByType(
               workShiftsData,
               WorkType.SickLeave,
             )} h`}</Typography>
@@ -107,7 +107,7 @@ function AggregationsTableForDriver({ workShiftsData, employee }: Props) {
           </TableCell>
           <TableCell>{t("workingHours.workingDays.aggregationsTable.holiday")}</TableCell>
           <TableCell align="right">
-            <Typography variant="h6">{`${WorkShiftsUtils.getTotalWorkHoursByType(
+            <Typography variant="h6">{`${WorkShiftsUtils.getWorkHoursInWorkPeriodByType(
               workShiftsData,
               WorkType.HolidayAllowance,
             )} h`}</Typography>
@@ -116,7 +116,7 @@ function AggregationsTableForDriver({ workShiftsData, employee }: Props) {
           <EmptyCell />
           <TableCell>{t("workingHours.workingDays.aggregationsTable.responsibilities")}</TableCell>
           <TableCell align="right">
-            <Typography variant="h6">{`${WorkShiftsUtils.getTotalWorkHoursByType(
+            <Typography variant="h6">{`${WorkShiftsUtils.getWorkHoursInWorkPeriodByType(
               workShiftsData,
               WorkType.OfficialDuties,
             )} h`}</Typography>
@@ -137,7 +137,7 @@ function AggregationsTableForDriver({ workShiftsData, employee }: Props) {
           <EmptyCell />
           <TableCell>{t("workingHours.workingDays.aggregationsTable.trainingDuringWorkTime")}</TableCell>
           <TableCell align="right">
-            <Typography variant="h6">{`${WorkShiftsUtils.getTotalWorkHoursByType(
+            <Typography variant="h6">{`${WorkShiftsUtils.getWorkHoursInWorkPeriodByType(
               workShiftsData,
               WorkType.Training,
             )} h`}</Typography>
@@ -146,7 +146,7 @@ function AggregationsTableForDriver({ workShiftsData, employee }: Props) {
         <TableRow>
           <TableCell>{t("workingHours.workingDays.aggregationsTable.waitingTime")}</TableCell>
           <TableCell align="right">
-            <Typography variant="h6">{`${WorkShiftsUtils.getTotalWorkHoursByType(
+            <Typography variant="h6">{`${WorkShiftsUtils.getWorkHoursInWorkPeriodByType(
               workShiftsData,
               WorkType.Standby,
             )} h`}</Typography>

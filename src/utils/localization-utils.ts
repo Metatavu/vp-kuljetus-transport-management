@@ -39,12 +39,12 @@ namespace LocalizationUtils {
 
   export const getLocalizedDriveStateStatus = (status: TruckDriveStateEnum, t: TFunction) =>
     ({
-      REST: t("vehicles.truckDriveStateStatus.working"),
-      DRIVER_AVAILABLE: t("vehicles.truckDriveStateStatus.working"),
+      REST: t("vehicles.truckDriveStateStatus.rest"),
+      DRIVER_AVAILABLE: t("vehicles.truckDriveStateStatus.driverAvailable"),
       WORK: t("vehicles.truckDriveStateStatus.working"),
       DRIVE: t("vehicles.truckDriveStateStatus.driving"),
-      ERROR: t("vehicles.truckDriveStateStatus.stopped"),
-      NOT_AVAILABLE: t("vehicles.truckDriveStateStatus.stopped"),
+      ERROR: t("vehicles.truckDriveStateStatus.error"),
+      NOT_AVAILABLE: t("vehicles.truckDriveStateStatus.notAvailable"),
     })[status];
 
   export const getLocalizedTruckEvent = (taskType: TaskType, t: TFunction) =>
@@ -125,10 +125,25 @@ namespace LocalizationUtils {
       SICK_LEAVE: t("workingHours.workingDays.aggregationsTable.absenceTypes.sickLeave"),
     })[absenceType];
 
+  export const getLocalizedAbsenceAbbreviation = (absenceType: AbsenceType, t: TFunction) =>
+    ({
+      TRAINING: t("workingHours.workingDays.abbreviations.training"),
+      VACATION: t("workingHours.workingDays.abbreviations.vacation"),
+      OFFICIAL_DUTIES: t("workingHours.workingDays.abbreviations.officialDuties"),
+      COMPENSATORY_LEAVE: t("workingHours.workingDays.abbreviations.compensatoryLeave"),
+      SICK_LEAVE: t("workingHours.workingDays.abbreviations.sickLeave"),
+    })[absenceType];
+
   export const getPerDiemAllowanceType = (perDiemAllowanceType: PerDiemAllowanceType, t: TFunction) =>
     ({
       PARTIAL: t("workingHours.workingDays.aggregationsTable.perDiemAllowanceTypes.partial"),
       FULL: t("workingHours.workingDays.aggregationsTable.perDiemAllowanceTypes.full"),
+    })[perDiemAllowanceType];
+
+  export const getPerDiemAllowanceAbbreviation = (perDiemAllowanceType: PerDiemAllowanceType, t: TFunction) =>
+    ({
+      PARTIAL: t("workingHours.workingDays.abbreviations.partial"),
+      FULL: t("workingHours.workingDays.abbreviations.full"),
     })[perDiemAllowanceType];
 }
 

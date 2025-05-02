@@ -32,21 +32,49 @@ function TerminalSiteModify() {
   const { siteId } = Route.useParams();
   const queryClient = useQueryClient();
   const { t } = useTranslation();
-
   const siteQuery = useQuery(getFindSiteQueryOptions(siteId));
 
-  const updateSite = useMutation({
-    mutationFn: (site: Site) => api.sites.updateSite({ siteId: siteId, site }),
+  const updateSiteAndThermometers = useMutation({
+    mutationFn: async ({
+      site,
+      originalSite,
+      changedThermometers,
+    }: {
+      site: Site;
+      originalSite: Site;
+      changedThermometers: { newName: string; thermometerId: string }[];
+    }) => {
+      const siteHasChanges = JSON.stringify(site) !== JSON.stringify(originalSite);
+
+      // Update the Site if there are changes
+      if (siteHasChanges) {
+        await api.sites.updateSite({ siteId: siteId, site });
+      }
+
+      // If there are changed thermometers, update them as well
+      if (changedThermometers.length > 0) {
+        await Promise.all(
+          changedThermometers.map(({ newName, thermometerId }) =>
+            api.thermometers.updateTerminalThermometer({
+              thermometerId,
+              updateTruckOrTowableThermometerRequest: { name: newName },
+            }),
+          ),
+        );
+      }
+    },
     onSuccess: () => {
       toast.success(t("management.terminals.successToast"));
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.SITES] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.SITE_TEMPERATURES] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.TERMINAL_THERMOMETERS] });
     },
     onError: () => toast.error(t("management.terminals.errorToast")),
   });
 
   return (
     <LoaderWrapper loading={siteQuery.isLoading}>
-      <Terminal formType="MODIFY" site={site} onSave={updateSite} />
+      <Terminal formType="MODIFY" site={site} onUpdate={updateSiteAndThermometers} />
     </LoaderWrapper>
   );
 }

@@ -11,6 +11,7 @@ import {
   ListFreightUnitsRequest,
   ListHolidaysRequest,
   ListRoutesRequest,
+  ListSiteTemperaturesRequest,
   ListSitesRequest,
   ListTasksRequest,
   ListTerminalThermometersRequest,
@@ -42,6 +43,10 @@ export const QUERY_KEYS = {
   TERMINAL_THERMOMETERS: "terminal-thermometers",
   TRUCK_TEMPERATURES: "truck-temperatures",
   TOWABLE_TEMPERATURES: "towable-temperatures",
+  SITE_TEMPERATURES: "site-temperatures",
+  TRUCK_LOCATIONS: "truck-locations",
+  TRUCK_ODOMETER_READINGS: "truck-odometer-readings",
+  TRUCK_SPEEDS: "truck-speeds",
 } as const;
 
 export const getListSitesQueryOptions = (requestParams: ListSitesRequest = {}, enabled = true) =>
@@ -283,6 +288,12 @@ export const getListTowableTemperaturesQueryOptions = (params: ListTowableTemper
   queryOptions({
     queryKey: [QUERY_KEYS.TOWABLE_TEMPERATURES, params],
     queryFn: () => api.towables.listTowableTemperatures(params),
+  });
+
+export const getListTerminalTemperaturesQueryOptions = (params: ListSiteTemperaturesRequest) =>
+  queryOptions({
+    queryKey: [QUERY_KEYS.SITE_TEMPERATURES, params],
+    queryFn: () => api.sites.listSiteTemperatures(params),
   });
 
 /**

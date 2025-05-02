@@ -3,6 +3,7 @@
   "save": "Save",
   "saveChanges": "Save changes",
   "undoChanges": "Undo changes",
+  "undoFormChangesTitle": "Undo form changes",
   "cancel": "Cancel",
   "close": "Close",
   "logout": "Logout",
@@ -24,6 +25,10 @@
   "selectDate": "Select date",
   "showMenu": "Show menu",
   "hideMenu": "Hide menu",
+  "notAuthorizedView": {
+    "notAuthorized": "Access denied",
+    "description": "You don't have permission to access this content."
+  },
   "equipmentType": {
     "truck": "Truck",
     "semiTruck": "Semi truck",
@@ -37,6 +42,9 @@
     "closeDialog": "Close dialog",
     "backToVehicles": "Back to vehicles",
     "backToWorkingHours": "Back to working hours"
+  },
+  "terminals": {
+    "title": "Terminals"
   },
   "vehicles": {
     "title": "Vehicle list",
@@ -137,11 +145,27 @@
       "modify": "Modify terminal {{name}}",
       "type": "Type",
       "name": "Name",
+      "map": "Map",
       "sensors": "Sensors",
       "address": "Address",
       "postalCode": "Postal code",
       "municipality": "Municipality",
+      "deviceId": "Device ID",
+      "devices": "Devices",
       "additionalInfo": "Additional info",
+      "deleteDevice": "Delete device?",
+      "deleteDeviceDescription": "Are you sure you want to delete this device?",
+      "configureNewDevice": "Configure new device",
+      "configureNewDeviceDescription": "Configure new device for terminal by entering device MAC address.",
+      "thermometers": {
+        "thermometers": "Thermometers",
+        "name": "Name",
+        "hardwareSensorId": "Hardware sensor ID",
+        "temperature": "Temperature °C",
+        "lastUpdate": "Last update",
+        "lastAlarm": "Last alarm",
+        "activeMonitors": "Active monitors"
+      },
       "errorMessages": {
         "nameMissing": "Name is required",
         "addressMissing": "Address is required",
@@ -164,6 +188,7 @@
       "modify": "Modify equipment {{equipmentName}}",
       "type": "Type",
       "name": "Name",
+      "costCenter": "Cost center",
       "licensePlate": "License plate",
       "number": "Number",
       "vin": "VIN number",
@@ -412,6 +437,8 @@
       "halfDayAllowance": "Half-Day Allowance",
       "fullDayAllowance": "Full-Day Allowance",
       "toWorkHourDetails": "To Work hour details",
+      "noWorkHourDetailsAvailable": "No working hour details available",
+      "noRecords": "no records",
       "approved": "Checked",
       "markAllApproved": "Mark all checked",
       "successToast": "Working hours saved!",
@@ -437,11 +464,21 @@
         "taskSpecificBonus": "Task-Specific Bonus",
         "freezerBonus": "Freezer Bonus",
         "absence": "Absence",
+        "selectAbsence": "Select absence type",
         "vehicle": "Vehicle",
         "dailyAllowance": "Daily Allowance",
+        "selectDailyAllowance": "Select daily allowance type",
         "inspected": "Inspected",
         "remarks": "Remarks",
-        "calculatedHours": "Calculated hours"
+        "calculatedHours": "Calculated"
+      },
+      "pdf": {
+        "costCenter": "CC",
+        "dayOffBonus": "DOB",
+        "notes": "Notes *",
+        "reportTitle": "Report from year ",
+        "reportPrinted": " Report printed: ",
+        "remark": "Remark"
       },
       "aggregationsTable": {
         "title": "{{year}} Working period {{start}} - {{end}} aggregated working hours",
@@ -478,6 +515,15 @@
           "full": "Full"
         }
       },
+      "abbreviations": {
+        "training": "TR",
+        "vacation": "VA",
+        "officialDuties": "OD",
+        "compensatoryLeave": "CL",
+        "sickLeave": "SL",
+        "partial": "Part",
+        "full": "Full"
+      },
       "changeLog": {
         "title": "Change log",
         "time": "Time",
@@ -489,7 +535,7 @@
       "workShiftDialog": {
         "title": "Work shift events {{date}}",
         "time": "Time",
-        "vehicle": "Vehicle",
+        "costCenter": "Cost center",
         "event": "Event",
         "duration": "Duration",
         "distance": "Distance",
@@ -520,7 +566,14 @@
           "driverCardInserted": "Driver card inserted",
           "driverCardRemoved": "Driver card removed",
           "office": "Office"
-        }
+        },
+        "confirmDialogMessage": {
+          "title": "Note!",
+          "description": "You have unsaved changes. Are you sure you want to leave the page?",
+          "confirm": "Leave"
+        },
+        "successToast": "Changes saved!",
+        "errorToast": "Failed to save changes!"
       }
     }
   }

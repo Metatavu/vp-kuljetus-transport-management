@@ -30,7 +30,7 @@ const TaskTableRow = ({ tasks, type, site, groupNumber, taskCount }: Props) => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const navigate = useNavigate({ from: "/drive-planning/routes" });
-  const freightsQuery = useQuery(getListFreightsQueryOptions());
+  const freightsQuery = useQuery(getListFreightsQueryOptions({ max: 100 }));
   const [menuCoordinates, setMenuCoordinates] = useState<{ clientX: number; clientY: number } | undefined>();
 
   const { name, address, postalCode, locality } = site;

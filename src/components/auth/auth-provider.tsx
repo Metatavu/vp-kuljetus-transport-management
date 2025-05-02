@@ -1,6 +1,7 @@
+import NotAuthorizedView from "components/generic/not-authorized-view";
 import { useAtom, useSetAtom } from "jotai";
 import Keycloak from "keycloak-js";
-import { ReactNode, useCallback, useEffect } from "react";
+import { ReactNode, useCallback, useEffect, useState } from "react";
 import config from "../../app/config";
 import { authAtom, userProfileAtom } from "../../atoms/auth";
 
@@ -11,11 +12,15 @@ type Props = {
 const keycloak = new Keycloak(config.auth);
 
 const AuthenticationProvider = ({ children }: Props) => {
-  const [auth, setAuth] = useAtom(authAtom);
+  const [_auth, setAuth] = useAtom(authAtom);
   const setUserProfile = useSetAtom(userProfileAtom);
+  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
 
   const updateAuthData = useCallback(() => {
     if (!(keycloak.tokenParsed && keycloak.token)) return;
+
+    const roles = keycloak.tokenParsed?.realm_access?.roles || [];
+    const hasAccess = roles.includes("manager");
 
     setAuth({
       token: keycloak.tokenParsed,
@@ -24,11 +29,13 @@ const AuthenticationProvider = ({ children }: Props) => {
     });
 
     setUserProfile(keycloak.profile);
+    setIsAuthorized(hasAccess);
   }, [setAuth, setUserProfile]);
 
   const clearAuthData = useCallback(() => {
     setAuth(undefined);
     setUserProfile(undefined);
+    setIsAuthorized(false);
   }, [setAuth, setUserProfile]);
 
   const initAuth = useCallback(async () => {
@@ -55,6 +62,8 @@ const AuthenticationProvider = ({ children }: Props) => {
         onLoad: "login-required",
         checkLoginIframe: false,
       });
+
+      updateAuthData();
     } catch (error) {
       console.error(error);
     }
@@ -63,10 +72,9 @@ const AuthenticationProvider = ({ children }: Props) => {
   /**
    * Initializes authentication when component mounts
    */
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (keycloak.authenticated === undefined) initAuth();
-  }, []);
+  }, [initAuth]);
 
   useEffect(() => {
     const interval = setInterval(async () => {
@@ -76,7 +84,13 @@ const AuthenticationProvider = ({ children }: Props) => {
     return () => clearInterval(interval);
   }, [updateAuthData]);
 
-  if (!auth) return null;
+  if (isAuthorized === null) {
+    return null;
+  }
+
+  if (!isAuthorized) {
+    return <NotAuthorizedView logout={() => keycloak.logout({ redirectUri: `${window.location.origin}` })} />;
+  }
 
   return children;
 };

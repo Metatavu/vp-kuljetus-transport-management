@@ -50,9 +50,9 @@ const RoutesTable = ({
   const { cellModesModel, handleCellClick, handleCellModelsChange } = useSingleClickCellEditMode(onTasksCellClick);
   const [expandedRows, setExpandedRows] = useState<string[]>([]);
 
-  const trucksQuery = useQuery(getListTrucksQueryOptions());
-  const driversQuery = useQuery(getListDriversQueryOptions());
-  const sitesQuery = useQuery(getListSitesQueryOptions());
+  const trucksQuery = useQuery(getListTrucksQueryOptions({ max: 100 }));
+  const driversQuery = useQuery(getListDriversQueryOptions({ max: 100 }));
+  const sitesQuery = useQuery(getListSitesQueryOptions({ max: 100 }));
 
   const processRowUpdate = async (newRow: Route, oldRow: Route) => {
     if (deepEqual(oldRow, newRow)) return oldRow;
