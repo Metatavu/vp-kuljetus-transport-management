@@ -129,7 +129,8 @@ function ChangeLog({ changeSets, workShiftDate, employees, workShiftHours, workE
     }
     if (entry.reason === WorkShiftChangeReason.WorkeventUpdatedType) {
       return `${LocalizationUtils.getWorkShiftChangeReason(entry.reason, t)} (${DateTime.fromJSDate(
-        workEvents?.find((workEvent) => workEvent.id === entry.workEventId)?.time ?? DateTime.now().toJSDate(),
+        // biome-ignore lint/style/noNonNullAssertion: Date always exists
+        workEvents?.find((workEvent) => workEvent.id === entry.workEventId)?.time!,
       ).toFormat("HH:mm")})`;
     }
     return entry.reason ? LocalizationUtils.getWorkShiftChangeReason(entry.reason, t) : "-";
