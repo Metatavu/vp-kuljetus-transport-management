@@ -64,7 +64,7 @@ function ChangeLog({ changeSets, workShiftDate, employees, workShiftHours, workE
   };
 
   const formatChange = (oldValue: string | undefined, newValue: string | undefined) => {
-    return `${oldValue ?? "-"} -> ${newValue ?? "-"}`;
+    return `${oldValue ?? "-"} → ${newValue ?? "-"}`;
   };
 
   const getChangedValues = (entry: WorkShiftChange) => {
