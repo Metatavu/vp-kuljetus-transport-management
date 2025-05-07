@@ -257,6 +257,9 @@
         "name": {
           "label": "Name",
           "placeholder": "Search by name"
+        },
+        "includeArchived": {
+          "label": "Archived"
         }
       },
       "employeeNumber": "Number",
