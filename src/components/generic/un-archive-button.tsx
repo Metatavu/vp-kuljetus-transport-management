@@ -19,7 +19,7 @@ const UnArchiveButton = ({ title, description, onUnArchive }: Props) => {
       showConfirmDialog({
         title: title,
         description: description,
-        positiveButtonColor: "info",
+        positiveButtonColor: "primary",
         positiveButtonText: t("unArchive"),
         onPositiveClick: onUnArchive,
       }),
@@ -29,7 +29,7 @@ const UnArchiveButton = ({ title, description, onUnArchive }: Props) => {
   return (
     <Button
       variant="text"
-      color="info"
+      color="primary"
       startIcon={<Replay />}
       sx={{ alignSelf: "flex-end" }}
       onClick={onButtonClick}
