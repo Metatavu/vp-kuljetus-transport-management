@@ -11,6 +11,7 @@
   "delete": "Delete",
   "approve": "Approve",
   "archive": "Archive",
+  "unArchive": "Unarchive",
   "open": "Open",
   "noSelection": "No selection",
   "all": "All",
@@ -287,8 +288,13 @@
         "title": "Archive employee",
         "description": "Are you sure you want to archive employee {{name}}?"
       },
+      "unArchiveDialog": {
+        "title": "Unarchive employee",
+        "description": "Are you sure you want to unarchive employee {{name}}?"
+      },
       "successToast": "Employee saved!",
       "archiveToast": "Employee archived!",
+      "unArchiveToast": "Employee unarchived!",
       "errorToast": "Failed to save employee!"
     },
     "holidays": {
