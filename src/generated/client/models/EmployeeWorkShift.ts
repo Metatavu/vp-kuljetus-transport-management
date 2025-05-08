@@ -119,6 +119,12 @@ export interface EmployeeWorkShift {
      */
     notes?: string;
     /**
+     * 
+     * @type {string}
+     * @memberof EmployeeWorkShift
+     */
+    defaultCostCenter?: string;
+    /**
      * Payroll export ID. This is filled when work shift is linked to a payroll export. Work shift cannot be
      * included in another payroll export if it is already linked to one.
      * 
@@ -168,6 +174,7 @@ export function EmployeeWorkShiftFromJSONTyped(json: any, ignoreDiscriminator: b
         'perDiemAllowance': !exists(json, 'perDiemAllowance') ? undefined : PerDiemAllowanceTypeFromJSON(json['perDiemAllowance']),
         'approved': json['approved'],
         'notes': !exists(json, 'notes') ? undefined : json['notes'],
+        'defaultCostCenter': !exists(json, 'defaultCostCenter') ? undefined : json['defaultCostCenter'],
         'payrollExportId': !exists(json, 'payrollExportId') ? undefined : json['payrollExportId'],
         'costCentersFromEvents': json['costCentersFromEvents'],
     };
@@ -189,6 +196,7 @@ export function EmployeeWorkShiftToJSON(value?: EmployeeWorkShift | null): any {
         'perDiemAllowance': PerDiemAllowanceTypeToJSON(value.perDiemAllowance),
         'approved': value.approved,
         'notes': value.notes,
+        'defaultCostCenter': value.defaultCostCenter,
         'costCentersFromEvents': value.costCentersFromEvents,
     };
 }

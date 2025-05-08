@@ -42,6 +42,7 @@ models/PayrollExport.ts
 models/PerDiemAllowanceType.ts
 models/Route.ts
 models/SalaryGroup.ts
+models/SalaryPeriodTotalWorkHours.ts
 models/Site.ts
 models/SiteType.ts
 models/SortOrder.ts
@@ -55,7 +56,11 @@ models/ThermalMonitorIncident.ts
 models/ThermalMonitorIncidentPagedPolicy.ts
 models/ThermalMonitorIncidentStatus.ts
 models/ThermalMonitorPagingPolicy.ts
+models/ThermalMonitorScheduleDate.ts
+models/ThermalMonitorSchedulePeriod.ts
+models/ThermalMonitorScheduleWeekDay.ts
 models/ThermalMonitorStatus.ts
+models/ThermalMonitorType.ts
 models/Towable.ts
 models/Truck.ts
 models/TruckDriveState.ts

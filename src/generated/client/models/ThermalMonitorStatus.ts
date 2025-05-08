@@ -19,13 +19,16 @@
  * 
  * Active monitors are actively monitoring the temperatures of the thermometers they are associated with. Monitors can be paused if they are active and changed back to active if paused but otherwise this field is controlled automatically by the server.
  * 
+ * Inactive monitors are scheduled monitors that should not be running at a given time according to their schedules.
+ * 
  * @export
  */
 export const ThermalMonitorStatus = {
     Pending: 'PENDING',
     Active: 'ACTIVE',
     Paused: 'PAUSED',
-    Finished: 'FINISHED'
+    Finished: 'FINISHED',
+    Inactive: 'INACTIVE'
 } as const;
 export type ThermalMonitorStatus = typeof ThermalMonitorStatus[keyof typeof ThermalMonitorStatus];
 

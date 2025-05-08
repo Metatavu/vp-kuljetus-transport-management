@@ -14,13 +14,6 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { PagingPolicyType } from './PagingPolicyType';
-import {
-    PagingPolicyTypeFromJSON,
-    PagingPolicyTypeFromJSONTyped,
-    PagingPolicyTypeToJSON,
-} from './PagingPolicyType';
-
 /**
  * Represents a paging policy for thermal monitor actions
  * @export
@@ -33,12 +26,6 @@ export interface ThermalMonitorPagingPolicy {
      * @memberof ThermalMonitorPagingPolicy
      */
     id?: string;
-    /**
-     * 
-     * @type {PagingPolicyType}
-     * @memberof ThermalMonitorPagingPolicy
-     */
-    type: PagingPolicyType;
     /**
      * 
      * @type {string}
@@ -70,7 +57,6 @@ export interface ThermalMonitorPagingPolicy {
  */
 export function instanceOfThermalMonitorPagingPolicy(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "type" in value;
     isInstance = isInstance && "thermalMonitorId" in value;
     isInstance = isInstance && "contactId" in value;
     isInstance = isInstance && "priority" in value;
@@ -90,7 +76,6 @@ export function ThermalMonitorPagingPolicyFromJSONTyped(json: any, ignoreDiscrim
     return {
         
         'id': !exists(json, 'id') ? undefined : json['id'],
-        'type': PagingPolicyTypeFromJSON(json['type']),
         'thermalMonitorId': json['thermalMonitorId'],
         'contactId': json['contactId'],
         'priority': json['priority'],
@@ -108,7 +93,6 @@ export function ThermalMonitorPagingPolicyToJSON(value?: ThermalMonitorPagingPol
     return {
         
         'id': value.id,
-        'type': PagingPolicyTypeToJSON(value.type),
         'thermalMonitorId': value.thermalMonitorId,
         'contactId': value.contactId,
         'priority': value.priority,

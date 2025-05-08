@@ -148,6 +148,11 @@ namespace LocalizationUtils {
       FULL: t("workingHours.workingDays.abbreviations.full"),
     })[perDiemAllowanceType];
 
+  export const getLocalizedPagingPolicyType = (pagingPolicyType: string, t: TFunction) =>
+    ({
+      EMAIL: t("management.alarmContacts.alarmType.title"),
+    })[pagingPolicyType];
+
   export const getWorkShiftChangeReason = (workShiftChangeReason: WorkShiftChangeReason, t: TFunction) =>
     ({
       WORKSHIFT_CREATED: t("workingHours.workingDays.changeLog.workShiftChangeReasons.workShiftCreated"),
