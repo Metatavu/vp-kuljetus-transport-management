@@ -8,6 +8,8 @@ import {
   TaskType,
   TruckDriveStateEnum,
   WorkEventType,
+  WorkShiftChangeReason,
+  WorkType,
 } from "generated/client";
 import { TFunction } from "i18next";
 
@@ -150,6 +152,48 @@ namespace LocalizationUtils {
     ({
       EMAIL: t("management.alarmContacts.alarmType.title"),
     })[pagingPolicyType];
+
+  export const getWorkShiftChangeReason = (workShiftChangeReason: WorkShiftChangeReason, t: TFunction) =>
+    ({
+      WORKSHIFT_CREATED: t("workingHours.workingDays.changeLog.workShiftChangeReasons.workShiftCreated"),
+      WORKSHIFT_UPDATED_APPROVED: t(
+        "workingHours.workingDays.changeLog.workShiftChangeReasons.workShiftUpdatedApproved",
+      ),
+      WORKSHIFT_UPDATED_DAYOFFWORKALLOWANCE: t(
+        "workingHours.workingDays.changeLog.workShiftChangeReasons.workShiftUpdatedDayOffWorkAllowance",
+      ),
+      WORKSHIFT_UPDATED_ABSENCE: t("workingHours.workingDays.changeLog.workShiftChangeReasons.workShiftUpdatedAbsence"),
+      WORKSHIFT_UPDATED_PERDIEMALLOWANCE: t(
+        "workingHours.workingDays.changeLog.workShiftChangeReasons.workShiftUpdatedPerDiemAllowance",
+      ),
+      WORKSHIFT_UPDATED_NOTES: t("workingHours.workingDays.changeLog.workShiftChangeReasons.workShiftUpdatedNotes"),
+      WORKEVENT_UPDATED_COSTCENTER: t(
+        "workingHours.workingDays.changeLog.workShiftChangeReasons.workEventUpdatedCostCenter",
+      ),
+      WORKEVENT_UPDATED_TYPE: t("workingHours.workingDays.changeLog.workShiftChangeReasons.workEventUpdatedType"),
+      WORKEVENT_UPDATED_TIMESTAMP: t(
+        "workingHours.workingDays.changeLog.workShiftChangeReasons.workEventUpdatedTimestamp",
+      ),
+      WORKSHIFTHOURS_UPDATED_ACTUALHOURS: t(
+        "workingHours.workingDays.changeLog.workShiftChangeReasons.workShiftHoursUpdatedActualHours",
+      ),
+    })[workShiftChangeReason];
+
+  export const getLocalizedWorkType = (workType: WorkType, t: TFunction) =>
+    ({
+      PAID_WORK: t("workingHours.workingDays.workTypes.paidWork"),
+      BREAK: t("workingHours.workingDays.workTypes.break"),
+      STANDBY: t("workingHours.workingDays.workTypes.standby"),
+      EVENING_ALLOWANCE: t("workingHours.workingDays.workTypes.eveningAllowance"),
+      NIGHT_ALLOWANCE: t("workingHours.workingDays.workTypes.nightAllowance"),
+      HOLIDAY_ALLOWANCE: t("workingHours.workingDays.workTypes.holidayAllowance"),
+      JOB_SPECIFIC_ALLOWANCE: t("workingHours.workingDays.workTypes.jobSpecificAllowance"),
+      FROZEN_ALLOWANCE: t("workingHours.workingDays.workTypes.frozenAllowance"),
+      OFFICIAL_DUTIES: t("workingHours.workingDays.workTypes.officialDuties"),
+      SICK_LEAVE: t("workingHours.workingDays.workTypes.sickLeave"),
+      TRAINING: t("workingHours.workingDays.workTypes.training"),
+      UNPAID: t("workingHours.workingDays.workTypes.unpaid"),
+    })[workType];
 }
 
 export default LocalizationUtils;

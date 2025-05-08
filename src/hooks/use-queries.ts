@@ -21,6 +21,7 @@ import {
   ListTruckOrTowableThermometersRequest,
   ListTruckTemperaturesRequest,
   ListTrucksRequest,
+  ListWorkShiftChangeSetsRequest,
   ListWorkShiftHoursRequest,
 } from "generated/client";
 
@@ -50,6 +51,7 @@ export const QUERY_KEYS = {
   TRUCK_ODOMETER_READINGS: "truck-odometer-readings",
   TRUCK_SPEEDS: "truck-speeds",
   ALARM_CONTACTS: "alarm-contacts",
+  WORK_SHIFT_CHANGE_SETS: "work-shift-change-sets",
 } as const;
 
 export const getListSitesQueryOptions = (requestParams: ListSitesRequest = {}, enabled = true) =>
@@ -138,6 +140,23 @@ export const getEmployeeWorkShiftsQueryOptions = (requestParams: ListEmployeeWor
       const totalResults = getTotalResultsFromHeaders(headers);
 
       return { employeeWorkShifts, totalResults };
+    },
+  });
+};
+
+export const getListWorkShiftChangeSetsQueryOptions = (
+  requestParams: ListWorkShiftChangeSetsRequest,
+  enabled = true,
+) => {
+  return queryOptions({
+    queryKey: [QUERY_KEYS.WORK_SHIFT_CHANGE_SETS, requestParams],
+    enabled: enabled,
+    queryFn: async () => {
+      const [workShiftChangeSets, headers] =
+        await api.workShiftChangeSets.listWorkShiftChangeSetsWithHeaders(requestParams);
+      const totalResults = getTotalResultsFromHeaders(headers);
+
+      return { workShiftChangeSets, totalResults };
     },
   });
 };
