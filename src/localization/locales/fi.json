@@ -350,7 +350,7 @@
       "editSuccessToast": "Ilmoitusyhteystiedon muutos tallennettu!",
       "editErrorToast": "Ilmoitusyhteystiedon muutos epäonnistui!",
       "deletePagingPolicyContact": "Poista ilmoitusyhteystieto",
-      "deleteConfirmationDescription": "Haluatko varmasti poistaa arkipyhän {{name}}?",
+      "deleteConfirmationDescription": "Haluatko varmasti poistaa yhteystiedon {{name}}?",
       "editAlarmContact": "Muokkaa ilmoitusyhteystietoa",
       "errorEmail": "Sähköposti on virheellinen"
     }
