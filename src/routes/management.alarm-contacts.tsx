@@ -63,23 +63,9 @@ function ManagementAlarmContacts() {
   const columns: GridColDef<PagingPolicyContact>[] = useMemo(
     () => [
       {
-        field: "id",
-        headerAlign: "left",
-        width: 0,
-        sortable: false,
-        flex: 1,
-      },
-      {
         field: "name",
         headerAlign: "left",
         headerName: t("management.alarmContacts.name"),
-        sortable: false,
-        flex: 1,
-      },
-      {
-        field: "contact",
-        headerAlign: "left",
-        headerName: t("management.alarmContacts.contact"),
         sortable: false,
         flex: 1,
       },
@@ -92,6 +78,13 @@ function ManagementAlarmContacts() {
         valueFormatter: ({ value }) => LocalizationUtils.getLocalizedPagingPolicyType(value as PagingPolicyType, t),
       },
       {
+        field: "contact",
+        headerAlign: "left",
+        headerName: t("management.alarmContacts.contact"),
+        sortable: false,
+        flex: 1,
+      },
+      {
         field: "actions",
         type: "actions",
         flex: 0.8,
@@ -99,9 +92,23 @@ function ManagementAlarmContacts() {
         renderCell: ({ row }) => (
           <Stack direction="row" spacing={1}>
             <Button
+              title={t("management.alarmContacts.editAlarmContact")}
+              size="small"
+              variant="outlined"
+              onClick={() =>
+                navigate({
+                  to: `/management/alarm-contacts/${row.id}/modify`,
+                  params: { contactId: row.id },
+                })
+              }
+            >
+              {t("edit")}
+            </Button>
+            <Button
               title={t("management.alarmContacts.deletePagingPolicyContact")}
               size="small"
               color="error"
+              variant="outlined"
               onClick={() =>
                 showConfirmDialog({
                   title: t("management.alarmContacts.deletePagingPolicyContact"),
@@ -115,21 +122,6 @@ function ManagementAlarmContacts() {
               }
             >
               {t("delete")}
-            </Button>
-            <Button
-              title={t("management.alarmContacts.editAlarmContact")}
-              size="small"
-              variant="outlined"
-              onClick={() =>
-                navigate({
-                  to: "/management/alarm-contacts_$contactId/modify",
-                  // biome-ignore lint/style/noNonNullAssertion: <explanation>
-                  params: { contactId: row.id! },
-                  search: { date: DateTime.now() },
-                })
-              }
-            >
-              {t("edit")}
             </Button>
           </Stack>
         ),

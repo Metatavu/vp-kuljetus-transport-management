@@ -2,6 +2,7 @@ import { queryOptions } from "@tanstack/react-query";
 import { api } from "api/index";
 import {
   FindEmployeeWorkShiftRequest,
+  FindPagingPolicyContactRequest,
   FindTowableRequest,
   FindTruckRequest,
   ListClientAppsRequest,
@@ -306,6 +307,13 @@ export const getListPagingPolicyContactsQueryOptions = (params: ListPagingPolicy
       const totalResults = getTotalResultsFromHeaders(headers);
       return { alarmContacts, totalResults };
     },
+  });
+
+export const getFindPagingPolicyContactQueryOptions = (params: FindPagingPolicyContactRequest) =>
+  queryOptions({
+    queryKey: [QUERY_KEYS.ALARM_CONTACTS, params.pagingPolicyContactId],
+    queryFn: () =>
+      api.pagingPolicyContacts.findPagingPolicyContact({ pagingPolicyContactId: params.pagingPolicyContactId }),
   });
 
 /**

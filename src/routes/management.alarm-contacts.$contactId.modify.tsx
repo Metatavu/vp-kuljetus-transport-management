@@ -1,26 +1,31 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { api } from "api/index";
+import LoaderWrapper from "components/generic/loader-wrapper";
 import ModifyAlarmContactFormDialog from "components/management/alarm-contacts/modify-alarm-contact-dialog";
 import { PagingPolicyContact } from "generated/client";
-import { QUERY_KEYS } from "hooks/use-queries";
-import { DateTime } from "luxon";
+import { QUERY_KEYS, getFindPagingPolicyContactQueryOptions } from "hooks/use-queries";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
-export const Route = createFileRoute(
-  "/management/alarm-contacts_$contactId/modify",
-)({
+export const Route = createFileRoute("/management/alarm-contacts/$contactId/modify")({
   component: ModifyAlarmContact,
-  validateSearch: ({ date }: Record<string, unknown>) => ({
-    date: date ? DateTime.fromISO(date as string) : DateTime.now(),
-  }),
 });
 
 function ModifyAlarmContact() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { t } = useTranslation();
+  const { contactId } = Route.useParams();
+
+  if (!contactId) {
+    return null;
+  }
+  const pagingPolicyContactQuery = useQuery(
+    getFindPagingPolicyContactQueryOptions({
+      pagingPolicyContactId: contactId,
+    }),
+  );
 
   const updatePagingPolicyContact = useMutation({
     mutationFn: async (pagingPolicyContact: PagingPolicyContact) => {
@@ -33,14 +38,18 @@ function ModifyAlarmContact() {
     onSuccess: () => {
       toast.success(t("management.alarmContacts.editSuccessToast"));
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ALARM_CONTACTS] });
+      navigate({ to: "/management/alarm-contacts" });
     },
     onError: () => toast.error(t("management.alarmContacts.editErrorToast")),
   });
 
   return (
-    <ModifyAlarmContactFormDialog
-      onModify={updatePagingPolicyContact}
-      onClose={() => navigate({ to: ".." })}
-    />
+    <LoaderWrapper loading={pagingPolicyContactQuery.isLoading}>
+      <ModifyAlarmContactFormDialog
+        pagingPolicyContact={pagingPolicyContactQuery.data}
+        onModify={updatePagingPolicyContact}
+        onClose={() => navigate({ to: "/management/alarm-contacts" })}
+      />
+    </LoaderWrapper>
   );
 }

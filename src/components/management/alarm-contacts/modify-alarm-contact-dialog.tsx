@@ -12,6 +12,7 @@ type PagingPolicyContactForm = {
   name: string;
   contact: string;
   type: PagingPolicyType;
+  id: string;
 };
 
 type Props = {
@@ -30,14 +31,15 @@ const ModifyAlarmContactFormDialog = ({ pagingPolicyContact, onModify, onClose }
   } = useForm<PagingPolicyContactForm>({
     mode: "onChange",
     defaultValues: {
-      name: pagingPolicyContact?.name ?? "",
-      contact: pagingPolicyContact?.contact ?? "",
+      name: pagingPolicyContact?.name,
+      contact: pagingPolicyContact?.contact,
       type: pagingPolicyContact?.type ?? PagingPolicyType.Email,
+      id: pagingPolicyContact?.id,
     },
   });
 
   const onSaveClick = async (pagingPolicyContact: PagingPolicyContact) => {
-    if (!onModify) return;
+    if (!onModify || !pagingPolicyContact.id) return;
     await onModify.mutateAsync(pagingPolicyContact);
   };
 
@@ -60,7 +62,7 @@ const ModifyAlarmContactFormDialog = ({ pagingPolicyContact, onModify, onClose }
     <Dialog open onClose={onClose} PaperProps={{ sx: { minWidth: "260px", margin: 0, borderRadius: 0 } }}>
       <DialogHeader
         closeTooltip={t("tooltips.closeDialog")}
-        title={t("management.alarmContacts.addContact")}
+        title={t("management.alarmContacts.editAlarmContact")}
         onClose={onClose}
       />
       <form onSubmit={handleSubmit(onSaveClick)}>
@@ -68,7 +70,7 @@ const ModifyAlarmContactFormDialog = ({ pagingPolicyContact, onModify, onClose }
           <TextField
             label={t("management.alarmContacts.name")}
             type="name"
-            value={pagingPolicyContact?.name}
+            defaultValue={pagingPolicyContact?.name}
             fullWidth
             margin="dense"
             {...register("name")}
@@ -96,7 +98,7 @@ const ModifyAlarmContactFormDialog = ({ pagingPolicyContact, onModify, onClose }
           <TextField
             label={t("management.alarmContacts.contact")}
             type="contact"
-            value={pagingPolicyContact?.contact}
+            defaultValue={pagingPolicyContact?.contact}
             fullWidth
             margin="dense"
             {...register("contact", {
@@ -114,7 +116,7 @@ const ModifyAlarmContactFormDialog = ({ pagingPolicyContact, onModify, onClose }
             {t("cancel")}
           </Button>
           <Button type="submit" autoFocus disabled={!!Object.keys(errors).length}>
-            {t("management.alarmContacts.addContact")}
+            {t("management.alarmContacts.editAlarmContact")}
           </Button>
         </DialogActions>
       </form>
