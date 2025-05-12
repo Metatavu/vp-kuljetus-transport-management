@@ -12,6 +12,7 @@ import {
   ListFreightUnitsRequest,
   ListHolidaysRequest,
   ListPagingPolicyContactsRequest,
+  ListPayrollExportsRequest,
   ListRoutesRequest,
   ListSiteTemperaturesRequest,
   ListSitesRequest,
@@ -52,6 +53,7 @@ export const QUERY_KEYS = {
   TRUCK_SPEEDS: "truck-speeds",
   ALARM_CONTACTS: "alarm-contacts",
   WORK_SHIFT_CHANGE_SETS: "work-shift-change-sets",
+  PAYROLL_EXPORTS: "payroll-exports",
 } as const;
 
 export const getListSitesQueryOptions = (requestParams: ListSitesRequest = {}, enabled = true) =>
@@ -335,6 +337,20 @@ export const getFindPagingPolicyContactQueryOptions = (params: FindPagingPolicyC
       api.pagingPolicyContacts.findPagingPolicyContact({ pagingPolicyContactId: params.pagingPolicyContactId }),
   });
 
+export const getListPayrollExportsQueryOptions = (params: ListPayrollExportsRequest) =>
+  queryOptions({
+    queryKey: [QUERY_KEYS.PAYROLL_EXPORTS, params],
+    queryFn: async () => {
+      const [payrollExports, headers] = await api.payrollExports.listPayrollExportsWithHeaders(params);
+      const totalResults = getTotalResultsFromHeaders(headers);
+      return { payrollExports, totalResults };
+    },
+  });
+export const getFindPayrollExportQueryOptions = (payrollExportId: string) =>
+  queryOptions({
+    queryKey: [QUERY_KEYS.PAYROLL_EXPORTS, payrollExportId],
+    queryFn: () => api.payrollExports.findPayrollExport({ payrollExportId }),
+  });
 /**
  * Gets total results from headers
  *

@@ -551,7 +551,10 @@
       "approved": "Tarkastettu",
       "markAllApproved": "Merkitse kaikki tarkastetuiksi",
       "successToast": "Työvuoro tallennettu!",
-      "errorToast": "Työvuoron tallennus epäonnistui"
+      "errorToast": "Työvuoron tallennus epäonnistui",
+      "sentToPayroll": "Lähetetty palkanlaskentaan",
+      "sendToPayrollSuccessToast": "Työvuorot lähetetty palkanlaskentaan!",
+      "sendToPayrollErrorToast": "Työvuoron lähetys palkanlaskentaan epäonnistui"
     },
     "workingDays": {
       "title": "Työpäivät",

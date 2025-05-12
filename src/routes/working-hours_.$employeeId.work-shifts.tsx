@@ -27,6 +27,7 @@ import WorkShiftsTableHeader from "components/working-hours/work-shifts-table-he
 import WorkingHoursDocument from "components/working-hours/working-hours-document";
 import {
   EmployeeWorkShift,
+  PayrollExport,
   SalaryGroup,
   WorkEvent,
   WorkShiftChangeReason,
@@ -179,6 +180,38 @@ function WorkShifts() {
       );
     },
   });
+
+  // Check if all workshifts are approved
+  const someWorkShiftsNotApproved = useMemo(() => {
+    if (!workShiftsDataForFormRows.data) return false;
+
+    const allWorkShifts = workShiftsDataForFormRows.data.map((row) => row.workShift);
+    const allWorkShiftsApproved = allWorkShifts.every((workShift) => workShift.approved);
+
+    return !allWorkShiftsApproved;
+  }, [workShiftsDataForFormRows.data]);
+
+  // Check if payroll export ID exists in work shifts
+  const payrollExportIdExists = useMemo(() => {
+    if (!workShiftsDataForFormRows.data) return false;
+
+    const allWorkShifts = workShiftsDataForFormRows.data.map((row) => row.workShift);
+    const allPayrollExportIds = allWorkShifts.every((workShift) => workShift.payrollExportId);
+
+    return allPayrollExportIds;
+  }, [workShiftsDataForFormRows.data]);
+
+  const foundPayrollExportData = useQuery({
+    enabled: payrollExportIdExists,
+    queryKey: [QUERY_KEYS.PAYROLL_EXPORTS, employeeId],
+    queryFn: async () => {
+      if (!workShiftsDataForFormRows.data || !workShiftsDataForFormRows.data[0].workShift.payrollExportId)
+        return undefined;
+      return await api.payrollExports.findPayrollExport({
+        payrollExportId: workShiftsDataForFormRows.data[0].workShift.payrollExportId,
+      });
+    },
+  }).data as PayrollExport | undefined;
 
   const workShiftChangeSets = useQuery(
     getListWorkShiftChangeSetsQueryOptions({
@@ -504,8 +537,9 @@ function WorkShifts() {
     (newDate: DateTime | null) => {
       handleFormUnregister();
       navigate({ search: (prev) => ({ ...prev, date: newDate ?? DateTime.now() }) });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.PAYROLL_EXPORTS] });
     },
-    [navigate, handleFormUnregister],
+    [navigate, handleFormUnregister, queryClient],
   );
 
   const disableDatesOnWorkingPeriod = (date: DateTime) => {
@@ -538,6 +572,28 @@ function WorkShifts() {
       </MenuItem>
     ));
   };
+
+  const createPayrollExport = useMutation({
+    mutationFn: async () => {
+      if (!workShiftsDataForFormRows.data) return Promise.reject();
+      const workShiftIds = workShiftsDataForFormRows.data.map((row) => row.workShift.id);
+      if (!workShiftIds) return Promise.reject();
+      const payrollExport = await api.payrollExports.createPayrollExport({
+        payrollExport: {
+          employeeId,
+          workShiftIds: workShiftIds.filter((id): id is string => id !== undefined),
+        },
+      });
+      return payrollExport;
+    },
+    onSuccess: () => {
+      toast.success(t("workingHours.workingHourBalances.successToast"));
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.WORK_SHIFTS] });
+    },
+    onError: () => {
+      toast.error(t("workingHours.workingHourBalances.errorToast"));
+    },
+  });
 
   const renderToolbar = () => {
     return (
@@ -605,18 +661,46 @@ function WorkShifts() {
               </LoadingButton>
             )}
           </BlobProvider>
-          <Button size="small" variant="contained" disabled={true} endIcon={<Send />}>
-            {t("workingHours.workingDays.sendToPayroll")}
-          </Button>
-          <Button
-            size="small"
-            variant="contained"
-            endIcon={<Save />}
-            type="submit"
-            disabled={!methods.formState.isDirty}
-          >
-            {t("save")}
-          </Button>
+          {createPayrollExport.isPending ? (
+            <LoadingButton loading={createPayrollExport.isPending} size="small" variant="contained" endIcon={<Send />}>
+              {t("workingHours.workingDays.sendToPayroll")}
+            </LoadingButton>
+          ) : (
+            <Button
+              size="small"
+              variant="contained"
+              disabled={someWorkShiftsNotApproved || !workShiftsDataForFormRows.data || payrollExportIdExists}
+              endIcon={<Send />}
+              onClick={() => {
+                createPayrollExport.mutateAsync();
+              }}
+            >
+              {payrollExportIdExists && foundPayrollExportData?.exportedAt
+                ? t("workingHours.workingHourBalances.sentToPayroll")
+                : t("workingHours.workingDays.sendToPayroll")}
+            </Button>
+          )}
+          {updateWorkShift.isPending ? (
+            <LoadingButton
+              loading={updateWorkShift.isPending}
+              size="small"
+              variant="contained"
+              endIcon={<Save />}
+              type="submit"
+            >
+              {t("save")}
+            </LoadingButton>
+          ) : (
+            <Button
+              size="small"
+              variant="contained"
+              endIcon={<Save />}
+              type="submit"
+              disabled={!methods.formState.isDirty}
+            >
+              {t("save")}
+            </Button>
+          )}
         </Stack>
       </Stack>
     );
@@ -691,6 +775,17 @@ function WorkShifts() {
                       <Box minWidth={245}>
                         <Typography variant="body2">{`Muutokset tallennettu ${getLatestChangeSetDateAndTime}`}</Typography>
                       </Box>
+                      {foundPayrollExportData?.exportedAt ? (
+                        <Box minWidth={245}>
+                          <Typography variant="body2">{`${t(
+                            "workingHours.workingHourBalances.sentToPayroll",
+                          )} ${DateTime.fromJSDate(foundPayrollExportData?.exportedAt).toFormat("dd.MM.yyyy HH:mm")} (${
+                            employees?.find((employee) => employee.id === foundPayrollExportData?.creatorId)?.firstName
+                          } ${
+                            employees?.find((employee) => employee.id === foundPayrollExportData?.creatorId)?.lastName
+                          })`}</Typography>
+                        </Box>
+                      ) : null}
                     </Stack>
                   </TableHeader>
                   <TableContainer>

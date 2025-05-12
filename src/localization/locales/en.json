@@ -442,7 +442,10 @@
       "approved": "Checked",
       "markAllApproved": "Mark all checked",
       "successToast": "Working hours saved!",
-      "errorToast": "Failed to save working hours"
+      "errorToast": "Failed to save working hours",
+      "sentToPayroll": "Sent to payroll",
+      "sendToPayrollSuccessToast": "Workshifts sent to payroll!",
+      "sendToPayrollErrorToast": "Failed to send workshifts to payroll"
     },
     "workingDays": {
       "title": "Working days",
