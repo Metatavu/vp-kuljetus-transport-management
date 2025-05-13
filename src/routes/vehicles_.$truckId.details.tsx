@@ -348,7 +348,7 @@ function VehicleInfo() {
         headerName: t("vehicles.details.driver"),
         sortable: false,
         flex: 1,
-        valueGetter: ({ row }) => driversDataMap.data?.get(row.siteId ?? "")?.displayName ?? "",
+        valueGetter: ({ row }) => driversDataMap.data?.get(row.driverId ?? "")?.displayName ?? "",
       },
     ],
     [t, customerSitesMap.data, driversDataMap.data],
