@@ -78,6 +78,7 @@
       "noLocationAvailable": "Sijaintitietoa ei saatavilla",
       "noUpdateInformation": "Ei päivitystietoja",
       "driver": "Kuljettaja",
+      "driverCard": "Digipiirturikortti",
       "temperature": "Lämpötila:",
       "noTemperatureAvailable": "Lämpötilatietoa ei saatavilla"
     },

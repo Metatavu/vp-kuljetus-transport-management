@@ -81,6 +81,7 @@
       "noLocationAvailable": "Location not available",
       "noUpdateInformation": "No last update information",
       "driver": "Driver",
+      "driverCard": "Driver card",
       "temperature": "Temperature:",
       "noTemperatureAvailable": "Temperature not available"
     },

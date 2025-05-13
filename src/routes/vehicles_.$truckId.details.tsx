@@ -7,10 +7,10 @@ import clsx from "clsx";
 import DatePickerWithArrows from "components/generic/date-picker-with-arrows";
 import GenericDataGrid from "components/generic/generic-data-grid";
 import { VehicleInfoBar } from "components/vehicles/vehicle-info-bar";
-import { Driver, Site, Task, TaskType, TruckDriveState, TruckDriveStateEnum } from "generated/client";
+import { Driver, Employee, Site, Task, TaskType, TruckDriveState, TruckDriveStateEnum } from "generated/client";
 import { getFindTruckQueryOptions } from "hooks/use-queries";
 import { t } from "i18next";
-import { DateTime, Interval } from "luxon";
+import { DateTime, Duration, Interval } from "luxon";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { queryClient } from "src/main";
@@ -133,14 +133,36 @@ function VehicleInfo() {
     },
   });
 
-  const driversDataMap = useQuery({
-    queryKey: ["drivers"],
-    queryFn: () => api.drivers.listDrivers({}),
+  const employeesDataMap = useQuery({
+    queryKey: ["employees"],
+    queryFn: () => api.employees.listEmployees({}),
     select: (data) =>
-      data.reduce((map, driver) => {
-        if (driver.id) map.set(driver.id, driver);
+      data.reduce((map, employee) => {
+        if (employee.id) map.set(employee.id, employee);
         return map;
-      }, new Map<string, Driver>()),
+      }, new Map<string, Employee>()),
+  });
+
+  const getDisplayName = (row: DriveStatesTableRow) => {
+    const employee = employeesDataMap.data?.get(row.driverId ?? "");
+
+    if (!employee) {
+      return "";
+    }
+
+    return `${employee.firstName} ${employee.lastName}`;
+  }
+
+  const previousDayDriveStateParams = {
+    truckId: truckId,
+    after: selectedDate.minus(Duration.fromISOTime("24:00")).startOf("day").toJSDate(),
+    before: selectedDate.minus(Duration.fromISOTime("24:00")).endOf("day").toJSDate(),
+  };
+
+  const previousDayDriveStates = useQuery({
+      queryKey: ["previousDayDriveStates", previousDayDriveStateParams],
+      queryFn: () => api.trucks.listDriveStates(previousDayDriveStateParams),
+      select: (data) => data.sort((a, b) => a.timestamp - b.timestamp),
   });
 
   const driveStatesQueryParams = {
@@ -250,7 +272,16 @@ function VehicleInfo() {
    */
   const driveStateRows = useMemo(() => {
     if (!driveStates.data) return [];
-    const tableRows = driveStates.data.reduce<DriveStatesTableRow[]>((rows, driveState, index, driveStates) => {
+    
+    const firstEventContainer = [];
+    if (previousDayDriveStates.data && previousDayDriveStates.data.length > 0) {
+      const newStartTimeForFirstEvent = selectedDate.startOf("day");
+      firstEventContainer.push({...previousDayDriveStates.data[previousDayDriveStates.data.length - 1 ], timestamp: newStartTimeForFirstEvent.toSeconds()})
+    }
+
+    const driveStateListFinal = [...firstEventContainer, ...driveStates.data];
+    
+    const tableRows = driveStateListFinal.reduce<DriveStatesTableRow[]>((rows, driveState, index, driveStates) => {
       const nextState = driveStates.at(index + 1);
 
       const driveStateInterval = getDriveStateInterval(driveState, nextState);
@@ -285,7 +316,7 @@ function VehicleInfo() {
     }, []);
 
     return tableRows.reverse();
-  }, [driveStates.data, uniqueTasks, getRowsToAdd, getTaskRows, getDriveStateInterval]);
+  }, [driveStates.data, uniqueTasks, getRowsToAdd, getTaskRows, getDriveStateInterval, previousDayDriveStates.data]);
 
   const columns: GridColDef<DriveStatesTableRow>[] = useMemo(
     () => [
@@ -348,10 +379,18 @@ function VehicleInfo() {
         headerName: t("vehicles.details.driver"),
         sortable: false,
         flex: 1,
-        valueGetter: ({ row }) => driversDataMap.data?.get(row.driverId ?? "")?.displayName ?? "",
+        valueGetter: ({ row }) => getDisplayName(row),
+      },
+      {
+        field: "driverCard",
+        headerAlign: "left",
+        headerName: t("vehicles.details.driverCard"),
+        sortable: false,
+        flex: 1,
+        valueGetter: ({ row }) => employeesDataMap.data?.get(row.driverId ?? "")?.driverCardId ?? "",
       },
     ],
-    [t, customerSitesMap.data, driversDataMap.data],
+    [t, customerSitesMap.data, employeesDataMap.data],
   );
 
   return (
