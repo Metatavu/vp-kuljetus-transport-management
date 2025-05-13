@@ -7,7 +7,7 @@ import clsx from "clsx";
 import DatePickerWithArrows from "components/generic/date-picker-with-arrows";
 import GenericDataGrid from "components/generic/generic-data-grid";
 import { VehicleInfoBar } from "components/vehicles/vehicle-info-bar";
-import { Driver, Employee, Site, Task, TaskType, TruckDriveState, TruckDriveStateEnum } from "generated/client";
+import { Employee, Site, Task, TaskType, TruckDriveState, TruckDriveStateEnum } from "generated/client";
 import { getFindTruckQueryOptions } from "hooks/use-queries";
 import { t } from "i18next";
 import { DateTime, Duration, Interval } from "luxon";
