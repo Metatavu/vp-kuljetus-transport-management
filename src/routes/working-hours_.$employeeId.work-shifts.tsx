@@ -27,7 +27,6 @@ import WorkShiftsTableHeader from "components/working-hours/work-shifts-table-he
 import WorkingHoursDocument from "components/working-hours/working-hours-document";
 import {
   EmployeeWorkShift,
-  PayrollExport,
   SalaryGroup,
   WorkEvent,
   WorkShiftChangeReason,
@@ -35,7 +34,12 @@ import {
   WorkShiftHours,
   WorkType,
 } from "generated/client";
-import { QUERY_KEYS, getListEmployeesQueryOptions, getListWorkShiftChangeSetsQueryOptions } from "hooks/use-queries";
+import {
+  QUERY_KEYS,
+  getFindPayrollExportQueryOptions,
+  getListEmployeesQueryOptions,
+  getListWorkShiftChangeSetsQueryOptions,
+} from "hooks/use-queries";
 import { t } from "i18next";
 import { DateTime } from "luxon";
 import { useCallback, useMemo } from "react";
@@ -181,37 +185,39 @@ function WorkShifts() {
     },
   });
 
-  // Check if all workshifts are approved
-  const someWorkShiftsNotApproved = useMemo(() => {
-    if (!workShiftsDataForFormRows.data) return false;
-
-    const allWorkShifts = workShiftsDataForFormRows.data.map((row) => row.workShift);
-    const allWorkShiftsApproved = allWorkShifts.every((workShift) => workShift.approved);
-
-    return !allWorkShiftsApproved;
-  }, [workShiftsDataForFormRows.data]);
+  const createPayrollExport = useMutation({
+    mutationFn: async () => {
+      if (!workShiftsDataForFormRows.data) return Promise.reject();
+      const workShiftIds = workShiftsDataForFormRows.data.map((row) => row.workShift.id);
+      if (!workShiftIds) return Promise.reject();
+      const payrollExport = await api.payrollExports.createPayrollExport({
+        payrollExport: {
+          employeeId,
+          workShiftIds: workShiftIds.filter((id): id is string => id !== undefined),
+        },
+      });
+      return payrollExport;
+    },
+    onSuccess: () => {
+      toast.success(t("workingHours.workingHourBalances.successToast"));
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.WORK_SHIFTS] });
+    },
+    onError: () => {
+      toast.error(t("workingHours.workingHourBalances.errorToast"));
+    },
+  });
 
   // Check if payroll export ID exists in work shifts
   const payrollExportIdExists = useMemo(() => {
     if (!workShiftsDataForFormRows.data) return false;
 
-    const allWorkShifts = workShiftsDataForFormRows.data.map((row) => row.workShift);
-    const allPayrollExportIds = allWorkShifts.every((workShift) => workShift.payrollExportId);
-
-    return allPayrollExportIds;
+    return workShiftsDataForFormRows.data.some((row) => row.workShift?.payrollExportId != null);
   }, [workShiftsDataForFormRows.data]);
 
   const foundPayrollExportData = useQuery({
+    ...getFindPayrollExportQueryOptions(workShiftsDataForFormRows.data?.[0]?.workShift?.payrollExportId ?? ""),
     enabled: payrollExportIdExists,
-    queryKey: [QUERY_KEYS.PAYROLL_EXPORTS, employeeId],
-    queryFn: async () => {
-      if (!workShiftsDataForFormRows.data || !workShiftsDataForFormRows.data[0].workShift.payrollExportId)
-        return undefined;
-      return await api.payrollExports.findPayrollExport({
-        payrollExportId: workShiftsDataForFormRows.data[0].workShift.payrollExportId,
-      });
-    },
-  }).data as PayrollExport | undefined;
+  });
 
   const workShiftChangeSets = useQuery(
     getListWorkShiftChangeSetsQueryOptions({
@@ -573,27 +579,15 @@ function WorkShifts() {
     ));
   };
 
-  const createPayrollExport = useMutation({
-    mutationFn: async () => {
-      if (!workShiftsDataForFormRows.data) return Promise.reject();
-      const workShiftIds = workShiftsDataForFormRows.data.map((row) => row.workShift.id);
-      if (!workShiftIds) return Promise.reject();
-      const payrollExport = await api.payrollExports.createPayrollExport({
-        payrollExport: {
-          employeeId,
-          workShiftIds: workShiftIds.filter((id): id is string => id !== undefined),
-        },
-      });
-      return payrollExport;
-    },
-    onSuccess: () => {
-      toast.success(t("workingHours.workingHourBalances.successToast"));
-      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.WORK_SHIFTS] });
-    },
-    onError: () => {
-      toast.error(t("workingHours.workingHourBalances.errorToast"));
-    },
-  });
+  const checkIfSendToPayrollButtonDisabled = useMemo(() => {
+    if (!workShiftsDataForFormRows.data) return true;
+    const allWorkShifts = workShiftsDataForFormRows.data.map((row) => row.workShift);
+    const allWorkShiftsApproved = allWorkShifts.every((workShift) => workShift.approved);
+    const allWorkShiftsHavePayrollExportId = allWorkShifts.every(
+      (workShift) => workShift.payrollExportId !== undefined,
+    );
+    return !allWorkShiftsApproved || allWorkShiftsHavePayrollExportId;
+  }, [workShiftsDataForFormRows.data]);
 
   const renderToolbar = () => {
     return (
@@ -669,13 +663,13 @@ function WorkShifts() {
             <Button
               size="small"
               variant="contained"
-              disabled={someWorkShiftsNotApproved || !workShiftsDataForFormRows.data || payrollExportIdExists}
+              disabled={checkIfSendToPayrollButtonDisabled}
               endIcon={<Send />}
               onClick={() => {
                 createPayrollExport.mutateAsync();
               }}
             >
-              {payrollExportIdExists && foundPayrollExportData?.exportedAt
+              {payrollExportIdExists && foundPayrollExportData.data?.exportedAt
                 ? t("workingHours.workingHourBalances.sentToPayroll")
                 : t("workingHours.workingDays.sendToPayroll")}
             </Button>
@@ -775,14 +769,18 @@ function WorkShifts() {
                       <Box minWidth={245}>
                         <Typography variant="body2">{`Muutokset tallennettu ${getLatestChangeSetDateAndTime}`}</Typography>
                       </Box>
-                      {foundPayrollExportData?.exportedAt ? (
+                      {foundPayrollExportData.data?.exportedAt ? (
                         <Box minWidth={245}>
                           <Typography variant="body2">{`${t(
                             "workingHours.workingHourBalances.sentToPayroll",
-                          )} ${DateTime.fromJSDate(foundPayrollExportData?.exportedAt).toFormat("dd.MM.yyyy HH:mm")} (${
-                            employees?.find((employee) => employee.id === foundPayrollExportData?.creatorId)?.firstName
+                          )} ${DateTime.fromJSDate(foundPayrollExportData.data?.exportedAt).toFormat(
+                            "dd.MM.yyyy HH:mm",
+                          )} (${
+                            employees?.find((employee) => employee.id === foundPayrollExportData.data?.creatorId)
+                              ?.firstName
                           } ${
-                            employees?.find((employee) => employee.id === foundPayrollExportData?.creatorId)?.lastName
+                            employees?.find((employee) => employee.id === foundPayrollExportData.data?.creatorId)
+                              ?.lastName
                           })`}</Typography>
                         </Box>
                       ) : null}

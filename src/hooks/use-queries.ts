@@ -350,6 +350,7 @@ export const getFindPayrollExportQueryOptions = (payrollExportId: string) =>
   queryOptions({
     queryKey: [QUERY_KEYS.PAYROLL_EXPORTS, payrollExportId],
     queryFn: () => api.payrollExports.findPayrollExport({ payrollExportId }),
+    enabled: !!payrollExportId,
   });
 /**
  * Gets total results from headers
