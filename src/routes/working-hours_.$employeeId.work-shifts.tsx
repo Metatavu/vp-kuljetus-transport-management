@@ -19,6 +19,7 @@ import { BlobProvider } from "@react-pdf/renderer";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Outlet, createFileRoute } from "@tanstack/react-router";
 import { api } from "api/index";
+import { useConfirmDialog } from "components/providers/confirm-dialog-provider";
 import AggregationsTableForDriver from "components/working-hours/aggregations-table-driver";
 import AggregationsTableForOffice from "components/working-hours/aggregations-table-office";
 import ChangeLog from "components/working-hours/change-log";
@@ -144,6 +145,7 @@ const TableContainer = styled(Stack, {
 function WorkShifts() {
   const { t } = useTranslation();
   const navigate = Route.useNavigate();
+  const showConfirmDialog = useConfirmDialog();
   const { employeeId } = Route.useParams();
   const queryClient = useQueryClient();
   const selectedDate = Route.useSearch({ select: (search) => search.date });
@@ -185,7 +187,7 @@ function WorkShifts() {
     },
   });
 
-  const createPayrollExport = useMutation({
+  const handleCreatePayrollExport = useMutation({
     mutationFn: async () => {
       if (!workShiftsDataForFormRows.data) return Promise.reject();
       const workShiftIds = workShiftsDataForFormRows.data.map((row) => row.workShift.id);
@@ -589,6 +591,17 @@ function WorkShifts() {
     return !allWorkShiftsApproved || allWorkShiftsHavePayrollExportId;
   }, [workShiftsDataForFormRows.data]);
 
+  const handlePayrollExportButtonClick = () => {
+    showConfirmDialog({
+      title: t("workingHours.workingDays.confirmDialogPayroll.title"),
+      description: t("workingHours.workingDays.confirmDialogPayroll.description"),
+      positiveButtonText: t("workingHours.workingDays.confirmDialogPayroll.confirm"),
+      onPositiveClick: () => {
+        handleCreatePayrollExport.mutateAsync();
+      },
+    });
+  };
+
   const renderToolbar = () => {
     return (
       <Stack direction="row" justifyContent="space-between">
@@ -655,18 +668,23 @@ function WorkShifts() {
               </LoadingButton>
             )}
           </BlobProvider>
-          {createPayrollExport.isPending ? (
-            <LoadingButton loading={createPayrollExport.isPending} size="small" variant="contained" endIcon={<Send />}>
+          {handleCreatePayrollExport.isPending ? (
+            <LoadingButton
+              loading={handleCreatePayrollExport.isPending}
+              size="small"
+              variant="contained"
+              endIcon={<Send />}
+            >
               {t("workingHours.workingDays.sendToPayroll")}
             </LoadingButton>
           ) : (
             <Button
               size="small"
               variant="contained"
-              disabled={checkIfSendToPayrollButtonDisabled}
+              disabled={checkIfSendToPayrollButtonDisabled || updateWorkShift.isPending}
               endIcon={<Send />}
               onClick={() => {
-                createPayrollExport.mutateAsync();
+                handlePayrollExportButtonClick();
               }}
             >
               {payrollExportIdExists && foundPayrollExportData.data?.exportedAt

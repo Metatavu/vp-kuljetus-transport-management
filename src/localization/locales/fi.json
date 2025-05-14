@@ -561,6 +561,11 @@
       "employee": "Työntekijä",
       "print": "Tulosta",
       "sendToPayroll": "Lähetä palkanlaskentaan",
+      "confirmDialogPayroll": {
+        "title": "Lähetä tiedot palkanlaskentaan",
+        "description": "Haluatko varmasti lähettää työvuorot palkanlaskentaan?",
+        "confirm": "Lähetä"
+      },
       "table": {
         "date": "Pvm.",
         "shiftStarts": "Vuoro alkaa",
