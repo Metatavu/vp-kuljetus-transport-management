@@ -17,6 +17,7 @@ import {
   ListSitesRequest,
   ListTasksRequest,
   ListTerminalThermometersRequest,
+  ListThermalMonitorsRequest,
   ListTowableTemperaturesRequest,
   ListTruckOrTowableThermometersRequest,
   ListTruckTemperaturesRequest,
@@ -52,6 +53,7 @@ export const QUERY_KEYS = {
   TRUCK_SPEEDS: "truck-speeds",
   ALARM_CONTACTS: "alarm-contacts",
   WORK_SHIFT_CHANGE_SETS: "work-shift-change-sets",
+  THERMAL_MONITORS: "thermal-monitors",
 } as const;
 
 export const getListSitesQueryOptions = (requestParams: ListSitesRequest = {}, enabled = true) =>
@@ -109,6 +111,17 @@ export const getFindTruckQueryOptions = ({ truckId }: FindTruckRequest, enabled 
     queryKey: [QUERY_KEYS.TRUCKS, truckId],
     enabled: enabled,
     queryFn: () => api.trucks.findTruck({ truckId }),
+  });
+
+export const getListTowablesQueryOptions = (requestParams: ListTrucksRequest = {}, enabled = true) =>
+  queryOptions({
+    queryKey: [QUERY_KEYS.TOWABLES, requestParams],
+    enabled: enabled,
+    queryFn: async () => {
+      const [towables, headers] = await api.towables.listTowablesWithHeaders(requestParams);
+      const totalResults = getTotalResultsFromHeaders(headers);
+      return { towables, totalResults };
+    },
   });
 
 export const getFindTowableQueryOptions = ({ towableId }: FindTowableRequest, enabled = true) =>
@@ -288,13 +301,13 @@ export const getFindEmployeeWorkShiftQueryOptions = (params: FindEmployeeWorkShi
     queryFn: () => api.employeeWorkShifts.findEmployeeWorkShift(params),
   });
 
-export const getListTerminalThermometersQueryOptions = (params: ListTerminalThermometersRequest) =>
+export const getListTerminalThermometersQueryOptions = (params: ListTerminalThermometersRequest = {}) =>
   queryOptions({
     queryKey: [QUERY_KEYS.TERMINAL_THERMOMETERS, params],
     queryFn: () => api.thermometers.listTerminalThermometers(params),
   });
 
-export const getListTruckOrTowableThermometersQueryOptions = (params: ListTruckOrTowableThermometersRequest) =>
+export const getListTruckOrTowableThermometersQueryOptions = (params: ListTruckOrTowableThermometersRequest = {}) =>
   queryOptions({
     queryKey: [QUERY_KEYS.TRUCK_OR_TOWABLE_THERMOMETERS, params],
     queryFn: () => api.thermometers.listTruckOrTowableThermometers(params),
@@ -333,6 +346,17 @@ export const getFindPagingPolicyContactQueryOptions = (params: FindPagingPolicyC
     queryKey: [QUERY_KEYS.ALARM_CONTACTS, params.pagingPolicyContactId],
     queryFn: () =>
       api.pagingPolicyContacts.findPagingPolicyContact({ pagingPolicyContactId: params.pagingPolicyContactId }),
+  });
+
+export const getListThermalMonitorsQueryOptions = (params: ListThermalMonitorsRequest) =>
+  queryOptions({
+    queryKey: [QUERY_KEYS.THERMAL_MONITORS, params],
+    queryFn: async () => {
+      const [thermalMonitors, headers] = await api.thermalMonitors.listThermalMonitorsWithHeaders(params);
+      const totalResults = getTotalResultsFromHeaders(headers);
+
+      return { thermalMonitors, totalResults };
+    },
   });
 
 /**

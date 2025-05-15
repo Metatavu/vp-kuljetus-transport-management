@@ -1,4 +1,5 @@
 import {
+  AlarmRounded,
   AnnouncementSharp,
   CommuteRounded,
   Devices,
@@ -24,6 +25,7 @@ function ManagementLayoutComponent() {
     { route: "/management/client-apps", label: "management.clientApps.title", Icon: Devices },
     { route: "/management/holidays", label: "management.holidays.title", Icon: TodayRounded },
     { route: "/management/alarm-contacts", label: "management.alarmContacts.title", Icon: AnnouncementSharp },
+    { route: "/management/thermal-monitors", label: "management.thermalMonitors.title", Icon: AlarmRounded },
   ];
 
   return (

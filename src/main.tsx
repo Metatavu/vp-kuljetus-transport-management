@@ -16,7 +16,6 @@ import ReactDOM from "react-dom/client";
 import { Flip, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { theme } from "./theme";
-
 const router = createRouter({ routeTree, context: { breadcrumbs: [] } });
 
 export const queryClient = new QueryClient({
