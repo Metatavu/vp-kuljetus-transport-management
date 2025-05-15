@@ -442,13 +442,21 @@
       "approved": "Checked",
       "markAllApproved": "Mark all checked",
       "successToast": "Working hours saved!",
-      "errorToast": "Failed to save working hours"
+      "errorToast": "Failed to save working hours",
+      "sentToPayroll": "Sent to payroll",
+      "sendToPayrollSuccessToast": "Workshifts sent to payroll!",
+      "sendToPayrollErrorToast": "Failed to send workshifts to payroll"
     },
     "workingDays": {
       "title": "Working days",
       "employee": "Employee",
       "print": "Print",
       "sendToPayroll": "Send to payroll",
+      "confirmDialogPayroll": {
+        "title": "Send to payroll",
+        "description": "Are you sure you want to send working hours to payroll?",
+        "confirm": "Send"
+      },
       "table": {
         "date": "Date",
         "shiftStarts": "Shift Starts",

@@ -551,13 +551,21 @@
       "approved": "Tarkastettu",
       "markAllApproved": "Merkitse kaikki tarkastetuiksi",
       "successToast": "Työvuoro tallennettu!",
-      "errorToast": "Työvuoron tallennus epäonnistui"
+      "errorToast": "Työvuoron tallennus epäonnistui",
+      "sentToPayroll": "Lähetetty palkanlaskentaan",
+      "sendToPayrollSuccessToast": "Työvuorot lähetetty palkanlaskentaan!",
+      "sendToPayrollErrorToast": "Työvuoron lähetys palkanlaskentaan epäonnistui"
     },
     "workingDays": {
       "title": "Työpäivät",
       "employee": "Työntekijä",
       "print": "Tulosta",
       "sendToPayroll": "Lähetä palkanlaskentaan",
+      "confirmDialogPayroll": {
+        "title": "Lähetä tiedot palkanlaskentaan",
+        "description": "Haluatko varmasti lähettää työvuorot palkanlaskentaan?",
+        "confirm": "Lähetä"
+      },
       "table": {
         "date": "Pvm.",
         "shiftStarts": "Vuoro alkaa",
