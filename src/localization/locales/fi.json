@@ -11,6 +11,7 @@
   "delete": "Poista",
   "approve": "Hyväksy",
   "archive": "Arkistoi",
+  "unArchive": "Palauta arkistosta",
   "open": "Avaa",
   "yes": "Kyllä",
   "noSelection": "Ei valintaa",
@@ -256,6 +257,9 @@
         "name": {
           "label": "Nimihaku",
           "placeholder": "Hae nimellä"
+        },
+        "includeArchived": {
+          "label": "Arkistoidut"
         }
       },
       "employeeNumber": "Tunnus",
@@ -310,6 +314,7 @@
       },
       "successToast": "Työntekijä tallennettu!",
       "archiveToast": "Työntekijä arkistoitu!",
+      "unArchiveToast": "Työntekijä palautettu arkistosta!",
       "errorToast": "Työntekijän tallennus epäonnistui!"
     },
     "holidays": {

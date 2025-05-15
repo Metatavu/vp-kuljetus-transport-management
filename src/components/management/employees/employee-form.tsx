@@ -3,6 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { api } from "api/index";
 import ArchiveButton from "components/generic/archive-button";
+import UnArchiveButton from "components/generic/un-archive-button";
 import { Employee, EmployeeType, Office, SalaryGroup } from "generated/client";
 import { TFunction } from "i18next";
 import { Key, useCallback, useMemo } from "react";
@@ -35,6 +36,20 @@ const EmployeeForm = ({ employee }: Props) => {
     },
     onSuccess: () => {
       toast.success(t("management.employees.archiveToast"));
+      navigate({ to: "/management/employees" });
+    },
+  });
+
+  const unArchiveEmployee = useMutation({
+    mutationFn: (employee?: Employee) => {
+      if (!employee?.id) return Promise.reject();
+      return api.employees.updateEmployee({
+        employeeId: employee.id,
+        employee: { ...employee, archivedAt: undefined },
+      });
+    },
+    onSuccess: () => {
+      toast.success(t("management.employees.unArchiveToast"));
       navigate({ to: "/management/employees" });
     },
   });
@@ -142,11 +157,18 @@ const EmployeeForm = ({ employee }: Props) => {
         <TextField label={t("management.employees.regularWorkingHours")} {...register("regularWorkingHours")} />
         <TextField label={t("management.employees.pinCode")} {...register("pinCode")} />
       </Stack>
-      {employee && (
+      {employee && employee.archivedAt == null && (
         <ArchiveButton
           title={t("management.employees.archiveDialog.title")}
           description={t("management.employees.archiveDialog.description", { name: employeeName })}
           onArchive={() => archiveEmployee.mutate(employee)}
+        />
+      )}
+      {employee && employee.archivedAt != null && (
+        <UnArchiveButton
+          title={t("management.employees.archiveDialog.title")}
+          description={t("management.employees.archiveDialog.description", { name: employeeName })}
+          onUnArchive={() => unArchiveEmployee.mutate(employee)}
         />
       )}
     </Stack>
