@@ -14,12 +14,24 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { ThermalMonitorSchedulePeriod } from './ThermalMonitorSchedulePeriod';
+import {
+    ThermalMonitorSchedulePeriodFromJSON,
+    ThermalMonitorSchedulePeriodFromJSONTyped,
+    ThermalMonitorSchedulePeriodToJSON,
+} from './ThermalMonitorSchedulePeriod';
 import type { ThermalMonitorStatus } from './ThermalMonitorStatus';
 import {
     ThermalMonitorStatusFromJSON,
     ThermalMonitorStatusFromJSONTyped,
     ThermalMonitorStatusToJSON,
 } from './ThermalMonitorStatus';
+import type { ThermalMonitorType } from './ThermalMonitorType';
+import {
+    ThermalMonitorTypeFromJSON,
+    ThermalMonitorTypeFromJSONTyped,
+    ThermalMonitorTypeToJSON,
+} from './ThermalMonitorType';
 
 /**
  * Represents a single monitor
@@ -77,6 +89,18 @@ export interface ThermalMonitor {
     activeTo?: Date;
     /**
      * 
+     * @type {ThermalMonitorType}
+     * @memberof ThermalMonitor
+     */
+    monitorType: ThermalMonitorType;
+    /**
+     * 
+     * @type {Array<ThermalMonitorSchedulePeriod>}
+     * @memberof ThermalMonitor
+     */
+    schedule?: Array<ThermalMonitorSchedulePeriod>;
+    /**
+     * 
      * @type {string}
      * @memberof ThermalMonitor
      */
@@ -109,6 +133,7 @@ export function instanceOfThermalMonitor(value: object): boolean {
     isInstance = isInstance && "name" in value;
     isInstance = isInstance && "status" in value;
     isInstance = isInstance && "thermometerIds" in value;
+    isInstance = isInstance && "monitorType" in value;
 
     return isInstance;
 }
@@ -131,6 +156,8 @@ export function ThermalMonitorFromJSONTyped(json: any, ignoreDiscriminator: bool
         'upperThresholdTemperature': !exists(json, 'upperThresholdTemperature') ? undefined : json['upperThresholdTemperature'],
         'activeFrom': !exists(json, 'activeFrom') ? undefined : (new Date(json['activeFrom'])),
         'activeTo': !exists(json, 'activeTo') ? undefined : (new Date(json['activeTo'])),
+        'monitorType': ThermalMonitorTypeFromJSON(json['monitorType']),
+        'schedule': !exists(json, 'schedule') ? undefined : ((json['schedule'] as Array<any>).map(ThermalMonitorSchedulePeriodFromJSON)),
         'creatorId': !exists(json, 'creatorId') ? undefined : json['creatorId'],
         'createdAt': !exists(json, 'createdAt') ? undefined : (new Date(json['createdAt'])),
         'lastModifierId': !exists(json, 'lastModifierId') ? undefined : json['lastModifierId'],
@@ -154,6 +181,8 @@ export function ThermalMonitorToJSON(value?: ThermalMonitor | null): any {
         'upperThresholdTemperature': value.upperThresholdTemperature,
         'activeFrom': value.activeFrom === undefined ? undefined : (value.activeFrom.toISOString()),
         'activeTo': value.activeTo === undefined ? undefined : (value.activeTo.toISOString()),
+        'monitorType': ThermalMonitorTypeToJSON(value.monitorType),
+        'schedule': value.schedule === undefined ? undefined : ((value.schedule as Array<any>).map(ThermalMonitorSchedulePeriodToJSON)),
     };
 }
 

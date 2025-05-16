@@ -442,13 +442,21 @@
       "approved": "Checked",
       "markAllApproved": "Mark all checked",
       "successToast": "Working hours saved!",
-      "errorToast": "Failed to save working hours"
+      "errorToast": "Failed to save working hours",
+      "sentToPayroll": "Sent to payroll",
+      "sendToPayrollSuccessToast": "Workshifts sent to payroll!",
+      "sendToPayrollErrorToast": "Failed to send workshifts to payroll"
     },
     "workingDays": {
       "title": "Working days",
       "employee": "Employee",
       "print": "Print",
       "sendToPayroll": "Send to payroll",
+      "confirmDialogPayroll": {
+        "title": "Send to payroll",
+        "description": "Are you sure you want to send working hours to payroll?",
+        "confirm": "Send"
+      },
       "table": {
         "date": "Date",
         "shiftStarts": "Shift Starts",
@@ -524,13 +532,48 @@
         "partial": "Part",
         "full": "Full"
       },
+      "workTypes": {
+        "paidWork": "Paid work",
+        "break": "Break",
+        "standby": "Standby",
+        "eveningAllowance": "Evening allowance",
+        "nightAllowance": "Nigh allowance",
+        "holidayAllowance": "Holiday allowance",
+        "jobSpecificAllowance": "Job specific allowance",
+        "frozenAllowance": "Freezer allowance",
+        "officialDuties": "Official duties",
+        "sickLeave": "Sick leave",
+        "training": "Training",
+        "unpaid": "Unpaid"
+      },
       "changeLog": {
         "title": "Change log",
         "time": "Time",
         "user": "User",
         "reviewed": "Reviewed",
-        "affectedDates": "Affected dates",
-        "explanation": "Explanation"
+        "affectedValues": "Affected values",
+        "explanation": "Explanation",
+        "lastEdited": "Last edited",
+        "workShiftChangeReasons": {
+          "workShiftCreated": "New work shift",
+          "workShiftUpdatedApproved": "Work shift approved",
+          "workShiftUpdatedDayOffWorkAllowance": "Day off work allowance change",
+          "workShiftUpdatedAbsence": "Absence change",
+          "workShiftUpdatedPerDiemAllowance": "Per diem allowance change",
+          "workShiftUpdatedNotes": "Notes change",
+          "workEventUpdatedCostCenter": "Cost center change",
+          "workEventUpdatedType": "Event type change",
+          "workEventUpdatedTimestamp": "Timestamp change",
+          "workShiftHoursUpdatedActualHours": "Actual hours change"
+        },
+        "approvedStatus": {
+          "approved": "Approved",
+          "notApproved": "Not approved"
+        },
+        "allowanceStatus": {
+          "noDayOffWorkAllowance": "No day off work allowance",
+          "dayOffWorkAllowance": "Day off work allowance"
+        }
       },
       "workShiftDialog": {
         "title": "Work shift events {{date}}",

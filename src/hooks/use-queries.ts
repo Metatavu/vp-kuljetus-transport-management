@@ -2,6 +2,7 @@ import { queryOptions } from "@tanstack/react-query";
 import { api } from "api/index";
 import {
   FindEmployeeWorkShiftRequest,
+  FindPagingPolicyContactRequest,
   FindTowableRequest,
   FindTruckRequest,
   ListClientAppsRequest,
@@ -10,6 +11,8 @@ import {
   ListEmployeesRequest,
   ListFreightUnitsRequest,
   ListHolidaysRequest,
+  ListPagingPolicyContactsRequest,
+  ListPayrollExportsRequest,
   ListRoutesRequest,
   ListSiteTemperaturesRequest,
   ListSitesRequest,
@@ -19,6 +22,7 @@ import {
   ListTruckOrTowableThermometersRequest,
   ListTruckTemperaturesRequest,
   ListTrucksRequest,
+  ListWorkShiftChangeSetsRequest,
   ListWorkShiftHoursRequest,
 } from "generated/client";
 
@@ -47,6 +51,9 @@ export const QUERY_KEYS = {
   TRUCK_LOCATIONS: "truck-locations",
   TRUCK_ODOMETER_READINGS: "truck-odometer-readings",
   TRUCK_SPEEDS: "truck-speeds",
+  ALARM_CONTACTS: "alarm-contacts",
+  WORK_SHIFT_CHANGE_SETS: "work-shift-change-sets",
+  PAYROLL_EXPORTS: "payroll-exports",
 } as const;
 
 export const getListSitesQueryOptions = (requestParams: ListSitesRequest = {}, enabled = true) =>
@@ -135,6 +142,23 @@ export const getEmployeeWorkShiftsQueryOptions = (requestParams: ListEmployeeWor
       const totalResults = getTotalResultsFromHeaders(headers);
 
       return { employeeWorkShifts, totalResults };
+    },
+  });
+};
+
+export const getListWorkShiftChangeSetsQueryOptions = (
+  requestParams: ListWorkShiftChangeSetsRequest,
+  enabled = true,
+) => {
+  return queryOptions({
+    queryKey: [QUERY_KEYS.WORK_SHIFT_CHANGE_SETS, requestParams],
+    enabled: enabled,
+    queryFn: async () => {
+      const [workShiftChangeSets, headers] =
+        await api.workShiftChangeSets.listWorkShiftChangeSetsWithHeaders(requestParams);
+      const totalResults = getTotalResultsFromHeaders(headers);
+
+      return { workShiftChangeSets, totalResults };
     },
   });
 };
@@ -296,6 +320,38 @@ export const getListTerminalTemperaturesQueryOptions = (params: ListSiteTemperat
     queryFn: () => api.sites.listSiteTemperatures(params),
   });
 
+export const getListPagingPolicyContactsQueryOptions = (params: ListPagingPolicyContactsRequest) =>
+  queryOptions({
+    queryKey: [QUERY_KEYS.ALARM_CONTACTS, params],
+    queryFn: async () => {
+      const [alarmContacts, headers] = await api.pagingPolicyContacts.listPagingPolicyContactsWithHeaders(params);
+      const totalResults = getTotalResultsFromHeaders(headers);
+      return { alarmContacts, totalResults };
+    },
+  });
+
+export const getFindPagingPolicyContactQueryOptions = (params: FindPagingPolicyContactRequest) =>
+  queryOptions({
+    queryKey: [QUERY_KEYS.ALARM_CONTACTS, params.pagingPolicyContactId],
+    queryFn: () =>
+      api.pagingPolicyContacts.findPagingPolicyContact({ pagingPolicyContactId: params.pagingPolicyContactId }),
+  });
+
+export const getListPayrollExportsQueryOptions = (params: ListPayrollExportsRequest) =>
+  queryOptions({
+    queryKey: [QUERY_KEYS.PAYROLL_EXPORTS, params],
+    queryFn: async () => {
+      const [payrollExports, headers] = await api.payrollExports.listPayrollExportsWithHeaders(params);
+      const totalResults = getTotalResultsFromHeaders(headers);
+      return { payrollExports, totalResults };
+    },
+  });
+export const getFindPayrollExportQueryOptions = (payrollExportId: string) =>
+  queryOptions({
+    queryKey: [QUERY_KEYS.PAYROLL_EXPORTS, payrollExportId],
+    queryFn: () => api.payrollExports.findPayrollExport({ payrollExportId }),
+    enabled: !!payrollExportId,
+  });
 /**
  * Gets total results from headers
  *

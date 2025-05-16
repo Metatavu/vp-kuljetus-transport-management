@@ -9,6 +9,8 @@ import {
   FreightUnitsApi,
   FreightsApi,
   HolidaysApi,
+  PagingPolicyContactsApi,
+  PayrollExportsApi,
   RoutesApi,
   SitesApi,
   TasksApi,
@@ -17,6 +19,7 @@ import {
   TrucksApi,
   VehiclesApi,
   WorkEventsApi,
+  WorkShiftChangeSetsApi,
   WorkShiftHoursApi,
 } from "generated/client";
 import { getDefaultStore } from "jotai";
@@ -46,4 +49,7 @@ export const api = {
   employeeWorkShifts: new EmployeeWorkShiftsApi(configuration),
   workEvents: new WorkEventsApi(configuration),
   thermometers: new ThermometersApi(configuration),
+  pagingPolicyContacts: new PagingPolicyContactsApi(configuration),
+  workShiftChangeSets: new WorkShiftChangeSetsApi(configuration),
+  payrollExports: new PayrollExportsApi(configuration),
 };

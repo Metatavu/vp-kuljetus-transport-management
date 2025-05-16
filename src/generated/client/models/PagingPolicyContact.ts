@@ -14,6 +14,13 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { PagingPolicyType } from './PagingPolicyType';
+import {
+    PagingPolicyTypeFromJSON,
+    PagingPolicyTypeFromJSONTyped,
+    PagingPolicyTypeToJSON,
+} from './PagingPolicyType';
+
 /**
  * Represents contact for a paging policy
  * @export
@@ -31,13 +38,19 @@ export interface PagingPolicyContact {
      * @type {string}
      * @memberof PagingPolicyContact
      */
-    name?: string;
+    name: string;
     /**
      * 
      * @type {string}
      * @memberof PagingPolicyContact
      */
-    email?: string;
+    contact: string;
+    /**
+     * 
+     * @type {PagingPolicyType}
+     * @memberof PagingPolicyContact
+     */
+    type: PagingPolicyType;
 }
 
 /**
@@ -45,6 +58,9 @@ export interface PagingPolicyContact {
  */
 export function instanceOfPagingPolicyContact(value: object): boolean {
     let isInstance = true;
+    isInstance = isInstance && "name" in value;
+    isInstance = isInstance && "contact" in value;
+    isInstance = isInstance && "type" in value;
 
     return isInstance;
 }
@@ -60,8 +76,9 @@ export function PagingPolicyContactFromJSONTyped(json: any, ignoreDiscriminator:
     return {
         
         'id': !exists(json, 'id') ? undefined : json['id'],
-        'name': !exists(json, 'name') ? undefined : json['name'],
-        'email': !exists(json, 'email') ? undefined : json['email'],
+        'name': json['name'],
+        'contact': json['contact'],
+        'type': PagingPolicyTypeFromJSON(json['type']),
     };
 }
 
@@ -75,7 +92,8 @@ export function PagingPolicyContactToJSON(value?: PagingPolicyContact | null): a
     return {
         
         'name': value.name,
-        'email': value.email,
+        'contact': value.contact,
+        'type': PagingPolicyTypeToJSON(value.type),
     };
 }
 
