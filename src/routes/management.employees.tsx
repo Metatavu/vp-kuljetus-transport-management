@@ -1,6 +1,6 @@
 import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from "@mui/icons-material/Search";
-import { Button, Divider, MenuItem, Stack, TextField, Typography, styled } from "@mui/material";
+import { Button, Divider, MenuItem, Stack, TextField, Typography, styled, Checkbox, FormControlLabel } from "@mui/material";
 import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
@@ -44,6 +44,8 @@ function ManagementEmployees() {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
+  const [includeArchived, setIncludeArchived] = useState(false);
+
   const [debouncedSearchTerm, _, setSearchTerm] = useDebounce("", 1000);
 
   const { watch, register } = useForm<EmployeeFilters>({
@@ -69,7 +71,8 @@ function ManagementEmployees() {
       office: officeFilter === "ALL" ? undefined : officeFilter,
       salaryGroup: salaryGroupFilter === "ALL" ? undefined : salaryGroupFilter,
       type: employeeTypeFilter === "ALL" ? undefined : employeeTypeFilter,
-    }),
+      archived: includeArchived
+    })
   );
 
   const renderLocalizedMenuItem = useCallback(
@@ -140,6 +143,26 @@ function ManagementEmployees() {
           "office",
           renderLocalizedMenuItems(Object.values(Office), LocalizationUtils.getLocalizedOffice),
         )}
+        {
+          <FormControlLabel
+            label={t("management.employees.filters.includeArchived.label")}
+            labelPlacement="top"
+            sx={{
+              alignItems: "flex-start",
+              justifyContent: "start",
+              '.MuiFormControlLabel-label': {
+                textAlign: 'left',
+                fontSize: '0.9rem',
+                fontWeight: 400,
+                lineHeight: "1.4375rem",
+                color: 'rgba(0, 0, 0, 0.6)'
+              },
+            }}
+            control={
+              <Checkbox sx={{ padding: 0 }} value={includeArchived} onChange={(event) => setIncludeArchived(event.target.checked)}/>
+            }
+          />
+        }
       </Stack>
     ),
     [t, renderSelectFilter, renderLocalizedMenuItems, setSearchTerm],
