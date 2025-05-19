@@ -11,6 +11,7 @@
   "delete": "Delete",
   "approve": "Approve",
   "archive": "Archive",
+  "unArchive": "Unarchive",
   "open": "Open",
   "noSelection": "No selection",
   "all": "All",
@@ -87,6 +88,7 @@
       "noLocationAvailable": "Location not available",
       "noUpdateInformation": "No last update information",
       "driver": "Driver",
+      "driverCard": "Driver card",
       "temperature": "Temperature:",
       "noTemperatureAvailable": "Temperature not available"
     },
@@ -264,6 +266,9 @@
         "name": {
           "label": "Name",
           "placeholder": "Search by name"
+        },
+        "includeArchived": {
+          "label": "Archived"
         }
       },
       "employeeNumber": "Number",
@@ -291,8 +296,13 @@
         "title": "Archive employee",
         "description": "Are you sure you want to archive employee {{name}}?"
       },
+      "unArchiveDialog": {
+        "title": "Unarchive employee",
+        "description": "Are you sure you want to unarchive employee {{name}}?"
+      },
       "successToast": "Employee saved!",
       "archiveToast": "Employee archived!",
+      "unArchiveToast": "Employee unarchived!",
       "errorToast": "Failed to save employee!"
     },
     "holidays": {
@@ -490,13 +500,21 @@
       "approved": "Checked",
       "markAllApproved": "Mark all checked",
       "successToast": "Working hours saved!",
-      "errorToast": "Failed to save working hours"
+      "errorToast": "Failed to save working hours",
+      "sentToPayroll": "Sent to payroll",
+      "sendToPayrollSuccessToast": "Workshifts sent to payroll!",
+      "sendToPayrollErrorToast": "Failed to send workshifts to payroll"
     },
     "workingDays": {
       "title": "Working days",
       "employee": "Employee",
       "print": "Print",
       "sendToPayroll": "Send to payroll",
+      "confirmDialogPayroll": {
+        "title": "Send to payroll",
+        "description": "Are you sure you want to send working hours to payroll?",
+        "confirm": "Send"
+      },
       "table": {
         "date": "Date",
         "shiftStarts": "Shift Starts",

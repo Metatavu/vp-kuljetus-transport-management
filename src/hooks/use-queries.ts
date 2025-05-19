@@ -12,6 +12,7 @@ import {
   ListFreightUnitsRequest,
   ListHolidaysRequest,
   ListPagingPolicyContactsRequest,
+  ListPayrollExportsRequest,
   ListRoutesRequest,
   ListSiteTemperaturesRequest,
   ListSitesRequest,
@@ -54,6 +55,7 @@ export const QUERY_KEYS = {
   ALARM_CONTACTS: "alarm-contacts",
   WORK_SHIFT_CHANGE_SETS: "work-shift-change-sets",
   THERMAL_MONITORS: "thermal-monitors",
+  PAYROLL_EXPORTS: "payroll-exports",
 } as const;
 
 export const getListSitesQueryOptions = (requestParams: ListSitesRequest = {}, enabled = true) =>
@@ -359,6 +361,21 @@ export const getListThermalMonitorsQueryOptions = (params: ListThermalMonitorsRe
     },
   });
 
+export const getListPayrollExportsQueryOptions = (params: ListPayrollExportsRequest) =>
+  queryOptions({
+    queryKey: [QUERY_KEYS.PAYROLL_EXPORTS, params],
+    queryFn: async () => {
+      const [payrollExports, headers] = await api.payrollExports.listPayrollExportsWithHeaders(params);
+      const totalResults = getTotalResultsFromHeaders(headers);
+      return { payrollExports, totalResults };
+    },
+  });
+export const getFindPayrollExportQueryOptions = (payrollExportId: string) =>
+  queryOptions({
+    queryKey: [QUERY_KEYS.PAYROLL_EXPORTS, payrollExportId],
+    queryFn: () => api.payrollExports.findPayrollExport({ payrollExportId }),
+    enabled: !!payrollExportId,
+  });
 /**
  * Gets total results from headers
  *

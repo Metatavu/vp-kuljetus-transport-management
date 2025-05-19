@@ -19,6 +19,7 @@ import { BlobProvider } from "@react-pdf/renderer";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Outlet, createFileRoute } from "@tanstack/react-router";
 import { api } from "api/index";
+import { useConfirmDialog } from "components/providers/confirm-dialog-provider";
 import AggregationsTableForDriver from "components/working-hours/aggregations-table-driver";
 import AggregationsTableForOffice from "components/working-hours/aggregations-table-office";
 import ChangeLog from "components/working-hours/change-log";
@@ -34,7 +35,12 @@ import {
   WorkShiftHours,
   WorkType,
 } from "generated/client";
-import { QUERY_KEYS, getListEmployeesQueryOptions, getListWorkShiftChangeSetsQueryOptions } from "hooks/use-queries";
+import {
+  QUERY_KEYS,
+  getFindPayrollExportQueryOptions,
+  getListEmployeesQueryOptions,
+  getListWorkShiftChangeSetsQueryOptions,
+} from "hooks/use-queries";
 import { t } from "i18next";
 import { DateTime } from "luxon";
 import { useCallback, useMemo } from "react";
@@ -139,6 +145,7 @@ const TableContainer = styled(Stack, {
 function WorkShifts() {
   const { t } = useTranslation();
   const navigate = Route.useNavigate();
+  const showConfirmDialog = useConfirmDialog();
   const { employeeId } = Route.useParams();
   const queryClient = useQueryClient();
   const selectedDate = Route.useSearch({ select: (search) => search.date });
@@ -178,6 +185,40 @@ function WorkShifts() {
         ),
       );
     },
+  });
+
+  const handleCreatePayrollExport = useMutation({
+    mutationFn: async () => {
+      if (!workShiftsDataForFormRows.data) return Promise.reject();
+      const workShiftIds = workShiftsDataForFormRows.data.map((row) => row.workShift.id);
+      if (!workShiftIds) return Promise.reject();
+      const payrollExport = await api.payrollExports.createPayrollExport({
+        payrollExport: {
+          employeeId,
+          workShiftIds: workShiftIds.filter((id): id is string => id !== undefined),
+        },
+      });
+      return payrollExport;
+    },
+    onSuccess: () => {
+      toast.success(t("workingHours.workingHourBalances.successToast"));
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.WORK_SHIFTS] });
+    },
+    onError: () => {
+      toast.error(t("workingHours.workingHourBalances.errorToast"));
+    },
+  });
+
+  // Check if payroll export ID exists in work shifts
+  const payrollExportIdExists = useMemo(() => {
+    if (!workShiftsDataForFormRows.data) return false;
+
+    return workShiftsDataForFormRows.data.some((row) => row.workShift?.payrollExportId != null);
+  }, [workShiftsDataForFormRows.data]);
+
+  const foundPayrollExportData = useQuery({
+    ...getFindPayrollExportQueryOptions(workShiftsDataForFormRows.data?.[0]?.workShift?.payrollExportId ?? ""),
+    enabled: payrollExportIdExists,
   });
 
   const workShiftChangeSets = useQuery(
@@ -504,8 +545,9 @@ function WorkShifts() {
     (newDate: DateTime | null) => {
       handleFormUnregister();
       navigate({ search: (prev) => ({ ...prev, date: newDate ?? DateTime.now() }) });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.PAYROLL_EXPORTS] });
     },
-    [navigate, handleFormUnregister],
+    [navigate, handleFormUnregister, queryClient],
   );
 
   const disableDatesOnWorkingPeriod = (date: DateTime) => {
@@ -537,6 +579,27 @@ function WorkShifts() {
         {employee.firstName} {employee.lastName}
       </MenuItem>
     ));
+  };
+
+  const checkIfSendToPayrollButtonDisabled = useMemo(() => {
+    if (!workShiftsDataForFormRows.data) return true;
+    const allWorkShifts = workShiftsDataForFormRows.data.map((row) => row.workShift);
+    const allWorkShiftsApproved = allWorkShifts.every((workShift) => workShift.approved);
+    const allWorkShiftsHavePayrollExportId = allWorkShifts.every(
+      (workShift) => workShift.payrollExportId !== undefined,
+    );
+    return !allWorkShiftsApproved || allWorkShiftsHavePayrollExportId;
+  }, [workShiftsDataForFormRows.data]);
+
+  const handlePayrollExportButtonClick = () => {
+    showConfirmDialog({
+      title: t("workingHours.workingDays.confirmDialogPayroll.title"),
+      description: t("workingHours.workingDays.confirmDialogPayroll.description"),
+      positiveButtonText: t("workingHours.workingDays.confirmDialogPayroll.confirm"),
+      onPositiveClick: () => {
+        handleCreatePayrollExport.mutateAsync();
+      },
+    });
   };
 
   const renderToolbar = () => {
@@ -605,18 +668,51 @@ function WorkShifts() {
               </LoadingButton>
             )}
           </BlobProvider>
-          <Button size="small" variant="contained" disabled={true} endIcon={<Send />}>
-            {t("workingHours.workingDays.sendToPayroll")}
-          </Button>
-          <Button
-            size="small"
-            variant="contained"
-            endIcon={<Save />}
-            type="submit"
-            disabled={!methods.formState.isDirty}
-          >
-            {t("save")}
-          </Button>
+          {handleCreatePayrollExport.isPending ? (
+            <LoadingButton
+              loading={handleCreatePayrollExport.isPending}
+              size="small"
+              variant="contained"
+              endIcon={<Send />}
+            >
+              {t("workingHours.workingDays.sendToPayroll")}
+            </LoadingButton>
+          ) : (
+            <Button
+              size="small"
+              variant="contained"
+              disabled={checkIfSendToPayrollButtonDisabled || updateWorkShift.isPending}
+              endIcon={<Send />}
+              onClick={() => {
+                handlePayrollExportButtonClick();
+              }}
+            >
+              {payrollExportIdExists && foundPayrollExportData.data?.exportedAt
+                ? t("workingHours.workingHourBalances.sentToPayroll")
+                : t("workingHours.workingDays.sendToPayroll")}
+            </Button>
+          )}
+          {updateWorkShift.isPending ? (
+            <LoadingButton
+              loading={updateWorkShift.isPending}
+              size="small"
+              variant="contained"
+              endIcon={<Save />}
+              type="submit"
+            >
+              {t("save")}
+            </LoadingButton>
+          ) : (
+            <Button
+              size="small"
+              variant="contained"
+              endIcon={<Save />}
+              type="submit"
+              disabled={!methods.formState.isDirty}
+            >
+              {t("save")}
+            </Button>
+          )}
         </Stack>
       </Stack>
     );
@@ -691,6 +787,21 @@ function WorkShifts() {
                       <Box minWidth={245}>
                         <Typography variant="body2">{`Muutokset tallennettu ${getLatestChangeSetDateAndTime}`}</Typography>
                       </Box>
+                      {foundPayrollExportData.data?.exportedAt ? (
+                        <Box minWidth={245}>
+                          <Typography variant="body2">{`${t(
+                            "workingHours.workingHourBalances.sentToPayroll",
+                          )} ${DateTime.fromJSDate(foundPayrollExportData.data?.exportedAt).toFormat(
+                            "dd.MM.yyyy HH:mm",
+                          )} (${
+                            employees?.find((employee) => employee.id === foundPayrollExportData.data?.creatorId)
+                              ?.firstName
+                          } ${
+                            employees?.find((employee) => employee.id === foundPayrollExportData.data?.creatorId)
+                              ?.lastName
+                          })`}</Typography>
+                        </Box>
+                      ) : null}
                     </Stack>
                   </TableHeader>
                   <TableContainer>

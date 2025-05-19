@@ -10,6 +10,7 @@ import {
   FreightsApi,
   HolidaysApi,
   PagingPolicyContactsApi,
+  PayrollExportsApi,
   RoutesApi,
   SitesApi,
   TasksApi,
@@ -54,4 +55,5 @@ export const api = {
   workShiftChangeSets: new WorkShiftChangeSetsApi(configuration),
   thermalMonitors: new ThermalMonitorsApi(configuration),
   thermalMonitorPagingPolicies: new ThermalMonitorPagingPoliciesApi(configuration),
+  payrollExports: new PayrollExportsApi(configuration),
 };
