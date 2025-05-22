@@ -37,6 +37,7 @@ import {
 } from "generated/client";
 import {
   QUERY_KEYS,
+  getFindEmployeeAggregatedWorkHoursQueryOptions,
   getFindPayrollExportQueryOptions,
   getListEmployeesQueryOptions,
   getListWorkShiftChangeSetsQueryOptions,
@@ -156,6 +157,13 @@ function WorkShifts() {
 
   const employeeSalaryGroup =
     employees?.find((employee) => employee.id === employeeId)?.salaryGroup ?? SalaryGroup.Driver;
+
+  const employeeAggregatedHours = useQuery({
+    ...getFindEmployeeAggregatedWorkHoursQueryOptions(
+      { employeeId: employeeId, dateInSalaryPeriod: selectedDate.toJSDate() },
+      !!employeeId,
+    ),
+  });
 
   const workingPeriodsForEmployee = TimeUtils.getWorkingPeriodDates(employeeSalaryGroup, selectedDate?.toJSDate());
 
@@ -526,6 +534,7 @@ function WorkShifts() {
       await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.WORK_SHIFTS] });
       await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.WORK_SHIFT_HOURS] });
       await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.WORK_SHIFT_CHANGE_SETS] });
+      await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.EMPLOYEES_AGGREGATED_HOURS] });
 
       toast.success(t("workingHours.workingHourBalances.successToast"));
     },
@@ -562,25 +571,6 @@ function WorkShifts() {
     return dateIsInsideWorkingPeriod;
   };
 
-  const renderEmployeeMenuItems = () => {
-    return employees?.map((employee) => (
-      <MenuItem
-        onClick={() => {
-          handleFormUnregister();
-          navigate({
-            to: "/working-hours/$employeeId/work-shifts",
-            params: { employeeId: employee.id },
-            search: { date: selectedDate },
-          });
-        }}
-        key={employee.id}
-        value={employee.id}
-      >
-        {employee.firstName} {employee.lastName}
-      </MenuItem>
-    ));
-  };
-
   const checkIfSendToPayrollButtonDisabled = useMemo(() => {
     if (!workShiftsDataForFormRows.data) return true;
     const allWorkShifts = workShiftsDataForFormRows.data.map((row) => row.workShift);
@@ -600,6 +590,40 @@ function WorkShifts() {
         handleCreatePayrollExport.mutateAsync();
       },
     });
+  };
+
+  const handleAllApprovedChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const isApproved = event.target.checked;
+    const formValues = methods.getValues();
+
+    const updatedFormValues = Object.values(formValues).map((row) => {
+      if (row.workShift.id === undefined || row.workShift.approved === isApproved) return row;
+
+      return {
+        ...row,
+        workShift: { ...row.workShift, approved: isApproved },
+      };
+    });
+    methods.reset(updatedFormValues);
+  };
+
+  const renderEmployeeMenuItems = () => {
+    return employees?.map((employee) => (
+      <MenuItem
+        onClick={() => {
+          handleFormUnregister();
+          navigate({
+            to: "/working-hours/$employeeId/work-shifts",
+            params: { employeeId: employee.id },
+            search: { date: selectedDate },
+          });
+        }}
+        key={employee.id}
+        value={employee.id}
+      >
+        {employee.firstName} {employee.lastName}
+      </MenuItem>
+    ));
   };
 
   const renderToolbar = () => {
@@ -651,6 +675,7 @@ function WorkShifts() {
               <WorkingHoursDocument
                 employee={employee}
                 workShiftsData={workShiftsDataWithWorkingPeriodDates}
+                employeeAggregatedHours={employeeAggregatedHours.data?.aggregatedHours}
                 workingPeriodsForEmployee={workingPeriodsForEmployee}
               />
             }
@@ -718,21 +743,6 @@ function WorkShifts() {
     );
   };
 
-  const handleAllApprovedChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const isApproved = event.target.checked;
-    const formValues = methods.getValues();
-
-    const updatedFormValues = Object.values(formValues).map((row) => {
-      if (row.workShift.id === undefined || row.workShift.approved === isApproved) return row;
-
-      return {
-        ...row,
-        workShift: { ...row.workShift, approved: isApproved },
-      };
-    });
-    methods.reset(updatedFormValues);
-  };
-
   const renderWorkingPeriodText = () => {
     if (!workingPeriodsForEmployee) return null;
 
@@ -785,7 +795,9 @@ function WorkShifts() {
                         label={t("workingHours.workingDays.table.inspected")}
                       />
                       <Box minWidth={245}>
-                        <Typography variant="body2">{`Muutokset tallennettu ${getLatestChangeSetDateAndTime}`}</Typography>
+                        <Typography variant="body2">{`${t(
+                          "workingHours.workingHourBalances.changesSaved",
+                        )} ${getLatestChangeSetDateAndTime}`}</Typography>
                       </Box>
                       {foundPayrollExportData.data?.exportedAt ? (
                         <Box minWidth={245}>
@@ -825,17 +837,19 @@ function WorkShifts() {
                 <Paper elevation={0} sx={{ display: "flex", flex: 2 }}>
                   <Stack flex={1}>
                     <TableHeader>{renderAggregationsTableTitle()}</TableHeader>
-                    {workShiftsDataForFormRows.isLoading ? (
+                    {workShiftsDataForFormRows.isLoading ||
+                    employeeAggregatedHours.isLoading ||
+                    employeeAggregatedHours.isFetching ? (
                       <Skeleton variant="rectangular" height={150} />
                     ) : employeeSalaryGroup === SalaryGroup.Driver ||
                       employeeSalaryGroup === SalaryGroup.Vplogistics ? (
                       <AggregationsTableForDriver
-                        workShiftsData={workShiftsDataForFormRows.data ?? []}
+                        employeeAggregatedHours={employeeAggregatedHours.data?.aggregatedHours}
                         employee={employee ?? undefined}
                       />
                     ) : (
                       <AggregationsTableForOffice
-                        workShiftsData={workShiftsDataForFormRows.data ?? []}
+                        employeeAggregatedHours={employeeAggregatedHours.data?.aggregatedHours}
                         employee={employee ?? undefined}
                       />
                     )}

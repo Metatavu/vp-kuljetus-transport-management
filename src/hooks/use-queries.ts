@@ -222,7 +222,7 @@ export const getListEmployeesQueryOptions = (requestParams: ListEmployeesRequest
 
 export const getFindEmployeeAggregatedWorkHoursQueryOptions = (
   requestParams: GetSalaryPeriodTotalWorkHoursRequest,
-  enabled = true,
+  enabled: boolean,
 ) =>
   queryOptions({
     queryKey: [QUERY_KEYS.EMPLOYEES_AGGREGATED_HOURS, requestParams],

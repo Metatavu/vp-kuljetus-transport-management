@@ -550,6 +550,7 @@
       "noRecords": "ei kirjauksia",
       "approved": "Tarkastettu",
       "markAllApproved": "Merkitse kaikki tarkastetuiksi",
+      "changesSaved": "Muutokset tallennettu",
       "successToast": "Työvuoro tallennettu!",
       "errorToast": "Työvuoron tallennus epäonnistui",
       "sentToPayroll": "Lähetetty palkanlaskentaan",
