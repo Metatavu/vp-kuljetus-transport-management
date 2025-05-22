@@ -182,9 +182,6 @@ const WorkingHoursDocument = ({ employee, workShiftsData, workingPeriodsForEmplo
         <Text style={styles.headerCellText}>{t("workingHours.workingDays.table.absence")}</Text>
       </View>
       <View style={[styles.timeTableCell, { maxWidth: 30 }]}>
-        <Text style={styles.headerCellText}>{t("workingHours.workingDays.pdf.costCenter")}</Text>
-      </View>
-      <View style={[styles.timeTableCell, { maxWidth: 30 }]}>
         <Text style={styles.headerCellText}>{t("workingHours.workingDays.table.dailyAllowance")}</Text>
       </View>
       <View style={[styles.timeTableCell, { maxWidth: 20 }]}>
@@ -282,9 +279,6 @@ const WorkingHoursDocument = ({ employee, workShiftsData, workingPeriodsForEmplo
         <Text style={styles.cellText}>
           {row.workShift.absence ? LocalizationUtils.getLocalizedAbsenceType(row.workShift.absence, t) : ""}
         </Text>
-      </View>
-      <View style={[styles.timeTableCell, { maxWidth: 30 }]}>
-        <Text style={styles.cellText}>7777, 5</Text>
       </View>
       <View style={[styles.timeTableCell, { maxWidth: 30 }]}>
         <Text style={styles.cellText}>

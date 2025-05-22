@@ -478,7 +478,9 @@
         "selectDailyAllowance": "Select daily allowance type",
         "inspected": "Inspected",
         "remarks": "Remarks",
-        "calculatedHours": "Calculated"
+        "calculatedHours": "Calculated",
+        "defaultCostCenter": "Cost center",
+        "defaultCostCenterAppreviation": "CC"
       },
       "pdf": {
         "costCenter": "CC",

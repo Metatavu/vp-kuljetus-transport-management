@@ -587,7 +587,9 @@
         "selectDailyAllowance": "Valitse päivärahan tyyppi",
         "inspected": "Tarkastettu",
         "remarks": "Huomautuksia",
-        "calculatedHours": "Laskettu"
+        "calculatedHours": "Laskettu",
+        "defaultCostCenterAppreviation": "KP",
+        "defaultCostCenter": "Oletus-kustannuspaikka työtapahtumille, joille sitä ei ole erikseen määritetty"
       },
       "pdf": {
         "costCenter": "KP",
