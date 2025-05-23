@@ -1,4 +1,4 @@
-import { ArchiveOutlined, SaveAlt } from "@mui/icons-material";
+import { ArchiveOutlined, Restore, SaveAlt } from "@mui/icons-material";
 import { Button, Paper, Stack, styled } from "@mui/material";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
@@ -6,12 +6,13 @@ import { api } from "api/index";
 import ToolbarRow from "components/generic/toolbar-row";
 import { useConfirmDialog } from "components/providers/confirm-dialog-provider";
 import { Towable, Truck } from "generated/client";
+import { useRef, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { getEquipmentDisplayName } from "src/utils/format-utils";
 import DataValidation from "../../../utils/data-validation-utils";
-import Sensors from "../sensors";
 import EquipmentForm from "./equipment-form";
+import TruckOrTowableThermometersList from "./truck-or-towable-thermometers-list";
 
 // Styled components
 const ScrollContainer = styled(Stack, {
@@ -26,20 +27,26 @@ const ScrollContainer = styled(Stack, {
 type Props = {
   formType: "ADD" | "MODIFY";
   initialData?: Truck | Towable;
-  onSave: (equipment: Truck | Towable) => unknown;
+  onSave: (equipment: Truck | Towable) => Promise<unknown>;
 };
 
-function EquipmentComponent({ formType, initialData, onSave }: Props) {
+function Equipment({ formType, initialData, onSave }: Props) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const showConfirmDialog = useConfirmDialog();
   const queryClient = useQueryClient();
-  
+  const thermometersRef = useRef<{ reset: () => void } | null>(null);
+  const [changedEquipmentThermometerNames, setChangedTerminalThermometerNames] = useState<
+    { newName: string; thermometerId: string }[]
+  >([]);
+  const [isSaving, setIsSaving] = useState(false);
+
   const methods = useForm<Truck | Towable>({
     mode: "onChange",
     defaultValues: initialData,
     shouldFocusError: true,
   });
+
   const onArchiveEquipment = async (equipment: Truck | Towable) => {
     if (DataValidation.isTruck(equipment)) {
       archiveTruck.mutate(equipment);
@@ -74,6 +81,57 @@ function EquipmentComponent({ formType, initialData, onSave }: Props) {
     },
   });
 
+  const onReset = () => {
+    if (initialData?.type === "TRUCK") {
+      methods.reset({
+        ...initialData,
+        name: initialData?.name ?? "",
+        costCenter: initialData?.costCenter ?? "",
+        plateNumber: initialData?.plateNumber ?? "",
+        vin: initialData?.vin ?? "",
+        imei: initialData?.imei ?? "",
+      });
+    } else {
+      methods.reset({
+        ...initialData,
+        name: initialData?.name ?? "",
+        plateNumber: initialData?.plateNumber ?? "",
+        vin: initialData?.vin ?? "",
+        imei: initialData?.imei ?? "",
+      });
+    }
+
+    thermometersRef.current?.reset();
+  };
+
+  const onSaveClick = async (values: Truck | Towable) => {
+    setIsSaving(true);
+
+    if (changedEquipmentThermometerNames.length > 0) {
+      await Promise.all(
+        changedEquipmentThermometerNames.map(({ newName, thermometerId }) =>
+          api.thermometers.updateTruckOrTowableThermometer({
+            thermometerId,
+            updateTruckOrTowableThermometerRequest: { name: newName },
+          }),
+        ),
+      );
+    }
+
+    await onSave(values);
+
+    onReset();
+
+    setIsSaving(false);
+  };
+
+  const formHasErrors = Object.keys(methods.formState.errors).length > 0;
+  const formIsNotDirty =
+    Object.keys(methods.formState.dirtyFields).length < 1 && changedEquipmentThermometerNames.length < 1;
+
+  const isUndoChangesDisabled = formIsNotDirty || isSaving;
+  const isSaveDisabled = formIsNotDirty || isSaving || formHasErrors;
+
   const renderToolbarButtons = () => (
     <Stack direction="row" spacing={2}>
       {initialData && (
@@ -91,7 +149,21 @@ function EquipmentComponent({ formType, initialData, onSave }: Props) {
           {t("archive")}
         </Button>
       )}
-      <Button variant="contained" startIcon={<SaveAlt />} onClick={methods.handleSubmit(onSave)}>
+      <Button
+        title={t("undoFormChangesTitle")}
+        disabled={isUndoChangesDisabled}
+        variant="text"
+        startIcon={<Restore />}
+        onClick={() => onReset()}
+      >
+        {t("undoChanges")}
+      </Button>
+      <Button
+        variant="contained"
+        startIcon={<SaveAlt />}
+        disabled={isSaveDisabled}
+        onClick={methods.handleSubmit(onSaveClick)}
+      >
         {t("save")}
       </Button>
     </Stack>
@@ -114,9 +186,11 @@ function EquipmentComponent({ formType, initialData, onSave }: Props) {
         </FormProvider>
         <ScrollContainer>
           {initialData ? (
-            <Sensors
+            <TruckOrTowableThermometersList
+              ref={thermometersRef}
               entityType={DataValidation.isTruck(initialData) ? "truck" : "towable"}
               entityId={initialData?.id ?? ""}
+              setChangedTerminalThermometerNames={setChangedTerminalThermometerNames}
             />
           ) : null}
         </ScrollContainer>
@@ -125,4 +199,4 @@ function EquipmentComponent({ formType, initialData, onSave }: Props) {
   );
 }
 
-export default EquipmentComponent;
+export default Equipment;

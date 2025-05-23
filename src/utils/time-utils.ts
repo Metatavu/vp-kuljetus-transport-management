@@ -4,6 +4,8 @@ import { DateTime, Interval } from "luxon";
 const WORKING_TIME_PERIOD_START_DATE = DateTime.now().set({ day: 7, month: 1, year: 2024 });
 
 namespace TimeUtils {
+  export const isValidInterval = (interval: Interval): interval is Interval<true> => interval.isValid;
+
   export const displayAsDateTime = (timestampInSeconds?: number, fallback?: string) => {
     if (timestampInSeconds === undefined) return fallback ?? "";
     return DateTime.fromSeconds(timestampInSeconds).toFormat("dd.MM.yyyy HH:mm:ss");

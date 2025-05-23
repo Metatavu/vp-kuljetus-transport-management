@@ -26,6 +26,12 @@
   "openCalendar": "Valitse päivä kalenterista",
   "showMenu": "Näytä valikko",
   "hideMenu": "Piilota valikko",
+  "previous": "Edellinen",
+  "next": "Seuraava",
+  "search": "Haku",
+  "formValidationErrors": {
+    "required": "Pakollinen kenttä"
+  },
   "notAuthorizedView": {
     "notAuthorized": "Pääsy evätty.",
     "description": "Sinulla ei ole tarvittavia oikeuksia sisällön katseluun."
@@ -159,6 +165,7 @@
       "deleteDeviceDescription": "Toiminto poistaa tämän laitteen valitulta terminaalilta. Haluatko varmasti poistaa laitteen?",
       "configureNewDevice": "Määritä uusi laite",
       "configureNewDeviceDescription": "Syötä terminaaliin asennetun laitteen MAC-osoite. Määrityksen jälkeen voit nimetä anturit erikseen ja ne tulevat näkyviin terminaalinäkymään.",
+      "macAddress": "MAC-osoite",
       "thermometers": {
         "thermometers": "Lämpötila-anturit",
         "name": "Nimi",
@@ -359,6 +366,66 @@
       "deleteConfirmationDescription": "Haluatko varmasti poistaa yhteystiedon {{name}}?",
       "editAlarmContact": "Muokkaa ilmoitusyhteystietoa",
       "errorEmail": "Sähköposti on virheellinen"
+    },
+    "thermalMonitors": {
+      "title": "Lämpötilavahdit",
+      "name": "Nimi",
+      "namePlaceholder": "Syötä vahtia kuvaava nimi",
+      "addNewMonitor": "Lisää uusi vahti",
+      "lowerThresholdTemperature": "Alaraja (°C)",
+      "lowerThresholdTemperatureHelperText": "Aseta lämpötila jonka alituksesta syntyy hälytys",
+      "upperThresholdTemperature": "Yläraja (°C)",
+      "upperThresholdTemperatureHelperText": "Aseta lämpötila jonka ylityksestä syntyy hälytys",
+      "selectMonitoredThermometers": "Valitse vahdittavat lämpömittarit",
+      "monitoredThermometers": "Vahdittavat lämpömittarit",
+      "searchHelperText": "Hae nimellä, terminaalilla tai kaluston nimellä tai rekisterinumerolla",
+      "status": "Tila",
+      "statuses": {
+        "PENDING": "Odottaa",
+        "ACTIVE": "Aktiivinen",
+        "INACTIVE": "Ei aktiivinen",
+        "PAUSED": "Pysäytetty",
+        "FINISHED": "Päättynyt"
+      },
+      "schedule": "Voimassaolo",
+      "defineMonitorActiveTimes": "Määritä vahdin voimassaolo",
+      "type": {
+        "ONE_OFF": "Aina",
+        "SCHEDULED": "Tiettyinä aikoina"
+      },
+      "weekdays": {
+        "title": "Viikonpäivät",
+        "MONDAY": "Maanantai",
+        "TUESDAY": "Tiistai",
+        "WEDNESDAY": "Keskiviikko",
+        "THURSDAY": "Torstai",
+        "FRIDAY": "Perjantai",
+        "SATURDAY": "Lauantai",
+        "SUNDAY": "Sunnuntai"
+      },
+      "times": "Kellonajat",
+      "actions": "Toiminnot",
+      "monitor": "Vahti",
+      "thermometers": "Lämpömittarit",
+      "pagingPolicies": "Toimenpiteet",
+      "addPolicy": "Lisää toimenpide",
+      "timeAfterAlarmActivation": "Aika hälytyksen aktivoitumisesta",
+      "timeAfterPreviousAction": "Aika edellisestä toimenpiteestä",
+      "notification": "Ilmoitus",
+      "notificationDelay": {
+        "0": "Välittömästi",
+        "60": "1 minuutin kuluttua",
+        "120": "2 minuutin kuluttua",
+        "300": "5 minuutin kuluttua",
+        "600": "10 minuutin kuluttua",
+        "900": "15 minuutin kuluttua",
+        "1800": "30 minuutin kuluttua",
+        "3600": "1 tunnin kuluttua",
+        "7200": "2 tunnin kuluttua",
+        "14400": "4 tunnin kuluttua",
+        "28800": "8 tunnin kuluttua",
+        "86400": "24 tunnin kuluttua"
+      }
     }
   },
   "drivePlanning": {

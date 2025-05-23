@@ -14,6 +14,8 @@ import {
   RoutesApi,
   SitesApi,
   TasksApi,
+  ThermalMonitorPagingPoliciesApi,
+  ThermalMonitorsApi,
   ThermometersApi,
   TowablesApi,
   TrucksApi,
@@ -51,5 +53,7 @@ export const api = {
   thermometers: new ThermometersApi(configuration),
   pagingPolicyContacts: new PagingPolicyContactsApi(configuration),
   workShiftChangeSets: new WorkShiftChangeSetsApi(configuration),
+  thermalMonitors: new ThermalMonitorsApi(configuration),
+  thermalMonitorPagingPolicies: new ThermalMonitorPagingPoliciesApi(configuration),
   payrollExports: new PayrollExportsApi(configuration),
 };

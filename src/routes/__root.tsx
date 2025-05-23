@@ -6,6 +6,7 @@ import * as luxon from "luxon";
 
 export const Route = createRootRoute({
   component: RootLayout,
+  errorComponent: () => <div>Root error</div>,
 });
 
 function RootLayout() {

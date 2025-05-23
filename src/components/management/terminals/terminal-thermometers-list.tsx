@@ -19,7 +19,7 @@ import { forwardRef, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { queryClient } from "src/main";
-import ThermometersTable from "./thermometers-table";
+import ThermometersTable from "../thermometers-table";
 
 type Props = {
   site: Site;
@@ -28,7 +28,7 @@ type Props = {
   >;
 };
 
-const Thermometers = forwardRef(({ site, setChangedTerminalThermometerNames }: Props, ref) => {
+const TerminalThermometersList = forwardRef(({ site, setChangedTerminalThermometerNames }: Props, ref) => {
   const { t } = useTranslation();
   const [openCreateNewDevice, setOpenCreateNewDevice] = useState(false);
   const [newDeviceIdentifier, setNewDeviceIdentifier] = useState<string>("");
@@ -104,7 +104,7 @@ const Thermometers = forwardRef(({ site, setChangedTerminalThermometerNames }: P
           margin="dense"
           id="deviceIdentifier"
           name="deviceIdentifier"
-          label="MAC-osoite"
+          label={t("management.terminals.macAddress")}
           type="text"
           fullWidth
           variant="filled"
@@ -131,7 +131,7 @@ const Thermometers = forwardRef(({ site, setChangedTerminalThermometerNames }: P
           </Button>
         }
       />
-      <Stack p={2}>
+      <Stack p={2} spacing={2}>
         {thermometersByDeviceIdentifier.map(({ deviceIdentifier, thermometers }) => (
           <ThermometersTable
             key={deviceIdentifier}
@@ -148,4 +148,4 @@ const Thermometers = forwardRef(({ site, setChangedTerminalThermometerNames }: P
   );
 });
 
-export default Thermometers;
+export default TerminalThermometersList;

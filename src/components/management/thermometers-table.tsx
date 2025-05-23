@@ -9,20 +9,21 @@ import {
   DialogTitle,
   TextField,
 } from "@mui/material";
-import { GridColDef } from "@mui/x-data-grid";
-import { useQueries } from "@tanstack/react-query";
+import { GridColDef, useGridApiRef } from "@mui/x-data-grid";
+import { api } from "api/index";
 import GenericDataGrid from "components/generic/generic-data-grid";
 import ToolbarRow from "components/generic/toolbar-row";
-import { TerminalTemperature, TerminalThermometer } from "generated/client";
-import { getListTerminalTemperaturesQueryOptions } from "hooks/use-queries";
-import { forwardRef, useImperativeHandle, useMemo, useState } from "react";
+import { TerminalTemperature, TerminalThermometer, TruckOrTowableThermometer } from "generated/client";
+import { Temperature } from "generated/client/models/Temperature";
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import TimeUtils from "src/utils/time-utils";
+import { useInterval } from "usehooks-ts";
 
 type Props = {
-  name: string;
-  thermometers: TerminalThermometer[];
-  onDeleteDevice: (deviceIdentifier: string) => void;
+  name?: string;
+  thermometers: (TruckOrTowableThermometer | TerminalThermometer)[];
+  onDeleteDevice?: (deviceIdentifier: string) => void;
   setChangedTerminalThermometerNames: React.Dispatch<
     React.SetStateAction<{ newName: string; thermometerId: string }[]>
   >;
@@ -31,20 +32,27 @@ type Props = {
 const ThermometersTable = forwardRef(
   ({ name, thermometers, onDeleteDevice, setChangedTerminalThermometerNames }: Props, ref) => {
     const { t } = useTranslation();
+    const firstThermometer = useMemo(() => thermometers.at(0), [thermometers]);
+    const apiRef = useGridApiRef();
+
+    const type = useMemo(() => {
+      if (!firstThermometer) return undefined;
+      if ("siteId" in firstThermometer) return "terminal";
+      if (firstThermometer.entityType === "truck") return "truck";
+      if (firstThermometer.entityType === "towable") return "towable";
+      return undefined;
+    }, [firstThermometer]);
+
     const [openDeleteDeviceConfirmationDialog, setOpenDeleteDeviceConfirmationDialog] = useState(false);
-    const [rows, setRows] = useState<TerminalThermometer[]>(thermometers);
-    const [gridKey, setGridKey] = useState(0);
+    const [temperatures, setTemperatures] = useState(new Map<string, TerminalTemperature>());
 
-    const handleClickOpen = () => {
-      setOpenDeleteDeviceConfirmationDialog(true);
-    };
+    const handleClickOpen = () => setOpenDeleteDeviceConfirmationDialog(true);
 
-    const handleClose = () => {
-      setOpenDeleteDeviceConfirmationDialog(false);
-    };
+    const handleClose = () => setOpenDeleteDeviceConfirmationDialog(false);
 
     const handleDeleteDevice = () => {
-      onDeleteDevice(name);
+      if (!name) return;
+      onDeleteDevice?.(name);
       handleClose();
     };
 
@@ -52,8 +60,7 @@ const ThermometersTable = forwardRef(
     useImperativeHandle(ref, () => ({
       reset: () => {
         setChangedTerminalThermometerNames([]);
-        setRows(thermometers);
-        setGridKey((prev) => prev + 1); // This forces a re-render of the grid
+        apiRef.current.forceUpdate();
       },
     }));
 
@@ -87,21 +94,56 @@ const ThermometersTable = forwardRef(
       });
     };
 
-    const temperatures = useQueries({
-      queries: thermometers.map((thermometer) => ({
-        ...getListTerminalTemperaturesQueryOptions({ siteId: thermometer.siteId, first: 0, max: thermometers.length }),
-        refetchInterval: 10_000,
-      })),
-      combine: (results) =>
-        results.reduce((map, result, currentIndex) => {
-          const temperature = result.data?.at(currentIndex);
-          if (temperature) map.set(temperature.thermometerId, temperature);
-          return map;
-        }, new Map<string, TerminalTemperature>()),
-    });
+    const fetchTemperatures = useCallback(async () => {
+      if (!firstThermometer || !type) return;
 
-    const columns = useMemo<GridColDef<TerminalThermometer>[]>(
-      (): GridColDef<TerminalThermometer>[] => [
+      const temperatures: Temperature[] = [];
+      const temperatureMap = new Map<string, TerminalTemperature>();
+
+      if (type === "terminal") {
+        temperatures.push(
+          ...(await api.sites.listSiteTemperatures({
+            siteId: (firstThermometer as TerminalThermometer).siteId,
+            first: 0,
+            max: 10,
+          })),
+        );
+      } else if (type === "truck") {
+        temperatures.push(
+          ...(await api.trucks.listTruckTemperatures({
+            truckId: (firstThermometer as TruckOrTowableThermometer).entityId,
+            first: 0,
+            max: 10,
+          })),
+        );
+      } else if (type === "towable") {
+        temperatures.push(
+          ...(await api.towables.listTowableTemperatures({
+            towableId: (firstThermometer as TruckOrTowableThermometer).entityId,
+            first: 0,
+            max: 10,
+          })),
+        );
+      }
+
+      for (const temperature of temperatures) {
+        const previousTemperature = temperatureMap.get(temperature.thermometerId);
+        if (!previousTemperature || previousTemperature.timestamp < temperature.timestamp) {
+          temperatureMap.set(temperature.thermometerId, temperature);
+        }
+      }
+
+      setTemperatures(temperatureMap);
+    }, [firstThermometer, type]);
+
+    useEffect(() => {
+      fetchTemperatures();
+    }, [fetchTemperatures]);
+
+    useInterval(fetchTemperatures, 10_000);
+
+    const columns = useMemo<GridColDef<TerminalThermometer | TruckOrTowableThermometer>[]>(
+      () => [
         {
           field: "name",
           headerName: t("management.terminals.thermometers.name"),
@@ -111,6 +153,7 @@ const ThermometersTable = forwardRef(
           valueGetter: ({ row }) => (row.id ? row.name : ""),
           renderEditCell: ({ id, field, value, api, row }) => (
             <TextField
+              autoFocus
               value={value}
               onChange={(event) => {
                 api.setEditCellValue({ id, field, value: event.target.value });
@@ -123,6 +166,7 @@ const ThermometersTable = forwardRef(
           field: "hardwareSensorId",
           headerName: t("management.terminals.thermometers.hardwareSensorId"),
           width: 150,
+          valueGetter: ({ row }) => ("siteId" in row ? row.hardwareSensorId : row.macAddress),
         },
         {
           field: "temperature",
@@ -141,12 +185,14 @@ const ThermometersTable = forwardRef(
           field: "lastAlarmTime",
           headerName: t("management.terminals.thermometers.lastAlarm"),
           width: 200,
+          valueFormatter: ({ value }) => (value ? TimeUtils.displayAsDateTime(value) : "-"),
         },
         {
           field: "activeMonitors",
           headerName: t("management.terminals.thermometers.activeMonitors"),
           flex: 1,
           cellClassName: "clickable",
+          valueFormatter: () => "-",
         },
       ],
       [t, temperatures, handleThermometerNameChange],
@@ -174,23 +220,25 @@ const ThermometersTable = forwardRef(
             <ToolbarRow
               title={name}
               toolbarButtons={
-                <Button color="error" onClick={handleClickOpen}>
-                  {t("delete")}
-                </Button>
+                onDeleteDevice ? (
+                  <Button color="error" onClick={handleClickOpen}>
+                    {t("delete")}
+                  </Button>
+                ) : undefined
               }
             />
           </Box>
           <GenericDataGrid
+            apiRef={apiRef}
             editMode="cell"
             sx={{ borderWidth: 0, borderRadius: 0 }}
             hideFooter
-            rows={rows.length ? rows : thermometers}
+            rows={thermometers}
             columns={columns}
             disableRowSelectionOnClick
-            key={gridKey}
           />
         </Card>
-        {renderDeleteDeviceConfirmationDialog()}
+        {onDeleteDevice ? renderDeleteDeviceConfirmationDialog() : null}
       </>
     );
   },

@@ -18,7 +18,7 @@ import { MapContainer, Marker, TileLayer } from "react-leaflet";
 import { queryClient } from "src/main";
 import LocationUtils from "utils/location-utils";
 import TerminalForm from "./terminal-form";
-import Thermometers from "./thermometers";
+import TerminalThermometersList from "./terminal-thermometers-list";
 
 type Props = {
   formType: "ADD" | "MODIFY";
@@ -41,7 +41,7 @@ type Props = {
 
 const DEFAULT_MAP_CENTER = latLng(61.1621924, 28.65865865);
 
-function TerminalSiteComponent({ formType, site, onSave, onUpdate }: Props) {
+function Terminal({ formType, site, onSave, onUpdate }: Props) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [tabValue, setTabValue] = useState("1");
@@ -95,11 +95,13 @@ function TerminalSiteComponent({ formType, site, onSave, onUpdate }: Props) {
       newSite && navigate({ to: `/management/terminals/${newSite.id}/modify` });
     } else {
       if (!site) return;
-      onUpdate?.mutate({
+      await onUpdate?.mutateAsync({
         site: siteData,
         originalSite: site,
         changedThermometers: changedTerminalThermometerNames,
       });
+
+      onReset();
     }
   };
 
@@ -115,7 +117,7 @@ function TerminalSiteComponent({ formType, site, onSave, onUpdate }: Props) {
     },
   });
 
-  const handleReset = () => {
+  const onReset = () => {
     reset({
       ...site,
       name: site?.name ?? "",
@@ -150,7 +152,7 @@ function TerminalSiteComponent({ formType, site, onSave, onUpdate }: Props) {
         disabled={isUndoChangesDisabled && changedTerminalThermometerNames.length < 1}
         variant="text"
         startIcon={<Restore />}
-        onClick={() => handleReset()}
+        onClick={() => onReset()}
       >
         {t("undoChanges")}
       </Button>
@@ -185,7 +187,7 @@ function TerminalSiteComponent({ formType, site, onSave, onUpdate }: Props) {
               </TabList>
               <TabPanel value="1" sx={{ flex: 1 }}>
                 {site && (
-                  <Thermometers
+                  <TerminalThermometersList
                     site={site}
                     setChangedTerminalThermometerNames={setChangedTerminalThermometerNames}
                     ref={thermometersRef}
@@ -209,4 +211,4 @@ function TerminalSiteComponent({ formType, site, onSave, onUpdate }: Props) {
   );
 }
 
-export default TerminalSiteComponent;
+export default Terminal;

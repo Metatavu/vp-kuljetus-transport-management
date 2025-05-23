@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { api } from "api/index";
-import EquipmentComponent from "components/management/equipments/equipment";
+import Equipment from "components/management/equipment/equipment";
 import { Towable, TowableTypeEnum, Truck } from "generated/client";
 import { t } from "i18next";
 import { useTranslation } from "react-i18next";
@@ -29,9 +29,9 @@ const EquipmentAdd = () => {
 
   const onEquipmentSave = async (equipment: Truck | Towable) => {
     if (Object.values(TowableTypeEnum).includes(equipment.type as TowableTypeEnum)) {
-      createTowableEquipment.mutate(equipment as Towable);
+      await createTowableEquipment.mutateAsync(equipment as Towable);
     } else {
-      createTruckEquipment.mutate(equipment as Truck);
+      await createTruckEquipment.mutateAsync(equipment as Truck);
     }
   };
 
@@ -53,5 +53,5 @@ const EquipmentAdd = () => {
     onError: () => toast.error(t("management.equipment.errorToast")),
   });
 
-  return <EquipmentComponent formType="ADD" onSave={onEquipmentSave} />;
+  return <Equipment formType="ADD" onSave={onEquipmentSave} />;
 };

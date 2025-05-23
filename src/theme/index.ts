@@ -20,8 +20,11 @@ declare module "@mui/material/styles" {
   // }
 }
 
+const defaultTheme = createTheme();
+
 const theme = createTheme(
   {
+    ...defaultTheme,
     typography: {
       fontFamily: ["Lato", "sans-serif"].join(","),
       h1: {
@@ -267,6 +270,11 @@ const theme = createTheme(
             padding: 0,
             backgroundColor: "rgba(0, 0, 0, 0.06)",
             borderRadius: "4px",
+            "&.Mui-error": {
+              borderStyle: "solid",
+              borderColor: defaultTheme.palette.error.main,
+              borderWidth: "1px",
+            },
           },
           input: {
             backgroundColor: "transparent",

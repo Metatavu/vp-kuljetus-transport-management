@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { api } from "api/index";
-import EquipmentComponent from "components/management/equipments/equipment";
+import Equipment from "components/management/equipment/equipment";
 import { Towable } from "generated/client";
 import { QUERY_KEYS, getFindTowableQueryOptions } from "hooks/use-queries";
 import { t } from "i18next";
@@ -41,13 +41,12 @@ function TowableModify() {
     onSuccess: () => {
       toast.success(t("management.equipment.successToast"));
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.TOWABLES] });
-      navigate({ to: "/management/equipment" });
     },
     onError: () => toast.error(t("management.equipment.errorToast")),
   });
 
   return (
-    <EquipmentComponent
+    <Equipment
       formType="MODIFY"
       initialData={towable}
       onSave={(towable) => updateTowable.mutateAsync(towable as Towable)}
