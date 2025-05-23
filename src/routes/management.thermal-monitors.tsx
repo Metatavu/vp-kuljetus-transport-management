@@ -1,6 +1,6 @@
 import { Add, Edit, PauseCircle, PlayCircle } from "@mui/icons-material";
 import { Button, IconButton, Stack, styled } from "@mui/material";
-import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
+import { GridColDef, GridPaginationModel, useGridApiRef } from "@mui/x-data-grid";
 import { useQuery } from "@tanstack/react-query";
 import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router";
 import GenericDataGrid from "components/generic/generic-data-grid";
@@ -9,9 +9,10 @@ import ToolbarRow from "components/generic/toolbar-row";
 import { ThermalMonitor, ThermalMonitorStatus, ThermalMonitorType } from "generated/client";
 import { getListThermalMonitorsQueryOptions } from "hooks/use-queries";
 import { t } from "i18next";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Breadcrumb } from "src/types";
+import { useResizeObserver } from "usehooks-ts";
 
 export const Route = createFileRoute("/management/thermal-monitors")({
   component: ManagementThermalMonitors,
@@ -37,6 +38,15 @@ const Root = styled(Stack, {
 function ManagementThermalMonitors() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const rootRef = useRef(null);
+  const gridApiRef = useGridApiRef();
+
+  const { width } = useResizeObserver({ ref: rootRef });
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: width changes should trigger resizing
+  useEffect(() => {
+    gridApiRef.current?.resize();
+  }, [width, gridApiRef]);
 
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
@@ -49,7 +59,6 @@ function ManagementThermalMonitors() {
       max: paginationModel.pageSize * paginationModel.page + paginationModel.pageSize,
     }),
   );
-
   const thermalMonitors = useMemo(() => thermalMonitorsQuery.data?.thermalMonitors ?? [], [thermalMonitorsQuery.data]);
 
   const columns = useMemo<GridColDef<ThermalMonitor>[]>(
@@ -59,13 +68,13 @@ function ManagementThermalMonitors() {
         headerAlign: "left",
         headerName: t("management.thermalMonitors.name"),
         sortable: false,
+        flex: 1,
       },
       {
         field: "lowerThresholdTemperature",
         headerAlign: "left",
         headerName: t("management.thermalMonitors.lowerThresholdTemperature"),
         sortable: false,
-        width: 100,
         valueFormatter: ({ value }) => (value !== undefined ? `${value} °C` : "-"),
       },
       {
@@ -73,7 +82,6 @@ function ManagementThermalMonitors() {
         headerAlign: "left",
         headerName: t("management.thermalMonitors.upperThresholdTemperature"),
         sortable: false,
-        width: 100,
         valueFormatter: ({ value }) => (value !== undefined ? `${value} °C` : "-"),
       },
       {
@@ -106,7 +114,7 @@ function ManagementThermalMonitors() {
         headerName: t("management.thermalMonitors.actions"),
         type: "actions",
         headerAlign: "left",
-        width: 250,
+        flex: 1,
         renderCell: ({ id, row }) => {
           const isActiveOrPaused = (
             [ThermalMonitorStatus.Active, ThermalMonitorStatus.Paused] as ThermalMonitorStatus[]
@@ -144,7 +152,7 @@ function ManagementThermalMonitors() {
 
   return (
     <LoaderWrapper loading={thermalMonitorsQuery.isLoading}>
-      <Root>
+      <Root ref={rootRef}>
         <ToolbarRow
           title={t("management.thermalMonitors.title")}
           toolbarButtons={
@@ -160,6 +168,7 @@ function ManagementThermalMonitors() {
         />
         <GenericDataGrid
           fullScreen
+          apiRef={gridApiRef}
           autoHeight={false}
           rows={thermalMonitors}
           columns={columns}

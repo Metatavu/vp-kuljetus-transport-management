@@ -8,7 +8,7 @@ import { QUERY_KEYS, getFindPagingPolicyContactQueryOptions } from "hooks/use-qu
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
-export const Route = createFileRoute("/management/alarm-contacts/$contactId/modify")({
+export const Route = createFileRoute("/management/paging-policy-contacts/$contactId/modify")({
   component: ModifyAlarmContact,
 });
 
@@ -38,7 +38,7 @@ function ModifyAlarmContact() {
     onSuccess: () => {
       toast.success(t("management.alarmContacts.editSuccessToast"));
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.PAGING_POLICY_CONTACTS] });
-      navigate({ to: "/management/alarm-contacts" });
+      navigate({ to: "/management/paging-policy-contacts" });
     },
     onError: () => toast.error(t("management.alarmContacts.editErrorToast")),
   });
@@ -48,7 +48,7 @@ function ModifyAlarmContact() {
       <ModifyAlarmContactFormDialog
         pagingPolicyContact={pagingPolicyContactQuery.data}
         onModify={updatePagingPolicyContact}
-        onClose={() => navigate({ to: "/management/alarm-contacts" })}
+        onClose={() => navigate({ to: "/management/paging-policy-contacts" })}
       />
     </LoaderWrapper>
   );

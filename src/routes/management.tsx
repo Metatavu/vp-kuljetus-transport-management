@@ -24,7 +24,7 @@ function ManagementLayoutComponent() {
     { route: "/management/employees", label: "management.employees.title", Icon: HailRounded },
     { route: "/management/client-apps", label: "management.clientApps.title", Icon: Devices },
     { route: "/management/holidays", label: "management.holidays.title", Icon: TodayRounded },
-    { route: "/management/alarm-contacts", label: "management.alarmContacts.title", Icon: AnnouncementSharp },
+    { route: "/management/paging-policy-contacts", label: "management.alarmContacts.title", Icon: AnnouncementSharp },
     { route: "/management/thermal-monitors", label: "management.thermalMonitors.title", Icon: AlarmRounded },
   ];
 

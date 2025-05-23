@@ -8,7 +8,7 @@ import { DateTime } from "luxon";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
-export const Route = createFileRoute("/management/alarm-contacts/add")({
+export const Route = createFileRoute("/management/paging-policy-contacts/add")({
   component: AddAlarmContact,
   validateSearch: ({ date }: Record<string, unknown>) => ({
     date: date ? DateTime.fromISO(date as string) : DateTime.now(),
@@ -30,7 +30,7 @@ function AddAlarmContact() {
           type,
         },
       });
-      navigate({ to: "/management/alarm-contacts" });
+      navigate({ to: "/management/paging-policy-contacts" });
     },
     onSuccess: () => {
       toast.success(t("management.alarmContacts.successToast", { count: 1 }));
