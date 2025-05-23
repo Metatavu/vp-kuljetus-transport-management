@@ -19,8 +19,15 @@ export function FormRadioGroup<T>({ options, row, labelPlacement }: Props<T>) {
       onChange={(e) => field.handleChange(e.target.value as T)}
       onBlur={field.handleBlur}
     >
-      {options.map(({ label, value }) => (
-        <FormControlLabel value={value} label={label} control={<Radio />} labelPlacement={labelPlacement} />
+      {options.map(({ label, value }, index) => (
+        <FormControlLabel
+          // biome-ignore lint/suspicious/noArrayIndexKey: Order never changes
+          key={index}
+          value={value}
+          label={label}
+          control={<Radio />}
+          labelPlacement={labelPlacement}
+        />
       ))}
     </RadioGroup>
   );

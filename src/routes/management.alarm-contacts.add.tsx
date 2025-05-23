@@ -34,7 +34,7 @@ function AddAlarmContact() {
     },
     onSuccess: () => {
       toast.success(t("management.alarmContacts.successToast", { count: 1 }));
-      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ALARM_CONTACTS] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.PAGING_POLICY_CONTACTS] });
     },
     onError: () => toast.error(t("management.alarmContacts.errorToast", { count: 1 })),
   });

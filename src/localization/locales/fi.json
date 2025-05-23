@@ -407,7 +407,25 @@
       "actions": "Toiminnot",
       "monitor": "Vahti",
       "thermometers": "Lämpömittarit",
-      "pagingPolicies": "Toimenpiteet"
+      "pagingPolicies": "Toimenpiteet",
+      "addPolicy": "Lisää toimenpide",
+      "timeAfterAlarmActivation": "Aika hälytyksen aktivoitumisesta",
+      "timeAfterPreviousAction": "Aika edellisestä toimenpiteestä",
+      "notification": "Ilmoitus",
+      "notificationDelay": {
+        "0": "Välittömästi",
+        "60": "1 minuutin kuluttua",
+        "120": "2 minuutin kuluttua",
+        "300": "5 minuutin kuluttua",
+        "600": "10 minuutin kuluttua",
+        "900": "15 minuutin kuluttua",
+        "1800": "30 minuutin kuluttua",
+        "3600": "1 tunnin kuluttua",
+        "7200": "2 tunnin kuluttua",
+        "14400": "4 tunnin kuluttua",
+        "28800": "8 tunnin kuluttua",
+        "86400": "24 tunnin kuluttua"
+      }
     }
   },
   "drivePlanning": {

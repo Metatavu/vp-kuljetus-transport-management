@@ -57,7 +57,7 @@ function ManagementAlarmContacts() {
       if (!pagingPolicyContact.id) return Promise.reject(new Error("PagingPolicyContact ID is missing"));
       return api.pagingPolicyContacts.deletePagingPolicyContact({ pagingPolicyContactId: pagingPolicyContact.id });
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ALARM_CONTACTS] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.PAGING_POLICY_CONTACTS] }),
   });
 
   const columns: GridColDef<PagingPolicyContact>[] = useMemo(

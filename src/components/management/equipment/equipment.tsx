@@ -132,15 +132,6 @@ function Equipment({ formType, initialData, onSave }: Props) {
   const isUndoChangesDisabled = formIsNotDirty || isSaving;
   const isSaveDisabled = formIsNotDirty || isSaving || formHasErrors;
 
-  console.log({
-    isSaveDisabled,
-    isUndoChangesDisabled,
-    isSaving,
-    changedEquipmentThermometerNames,
-    formHasErrors,
-    formIsNotDirty,
-  });
-
   const renderToolbarButtons = () => (
     <Stack direction="row" spacing={2}>
       {initialData && (

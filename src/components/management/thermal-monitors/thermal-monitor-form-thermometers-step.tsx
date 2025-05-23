@@ -24,7 +24,7 @@ import {
 } from "hooks/use-queries";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ThermalMonitorFormValues } from "routes/management.thermal-monitors.add";
+import { ThermalMonitorFormValues } from "./thermal-monitor-form-dialog";
 
 type ThermometerWithRelatedEntityName = {
   id: string;
@@ -160,9 +160,8 @@ const ThermalMonitorFormThermometersStep = withForm({
         <Stack direction="column" spacing={1} flex={1} maxHeight={500}>
           <Typography variant="h6">{t("management.thermalMonitors.monitoredThermometers")}</Typography>
           <Box flex={1} overflow="auto" border={1} borderColor="divider" borderRadius={1} bgcolor="background.default">
-            <form.Subscribe
-              selector={(state) => state.values.thermometerIds}
-              children={(thermometerIds) => (
+            <form.Subscribe selector={(state) => state.values.thermometerIds}>
+              {(thermometerIds) => (
                 <>
                   {thermometerIds.map((id) => {
                     const thermometer = thermometersWithRelatedEntityNames.find((thermometer) => thermometer.id === id);
@@ -195,7 +194,7 @@ const ThermalMonitorFormThermometersStep = withForm({
                   })}
                 </>
               )}
-            />
+            </form.Subscribe>
           </Box>
         </Stack>
       </Stack>

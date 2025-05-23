@@ -9,8 +9,8 @@ export function FormTextField(props: Props) {
   return (
     <TextField
       name={field.name}
-      value={field.state.value || ""}
-      onChange={(e) => field.handleChange(e.target.value || undefined)}
+      value={field.state.value ?? ""}
+      onChange={(e) => field.handleChange(e.target.value ?? undefined)}
       onBlur={field.handleBlur}
       error={!!field.state.meta.errors.length}
       helperText={field.state.meta.errors.map((error) => error.message).join(", ")}

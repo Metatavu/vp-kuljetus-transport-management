@@ -37,7 +37,7 @@ function ModifyAlarmContact() {
     },
     onSuccess: () => {
       toast.success(t("management.alarmContacts.editSuccessToast"));
-      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ALARM_CONTACTS] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.PAGING_POLICY_CONTACTS] });
       navigate({ to: "/management/alarm-contacts" });
     },
     onError: () => toast.error(t("management.alarmContacts.editErrorToast")),

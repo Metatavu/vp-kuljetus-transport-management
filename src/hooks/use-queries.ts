@@ -3,6 +3,7 @@ import { api } from "api/index";
 import {
   FindEmployeeWorkShiftRequest,
   FindPagingPolicyContactRequest,
+  FindThermalMonitorRequest,
   FindTowableRequest,
   FindTruckRequest,
   ListClientAppsRequest,
@@ -11,6 +12,7 @@ import {
   ListEmployeesRequest,
   ListFreightUnitsRequest,
   ListHolidaysRequest,
+  ListPagingPoliciesRequest,
   ListPagingPolicyContactsRequest,
   ListPayrollExportsRequest,
   ListRoutesRequest,
@@ -52,9 +54,10 @@ export const QUERY_KEYS = {
   TRUCK_LOCATIONS: "truck-locations",
   TRUCK_ODOMETER_READINGS: "truck-odometer-readings",
   TRUCK_SPEEDS: "truck-speeds",
-  ALARM_CONTACTS: "alarm-contacts",
+  PAGING_POLICY_CONTACTS: "paging-policy-contacts",
   WORK_SHIFT_CHANGE_SETS: "work-shift-change-sets",
   THERMAL_MONITORS: "thermal-monitors",
+  THERMAL_MONITOR_PAGING_POLICIES: "thermal-monitor-paging-policies",
   PAYROLL_EXPORTS: "payroll-exports",
 } as const;
 
@@ -335,17 +338,18 @@ export const getListTerminalTemperaturesQueryOptions = (params: ListSiteTemperat
 
 export const getListPagingPolicyContactsQueryOptions = (params: ListPagingPolicyContactsRequest) =>
   queryOptions({
-    queryKey: [QUERY_KEYS.ALARM_CONTACTS, params],
+    queryKey: [QUERY_KEYS.PAGING_POLICY_CONTACTS, params],
     queryFn: async () => {
-      const [alarmContacts, headers] = await api.pagingPolicyContacts.listPagingPolicyContactsWithHeaders(params);
+      const [pagingPolicyContacts, headers] =
+        await api.pagingPolicyContacts.listPagingPolicyContactsWithHeaders(params);
       const totalResults = getTotalResultsFromHeaders(headers);
-      return { alarmContacts, totalResults };
+      return { pagingPolicyContacts, totalResults };
     },
   });
 
 export const getFindPagingPolicyContactQueryOptions = (params: FindPagingPolicyContactRequest) =>
   queryOptions({
-    queryKey: [QUERY_KEYS.ALARM_CONTACTS, params.pagingPolicyContactId],
+    queryKey: [QUERY_KEYS.PAGING_POLICY_CONTACTS, params.pagingPolicyContactId],
     queryFn: () =>
       api.pagingPolicyContacts.findPagingPolicyContact({ pagingPolicyContactId: params.pagingPolicyContactId }),
   });
@@ -359,6 +363,18 @@ export const getListThermalMonitorsQueryOptions = (params: ListThermalMonitorsRe
 
       return { thermalMonitors, totalResults };
     },
+  });
+
+export const getFindThermalMonitorQueryOptions = ({ thermalMonitorId }: FindThermalMonitorRequest) =>
+  queryOptions({
+    queryKey: [QUERY_KEYS.THERMAL_MONITORS, thermalMonitorId],
+    queryFn: () => api.thermalMonitors.findThermalMonitor({ thermalMonitorId }),
+  });
+
+export const getListThermalMonitorPagingPoliciesQueryOptions = (params: ListPagingPoliciesRequest) =>
+  queryOptions({
+    queryKey: [QUERY_KEYS.THERMAL_MONITOR_PAGING_POLICIES, params],
+    queryFn: () => api.thermalMonitorPagingPolicies.listPagingPolicies(params),
   });
 
 export const getListPayrollExportsQueryOptions = (params: ListPayrollExportsRequest) =>

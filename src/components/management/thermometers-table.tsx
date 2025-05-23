@@ -157,7 +157,6 @@ const ThermometersTable = forwardRef(
               value={value}
               onChange={(event) => {
                 api.setEditCellValue({ id, field, value: event.target.value });
-                console.log("Thermometer name changed:", event.target.value, row.id);
                 handleThermometerNameChange({ newName: event.target.value, thermometerId: row.id ?? "" });
               }}
             />

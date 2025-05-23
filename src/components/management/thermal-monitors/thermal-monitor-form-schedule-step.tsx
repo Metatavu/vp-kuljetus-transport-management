@@ -1,4 +1,5 @@
 import { Checkbox, FormControlLabel, Stack, Typography } from "@mui/material";
+import { TimePicker } from "@mui/x-date-pickers";
 import { useStore } from "@tanstack/react-form";
 import { RadioOption } from "components/form/radio-group";
 import { ThermalMonitorSchedulePeriod, ThermalMonitorScheduleWeekDay, ThermalMonitorType } from "generated/client";
@@ -6,8 +7,8 @@ import { withForm } from "hooks/form";
 import { DateTime, HourNumbers, Interval, MinuteNumbers, WeekdayNumbers } from "luxon";
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { ThermalMonitorFormValues } from "routes/management.thermal-monitors.add";
 import TimeUtils from "src/utils/time-utils";
+import { ThermalMonitorFormValues } from "./thermal-monitor-form-dialog";
 
 type WeekdaySchedule = {
   weekday: ThermalMonitorScheduleWeekDay;
@@ -17,18 +18,19 @@ type WeekdaySchedule = {
   endMinute?: MinuteNumbers;
 };
 
-const scheduleWeekdayToNumber = (weekday: ThermalMonitorScheduleWeekDay): WeekdayNumbers =>
-  (
-    ({
-      [ThermalMonitorScheduleWeekDay.Monday]: 1,
-      [ThermalMonitorScheduleWeekDay.Tuesday]: 2,
-      [ThermalMonitorScheduleWeekDay.Wednesday]: 3,
-      [ThermalMonitorScheduleWeekDay.Thursday]: 4,
-      [ThermalMonitorScheduleWeekDay.Friday]: 5,
-      [ThermalMonitorScheduleWeekDay.Saturday]: 6,
-      [ThermalMonitorScheduleWeekDay.Sunday]: 7,
-    }) as const
-  )[weekday];
+const WEEKDAYS = [
+  ThermalMonitorScheduleWeekDay.Monday,
+  ThermalMonitorScheduleWeekDay.Tuesday,
+  ThermalMonitorScheduleWeekDay.Wednesday,
+  ThermalMonitorScheduleWeekDay.Thursday,
+  ThermalMonitorScheduleWeekDay.Friday,
+  ThermalMonitorScheduleWeekDay.Saturday,
+  ThermalMonitorScheduleWeekDay.Sunday,
+] as const;
+
+const scheduleWeekdayToNumber = (weekday: ThermalMonitorScheduleWeekDay): WeekdayNumbers => {
+  return (WEEKDAYS.indexOf(weekday) + 1) as WeekdayNumbers;
+};
 
 const ThermalMonitorFormScheduleStep = withForm({
   defaultValues: {} as ThermalMonitorFormValues,
@@ -37,45 +39,36 @@ const ThermalMonitorFormScheduleStep = withForm({
 
     const schedule = useStore(form.store, (state) => state.values.schedule);
 
-    console.log(JSON.stringify(schedule));
-
     const weekdaySchedules = useMemo(() => {
-      const schedulesToIntervals = (schedule ?? []).map((schedule) =>
-        Interval.fromDateTimes(
-          DateTime.fromObject({
-            year: 2000,
-            weekday: scheduleWeekdayToNumber(schedule.start.weekday),
-            hour: schedule.start.hour,
-            minute: schedule.start.minute,
-          }),
-          DateTime.fromObject({
-            year: 2000,
-            weekday: scheduleWeekdayToNumber(schedule.end.weekday),
-            hour: schedule.end.hour,
-            minute: schedule.end.minute,
-          }),
-        ),
-      );
+      const schedulesToIntervals = (schedule ?? []).map((schedule) => {
+        const startDate = DateTime.fromObject({
+          weekday: scheduleWeekdayToNumber(schedule.start.weekday),
+          hour: schedule.start.hour,
+          minute: schedule.start.minute,
+        });
+        const endDate = DateTime.fromObject({
+          weekday: scheduleWeekdayToNumber(schedule.end.weekday),
+          hour: schedule.end.hour,
+          minute: schedule.end.minute,
+        });
+        return Interval.fromDateTimes(startDate, endDate);
+      });
 
       const mergedIntervals = Interval.merge(schedulesToIntervals).filter(TimeUtils.isValidInterval);
 
-      return [
-        ThermalMonitorScheduleWeekDay.Monday,
-        ThermalMonitorScheduleWeekDay.Tuesday,
-        ThermalMonitorScheduleWeekDay.Wednesday,
-        ThermalMonitorScheduleWeekDay.Thursday,
-        ThermalMonitorScheduleWeekDay.Friday,
-        ThermalMonitorScheduleWeekDay.Saturday,
-        ThermalMonitorScheduleWeekDay.Sunday,
-      ].map<WeekdaySchedule>((weekday) => {
+      return WEEKDAYS.map<WeekdaySchedule>((weekday) => {
         const intervalsContainingWeekday = mergedIntervals.filter((interval) =>
-          interval.contains(DateTime.fromObject({ year: 2000, weekday: scheduleWeekdayToNumber(weekday) })),
+          interval.overlaps(
+            Interval.fromDateTimes(
+              DateTime.fromObject({ weekday: scheduleWeekdayToNumber(weekday) }).startOf("day"),
+              DateTime.fromObject({ weekday: scheduleWeekdayToNumber(weekday) }).endOf("day"),
+            ),
+          ),
         );
 
         if (intervalsContainingWeekday.length === 0) return { weekday };
 
         const weekdayStart = DateTime.fromObject({
-          year: 2000,
           weekday: scheduleWeekdayToNumber(weekday),
           hour: 0,
           minute: 0,
@@ -120,7 +113,6 @@ const ThermalMonitorFormScheduleStep = withForm({
 
     const timesForWeekdaysToSchedulePeriods = useCallback(
       (weekdaySchedules: WeekdaySchedule[]): ThermalMonitorSchedulePeriod[] => {
-        console.log("weekdaySchedules", weekdaySchedules);
         const weekdaysWithSchedule = weekdaySchedules.filter(
           (weekdaySchedule) =>
             weekdaySchedule.startHour !== undefined &&
@@ -128,8 +120,6 @@ const ThermalMonitorFormScheduleStep = withForm({
             weekdaySchedule.endHour !== undefined &&
             weekdaySchedule.endMinute !== undefined,
         );
-
-        console.log("weekdaySchedules", weekdaysWithSchedule);
 
         return weekdaysWithSchedule.reduce<ThermalMonitorSchedulePeriod[]>((schedulePeriods, weekdaySchedule) => {
           if (
@@ -171,6 +161,101 @@ const ThermalMonitorFormScheduleStep = withForm({
       [form, timesForWeekdaysToSchedulePeriods],
     );
 
+    const onUpdateWeekdayHours = useCallback(
+      (
+        weekdaySchedules: WeekdaySchedule[],
+        weekday: ThermalMonitorScheduleWeekDay,
+        values: Partial<Omit<WeekdaySchedule, "weekday">>,
+      ) => {
+        form.setFieldValue("schedule", () =>
+          timesForWeekdaysToSchedulePeriods(
+            weekdaySchedules.map((weekdaySchedule) =>
+              weekdaySchedule.weekday === weekday ? { ...weekdaySchedule, ...values } : weekdaySchedule,
+            ),
+          ),
+        );
+      },
+      [form, timesForWeekdaysToSchedulePeriods],
+    );
+
+    const getWeekdayTimePropertiesByType = (type: "start" | "end") =>
+      ({
+        start: ["startHour", "startMinute"] as const,
+        end: ["endHour", "endMinute"] as const,
+      })[type];
+
+    const onTimePickerValueChange =
+      (weekdaySchedule: WeekdaySchedule, type: "start" | "end") => (value: DateTime | null) => {
+        const [hourProperty, minuteProperty] = getWeekdayTimePropertiesByType(type);
+
+        if (!value?.isValid) return;
+
+        if (
+          type === "start" &&
+          !Interval.fromDateTimes(
+            DateTime.fromObject({ hour: value.hour, minute: value.minute }),
+            DateTime.fromObject({
+              hour: weekdaySchedule.endHour,
+              minute: weekdaySchedule.endMinute,
+            }),
+          ).isValid
+        ) {
+          return;
+        }
+
+        if (
+          type === "end" &&
+          !Interval.fromDateTimes(
+            DateTime.fromObject({
+              hour: weekdaySchedule.startHour,
+              minute: weekdaySchedule.startMinute,
+            }),
+            DateTime.fromObject({ hour: value.hour, minute: value.minute }),
+          ).isValid
+        ) {
+          return;
+        }
+
+        onUpdateWeekdayHours(weekdaySchedules, weekdaySchedule.weekday, {
+          [hourProperty]: value.hour,
+          [minuteProperty]: value.minute,
+        });
+      };
+
+    const renderTimePickerField = (weekdaySchedule: WeekdaySchedule, type: "start" | "end") => {
+      const [hourProperty, minuteProperty] = getWeekdayTimePropertiesByType(type);
+      const hours = weekdaySchedule[hourProperty];
+      const minutes = weekdaySchedule[minuteProperty];
+
+      const pickerValue =
+        hours !== undefined && minutes !== undefined
+          ? (DateTime.fromObject({ hour: hours, minute: minutes }) as DateTime<true>)
+          : null;
+
+      const disabled = hours === undefined || minutes === undefined;
+
+      const maxTime =
+        type === "start"
+          ? DateTime.fromObject({ hour: weekdaySchedule.endHour, minute: weekdaySchedule.endMinute })
+          : undefined;
+
+      const minTime =
+        type === "end"
+          ? DateTime.fromObject({ hour: weekdaySchedule.startHour, minute: weekdaySchedule.startMinute })
+          : undefined;
+
+      return (
+        <TimePicker
+          value={pickerValue}
+          disabled={disabled}
+          minTime={minTime}
+          maxTime={maxTime}
+          onChange={onTimePickerValueChange(weekdaySchedule, type)}
+          slotProps={{ openPickerButton: { sx: { p: 0.25, mr: 0.25 } } }}
+        />
+      );
+    };
+
     return (
       <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
         <Stack spacing={2} sx={{ width: 300 }}>
@@ -187,24 +272,43 @@ const ThermalMonitorFormScheduleStep = withForm({
             )}
           />
         </Stack>
-        <Stack spacing={2} sx={{ width: 300 }}>
-          <Typography variant="h6">{t("management.thermalMonitors.weekdays.title")}</Typography>
-          {weekdaySchedules.map((weekdaySchedule) => (
-            <FormControlLabel
-              key={weekdaySchedule.weekday}
-              label={t(`management.thermalMonitors.weekdays.${weekdaySchedule.weekday}`)}
-              control={
-                <Checkbox
-                  checked={weekdaySchedule.startHour !== undefined}
-                  onChange={(event) => onToggleWeekday(weekdaySchedules, weekdaySchedule.weekday, event.target.checked)}
-                />
-              }
-            />
-          ))}
-        </Stack>
-        <Stack spacing={2} sx={{ width: 300 }}>
-          <Typography variant="h6">{t("management.thermalMonitors.times")}</Typography>
-        </Stack>
+        <form.Subscribe
+          selector={(state) => state.values.type === ThermalMonitorType.Scheduled}
+          children={(isScheduled) =>
+            isScheduled ? (
+              <>
+                <Stack width={300}>
+                  <Typography variant="h6">{t("management.thermalMonitors.weekdays.title")}</Typography>
+                  {weekdaySchedules.map((weekdaySchedule) => (
+                    <FormControlLabel
+                      key={weekdaySchedule.weekday}
+                      label={t(`management.thermalMonitors.weekdays.${weekdaySchedule.weekday}`)}
+                      style={{ height: 48 }}
+                      control={
+                        <Checkbox
+                          checked={weekdaySchedule.startHour !== undefined}
+                          onChange={(event) =>
+                            onToggleWeekday(weekdaySchedules, weekdaySchedule.weekday, event.target.checked)
+                          }
+                        />
+                      }
+                    />
+                  ))}
+                </Stack>
+                <Stack width={300}>
+                  <Typography variant="h6">{t("management.thermalMonitors.times")}</Typography>
+                  {weekdaySchedules.map((weekdaySchedule) => (
+                    <Stack key={weekdaySchedule.weekday} direction="row" alignItems="center" gap={2} height={48}>
+                      {renderTimePickerField(weekdaySchedule, "start")}
+                      {"—"}
+                      {renderTimePickerField(weekdaySchedule, "end")}
+                    </Stack>
+                  ))}
+                </Stack>
+              </>
+            ) : null
+          }
+        />
       </Stack>
     );
   },

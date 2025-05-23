@@ -91,15 +91,14 @@ function ManagementThermalMonitors() {
         sortable: false,
         flex: 1,
         valueGetter: ({ row: { activeFrom, activeTo, schedule, monitorType } }) => {
-          if (monitorType === ThermalMonitorType.OneOff && activeFrom && activeTo) {
-            return t("management.thermalMonitors.type.ONE_OFF");
+          if (monitorType === ThermalMonitorType.OneOff) {
+            if (!activeFrom && !activeTo) return t("management.thermalMonitors.type.ONE_OFF");
+            return "-";
           }
 
           if (monitorType === ThermalMonitorType.Scheduled && schedule) {
             return t("management.thermalMonitors.type.SCHEDULED"); // TODO: Format schedule
           }
-
-          return "-";
         },
       },
       {
@@ -114,7 +113,7 @@ function ManagementThermalMonitors() {
           ).includes(row.status);
 
           return (
-            <Stack width="100%" px={1} direction="row" spacing={1} justifyContent="end">
+            <Stack width="100%" px={1} direction="row" spacing={1} justifyContent="end" alignItems="center">
               {isActiveOrPaused && (
                 <IconButton onClick={() => {}}>
                   {row.status === ThermalMonitorStatus.Paused ? <PlayCircle /> : <PauseCircle />}
