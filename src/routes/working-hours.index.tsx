@@ -163,7 +163,7 @@ function WorkingHours() {
               onClick={() =>
                 navigate({
                   to: "/working-hours/$employeeId/work-shifts",
-                  params: { employeeId: params.row.id as string },
+                  params: { employeeId: params.row.employee.id as string },
                   search: { date: selectedDate },
                 })
               }

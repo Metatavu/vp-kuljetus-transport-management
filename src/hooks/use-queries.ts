@@ -56,6 +56,7 @@ export const QUERY_KEYS = {
   WORK_SHIFT_CHANGE_SETS: "work-shift-change-sets",
   PAYROLL_EXPORTS: "payroll-exports",
   EMPLOYEES_AGGREGATED_HOURS: "employees-aggregated-hours",
+  EMPLOYEE_AGGREGATED_HOURS: "employee-aggregated-hours",
 } as const;
 
 export const getListSitesQueryOptions = (requestParams: ListSitesRequest = {}, enabled = true) =>
@@ -225,7 +226,7 @@ export const getFindEmployeeAggregatedWorkHoursQueryOptions = (
   enabled: boolean,
 ) =>
   queryOptions({
-    queryKey: [QUERY_KEYS.EMPLOYEES_AGGREGATED_HOURS, requestParams],
+    queryKey: [QUERY_KEYS.EMPLOYEE_AGGREGATED_HOURS, requestParams],
     enabled: enabled,
     queryFn: async () => {
       const aggregatedHours = await api.employees.getSalaryPeriodTotalWorkHours(requestParams);

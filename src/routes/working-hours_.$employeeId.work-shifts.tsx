@@ -534,7 +534,7 @@ function WorkShifts() {
       await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.WORK_SHIFTS] });
       await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.WORK_SHIFT_HOURS] });
       await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.WORK_SHIFT_CHANGE_SETS] });
-      await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.EMPLOYEES_AGGREGATED_HOURS] });
+      await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.EMPLOYEE_AGGREGATED_HOURS] });
 
       toast.success(t("workingHours.workingHourBalances.successToast"));
     },
@@ -593,18 +593,20 @@ function WorkShifts() {
   };
 
   const handleAllApprovedChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const isApproved = event.target.checked;
+    const isAllApproved = event.target.checked;
     const formValues = methods.getValues();
 
-    const updatedFormValues = Object.values(formValues).map((row) => {
-      if (row.workShift.id === undefined || row.workShift.approved === isApproved) return row;
+    Object.values(formValues).map((row: EmployeeWorkHoursFormRow, index: number) => {
+      const currentValue = row?.workShift?.approved;
 
-      return {
-        ...row,
-        workShift: { ...row.workShift, approved: isApproved },
-      };
+      if (row?.workShift?.id !== undefined && currentValue !== isAllApproved) {
+        methods.setValue(`${index}.workShift.approved`, isAllApproved, {
+          shouldDirty: true,
+          shouldValidate: true,
+          shouldTouch: true,
+        });
+      }
     });
-    methods.reset(updatedFormValues);
   };
 
   const renderEmployeeMenuItems = () => {
@@ -789,6 +791,10 @@ function WorkShifts() {
                         control={
                           <Checkbox
                             onChange={handleAllApprovedChange}
+                            checked={Object.values(methods.getValues())
+                              .filter((row) => row.workShift.id !== undefined)
+                              .every((row) => row.workShift.approved)}
+                            name="allApproved"
                             title={t("workingHours.workingHourBalances.markAllApproved")}
                           />
                         }
