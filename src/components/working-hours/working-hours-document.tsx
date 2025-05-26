@@ -1,5 +1,5 @@
 import { Document, Image, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
-import { AbsenceType, Employee, PerDiemAllowanceType, WorkType } from "generated/client";
+import { Employee, SalaryPeriodTotalWorkHours, WorkType } from "generated/client";
 import { DateTime } from "luxon";
 import { useTranslation } from "react-i18next";
 import { EmployeeWorkHoursFormRow } from "src/types";
@@ -91,11 +91,17 @@ const styles = StyleSheet.create({
 interface Props {
   employee?: Employee;
   workShiftsData: EmployeeWorkHoursFormRow[];
+  employeeAggregatedHours?: SalaryPeriodTotalWorkHours | undefined;
   workingPeriodsForEmployee: { start: Date; end: Date };
 }
 
-const WorkingHoursDocument = ({ employee, workShiftsData, workingPeriodsForEmployee }: Props) => {
-  if (!employee || !workShiftsData) {
+const WorkingHoursDocument = ({
+  employee,
+  workShiftsData,
+  workingPeriodsForEmployee,
+  employeeAggregatedHours,
+}: Props) => {
+  if (!employee || !workShiftsData || !employeeAggregatedHours) {
     return null;
   }
   const { t } = useTranslation();
@@ -180,9 +186,6 @@ const WorkingHoursDocument = ({ employee, workShiftsData, workingPeriodsForEmplo
       </View>
       <View style={styles.timeTableCell}>
         <Text style={styles.headerCellText}>{t("workingHours.workingDays.table.absence")}</Text>
-      </View>
-      <View style={[styles.timeTableCell, { maxWidth: 30 }]}>
-        <Text style={styles.headerCellText}>{t("workingHours.workingDays.pdf.costCenter")}</Text>
       </View>
       <View style={[styles.timeTableCell, { maxWidth: 30 }]}>
         <Text style={styles.headerCellText}>{t("workingHours.workingDays.table.dailyAllowance")}</Text>
@@ -282,9 +285,6 @@ const WorkingHoursDocument = ({ employee, workShiftsData, workingPeriodsForEmplo
         <Text style={styles.cellText}>
           {row.workShift.absence ? LocalizationUtils.getLocalizedAbsenceType(row.workShift.absence, t) : ""}
         </Text>
-      </View>
-      <View style={[styles.timeTableCell, { maxWidth: 30 }]}>
-        <Text style={styles.cellText}>7777, 5</Text>
       </View>
       <View style={[styles.timeTableCell, { maxWidth: 30 }]}>
         <Text style={styles.cellText}>
@@ -388,26 +388,19 @@ const WorkingHoursDocument = ({ employee, workShiftsData, workingPeriodsForEmplo
               <Text>{t("workingHours.workingDays.aggregationsTable.workingHours")}</Text>
             </View>
             <View style={[styles.tableCell, { maxWidth: 50 }]}>
-              <Text style={styles.boldText}>{`${WorkShiftsUtils.getWorkHoursInWorkPeriodByType(
-                workShiftsData,
-                WorkType.PaidWork,
-              )} h`}</Text>
+              <Text style={styles.boldText}>{`${employeeAggregatedHours.workingHours.toFixed(2)} h`}</Text>
             </View>
             <View style={[styles.tableCell, { alignItems: "flex-start" }]}>
               <Text>{t("workingHours.workingDays.aggregationsTable.vacation")}</Text>
             </View>
             <View style={[styles.tableCell, { maxWidth: 50 }]}>
-              <Text style={styles.boldText}>
-                {`${WorkShiftsUtils.getTotalHoursByAbsenseType(workShiftsData, AbsenceType.Vacation)} h`}
-              </Text>
+              <Text style={styles.boldText}>{`${employeeAggregatedHours.vacation.toFixed(2)} h`}</Text>
             </View>
             <View style={[styles.tableCell, { alignItems: "flex-start" }]}>
               <Text>{t("workingHours.workingDays.aggregationsTable.partialDailyAllowance")}</Text>
             </View>
             <View style={[styles.tableCell, { maxWidth: 50 }]}>
-              <Text style={styles.boldText}>
-                {`${WorkShiftsUtils.getPerDiemAllowanceCount(workShiftsData, PerDiemAllowanceType.Partial)} pv`}
-              </Text>
+              <Text style={styles.boldText}>{`${employeeAggregatedHours.partialDailyAllowance} pv`}</Text>
             </View>
             <View style={[styles.tableCell, { alignItems: "flex-start" }]}>
               <Text style={styles.boldText} />
@@ -424,25 +417,20 @@ const WorkingHoursDocument = ({ employee, workShiftsData, workingPeriodsForEmplo
             <View style={[styles.tableCell, { maxWidth: 50 }]}>
               <Text style={styles.boldText}>{`${WorkShiftsUtils.getRegularWorkingHoursOnWorkPeriod(
                 employee,
-                workShiftsData,
+                employeeAggregatedHours.unpaid ?? 0,
               )} h`}</Text>
             </View>
             <View style={[styles.tableCell, { alignItems: "flex-start" }]}>
               <Text>{t("workingHours.workingDays.aggregationsTable.unpaid")}</Text>
             </View>
             <View style={[styles.tableCell, { maxWidth: 50 }]}>
-              <Text style={styles.boldText}>{`${WorkShiftsUtils.getWorkHoursInWorkPeriodByType(
-                workShiftsData,
-                WorkType.Unpaid,
-              )} h`}</Text>
+              <Text style={styles.boldText}>{`${employeeAggregatedHours.unpaid.toFixed(2)} h`}</Text>
             </View>
             <View style={[styles.tableCell, { alignItems: "flex-start" }]}>
               <Text>{t("workingHours.workingDays.aggregationsTable.fullDayAllowance")}</Text>
             </View>
             <View style={[styles.tableCell, { maxWidth: 50 }]}>
-              <Text style={styles.boldText}>
-                {`${WorkShiftsUtils.getPerDiemAllowanceCount(workShiftsData, PerDiemAllowanceType.Full)} pv`}
-              </Text>
+              <Text style={styles.boldText}>{`${employeeAggregatedHours.fullDailyAllowance} pv`}</Text>
             </View>
             <View style={[styles.tableCell, { alignItems: "flex-start" }]}>
               <Text />
@@ -457,18 +445,13 @@ const WorkingHoursDocument = ({ employee, workShiftsData, workingPeriodsForEmplo
               <Text>{t("workingHours.workingDays.aggregationsTable.overtimeHalf")}</Text>
             </View>
             <View style={[styles.tableCell, { maxWidth: 50 }]}>
-              <Text style={styles.boldText}>
-                {`${WorkShiftsUtils.getOverTimeHoursForDriver(workShiftsData, employee).overTimeHalf} h`}
-              </Text>
+              <Text style={styles.boldText}>{`${employeeAggregatedHours.overTimeHalf.toFixed(2)} h`}</Text>
             </View>
             <View style={[styles.tableCell, { alignItems: "flex-start" }]}>
               <Text>{t("workingHours.workingDays.aggregationsTable.holiday")}</Text>
             </View>
             <View style={[styles.tableCell, { maxWidth: 50 }]}>
-              <Text style={styles.boldText}>{`${WorkShiftsUtils.getWorkHoursInWorkPeriodByType(
-                workShiftsData,
-                WorkType.HolidayAllowance,
-              )} h`}</Text>
+              <Text style={styles.boldText}>{`${employeeAggregatedHours.holiday.toFixed(2)} h`}</Text>
             </View>
             <View style={[styles.tableCell, { alignItems: "flex-start" }]}>
               <Text style={styles.boldText} />
@@ -487,21 +470,19 @@ const WorkingHoursDocument = ({ employee, workShiftsData, workingPeriodsForEmplo
               <Text>{t("workingHours.workingDays.aggregationsTable.overtimeFull")}</Text>
             </View>
             <View style={[styles.tableCell, { maxWidth: 50 }]}>
-              <Text style={styles.boldText}>
-                {`${WorkShiftsUtils.getOverTimeHoursForDriver(workShiftsData, employee).overTimeFull} h`}
-              </Text>
+              <Text style={styles.boldText}>{`${employeeAggregatedHours.overTimeFull.toFixed(2)} h`}</Text>
             </View>
             <View style={[styles.tableCell, { alignItems: "flex-start" }]}>
               <Text>{"Vapaapäivätyön lisä (VPTL)"}</Text>
             </View>
             <View style={[styles.tableCell, { maxWidth: 50 }]}>
-              <Text style={styles.boldText}>{`${WorkShiftsUtils.getDayOffWorkAllowanceHours(workShiftsData)} h`}</Text>
+              <Text style={styles.boldText}>{`${employeeAggregatedHours.dayOffBonus.toFixed(2)} h`}</Text>
             </View>
             <View style={[styles.tableCell, { alignItems: "flex-start" }]}>
               <Text>{t("workingHours.workingDays.aggregationsTable.fillingHours")}</Text>
             </View>
             <View style={[styles.tableCell, { maxWidth: 50 }]}>
-              <Text style={styles.boldText}>{`${WorkShiftsUtils.getFillingHours(workShiftsData, employee)} h`}</Text>
+              <Text style={styles.boldText}>{`${employeeAggregatedHours.fillingHours.toFixed(2)} h`}</Text>
             </View>
             <View style={[styles.tableCell, { opacity: 0 }]} />
             <View style={[styles.tableCell, { maxWidth: 50, opacity: 0 }]}>
@@ -514,25 +495,19 @@ const WorkingHoursDocument = ({ employee, workShiftsData, workingPeriodsForEmplo
               <Text>{t("workingHours.workingDays.aggregationsTable.nightWork")}</Text>
             </View>
             <View style={[styles.tableCell, { maxWidth: 50 }]}>
-              <Text style={styles.boldText}>
-                {`${WorkShiftsUtils.getWorkHoursInWorkPeriodByType(workShiftsData, WorkType.NightAllowance)} h`}
-              </Text>
+              <Text style={styles.boldText}>{`${employeeAggregatedHours.nightWork.toFixed(2)} h`}</Text>
             </View>
             <View style={[styles.tableCell, { alignItems: "flex-start" }]}>
               <Text>{t("workingHours.workingDays.aggregationsTable.pekkanens")}</Text>
             </View>
             <View style={[styles.tableCell, { maxWidth: 50 }]}>
-              <Text style={styles.boldText}>
-                {`${WorkShiftsUtils.getTotalHoursByAbsenseType(workShiftsData, AbsenceType.CompensatoryLeave)} h`}
-              </Text>
+              <Text style={styles.boldText}>{`${employeeAggregatedHours.compensatoryLeave.toFixed(2)} h`}</Text>
             </View>
             <View style={[styles.tableCell, { alignItems: "flex-start" }]}>
               <Text>{t("workingHours.workingDays.aggregationsTable.absenceTypes.officialDuties")}</Text>
             </View>
             <View style={[styles.tableCell, { maxWidth: 50 }]}>
-              <Text style={styles.boldText}>
-                {`${WorkShiftsUtils.getWorkHoursInWorkPeriodByType(workShiftsData, WorkType.OfficialDuties)} h`}
-              </Text>
+              <Text style={styles.boldText}>{`${employeeAggregatedHours.responsibilities.toFixed(2)} h`}</Text>
             </View>
             <View style={[styles.tableCell, { opacity: 0 }]} />
             <View style={[styles.tableCell, { maxWidth: 50, opacity: 0 }]}>
@@ -545,25 +520,19 @@ const WorkingHoursDocument = ({ employee, workShiftsData, workingPeriodsForEmplo
               <Text>{t("workingHours.workingDays.aggregationsTable.eveningWork")}</Text>
             </View>
             <View style={[styles.tableCell, { maxWidth: 50 }]}>
-              <Text style={styles.boldText}>
-                {`${WorkShiftsUtils.getWorkHoursInWorkPeriodByType(workShiftsData, WorkType.EveningAllowance)} h`}
-              </Text>
+              <Text style={styles.boldText}>{`${employeeAggregatedHours.eveningWork.toFixed(2)} h`}</Text>
             </View>
             <View style={[styles.tableCell, { alignItems: "flex-start" }]}>
               <Text>{t("workingHours.workingDays.aggregationsTable.sickHours")}</Text>
             </View>
             <View style={[styles.tableCell, { maxWidth: 50 }]}>
-              <Text style={styles.boldText}>
-                {`${WorkShiftsUtils.getWorkHoursInWorkPeriodByType(workShiftsData, WorkType.SickLeave)} h`}
-              </Text>
+              <Text style={styles.boldText}>{`${employeeAggregatedHours.sickHours.toFixed(2)} h`}</Text>
             </View>
             <View style={[styles.tableCell, { alignItems: "flex-start" }]}>
               <Text>{t("workingHours.workingDays.aggregationsTable.trainingDuringWorkTime")}</Text>
             </View>
             <View style={[styles.tableCell, { maxWidth: 50 }]}>
-              <Text style={styles.boldText}>
-                {`${WorkShiftsUtils.getWorkHoursInWorkPeriodByType(workShiftsData, WorkType.Training)} h`}
-              </Text>
+              <Text style={styles.boldText}>{`${employeeAggregatedHours.trainingDuringWorkTime.toFixed(2)} h`}</Text>
             </View>
             <View style={[styles.tableCell, { opacity: 0 }]} />
             <View style={[styles.tableCell, { maxWidth: 50, opacity: 0 }]}>
