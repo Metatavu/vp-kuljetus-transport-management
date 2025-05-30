@@ -27,7 +27,7 @@ const Root = styled(Stack, {
   flexDirection: "column",
 }));
 
-export const Route = createFileRoute("/management/alarm-contacts")({
+export const Route = createFileRoute("/management/paging-policy-contacts")({
   component: ManagementAlarmContacts,
   loader: () => {
     const breadcrumbs: Breadcrumb[] = [
@@ -57,7 +57,7 @@ function ManagementAlarmContacts() {
       if (!pagingPolicyContact.id) return Promise.reject(new Error("PagingPolicyContact ID is missing"));
       return api.pagingPolicyContacts.deletePagingPolicyContact({ pagingPolicyContactId: pagingPolicyContact.id });
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ALARM_CONTACTS] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.PAGING_POLICY_CONTACTS] }),
   });
 
   const columns: GridColDef<PagingPolicyContact>[] = useMemo(
@@ -143,7 +143,7 @@ function ManagementAlarmContacts() {
                 startIcon={<Add />}
                 onClick={() =>
                   navigate({
-                    to: "/management/alarm-contacts/add",
+                    to: "/management/paging-policy-contacts/add",
                     search: { date: DateTime.now() },
                   })
                 }
@@ -153,12 +153,12 @@ function ManagementAlarmContacts() {
             </Stack>
           }
         />
-        <Stack flex={1} sx={{ height: "100%", overflowY: "auto" }}>
+        <Stack flex={1} height="100%" overflow="auto">
           <GenericDataGrid
             editMode="cell"
             fullScreen
             autoHeight={false}
-            rows={alarmContactsQuery.data?.alarmContacts ?? []}
+            rows={alarmContactsQuery.data?.pagingPolicyContacts ?? []}
             columns={columns}
             rowCount={alarmContactsQuery.data?.totalResults}
             disableRowSelectionOnClick

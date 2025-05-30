@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { api } from "api/index";
 import LoaderWrapper from "components/generic/loader-wrapper";
-import EquipmentComponent from "components/management/equipments/equipment";
+import Equipment from "components/management/equipment/equipment";
 import { Truck } from "generated/client";
 import { getFindTruckQueryOptions } from "hooks/use-queries";
 import { t } from "i18next";
@@ -48,7 +48,7 @@ function TruckModify() {
 
   return (
     <LoaderWrapper loading={truckQuery.isFetching}>
-      <EquipmentComponent
+      <Equipment
         formType="MODIFY"
         initialData={truckQuery.data}
         onSave={(truck) => updateTruck.mutateAsync(truck as Truck)}
