@@ -795,6 +795,7 @@ function WorkShifts() {
                               .filter((row) => row.workShift.id !== undefined)
                               .every((row) => row.workShift.approved)}
                             name="allApproved"
+                            disabled={workShiftsDataForFormRows.data?.length === 0}
                             title={t("workingHours.workingHourBalances.markAllApproved")}
                           />
                         }

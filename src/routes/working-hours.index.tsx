@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { api } from "api/index";
 import GenericDataGrid from "components/generic/generic-data-grid";
-import { Employee, EmployeeType, Office, SalaryGroup, SalaryPeriodTotalWorkHours } from "generated/client";
+import { EmployeeType, Office, SalaryGroup } from "generated/client";
 import { useDebounce } from "hooks/use-debounce";
 import { QUERY_KEYS } from "hooks/use-queries";
 import { TFunction, t } from "i18next";
@@ -33,7 +33,7 @@ export const Route = createFileRoute("/working-hours/")({
 });
 
 type EmployeeFilters = {
-  salaryGroup: SalaryGroup;
+  salaryGroup: SalaryGroup | "ALL";
   employeeType: EmployeeType | "ALL";
   office: Office | "ALL";
 };
@@ -81,7 +81,7 @@ function WorkingHours() {
   const { watch, register } = useForm<EmployeeFilters>({
     mode: "onChange",
     defaultValues: {
-      salaryGroup: SalaryGroup.Driver,
+      salaryGroup: "ALL",
       employeeType: "ALL",
       office: "ALL",
     },
@@ -91,17 +91,16 @@ function WorkingHours() {
   const salaryGroupFilter = watch("salaryGroup");
   const employeeTypeFilter = watch("employeeType");
 
-  const employeesWithAggregatedHours = useQuery({
+  const employeesQuery = useQuery({
     queryKey: [
       QUERY_KEYS.EMPLOYEES,
-      QUERY_KEYS.EMPLOYEES_AGGREGATED_HOURS,
-      selectedDate,
+      page,
+      pageSize,
+      debouncedSearchTerm,
       officeFilter,
       salaryGroupFilter,
       employeeTypeFilter,
-      debouncedSearchTerm,
-      page,
-      pageSize,
+      selectedDate,
     ],
     queryFn: async () => {
       const [employees] = await api.employees.listEmployeesWithHeaders({
@@ -109,25 +108,26 @@ function WorkingHours() {
         max: pageSize + 1,
         search: debouncedSearchTerm || undefined,
         office: officeFilter === "ALL" ? undefined : officeFilter,
-        salaryGroup: salaryGroupFilter ? undefined : salaryGroupFilter,
+        salaryGroup: salaryGroupFilter === "ALL" ? undefined : salaryGroupFilter,
         type: employeeTypeFilter === "ALL" ? undefined : employeeTypeFilter,
       });
+      return employees;
+    },
+  });
 
-      return await Promise.all(
-        employees.map<Promise<{ employee: Employee; aggregatedHours: SalaryPeriodTotalWorkHours }>>(
-          async (employee) => {
-            const aggregatedHours = await api.employees.getSalaryPeriodTotalWorkHours({
-              // biome-ignore lint/style/noNonNullAssertion: Employee ID is always present
-              employeeId: employee.id!,
-              dateInSalaryPeriod: selectedDate?.toJSDate(),
-            });
-
-            return {
-              employee: employee,
-              aggregatedHours: aggregatedHours,
-            };
-          },
-        ),
+  const aggregatedHoursForEmoloyees = useQuery({
+    enabled: !!employeesQuery?.data?.length && employeesQuery?.data?.length > 0,
+    queryKey: [QUERY_KEYS.EMPLOYEES_AGGREGATED_HOURS, selectedDate],
+    queryFn: async () => {
+      return Promise.all(
+        (employeesQuery?.data ?? []).map(async (employee) => {
+          const aggregatedHours = await api.employees.getSalaryPeriodTotalWorkHours({
+            // biome-ignore lint/style/noNonNullAssertion: Employee ID is always present
+            employeeId: employee.id!,
+            dateInSalaryPeriod: selectedDate?.toJSDate(),
+          });
+          return { employee, aggregatedHours };
+        }),
       );
     },
   });
@@ -174,7 +174,12 @@ function WorkingHours() {
         ),
       },
       {
-        valueGetter: (params) => Number(params.row.aggregatedHours.workingHours).toFixed(2),
+        valueGetter: (params) => {
+          if (params.row.aggregatedHours?.workingHours === undefined) {
+            return "-";
+          }
+          return Number(params.row.aggregatedHours.workingHours).toFixed(2);
+        },
         field: "totalWorkTime",
         headerAlign: "center",
         headerName: t("workingHours.workingHourBalances.totalWorkTime"),
@@ -183,8 +188,13 @@ function WorkingHours() {
         align: "center",
       },
       {
-        // valueGetter: (params) => Number(params.row.aggregatedHours.breaks).toFixed(2), // Not yet supported
-        field: "breaks",
+        valueGetter: (params) => {
+          if (params.row.aggregatedHours?.breakHours === undefined) {
+            return "-";
+          }
+          return Number(params.row.aggregatedHours.breakHours).toFixed(2);
+        },
+        field: "breakHours",
         headerAlign: "center",
         headerName: t("workingHours.workingHourBalances.breaks"),
         sortable: false,
@@ -192,7 +202,12 @@ function WorkingHours() {
         align: "center",
       },
       {
-        valueGetter: (params) => Number(params.row.aggregatedHours.waitingTime).toFixed(2),
+        valueGetter: (params) => {
+          if (params.row.aggregatedHours?.waitingTime === undefined) {
+            return "-";
+          }
+          return Number(params.row.aggregatedHours.waitingTime).toFixed(2);
+        },
         field: "waitingTime",
         headerAlign: "center",
         headerName: t("workingHours.workingHourBalances.waitingTime"),
@@ -201,10 +216,17 @@ function WorkingHours() {
         align: "center",
       },
       {
-        valueGetter: (params) =>
-          (Number(params.row.aggregatedHours.overTimeFull) + Number(params.row.aggregatedHours.overTimeHalf)).toFixed(
-            2,
-          ),
+        valueGetter: (params) => {
+          if (
+            params.row.aggregatedHours?.overTimeFull === undefined ||
+            params.row.aggregatedHours?.overTimeHalf === undefined
+          ) {
+            return "-";
+          }
+          return (
+            Number(params.row.aggregatedHours.overTimeFull) + Number(params.row.aggregatedHours.overTimeHalf)
+          ).toFixed(2);
+        },
         field: "overtime",
         headerAlign: "center",
         headerName: t("workingHours.workingHourBalances.overtime"),
@@ -213,7 +235,12 @@ function WorkingHours() {
         align: "center",
       },
       {
-        valueGetter: (params) => Number(params.row.aggregatedHours.eveningWork).toFixed(2),
+        valueGetter: (params) => {
+          if (params.row.aggregatedHours?.eveningWork === undefined) {
+            return "-";
+          }
+          return Number(params.row.aggregatedHours.eveningWork).toFixed(2);
+        },
         field: "eveningWork",
         headerAlign: "center",
         headerName: t("workingHours.workingHourBalances.eveningWork"),
@@ -222,7 +249,12 @@ function WorkingHours() {
         align: "center",
       },
       {
-        valueGetter: (params) => Number(params.row.aggregatedHours.nightWork).toFixed(2),
+        valueGetter: (params) => {
+          if (params.row.aggregatedHours?.nightWork === undefined) {
+            return "-";
+          }
+          return Number(params.row.aggregatedHours.nightWork).toFixed(2);
+        },
         field: "nightWork",
         headerAlign: "center",
         headerName: t("workingHours.workingHourBalances.nightWork"),
@@ -231,7 +263,12 @@ function WorkingHours() {
         align: "center",
       },
       {
-        //valueGetter: (params) => Number(params.row.aggregatedHours.taskSpecificBonus).toFixed(2), // Not yet supported
+        valueGetter: (params) => {
+          if (params.row.aggregatedHours?.jobSpecificAllowance === undefined) {
+            return "-";
+          }
+          return Number(params.row.aggregatedHours.jobSpecificAllowance).toFixed(2);
+        },
         field: "taskSpecificBonus",
         headerAlign: "center",
         headerName: t("workingHours.workingHourBalances.taskSpecificBonus"),
@@ -240,7 +277,12 @@ function WorkingHours() {
         align: "center",
       },
       {
-        //valueGetter: (params) => Number(params.row.aggregatedHours.freezerBonus).toFixed(2), // Not yet supported
+        valueGetter: (params) => {
+          if (params.row.aggregatedHours?.frozenAllowance === undefined) {
+            return "-";
+          }
+          return Number(params.row.aggregatedHours.frozenAllowance).toFixed(2);
+        },
         field: "freezerBonus",
         headerAlign: "center",
         headerName: t("workingHours.workingHourBalances.freezerBonus"),
@@ -249,7 +291,12 @@ function WorkingHours() {
         align: "center",
       },
       {
-        valueGetter: (params) => Number(params.row.aggregatedHours.holiday).toFixed(2),
+        valueGetter: (params) => {
+          if (params.row.aggregatedHours?.holiday === undefined) {
+            return "-";
+          }
+          return Number(params.row.aggregatedHours.holiday).toFixed(2);
+        },
         field: "holidayBonus",
         headerAlign: "center",
         headerName: t("workingHours.workingHourBalances.holidayBonus"),
@@ -258,7 +305,12 @@ function WorkingHours() {
         align: "center",
       },
       {
-        valueGetter: (params) => Number(params.row.aggregatedHours.dayOffBonus).toFixed(2),
+        valueGetter: (params) => {
+          if (params.row.aggregatedHours?.dayOffBonus === undefined) {
+            return "-";
+          }
+          return Number(params.row.aggregatedHours.dayOffBonus).toFixed(2);
+        },
         field: "dayOffBonus",
         headerAlign: "center",
         headerName: t("workingHours.workingHourBalances.dayOffBonus"),
@@ -267,7 +319,12 @@ function WorkingHours() {
         align: "center",
       },
       {
-        valueGetter: (params) => Number(params.row.aggregatedHours.sickHours).toFixed(2),
+        valueGetter: (params) => {
+          if (params.row.aggregatedHours?.sickHours === undefined) {
+            return "-";
+          }
+          return Number(params.row.aggregatedHours.sickHours).toFixed(2);
+        },
         field: "sickLeaveOrAbsent",
         headerAlign: "center",
         headerName: t("workingHours.workingHourBalances.sickLeaveOrAbsent"),
@@ -276,7 +333,12 @@ function WorkingHours() {
         align: "center",
       },
       {
-        valueGetter: (params) => Number(params.row.aggregatedHours.compensatoryLeave).toFixed(2),
+        valueGetter: (params) => {
+          if (params.row.aggregatedHours?.compensatoryLeave === undefined) {
+            return "-";
+          }
+          return Number(params.row.aggregatedHours.compensatoryLeave).toFixed(2);
+        },
         field: "pekkanens",
         headerAlign: "center",
         headerName: t("workingHours.workingHourBalances.pekkanens"),
@@ -285,7 +347,12 @@ function WorkingHours() {
         align: "center",
       },
       {
-        valueGetter: (params) => Number(params.row.aggregatedHours.vacation).toFixed(2),
+        valueGetter: (params) => {
+          if (params.row.aggregatedHours?.vacation === undefined) {
+            return "-";
+          }
+          return Number(params.row.aggregatedHours.vacation).toFixed(2);
+        },
         field: "vacation",
         headerAlign: "center",
         headerName: t("workingHours.workingHourBalances.vacation"),
@@ -294,7 +361,12 @@ function WorkingHours() {
         align: "center",
       },
       {
-        valueGetter: (params) => Number(params.row.aggregatedHours.fillingHours).toFixed(2),
+        valueGetter: (params) => {
+          if (params.row.aggregatedHours?.fillingHours === undefined) {
+            return "-";
+          }
+          return Number(params.row.aggregatedHours.fillingHours).toFixed(2);
+        },
         field: "fillHours",
         headerAlign: "center",
         headerName: t("workingHours.workingHourBalances.fillHours"),
@@ -303,7 +375,12 @@ function WorkingHours() {
         align: "center",
       },
       {
-        valueGetter: (params) => params.row.aggregatedHours.partialDailyAllowance,
+        valueGetter: (params) => {
+          if (params.row.aggregatedHours?.partialDailyAllowance === undefined) {
+            return "-";
+          }
+          return params.row.aggregatedHours.partialDailyAllowance;
+        },
         field: "halfDayAllowance",
         headerAlign: "center",
         headerName: t("workingHours.workingHourBalances.halfDayAllowance"),
@@ -312,7 +389,12 @@ function WorkingHours() {
         align: "center",
       },
       {
-        valueGetter: (params) => params.row.aggregatedHours.fullDailyAllowance,
+        valueGetter: (params) => {
+          if (params.row.aggregatedHours?.fullDailyAllowance === undefined) {
+            return "-";
+          }
+          return params.row.aggregatedHours.fullDailyAllowance;
+        },
         field: "fullDayAllowance",
         headerAlign: "center",
         headerName: t("workingHours.workingHourBalances.fullDayAllowance"),
@@ -342,9 +424,11 @@ function WorkingHours() {
   );
 
   const renderLocalizedSalaryGroupOptions = useCallback(
-    <T extends string>(items: string[], labelResolver: (value: T, t: TFunction) => string) =>
-      items.map((item) => renderLocalizedMenuItem(item as T, labelResolver)),
-    [renderLocalizedMenuItem],
+    <T extends string>(items: string[], labelResolver: (value: T, t: TFunction) => string) => [
+      <MenuItem value="ALL">{t("all")}</MenuItem>,
+      ...items.map((item) => renderLocalizedMenuItem(item as T, labelResolver)),
+    ],
+    [t, renderLocalizedMenuItem],
   );
 
   const renderSelectFilter = useCallback(
@@ -412,12 +496,62 @@ function WorkingHours() {
     );
   };
 
+  // Combine employees with their aggregated hours
+  const employeesWithAggregatedHours = useMemo(() => {
+    if (!employeesQuery.data) {
+      return [];
+    }
+    if (!aggregatedHoursForEmoloyees.data) {
+      return employeesQuery.data.map((employee) => {
+        return {
+          employee,
+          aggregatedHours: {
+            workingHours: undefined,
+            workingTime: undefined,
+            overTimeHalf: undefined,
+            overTimeFull: undefined,
+            waitingTime: undefined,
+            eveningWork: undefined,
+            nightWork: undefined,
+            jobSpecificAllowance: undefined,
+            frozenAllowance: undefined,
+            holiday: undefined,
+            dayOffBonus: undefined,
+            sickHours: undefined,
+            compensatoryLeave: undefined,
+            vacation: undefined,
+            fillingHours: undefined,
+            partialDailyAllowance: undefined,
+            fullDailyAllowance: undefined,
+            breakHours: undefined,
+          },
+        };
+      });
+    }
+    return employeesQuery.data.map((employee) => {
+      const aggregatedHours = aggregatedHoursForEmoloyees.data.find(
+        (item) => item.employee.id === employee.id,
+      )?.aggregatedHours;
+      return {
+        employee,
+        aggregatedHours: aggregatedHours,
+      };
+    });
+  }, [employeesQuery.data, aggregatedHoursForEmoloyees.data]);
+
+  // Calculate approved workshifts count
+  // This part can be finalized when the API provides the necessary values
+  // const approvedWorkshiftsCount = useMemo(() => {
+  //   return aggregatedHoursForEmoloyees.data?.reduce((count, item) => {
+  //     return count + (item.hours.amountOfApprovedWorkshifts ?? 0);
+  //   }, 0);
+  // }, [aggregatedHoursForEmoloyees.data]);
+
   return (
     <Root>
       {renderFilters()}
       <Paper sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
         <Stack flexDirection="row" alignItems="center" gap={4} p={(theme) => theme.spacing(1, 2)}>
-          {/* <Typography variant="h6">{"Su 28.4. 00:00 - La 11.5. 24:00"}</Typography> */}
           <Typography variant="subtitle2">
             {t("workingHours.workingHourBalances.uncheckedCount", { count: 2 })}
           </Typography>
@@ -431,9 +565,9 @@ function WorkingHours() {
             showCellVerticalBorder
             showColumnVerticalBorder
             disableColumnSelector
-            loading={employeesWithAggregatedHours.isFetching}
-            rows={employeesWithAggregatedHours.data ?? []}
-            rowCount={employeesWithAggregatedHours.data?.length ?? 0}
+            loading={employeesQuery.isFetching}
+            rows={employeesWithAggregatedHours ?? []}
+            rowCount={employeesQuery.data?.length ?? 0}
             getRowId={(row) => row.employee.id}
             paginationModel={{ page, pageSize }}
             onPaginationModelChange={setPaginationModel}

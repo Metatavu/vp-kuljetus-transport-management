@@ -347,20 +347,22 @@ function WorkShiftRow({ index, date, workShiftId }: Props) {
         />
       </Cell>
       <Cell width={90}>
-        <Checkbox
-          size="small"
-          className="cell-checkbox"
-          title={t("workingHours.workingHourBalances.approved")}
-          aria-label={t("workingHours.workingHourBalances.approved")}
-          checked={approved ?? false}
-          onChange={(_, checked) =>
-            setValue(`${index}.workShift.approved`, checked, {
-              shouldDirty: true,
-              shouldValidate: true,
-              shouldTouch: true,
-            })
-          }
-        />
+        {workShift?.id ? (
+          <Checkbox
+            size="small"
+            className="cell-checkbox"
+            title={t("workingHours.workingHourBalances.approved")}
+            aria-label={t("workingHours.workingHourBalances.approved")}
+            checked={approved ?? false}
+            onChange={(_, checked) =>
+              setValue(`${index}.workShift.approved`, checked, {
+                shouldDirty: true,
+                shouldValidate: true,
+                shouldTouch: true,
+              })
+            }
+          />
+        ) : null}
       </Cell>
     </Row>
   );
