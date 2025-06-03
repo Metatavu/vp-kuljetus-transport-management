@@ -37,6 +37,7 @@ export interface ListSiteTemperaturesRequest {
 }
 export interface ListSitesRequest {
     archived?: boolean;
+    thermometerId?: string;
     first?: number;
     max?: number;
 }
@@ -193,6 +194,9 @@ export class SitesApi extends runtime.BaseAPI {
         const queryParameters: any = {};
         if (requestParameters.archived !== undefined) {
             queryParameters['archived'] = requestParameters.archived;
+        }
+        if (requestParameters.thermometerId !== undefined) {
+            queryParameters['thermometerId'] = requestParameters.thermometerId;
         }
         if (requestParameters.first !== undefined) {
             queryParameters['first'] = requestParameters.first;
