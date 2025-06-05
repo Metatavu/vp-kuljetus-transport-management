@@ -11,6 +11,7 @@
   "delete": "Delete",
   "approve": "Approve",
   "archive": "Archive",
+  "unArchive": "Unarchive",
   "open": "Open",
   "noSelection": "No selection",
   "all": "All",
@@ -25,6 +26,12 @@
   "selectDate": "Select date",
   "showMenu": "Show menu",
   "hideMenu": "Hide menu",
+  "previous": "Previous",
+  "next": "Next",
+  "search": "Search",
+  "formValidationErrors": {
+    "required": "Required field"
+  },
   "notAuthorizedView": {
     "notAuthorized": "Access denied",
     "description": "You don't have permission to access this content."
@@ -81,6 +88,7 @@
       "noLocationAvailable": "Location not available",
       "noUpdateInformation": "No last update information",
       "driver": "Driver",
+      "driverCard": "Driver card",
       "temperature": "Temperature:",
       "noTemperatureAvailable": "Temperature not available"
     },
@@ -157,6 +165,7 @@
       "deleteDeviceDescription": "Are you sure you want to delete this device?",
       "configureNewDevice": "Configure new device",
       "configureNewDeviceDescription": "Configure new device for terminal by entering device MAC address.",
+      "macAddress": "MAC address",
       "thermometers": {
         "thermometers": "Thermometers",
         "name": "Name",
@@ -257,6 +266,9 @@
         "name": {
           "label": "Name",
           "placeholder": "Search by name"
+        },
+        "includeArchived": {
+          "label": "Archived"
         }
       },
       "employeeNumber": "Number",
@@ -284,8 +296,13 @@
         "title": "Archive employee",
         "description": "Are you sure you want to archive employee {{name}}?"
       },
+      "unArchiveDialog": {
+        "title": "Unarchive employee",
+        "description": "Are you sure you want to unarchive employee {{name}}?"
+      },
       "successToast": "Employee saved!",
       "archiveToast": "Employee archived!",
+      "unArchiveToast": "Employee unarchived!",
       "errorToast": "Failed to save employee!"
     },
     "holidays": {
@@ -311,6 +328,65 @@
       "editSuccessToast": "Holiday modification saved!",
       "deleteHoliday": "Delete holiday",
       "deleteConfirmationDescription": "Are you sure you want to delete holiday {{name}} {{date}}?"
+    },
+    "thermalMonitors": {
+      "title": "Temperature monitors",
+      "name": "Name",
+      "namePlaceholder": "Insert descriptive name for monitor",
+      "addNewMonitor": "Add new monitor",
+      "lowerThresholdTemperature": "Lower threshold temperature",
+      "lowerThresholdTemperatureHelperText": "Set a threshold which triggers an alarm when temperature falls below it",
+      "upperThresholdTemperature": "Upper threshold temperature",
+      "upperThresholdTemperatureHelperText": "Set a threshold which triggers an alarm when temperature rises over it",
+      "selectMonitoredThermometers": "Select monitored thermometers",
+      "monitoredThermometers": "Monitored thermometers",
+      "searchHelperText": "Search by name, terminal, or equipment name or registration number",
+      "status": "Status",
+      "statuses": {
+        "PENDING": "Pending",
+        "ACTIVE": "Active",
+        "PAUSED": "Paused",
+        "FINISHED": "Finished"
+      },
+      "schedule": "Active at",
+      "defineMonitorActiveTimes": "Define when the monitor is active",
+      "type": {
+        "ONE_OFF": "Always",
+        "SCHEDULED": "Scheduled"
+      },
+      "weekdays": {
+        "title": "Weekdays",
+        "MONDAY": "Monday",
+        "TUESDAY": "Tuesday",
+        "WEDNESDAY": "Wednesday",
+        "THURSDAY": "Thursday",
+        "FRIDAY": "Friday",
+        "SATURDAY": "Saturday",
+        "SUNDAY": "Sunday"
+      },
+      "times": "Times",
+      "actions": "Actions",
+      "monitor": "Monitor",
+      "thermometers": "Thermometers",
+      "pagingPolicies": "Actions",
+      "addPolicy": "Add action",
+      "timeAfterAlarmActivation": "Time after alarm activation",
+      "timeAfterPreviousAction": "Time after previous action",
+      "notification": "Notification",
+      "notificationDelay": {
+        "0": "immediately",
+        "60": "After 1 minute",
+        "120": "After 2 minutes",
+        "300": "After 5 minutes",
+        "600": "After 10 minutes",
+        "900": "After 15 minutes",
+        "1800": "After 30 minutes",
+        "3600": "After 1 hour",
+        "7200": "After 2 hours",
+        "14400": "After 4 hours",
+        "28800": "After 8 hours",
+        "86400": "After 24 hours"
+      }
     }
   },
   "drivePlanning": {

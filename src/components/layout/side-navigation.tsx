@@ -1,7 +1,8 @@
 import { Menu } from "@mui/icons-material";
 import { Paper, Tab, Tabs, styled } from "@mui/material";
 import { useMatches, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { sideNavigationCollapsedAtom } from "atoms/side-navigation";
+import { useAtom } from "jotai";
 import { useTranslation } from "react-i18next";
 import { NavigationItem } from "src/types";
 
@@ -22,7 +23,7 @@ const SideNavigation = ({ navigationItems }: Props) => {
   const navigate = useNavigate();
   useMatches();
 
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useAtom(sideNavigationCollapsedAtom);
 
   const selectedRouteIndex = navigationItems.findIndex(({ route }) => !!route && location.pathname.startsWith(route));
 
