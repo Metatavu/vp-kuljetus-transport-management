@@ -17,10 +17,10 @@ import { useTranslation } from "react-i18next";
 import { Breadcrumb, LocalizedLabelKey } from "src/types";
 import DataValidation from "src/utils/data-validation-utils";
 import LocalizationUtils from "src/utils/localization-utils";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 export const workShiftSearchSchema = z.object({
-  date: z.string().datetime({ offset: true }).transform(DataValidation.parseValidDateTime),
+  date: z.iso.datetime({ offset: true }).transform(DataValidation.parseValidDateTime),
 });
 
 export const Route = createFileRoute("/working-hours/")({
