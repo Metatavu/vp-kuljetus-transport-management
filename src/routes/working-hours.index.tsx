@@ -132,6 +132,57 @@ function WorkingHours() {
     },
   });
 
+  // Combine employees with their aggregated hours
+  const employeesWithAggregatedHours = useMemo(() => {
+    if (!employeesQuery.data) {
+      return [];
+    }
+    if (!aggregatedHoursForEmoloyees.data) {
+      return employeesQuery.data.map((employee) => {
+        return {
+          employee,
+          aggregatedHours: {
+            workingHours: undefined,
+            workingTime: undefined,
+            overTimeHalf: undefined,
+            overTimeFull: undefined,
+            waitingTime: undefined,
+            eveningWork: undefined,
+            nightWork: undefined,
+            jobSpecificAllowance: undefined,
+            frozenAllowance: undefined,
+            holiday: undefined,
+            dayOffBonus: undefined,
+            sickHours: undefined,
+            compensatoryLeave: undefined,
+            vacation: undefined,
+            fillingHours: undefined,
+            partialDailyAllowance: undefined,
+            fullDailyAllowance: undefined,
+            breakHours: undefined,
+          },
+        };
+      });
+    }
+    return employeesQuery.data.map((employee) => {
+      const aggregatedHours = aggregatedHoursForEmoloyees.data.find(
+        (item) => item.employee.id === employee.id,
+      )?.aggregatedHours;
+      return {
+        employee,
+        aggregatedHours: aggregatedHours,
+      };
+    });
+  }, [employeesQuery.data, aggregatedHoursForEmoloyees.data]);
+
+  // Calculate approved workshifts count
+  // This part can be finalized when the API provides the necessary values
+  // const approvedWorkshiftsCount = useMemo(() => {
+  //   return aggregatedHoursForEmoloyees.data?.reduce((count, item) => {
+  //     return count + (item.hours.amountOfApprovedWorkshifts ?? 0);
+  //   }, 0);
+  // }, [aggregatedHoursForEmoloyees.data]);
+
   const onChangeDate = useCallback(
     (newDate: DateTime | null) => navigate({ search: (prev) => ({ ...prev, date: newDate ?? DateTime.now() }) }),
     [navigate],
@@ -495,57 +546,6 @@ function WorkingHours() {
       </FilterContainer>
     );
   };
-
-  // Combine employees with their aggregated hours
-  const employeesWithAggregatedHours = useMemo(() => {
-    if (!employeesQuery.data) {
-      return [];
-    }
-    if (!aggregatedHoursForEmoloyees.data) {
-      return employeesQuery.data.map((employee) => {
-        return {
-          employee,
-          aggregatedHours: {
-            workingHours: undefined,
-            workingTime: undefined,
-            overTimeHalf: undefined,
-            overTimeFull: undefined,
-            waitingTime: undefined,
-            eveningWork: undefined,
-            nightWork: undefined,
-            jobSpecificAllowance: undefined,
-            frozenAllowance: undefined,
-            holiday: undefined,
-            dayOffBonus: undefined,
-            sickHours: undefined,
-            compensatoryLeave: undefined,
-            vacation: undefined,
-            fillingHours: undefined,
-            partialDailyAllowance: undefined,
-            fullDailyAllowance: undefined,
-            breakHours: undefined,
-          },
-        };
-      });
-    }
-    return employeesQuery.data.map((employee) => {
-      const aggregatedHours = aggregatedHoursForEmoloyees.data.find(
-        (item) => item.employee.id === employee.id,
-      )?.aggregatedHours;
-      return {
-        employee,
-        aggregatedHours: aggregatedHours,
-      };
-    });
-  }, [employeesQuery.data, aggregatedHoursForEmoloyees.data]);
-
-  // Calculate approved workshifts count
-  // This part can be finalized when the API provides the necessary values
-  // const approvedWorkshiftsCount = useMemo(() => {
-  //   return aggregatedHoursForEmoloyees.data?.reduce((count, item) => {
-  //     return count + (item.hours.amountOfApprovedWorkshifts ?? 0);
-  //   }, 0);
-  // }, [aggregatedHoursForEmoloyees.data]);
 
   return (
     <Root>

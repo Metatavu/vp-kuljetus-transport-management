@@ -53,10 +53,10 @@ import DataValidation from "src/utils/data-validation-utils";
 import TimeUtils from "src/utils/time-utils";
 import WorkShiftsUtils from "src/utils/workshift-utils";
 import { v4 as uuidv4 } from "uuid";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 export const workShiftSearchSchema = z.object({
-  date: z.string().datetime({ offset: true }).transform(DataValidation.parseValidDateTime),
+  date: z.iso.datetime({ offset: true }).transform(DataValidation.parseValidDateTime),
 });
 
 export const Route = createFileRoute("/working-hours_/$employeeId/work-shifts")({
