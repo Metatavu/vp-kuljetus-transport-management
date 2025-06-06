@@ -158,12 +158,12 @@ function WorkShifts() {
   const employeeSalaryGroup =
     employees?.find((employee) => employee.id === employeeId)?.salaryGroup ?? SalaryGroup.Driver;
 
-  const employeeAggregatedHours = useQuery({
-    ...getFindEmployeeAggregatedWorkHoursQueryOptions(
+  const employeeAggregatedHours = useQuery(
+    getFindEmployeeAggregatedWorkHoursQueryOptions(
       { employeeId: employeeId, dateInSalaryPeriod: selectedDate.toJSDate() },
       !!employeeId,
-    ),
-  });
+    )
+  );
 
   const workingPeriodsForEmployee = TimeUtils.getWorkingPeriodDates(employeeSalaryGroup, selectedDate?.toJSDate());
 
