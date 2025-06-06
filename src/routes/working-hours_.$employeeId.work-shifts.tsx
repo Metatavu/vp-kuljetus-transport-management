@@ -162,7 +162,7 @@ function WorkShifts() {
     getFindEmployeeAggregatedWorkHoursQueryOptions(
       { employeeId: employeeId, dateInSalaryPeriod: selectedDate.toJSDate() },
       !!employeeId,
-    )
+    ),
   );
 
   const workingPeriodsForEmployee = TimeUtils.getWorkingPeriodDates(employeeSalaryGroup, selectedDate?.toJSDate());
@@ -677,7 +677,7 @@ function WorkShifts() {
               <WorkingHoursDocument
                 employee={employee}
                 workShiftsData={workShiftsDataWithWorkingPeriodDates}
-                employeeAggregatedHours={employeeAggregatedHours.data?.aggregatedHours}
+                employeeAggregatedHours={employeeAggregatedHours.data}
                 workingPeriodsForEmployee={workingPeriodsForEmployee}
               />
             }
@@ -851,12 +851,12 @@ function WorkShifts() {
                     ) : employeeSalaryGroup === SalaryGroup.Driver ||
                       employeeSalaryGroup === SalaryGroup.Vplogistics ? (
                       <AggregationsTableForDriver
-                        employeeAggregatedHours={employeeAggregatedHours.data?.aggregatedHours}
+                        employeeAggregatedHours={employeeAggregatedHours.data}
                         employee={employee ?? undefined}
                       />
                     ) : (
                       <AggregationsTableForOffice
-                        employeeAggregatedHours={employeeAggregatedHours.data?.aggregatedHours}
+                        employeeAggregatedHours={employeeAggregatedHours.data}
                         employee={employee ?? undefined}
                       />
                     )}
