@@ -244,11 +244,7 @@ export const getFindEmployeeAggregatedWorkHoursQueryOptions = (
   queryOptions({
     queryKey: [QUERY_KEYS.EMPLOYEE_AGGREGATED_HOURS, requestParams],
     enabled: enabled,
-    queryFn: async () => {
-      const aggregatedHours = await api.employees.getSalaryPeriodTotalWorkHours(requestParams);
-
-      return { aggregatedHours };
-    },
+    queryFn: () => api.employees.getSalaryPeriodTotalWorkHours(requestParams),
   });
 
 export const getFindEmployeeQueryOptions = (employeeId: string, enabled = true) =>
