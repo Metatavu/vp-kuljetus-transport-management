@@ -38,6 +38,7 @@ export interface ListTowableTemperaturesRequest {
 export interface ListTowablesRequest {
     plateNumber?: string;
     archived?: boolean;
+    thermometerId?: string;
     first?: number;
     max?: number;
 }
@@ -197,6 +198,9 @@ export class TowablesApi extends runtime.BaseAPI {
         }
         if (requestParameters.archived !== undefined) {
             queryParameters['archived'] = requestParameters.archived;
+        }
+        if (requestParameters.thermometerId !== undefined) {
+            queryParameters['thermometerId'] = requestParameters.thermometerId;
         }
         if (requestParameters.first !== undefined) {
             queryParameters['first'] = requestParameters.first;

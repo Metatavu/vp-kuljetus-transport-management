@@ -1,6 +1,16 @@
 import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from "@mui/icons-material/Search";
-import { Button, Divider, MenuItem, Stack, TextField, Typography, styled, Checkbox, FormControlLabel } from "@mui/material";
+import {
+  Button,
+  Checkbox,
+  Divider,
+  FormControlLabel,
+  MenuItem,
+  Stack,
+  TextField,
+  Typography,
+  styled,
+} from "@mui/material";
 import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
@@ -71,8 +81,8 @@ function ManagementEmployees() {
       office: officeFilter === "ALL" ? undefined : officeFilter,
       salaryGroup: salaryGroupFilter === "ALL" ? undefined : salaryGroupFilter,
       type: employeeTypeFilter === "ALL" ? undefined : employeeTypeFilter,
-      archived: includeArchived
-    })
+      archived: includeArchived,
+    }),
   );
 
   const renderLocalizedMenuItem = useCallback(
@@ -150,22 +160,26 @@ function ManagementEmployees() {
             sx={{
               alignItems: "flex-start",
               justifyContent: "start",
-              '.MuiFormControlLabel-label': {
-                textAlign: 'left',
-                fontSize: '0.9rem',
+              ".MuiFormControlLabel-label": {
+                textAlign: "left",
+                fontSize: "0.9rem",
                 fontWeight: 400,
                 lineHeight: "1.4375rem",
-                color: 'rgba(0, 0, 0, 0.6)'
+                color: "rgba(0, 0, 0, 0.6)",
               },
             }}
             control={
-              <Checkbox sx={{ padding: 0 }} value={includeArchived} onChange={(event) => setIncludeArchived(event.target.checked)}/>
+              <Checkbox
+                sx={{ padding: 0 }}
+                value={includeArchived}
+                onChange={(event) => setIncludeArchived(event.target.checked)}
+              />
             }
           />
         }
       </Stack>
     ),
-    [t, renderSelectFilter, renderLocalizedMenuItems, setSearchTerm],
+    [t, renderSelectFilter, renderLocalizedMenuItems, setSearchTerm, includeArchived],
   );
 
   const columns: GridColDef<Employee>[] = useMemo(
