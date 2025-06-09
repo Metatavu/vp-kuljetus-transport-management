@@ -44,10 +44,11 @@ function WorkShiftsTableHeader() {
         {t("workingHours.workingDays.table.absence")}
       </HeaderCell>
       <HeaderCell width={90}>{t("workingHours.workingDays.table.dailyAllowance")}</HeaderCell>
-      <HeaderCell width={90}>{t("workingHours.workingDays.table.inspected")}</HeaderCell>
+      <HeaderCell width={90}>{t("workingHours.workingDays.table.defaultCostCenterAppreviation")}</HeaderCell>
       <HeaderCell minWidth={175} flex={1}>
         {t("workingHours.workingDays.table.remarks")}
       </HeaderCell>
+      <HeaderCell width={90}>{t("workingHours.workingDays.table.inspected")}</HeaderCell>
     </Stack>
   );
 }

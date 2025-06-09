@@ -517,6 +517,7 @@
       "noRecords": "no records",
       "approved": "Checked",
       "markAllApproved": "Mark all checked",
+      "changesSaved": "Changes saved",
       "successToast": "Working hours saved!",
       "errorToast": "Failed to save working hours",
       "sentToPayroll": "Sent to payroll",
@@ -554,7 +555,9 @@
         "selectDailyAllowance": "Select daily allowance type",
         "inspected": "Inspected",
         "remarks": "Remarks",
-        "calculatedHours": "Calculated"
+        "calculatedHours": "Calculated",
+        "defaultCostCenter": "Cost center",
+        "defaultCostCenterAppreviation": "CC"
       },
       "pdf": {
         "costCenter": "CC",
