@@ -17,6 +17,7 @@ import { useTranslation } from "react-i18next";
 import type { Breadcrumb, LocalizedLabelKey } from "src/types";
 import DataValidation from "src/utils/data-validation-utils";
 import LocalizationUtils from "src/utils/localization-utils";
+import { usePaginationToFirstAndMax } from "src/utils/server-side-pagination-utils";
 import { z } from "zod/v4";
 
 type EmployeeWithAggregatedHours = {
@@ -97,10 +98,12 @@ function WorkingHours() {
   const salaryGroupFilter = watch("salaryGroup");
   const employeeTypeFilter = watch("employeeType");
 
+  const [first, max] = usePaginationToFirstAndMax({ page, pageSize });
+
   const employeesQuery = useQuery(
     getListEmployeesQueryOptions({
-      first: pageSize * page,
-      max: pageSize + 1,
+      first,
+      max,
       search: debouncedSearchTerm || undefined,
       office: officeFilter === "ALL" ? undefined : officeFilter,
       salaryGroup: salaryGroupFilter === "ALL" ? undefined : salaryGroupFilter,
