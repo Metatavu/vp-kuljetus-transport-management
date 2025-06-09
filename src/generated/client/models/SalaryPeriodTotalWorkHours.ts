@@ -165,6 +165,12 @@ export interface SalaryPeriodTotalWorkHours {
      * @memberof SalaryPeriodTotalWorkHours
      */
     amountOfApprovedWorkshifts: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof SalaryPeriodTotalWorkHours
+     */
+    employeeId: string;
 }
 
 /**
@@ -196,6 +202,7 @@ export function instanceOfSalaryPeriodTotalWorkHours(value: object): boolean {
     isInstance = isInstance && "salaryPeriodStartDate" in value;
     isInstance = isInstance && "salaryPeriodEndDate" in value;
     isInstance = isInstance && "amountOfApprovedWorkshifts" in value;
+    isInstance = isInstance && "employeeId" in value;
 
     return isInstance;
 }
@@ -234,6 +241,7 @@ export function SalaryPeriodTotalWorkHoursFromJSONTyped(json: any, ignoreDiscrim
         'salaryPeriodStartDate': (new Date(json['salaryPeriodStartDate'])),
         'salaryPeriodEndDate': (new Date(json['salaryPeriodEndDate'])),
         'amountOfApprovedWorkshifts': json['amountOfApprovedWorkshifts'],
+        'employeeId': json['employeeId'],
     };
 }
 
@@ -270,6 +278,7 @@ export function SalaryPeriodTotalWorkHoursToJSON(value?: SalaryPeriodTotalWorkHo
         'salaryPeriodStartDate': (value.salaryPeriodStartDate.toISOString().substring(0,10)),
         'salaryPeriodEndDate': (value.salaryPeriodEndDate.toISOString().substring(0,10)),
         'amountOfApprovedWorkshifts': value.amountOfApprovedWorkshifts,
+        'employeeId': value.employeeId,
     };
 }
 
