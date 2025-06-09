@@ -523,13 +523,13 @@ function WorkingHours() {
   return (
     <Root>
       {renderFilters()}
-      <Paper sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
+      <Paper sx={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
         <Stack flexDirection="row" alignItems="center" gap={4} p={(theme) => theme.spacing(1, 2)}>
           <Typography variant="subtitle2">
             {t("workingHours.workingHourBalances.uncheckedCount", { count: 2 })}
           </Typography>
         </Stack>
-        <Stack flex={1} sx={{ flex: 1, overflowY: "auto" }}>
+        <Stack sx={{ flex: 1, overflowY: "auto" }}>
           <GenericDataGrid
             fullScreen
             autoHeight={false}
