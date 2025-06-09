@@ -302,14 +302,17 @@ function WorkShiftRow({ index, date, workShiftId }: Props) {
       </Cell>
       <Cell width={90}>{renderPerDiemAllowanceSelectInput()}</Cell>
       <Cell width={90}>
-        <Checkbox
+        <TextField
+          className="cell-input"
           size="small"
-          className="cell-checkbox"
-          title={t("workingHours.workingHourBalances.approved")}
-          aria-label={t("workingHours.workingHourBalances.approved")}
-          checked={approved ?? false}
-          onChange={(_, checked) =>
-            setValue(`${index}.workShift.approved`, checked, {
+          title={t("workingHours.workingDays.table.defaultCostCenter")}
+          aria-label={t("workingHours.workingDays.table.defaultCostCenterAppreviation")}
+          fullWidth
+          disabled={workShift?.approved}
+          variant="outlined"
+          value={workShift?.defaultCostCenter ?? ""}
+          onChange={(event) =>
+            setValue(`${index}.workShift.defaultCostCenter`, event.target.value || undefined, {
               shouldDirty: true,
               shouldValidate: true,
               shouldTouch: true,
@@ -342,6 +345,24 @@ function WorkShiftRow({ index, date, workShiftId }: Props) {
             height: isFocused ? "100px" : "40px",
           }}
         />
+      </Cell>
+      <Cell width={90}>
+        {workShift?.id ? (
+          <Checkbox
+            size="small"
+            className="cell-checkbox"
+            title={t("workingHours.workingHourBalances.approved")}
+            aria-label={t("workingHours.workingHourBalances.approved")}
+            checked={approved ?? false}
+            onChange={(_, checked) =>
+              setValue(`${index}.workShift.approved`, checked, {
+                shouldDirty: true,
+                shouldValidate: true,
+                shouldTouch: true,
+              })
+            }
+          />
+        ) : null}
       </Cell>
     </Row>
   );

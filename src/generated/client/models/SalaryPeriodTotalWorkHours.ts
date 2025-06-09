@@ -129,6 +129,48 @@ export interface SalaryPeriodTotalWorkHours {
      * @memberof SalaryPeriodTotalWorkHours
      */
     fullDailyAllowance: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof SalaryPeriodTotalWorkHours
+     */
+    breakHours: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof SalaryPeriodTotalWorkHours
+     */
+    jobSpecificAllowance: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof SalaryPeriodTotalWorkHours
+     */
+    frozenAllowance: number;
+    /**
+     * 
+     * @type {Date}
+     * @memberof SalaryPeriodTotalWorkHours
+     */
+    salaryPeriodStartDate: Date;
+    /**
+     * 
+     * @type {Date}
+     * @memberof SalaryPeriodTotalWorkHours
+     */
+    salaryPeriodEndDate: Date;
+    /**
+     * 
+     * @type {number}
+     * @memberof SalaryPeriodTotalWorkHours
+     */
+    amountOfApprovedWorkshifts: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof SalaryPeriodTotalWorkHours
+     */
+    employeeId: string;
 }
 
 /**
@@ -154,6 +196,13 @@ export function instanceOfSalaryPeriodTotalWorkHours(value: object): boolean {
     isInstance = isInstance && "fillingHours" in value;
     isInstance = isInstance && "partialDailyAllowance" in value;
     isInstance = isInstance && "fullDailyAllowance" in value;
+    isInstance = isInstance && "breakHours" in value;
+    isInstance = isInstance && "jobSpecificAllowance" in value;
+    isInstance = isInstance && "frozenAllowance" in value;
+    isInstance = isInstance && "salaryPeriodStartDate" in value;
+    isInstance = isInstance && "salaryPeriodEndDate" in value;
+    isInstance = isInstance && "amountOfApprovedWorkshifts" in value;
+    isInstance = isInstance && "employeeId" in value;
 
     return isInstance;
 }
@@ -186,6 +235,13 @@ export function SalaryPeriodTotalWorkHoursFromJSONTyped(json: any, ignoreDiscrim
         'fillingHours': json['fillingHours'],
         'partialDailyAllowance': json['partialDailyAllowance'],
         'fullDailyAllowance': json['fullDailyAllowance'],
+        'breakHours': json['breakHours'],
+        'jobSpecificAllowance': json['jobSpecificAllowance'],
+        'frozenAllowance': json['frozenAllowance'],
+        'salaryPeriodStartDate': (new Date(json['salaryPeriodStartDate'])),
+        'salaryPeriodEndDate': (new Date(json['salaryPeriodEndDate'])),
+        'amountOfApprovedWorkshifts': json['amountOfApprovedWorkshifts'],
+        'employeeId': json['employeeId'],
     };
 }
 
@@ -216,6 +272,13 @@ export function SalaryPeriodTotalWorkHoursToJSON(value?: SalaryPeriodTotalWorkHo
         'fillingHours': value.fillingHours,
         'partialDailyAllowance': value.partialDailyAllowance,
         'fullDailyAllowance': value.fullDailyAllowance,
+        'breakHours': value.breakHours,
+        'jobSpecificAllowance': value.jobSpecificAllowance,
+        'frozenAllowance': value.frozenAllowance,
+        'salaryPeriodStartDate': (value.salaryPeriodStartDate.toISOString().substring(0,10)),
+        'salaryPeriodEndDate': (value.salaryPeriodEndDate.toISOString().substring(0,10)),
+        'amountOfApprovedWorkshifts': value.amountOfApprovedWorkshifts,
+        'employeeId': value.employeeId,
     };
 }
 

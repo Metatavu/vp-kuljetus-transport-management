@@ -27,16 +27,17 @@ import WorkShiftRow from "components/working-hours/work-shift-row";
 import WorkShiftsTableHeader from "components/working-hours/work-shifts-table-header";
 import WorkingHoursDocument from "components/working-hours/working-hours-document";
 import {
-  EmployeeWorkShift,
+  type EmployeeWorkShift,
   SalaryGroup,
-  WorkEvent,
+  type WorkEvent,
   WorkShiftChangeReason,
-  WorkShiftChangeSet,
-  WorkShiftHours,
+  type WorkShiftChangeSet,
+  type WorkShiftHours,
   WorkType,
 } from "generated/client";
 import {
   QUERY_KEYS,
+  getFindEmployeeAggregatedWorkHoursQueryOptions,
   getFindPayrollExportQueryOptions,
   getListEmployeesQueryOptions,
   getListWorkShiftChangeSetsQueryOptions,
@@ -47,15 +48,15 @@ import { useCallback, useMemo } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { Breadcrumb, EmployeeWorkHoursForm, EmployeeWorkHoursFormRow } from "src/types";
+import type { Breadcrumb, EmployeeWorkHoursForm, EmployeeWorkHoursFormRow } from "src/types";
 import DataValidation from "src/utils/data-validation-utils";
 import TimeUtils from "src/utils/time-utils";
 import WorkShiftsUtils from "src/utils/workshift-utils";
 import { v4 as uuidv4 } from "uuid";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 export const workShiftSearchSchema = z.object({
-  date: z.string().datetime({ offset: true }).transform(DataValidation.parseValidDateTime),
+  date: z.iso.datetime({ offset: true }).transform(DataValidation.parseValidDateTime),
 });
 
 export const Route = createFileRoute("/working-hours_/$employeeId/work-shifts")({
@@ -156,6 +157,13 @@ function WorkShifts() {
 
   const employeeSalaryGroup =
     employees?.find((employee) => employee.id === employeeId)?.salaryGroup ?? SalaryGroup.Driver;
+
+  const employeeAggregatedHours = useQuery(
+    getFindEmployeeAggregatedWorkHoursQueryOptions({
+      employeeId: employeeId,
+      dateInSalaryPeriod: selectedDate.toJSDate(),
+    }),
+  );
 
   const workingPeriodsForEmployee = TimeUtils.getWorkingPeriodDates(employeeSalaryGroup, selectedDate?.toJSDate());
 
@@ -526,6 +534,7 @@ function WorkShifts() {
       await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.WORK_SHIFTS] });
       await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.WORK_SHIFT_HOURS] });
       await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.WORK_SHIFT_CHANGE_SETS] });
+      await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.EMPLOYEE_AGGREGATED_HOURS] });
 
       toast.success(t("workingHours.workingHourBalances.successToast"));
     },
@@ -534,12 +543,12 @@ function WorkShifts() {
     },
   });
 
-  const handleFormUnregister = async () => {
+  const handleFormUnregister = useCallback(async () => {
     const formRowsCount = Object.values(methods.getValues()).length;
     for (let rowNumber = 0; rowNumber < formRowsCount; rowNumber++) {
       methods.unregister(`${rowNumber}`, { keepValue: false });
     }
-  };
+  }, [methods]);
 
   const onChangeDate = useCallback(
     (newDate: DateTime | null) => {
@@ -562,25 +571,6 @@ function WorkShifts() {
     return dateIsInsideWorkingPeriod;
   };
 
-  const renderEmployeeMenuItems = () => {
-    return employees?.map((employee) => (
-      <MenuItem
-        onClick={() => {
-          handleFormUnregister();
-          navigate({
-            to: "/working-hours/$employeeId/work-shifts",
-            params: { employeeId: employee.id },
-            search: { date: selectedDate },
-          });
-        }}
-        key={employee.id}
-        value={employee.id}
-      >
-        {employee.firstName} {employee.lastName}
-      </MenuItem>
-    ));
-  };
-
   const checkIfSendToPayrollButtonDisabled = useMemo(() => {
     if (!workShiftsDataForFormRows.data) return true;
     const allWorkShifts = workShiftsDataForFormRows.data.map((row) => row.workShift);
@@ -600,6 +590,42 @@ function WorkShifts() {
         handleCreatePayrollExport.mutateAsync();
       },
     });
+  };
+
+  const handleAllApprovedChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const isAllApproved = event.target.checked;
+    const formValues = methods.getValues();
+
+    Object.values(formValues).map((row: EmployeeWorkHoursFormRow, index: number) => {
+      const currentValue = row?.workShift?.approved;
+
+      if (row?.workShift?.id !== undefined && currentValue !== isAllApproved) {
+        methods.setValue(`${index}.workShift.approved`, isAllApproved, {
+          shouldDirty: true,
+          shouldValidate: true,
+          shouldTouch: true,
+        });
+      }
+    });
+  };
+
+  const renderEmployeeMenuItems = () => {
+    return employees?.map((employee) => (
+      <MenuItem
+        onClick={() => {
+          handleFormUnregister();
+          navigate({
+            to: "/working-hours/$employeeId/work-shifts",
+            params: { employeeId: employee.id },
+            search: { date: selectedDate },
+          });
+        }}
+        key={employee.id}
+        value={employee.id}
+      >
+        {employee.firstName} {employee.lastName}
+      </MenuItem>
+    ));
   };
 
   const renderToolbar = () => {
@@ -651,6 +677,7 @@ function WorkShifts() {
               <WorkingHoursDocument
                 employee={employee}
                 workShiftsData={workShiftsDataWithWorkingPeriodDates}
+                employeeAggregatedHours={employeeAggregatedHours.data}
                 workingPeriodsForEmployee={workingPeriodsForEmployee}
               />
             }
@@ -718,21 +745,6 @@ function WorkShifts() {
     );
   };
 
-  const handleAllApprovedChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const isApproved = event.target.checked;
-    const formValues = methods.getValues();
-
-    const updatedFormValues = Object.values(formValues).map((row) => {
-      if (row.workShift.id === undefined || row.workShift.approved === isApproved) return row;
-
-      return {
-        ...row,
-        workShift: { ...row.workShift, approved: isApproved },
-      };
-    });
-    methods.reset(updatedFormValues);
-  };
-
   const renderWorkingPeriodText = () => {
     if (!workingPeriodsForEmployee) return null;
 
@@ -779,13 +791,20 @@ function WorkShifts() {
                         control={
                           <Checkbox
                             onChange={handleAllApprovedChange}
+                            checked={Object.values(methods.getValues())
+                              .filter((row) => row.workShift.id !== undefined)
+                              .every((row) => row.workShift.approved)}
+                            name="allApproved"
+                            disabled={workShiftsDataForFormRows.data?.length === 0}
                             title={t("workingHours.workingHourBalances.markAllApproved")}
                           />
                         }
                         label={t("workingHours.workingDays.table.inspected")}
                       />
                       <Box minWidth={245}>
-                        <Typography variant="body2">{`Muutokset tallennettu ${getLatestChangeSetDateAndTime}`}</Typography>
+                        <Typography variant="body2">{`${t(
+                          "workingHours.workingHourBalances.changesSaved",
+                        )} ${getLatestChangeSetDateAndTime}`}</Typography>
                       </Box>
                       {foundPayrollExportData.data?.exportedAt ? (
                         <Box minWidth={245}>
@@ -825,17 +844,19 @@ function WorkShifts() {
                 <Paper elevation={0} sx={{ display: "flex", flex: 2 }}>
                   <Stack flex={1}>
                     <TableHeader>{renderAggregationsTableTitle()}</TableHeader>
-                    {workShiftsDataForFormRows.isLoading ? (
+                    {workShiftsDataForFormRows.isLoading ||
+                    employeeAggregatedHours.isLoading ||
+                    employeeAggregatedHours.isFetching ? (
                       <Skeleton variant="rectangular" height={150} />
                     ) : employeeSalaryGroup === SalaryGroup.Driver ||
                       employeeSalaryGroup === SalaryGroup.Vplogistics ? (
                       <AggregationsTableForDriver
-                        workShiftsData={workShiftsDataForFormRows.data ?? []}
+                        employeeAggregatedHours={employeeAggregatedHours.data}
                         employee={employee ?? undefined}
                       />
                     ) : (
                       <AggregationsTableForOffice
-                        workShiftsData={workShiftsDataForFormRows.data ?? []}
+                        employeeAggregatedHours={employeeAggregatedHours.data}
                         employee={employee ?? undefined}
                       />
                     )}

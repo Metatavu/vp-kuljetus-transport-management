@@ -91,6 +91,7 @@ export interface ListTrucksRequest {
     archived?: boolean;
     sortBy?: TruckSortByField;
     sortDirection?: SortOrder;
+    thermometerId?: string;
     first?: number;
     max?: number;
 }
@@ -478,6 +479,9 @@ export class TrucksApi extends runtime.BaseAPI {
         }
         if (requestParameters.sortDirection !== undefined) {
             queryParameters['sortDirection'] = requestParameters.sortDirection;
+        }
+        if (requestParameters.thermometerId !== undefined) {
+            queryParameters['thermometerId'] = requestParameters.thermometerId;
         }
         if (requestParameters.first !== undefined) {
             queryParameters['first'] = requestParameters.first;

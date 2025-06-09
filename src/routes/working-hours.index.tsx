@@ -1,25 +1,33 @@
 import SearchIcon from "@mui/icons-material/Search";
 import { Link, MenuItem, Paper, Stack, TextField, Typography, styled } from "@mui/material";
-import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
+import type { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import { DatePicker } from "@mui/x-date-pickers";
-import { useQuery } from "@tanstack/react-query";
+import { useQueries, useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import GenericDataGrid from "components/generic/generic-data-grid";
-import { EmployeeType, Office, SalaryGroup } from "generated/client";
+import LoadingCellValue from "components/generic/loading-cell-value";
+import { type Employee, EmployeeType, Office, SalaryGroup, type SalaryPeriodTotalWorkHours } from "generated/client";
 import { useDebounce } from "hooks/use-debounce";
-import { getListEmployeesQueryOptions } from "hooks/use-queries";
-import { TFunction, t } from "i18next";
+import { getFindEmployeeAggregatedWorkHoursQueryOptions, getListEmployeesQueryOptions } from "hooks/use-queries";
+import { type TFunction, t } from "i18next";
 import { DateTime } from "luxon";
-import { Key, ReactNode, useCallback, useMemo, useState } from "react";
+import { type Key, type ReactNode, useCallback, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { Breadcrumb, LocalizedLabelKey } from "src/types";
+import type { Breadcrumb, LocalizedLabelKey } from "src/types";
 import DataValidation from "src/utils/data-validation-utils";
 import LocalizationUtils from "src/utils/localization-utils";
-import { z } from "zod";
+import { usePaginationToFirstAndMax } from "src/utils/server-side-pagination-utils";
+import { z } from "zod/v4";
+
+type EmployeeWithAggregatedHours = {
+  employee: Employee;
+  aggregatedHours: SalaryPeriodTotalWorkHours | undefined;
+  aggregatedHoursLoading: boolean;
+};
 
 export const workShiftSearchSchema = z.object({
-  date: z.string().datetime({ offset: true }).transform(DataValidation.parseValidDateTime),
+  date: z.iso.datetime({ offset: true }).transform(DataValidation.parseValidDateTime),
 });
 
 export const Route = createFileRoute("/working-hours/")({
@@ -32,7 +40,7 @@ export const Route = createFileRoute("/working-hours/")({
 });
 
 type EmployeeFilters = {
-  salaryGroup: SalaryGroup;
+  salaryGroup: SalaryGroup | "ALL";
   employeeType: EmployeeType | "ALL";
   office: Office | "ALL";
 };
@@ -80,7 +88,7 @@ function WorkingHours() {
   const { watch, register } = useForm<EmployeeFilters>({
     mode: "onChange",
     defaultValues: {
-      salaryGroup: SalaryGroup.Driver,
+      salaryGroup: "ALL",
       employeeType: "ALL",
       office: "ALL",
     },
@@ -90,25 +98,53 @@ function WorkingHours() {
   const salaryGroupFilter = watch("salaryGroup");
   const employeeTypeFilter = watch("employeeType");
 
+  const [first, max] = usePaginationToFirstAndMax({ page, pageSize });
+
   const employeesQuery = useQuery(
     getListEmployeesQueryOptions({
-      first: pageSize * page,
-      max: pageSize,
+      first,
+      max,
       search: debouncedSearchTerm || undefined,
       office: officeFilter === "ALL" ? undefined : officeFilter,
-      salaryGroup: salaryGroupFilter ? undefined : salaryGroupFilter,
+      salaryGroup: salaryGroupFilter === "ALL" ? undefined : salaryGroupFilter,
       type: employeeTypeFilter === "ALL" ? undefined : employeeTypeFilter,
     }),
   );
+
+  const aggregatedHoursQueries = useQueries({
+    queries: (employeesQuery.data?.employees ?? []).map((employee) =>
+      getFindEmployeeAggregatedWorkHoursQueryOptions({
+        // biome-ignore lint/style/noNonNullAssertion: API guarantees that employee ID is present
+        employeeId: employee.id!,
+        dateInSalaryPeriod: selectedDate?.toJSDate(),
+      }),
+    ),
+  });
+
+  const employeesWithAggregatedHours = useMemo<EmployeeWithAggregatedHours[]>(() => {
+    const employees = employeesQuery.data?.employees ?? [];
+    if (!employees) return [];
+
+    return employees.map<EmployeeWithAggregatedHours>((employee) => {
+      const aggregatedHoursQuery = aggregatedHoursQueries.find((hours) => hours.data?.employeeId === employee.id);
+
+      return {
+        employee,
+        aggregatedHours: aggregatedHoursQuery?.data,
+        aggregatedHoursLoading: aggregatedHoursQuery?.isFetching ?? true,
+      };
+    });
+  }, [employeesQuery.data, aggregatedHoursQueries]);
 
   const onChangeDate = useCallback(
     (newDate: DateTime | null) => navigate({ search: (prev) => ({ ...prev, date: newDate ?? DateTime.now() }) }),
     [navigate],
   );
 
-  const columns: GridColDef[] = useMemo<GridColDef[]>(
-    () => [
+  const columns = useMemo(
+    (): GridColDef<EmployeeWithAggregatedHours>[] => [
       {
+        valueGetter: (params) => params.row.employee?.employeeNumber,
         field: "employeeNumber",
         headerAlign: "center",
         headerName: t("workingHours.workingHourBalances.number"),
@@ -117,7 +153,7 @@ function WorkingHours() {
         align: "center",
       },
       {
-        valueGetter: (params) => `${params.row.firstName} ${params.row.lastName}`,
+        valueGetter: (params) => `${params.row.employee?.firstName ?? ""} ${params.row.employee?.lastName ?? ""}`,
         field: "name",
         headerAlign: "left",
         headerName: t("workingHours.workingHourBalances.person"),
@@ -131,17 +167,24 @@ function WorkingHours() {
               onClick={() =>
                 navigate({
                   to: "/working-hours/$employeeId/work-shifts",
-                  params: { employeeId: params.row.id as string },
+                  params: { employeeId: params.row.employee.id as string },
                   search: { date: selectedDate },
                 })
               }
             >
-              {params.row.firstName} {params.row.lastName}
+              {params.row.employee.firstName} {params.row.employee.lastName}
             </Link>
           </Stack>
         ),
       },
       {
+        valueGetter: (params) => {
+          if (params.row.aggregatedHours?.workingHours === undefined) {
+            return "-";
+          }
+          return Number(params.row.aggregatedHours.workingHours).toFixed(2);
+        },
+        renderCell: ({ value, row }) => <LoadingCellValue value={value} loading={row.aggregatedHoursLoading} />,
         field: "totalWorkTime",
         headerAlign: "center",
         headerName: t("workingHours.workingHourBalances.totalWorkTime"),
@@ -150,7 +193,14 @@ function WorkingHours() {
         align: "center",
       },
       {
-        field: "breaks",
+        valueGetter: (params) => {
+          if (params.row.aggregatedHours?.breakHours === undefined) {
+            return "-";
+          }
+          return Number(params.row.aggregatedHours.breakHours).toFixed(2);
+        },
+        renderCell: ({ value, row }) => <LoadingCellValue value={value} loading={row.aggregatedHoursLoading} />,
+        field: "breakHours",
         headerAlign: "center",
         headerName: t("workingHours.workingHourBalances.breaks"),
         sortable: false,
@@ -158,6 +208,13 @@ function WorkingHours() {
         align: "center",
       },
       {
+        valueGetter: (params) => {
+          if (params.row.aggregatedHours?.waitingTime === undefined) {
+            return "-";
+          }
+          return Number(params.row.aggregatedHours.waitingTime).toFixed(2);
+        },
+        renderCell: ({ value, row }) => <LoadingCellValue value={value} loading={row.aggregatedHoursLoading} />,
         field: "waitingTime",
         headerAlign: "center",
         headerName: t("workingHours.workingHourBalances.waitingTime"),
@@ -166,6 +223,18 @@ function WorkingHours() {
         align: "center",
       },
       {
+        valueGetter: (params) => {
+          if (
+            params.row.aggregatedHours?.overTimeFull === undefined ||
+            params.row.aggregatedHours?.overTimeHalf === undefined
+          ) {
+            return "-";
+          }
+          return (
+            Number(params.row.aggregatedHours.overTimeFull) + Number(params.row.aggregatedHours.overTimeHalf)
+          ).toFixed(2);
+        },
+        renderCell: ({ value, row }) => <LoadingCellValue value={value} loading={row.aggregatedHoursLoading} />,
         field: "overtime",
         headerAlign: "center",
         headerName: t("workingHours.workingHourBalances.overtime"),
@@ -174,6 +243,13 @@ function WorkingHours() {
         align: "center",
       },
       {
+        valueGetter: (params) => {
+          if (params.row.aggregatedHours?.eveningWork === undefined) {
+            return "-";
+          }
+          return Number(params.row.aggregatedHours.eveningWork).toFixed(2);
+        },
+        renderCell: (params) => <LoadingCellValue value={params.value} loading={params.row.aggregatedHoursLoading} />,
         field: "eveningWork",
         headerAlign: "center",
         headerName: t("workingHours.workingHourBalances.eveningWork"),
@@ -182,6 +258,13 @@ function WorkingHours() {
         align: "center",
       },
       {
+        valueGetter: (params) => {
+          if (params.row.aggregatedHours?.nightWork === undefined) {
+            return "-";
+          }
+          return Number(params.row.aggregatedHours.nightWork).toFixed(2);
+        },
+        renderCell: ({ value, row }) => <LoadingCellValue value={value} loading={row.aggregatedHoursLoading} />,
         field: "nightWork",
         headerAlign: "center",
         headerName: t("workingHours.workingHourBalances.nightWork"),
@@ -190,6 +273,13 @@ function WorkingHours() {
         align: "center",
       },
       {
+        valueGetter: (params) => {
+          if (params.row.aggregatedHours?.jobSpecificAllowance === undefined) {
+            return "-";
+          }
+          return Number(params.row.aggregatedHours.jobSpecificAllowance).toFixed(2);
+        },
+        renderCell: ({ value, row }) => <LoadingCellValue value={value} loading={row.aggregatedHoursLoading} />,
         field: "taskSpecificBonus",
         headerAlign: "center",
         headerName: t("workingHours.workingHourBalances.taskSpecificBonus"),
@@ -198,6 +288,13 @@ function WorkingHours() {
         align: "center",
       },
       {
+        valueGetter: (params) => {
+          if (params.row.aggregatedHours?.frozenAllowance === undefined) {
+            return "-";
+          }
+          return Number(params.row.aggregatedHours.frozenAllowance).toFixed(2);
+        },
+        renderCell: ({ value, row }) => <LoadingCellValue value={value} loading={row.aggregatedHoursLoading} />,
         field: "freezerBonus",
         headerAlign: "center",
         headerName: t("workingHours.workingHourBalances.freezerBonus"),
@@ -206,6 +303,13 @@ function WorkingHours() {
         align: "center",
       },
       {
+        valueGetter: (params) => {
+          if (params.row.aggregatedHours?.holiday === undefined) {
+            return "-";
+          }
+          return Number(params.row.aggregatedHours.holiday).toFixed(2);
+        },
+        renderCell: ({ value, row }) => <LoadingCellValue value={value} loading={row.aggregatedHoursLoading} />,
         field: "holidayBonus",
         headerAlign: "center",
         headerName: t("workingHours.workingHourBalances.holidayBonus"),
@@ -214,6 +318,13 @@ function WorkingHours() {
         align: "center",
       },
       {
+        valueGetter: (params) => {
+          if (params.row.aggregatedHours?.dayOffBonus === undefined) {
+            return "-";
+          }
+          return Number(params.row.aggregatedHours.dayOffBonus).toFixed(2);
+        },
+        renderCell: ({ value, row }) => <LoadingCellValue value={value} loading={row.aggregatedHoursLoading} />,
         field: "dayOffBonus",
         headerAlign: "center",
         headerName: t("workingHours.workingHourBalances.dayOffBonus"),
@@ -222,6 +333,13 @@ function WorkingHours() {
         align: "center",
       },
       {
+        valueGetter: (params) => {
+          if (params.row.aggregatedHours?.sickHours === undefined) {
+            return "-";
+          }
+          return Number(params.row.aggregatedHours.sickHours).toFixed(2);
+        },
+        renderCell: ({ value, row }) => <LoadingCellValue value={value} loading={row.aggregatedHoursLoading} />,
         field: "sickLeaveOrAbsent",
         headerAlign: "center",
         headerName: t("workingHours.workingHourBalances.sickLeaveOrAbsent"),
@@ -230,6 +348,13 @@ function WorkingHours() {
         align: "center",
       },
       {
+        valueGetter: (params) => {
+          if (params.row.aggregatedHours?.compensatoryLeave === undefined) {
+            return "-";
+          }
+          return Number(params.row.aggregatedHours.compensatoryLeave).toFixed(2);
+        },
+        renderCell: ({ value, row }) => <LoadingCellValue value={value} loading={row.aggregatedHoursLoading} />,
         field: "pekkanens",
         headerAlign: "center",
         headerName: t("workingHours.workingHourBalances.pekkanens"),
@@ -238,6 +363,13 @@ function WorkingHours() {
         align: "center",
       },
       {
+        valueGetter: (params) => {
+          if (params.row.aggregatedHours?.vacation === undefined) {
+            return "-";
+          }
+          return Number(params.row.aggregatedHours.vacation).toFixed(2);
+        },
+        renderCell: ({ value, row }) => <LoadingCellValue value={value} loading={row.aggregatedHoursLoading} />,
         field: "vacation",
         headerAlign: "center",
         headerName: t("workingHours.workingHourBalances.vacation"),
@@ -246,6 +378,13 @@ function WorkingHours() {
         align: "center",
       },
       {
+        valueGetter: (params) => {
+          if (params.row.aggregatedHours?.fillingHours === undefined) {
+            return "-";
+          }
+          return Number(params.row.aggregatedHours.fillingHours).toFixed(2);
+        },
+        renderCell: ({ value, row }) => <LoadingCellValue value={value} loading={row.aggregatedHoursLoading} />,
         field: "fillHours",
         headerAlign: "center",
         headerName: t("workingHours.workingHourBalances.fillHours"),
@@ -254,6 +393,13 @@ function WorkingHours() {
         align: "center",
       },
       {
+        valueGetter: (params) => {
+          if (params.row.aggregatedHours?.partialDailyAllowance === undefined) {
+            return "-";
+          }
+          return params.row.aggregatedHours.partialDailyAllowance;
+        },
+        renderCell: ({ value, row }) => <LoadingCellValue value={value} loading={row.aggregatedHoursLoading} />,
         field: "halfDayAllowance",
         headerAlign: "center",
         headerName: t("workingHours.workingHourBalances.halfDayAllowance"),
@@ -262,6 +408,13 @@ function WorkingHours() {
         align: "center",
       },
       {
+        valueGetter: (params) => {
+          if (params.row.aggregatedHours?.fullDailyAllowance === undefined) {
+            return "-";
+          }
+          return params.row.aggregatedHours.fullDailyAllowance;
+        },
+        renderCell: ({ value, row }) => <LoadingCellValue value={value} loading={row.aggregatedHoursLoading} />,
         field: "fullDayAllowance",
         headerAlign: "center",
         headerName: t("workingHours.workingHourBalances.fullDayAllowance"),
@@ -284,16 +437,22 @@ function WorkingHours() {
 
   const renderLocalizedMenuItems = useCallback(
     <T extends string>(items: string[], labelResolver: (value: T, t: TFunction) => string) => [
-      <MenuItem value="ALL">{t("all")}</MenuItem>,
+      <MenuItem key="ALL" value="ALL">
+        {t("all")}
+      </MenuItem>,
       ...items.map((item) => renderLocalizedMenuItem(item as T, labelResolver)),
     ],
     [t, renderLocalizedMenuItem],
   );
 
   const renderLocalizedSalaryGroupOptions = useCallback(
-    <T extends string>(items: string[], labelResolver: (value: T, t: TFunction) => string) =>
-      items.map((item) => renderLocalizedMenuItem(item as T, labelResolver)),
-    [renderLocalizedMenuItem],
+    <T extends string>(items: string[], labelResolver: (value: T, t: TFunction) => string) => [
+      <MenuItem key="ALL" value="ALL">
+        {t("all")}
+      </MenuItem>,
+      ...items.map((item) => renderLocalizedMenuItem(item as T, labelResolver)),
+    ],
+    [t, renderLocalizedMenuItem],
   );
 
   const renderSelectFilter = useCallback(
@@ -366,7 +525,6 @@ function WorkingHours() {
       {renderFilters()}
       <Paper sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
         <Stack flexDirection="row" alignItems="center" gap={4} p={(theme) => theme.spacing(1, 2)}>
-          <Typography variant="h6">{"Su 28.4. 00:00 - La 11.5. 24:00"}</Typography>
           <Typography variant="subtitle2">
             {t("workingHours.workingHourBalances.uncheckedCount", { count: 2 })}
           </Typography>
@@ -381,8 +539,9 @@ function WorkingHours() {
             showColumnVerticalBorder
             disableColumnSelector
             loading={employeesQuery.isFetching}
-            rows={employeesQuery.data?.employees ?? []}
             rowCount={employeesQuery.data?.totalResults ?? 0}
+            rows={employeesWithAggregatedHours}
+            getRowId={(row) => row.employee.id}
             paginationModel={{ page, pageSize }}
             onPaginationModelChange={setPaginationModel}
           />

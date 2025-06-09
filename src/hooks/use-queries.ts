@@ -1,11 +1,12 @@
 import { queryOptions } from "@tanstack/react-query";
 import { api } from "api/index";
-import {
+import type {
   FindEmployeeWorkShiftRequest,
   FindPagingPolicyContactRequest,
   FindThermalMonitorRequest,
   FindTowableRequest,
   FindTruckRequest,
+  GetSalaryPeriodTotalWorkHoursRequest,
   ListClientAppsRequest,
   ListEmployeeWorkEventsRequest,
   ListEmployeeWorkShiftsRequest,
@@ -59,6 +60,8 @@ export const QUERY_KEYS = {
   THERMAL_MONITORS: "thermal-monitors",
   THERMAL_MONITOR_PAGING_POLICIES: "thermal-monitor-paging-policies",
   PAYROLL_EXPORTS: "payroll-exports",
+  EMPLOYEES_AGGREGATED_HOURS: "employees-aggregated-hours",
+  EMPLOYEE_AGGREGATED_HOURS: "employee-aggregated-hours",
 } as const;
 
 export const getListSitesQueryOptions = (requestParams: ListSitesRequest = {}, enabled = true) =>
@@ -234,6 +237,12 @@ export const getListEmployeesQueryOptions = (requestParams: ListEmployeesRequest
     },
   });
 
+export const getFindEmployeeAggregatedWorkHoursQueryOptions = (requestParams: GetSalaryPeriodTotalWorkHoursRequest) =>
+  queryOptions({
+    queryKey: [QUERY_KEYS.EMPLOYEE_AGGREGATED_HOURS, requestParams],
+    queryFn: () => api.employees.getSalaryPeriodTotalWorkHours(requestParams),
+  });
+
 export const getFindEmployeeQueryOptions = (employeeId: string, enabled = true) =>
   queryOptions({
     queryKey: [QUERY_KEYS.EMPLOYEES, employeeId],
@@ -253,6 +262,8 @@ export const getListWorkShiftHoursQueryOptions = (requestParams: ListWorkShiftHo
     },
   });
 };
+
+// get list of aggregated work shift hours
 
 export const getListHolidaysQueryOptions = (requestParams: ListHolidaysRequest = {}, enabled = true) =>
   queryOptions({
@@ -398,4 +409,4 @@ export const getFindPayrollExportQueryOptions = (payrollExportId: string) =>
  * @param headers Response headers
  * @returns Total results from headers or 0 if x-total-count header is not present
  */
-const getTotalResultsFromHeaders = (headers: Headers) => parseInt(headers.get("x-total-count") ?? "0");
+const getTotalResultsFromHeaders = (headers: Headers) => Number.parseInt(headers.get("x-total-count") ?? "0");
