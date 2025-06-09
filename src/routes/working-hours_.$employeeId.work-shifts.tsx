@@ -27,12 +27,12 @@ import WorkShiftRow from "components/working-hours/work-shift-row";
 import WorkShiftsTableHeader from "components/working-hours/work-shifts-table-header";
 import WorkingHoursDocument from "components/working-hours/working-hours-document";
 import {
-  EmployeeWorkShift,
+  type EmployeeWorkShift,
   SalaryGroup,
-  WorkEvent,
+  type WorkEvent,
   WorkShiftChangeReason,
-  WorkShiftChangeSet,
-  WorkShiftHours,
+  type WorkShiftChangeSet,
+  type WorkShiftHours,
   WorkType,
 } from "generated/client";
 import {
@@ -48,7 +48,7 @@ import { useCallback, useMemo } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { Breadcrumb, EmployeeWorkHoursForm, EmployeeWorkHoursFormRow } from "src/types";
+import type { Breadcrumb, EmployeeWorkHoursForm, EmployeeWorkHoursFormRow } from "src/types";
 import DataValidation from "src/utils/data-validation-utils";
 import TimeUtils from "src/utils/time-utils";
 import WorkShiftsUtils from "src/utils/workshift-utils";
@@ -159,10 +159,10 @@ function WorkShifts() {
     employees?.find((employee) => employee.id === employeeId)?.salaryGroup ?? SalaryGroup.Driver;
 
   const employeeAggregatedHours = useQuery(
-    getFindEmployeeAggregatedWorkHoursQueryOptions(
-      { employeeId: employeeId, dateInSalaryPeriod: selectedDate.toJSDate() },
-      !!employeeId,
-    ),
+    getFindEmployeeAggregatedWorkHoursQueryOptions({
+      employeeId: employeeId,
+      dateInSalaryPeriod: selectedDate.toJSDate(),
+    }),
   );
 
   const workingPeriodsForEmployee = TimeUtils.getWorkingPeriodDates(employeeSalaryGroup, selectedDate?.toJSDate());
@@ -543,12 +543,12 @@ function WorkShifts() {
     },
   });
 
-  const handleFormUnregister = async () => {
+  const handleFormUnregister = useCallback(async () => {
     const formRowsCount = Object.values(methods.getValues()).length;
     for (let rowNumber = 0; rowNumber < formRowsCount; rowNumber++) {
       methods.unregister(`${rowNumber}`, { keepValue: false });
     }
-  };
+  }, [methods]);
 
   const onChangeDate = useCallback(
     (newDate: DateTime | null) => {

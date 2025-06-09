@@ -1,6 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
 import { api } from "api/index";
-import {
+import type {
   FindEmployeeWorkShiftRequest,
   FindPagingPolicyContactRequest,
   FindThermalMonitorRequest,
@@ -237,13 +237,9 @@ export const getListEmployeesQueryOptions = (requestParams: ListEmployeesRequest
     },
   });
 
-export const getFindEmployeeAggregatedWorkHoursQueryOptions = (
-  requestParams: GetSalaryPeriodTotalWorkHoursRequest,
-  enabled: boolean,
-) =>
+export const getFindEmployeeAggregatedWorkHoursQueryOptions = (requestParams: GetSalaryPeriodTotalWorkHoursRequest) =>
   queryOptions({
     queryKey: [QUERY_KEYS.EMPLOYEE_AGGREGATED_HOURS, requestParams],
-    enabled: enabled,
     queryFn: () => api.employees.getSalaryPeriodTotalWorkHours(requestParams),
   });
 
@@ -413,4 +409,4 @@ export const getFindPayrollExportQueryOptions = (payrollExportId: string) =>
  * @param headers Response headers
  * @returns Total results from headers or 0 if x-total-count header is not present
  */
-const getTotalResultsFromHeaders = (headers: Headers) => parseInt(headers.get("x-total-count") ?? "0");
+const getTotalResultsFromHeaders = (headers: Headers) => Number.parseInt(headers.get("x-total-count") ?? "0");
