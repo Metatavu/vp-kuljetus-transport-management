@@ -488,7 +488,8 @@
     "title": "Incidents",
     "filters": {
       "monitor": "Monitor",
-      "thermometer": "Thermometer"
+      "thermometer": "Thermometer",
+      "status": "Status"
     },
     "columns": {
       "monitor": "Monitor",

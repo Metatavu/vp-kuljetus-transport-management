@@ -48,6 +48,7 @@ const FilterContainer = styled(Stack, {
 interface IncidentFilters {
   monitor: string;
   thermometer: string;
+  status: string;
 }
 
 interface IncidentRow {
@@ -68,21 +69,48 @@ const Incidents = () => {
     mode: "onChange",
     defaultValues: {
       monitor: "ALL",
-      thermometer: "ALL"
+      thermometer: "ALL",
+      status: "ALL"
     },
   });
 
   const monitorFilter = watch("monitor");
   const thermometerFilter = watch("thermometer");
+  const statusFilter = watch("status");
   const [{ page, pageSize }, setPaginationModel] = useState<GridPaginationModel>({ page: 0, pageSize: 25 });
   const [first, max] = usePaginationToFirstAndMax({ page, pageSize });
   
   const incidentsQuery = useQuery(getListIncidentsQueryOptions({
     monitorId: monitorFilter == "ALL" ? undefined : monitorFilter,
     thermometerId: thermometerFilter == "ALL" ? undefined : thermometerFilter,
+    incidentStatus: statusFilter == "ALL" ? undefined : statusFilter as ThermalMonitorIncidentStatus,
     max: max,
     first: first
   }));
+
+  const statusOptions = () => {
+    const options = [
+      {
+        "value": "TRIGGERED",
+        "text": t("incidents.status.triggered")
+      },
+      {
+        "value": "ACKNOWLEDGED",
+        "text": t("incidents.status.acknowledged")
+      },
+      {
+        "value": "RESOLVED",
+        "text": t("incidents.status.resolved")
+      },
+    ]
+
+    return [
+      <MenuItem key="ALL" value="ALL">
+        {t("all")}
+      </MenuItem>,
+      ...options.map(item => <MenuItem key={item.value} value={item.value}>{item.text}</MenuItem>)
+    ]
+  }
 
   const thermalMonitorOptions = () => {
     const monitors = monitorsQuery.data?.thermalMonitors.map(thermalMonitor => {
@@ -150,6 +178,12 @@ const Incidents = () => {
           "thermometer",
           thermometerOptions(),
         )}
+        {renderSelectFilter(
+            "incidents.filters.status",
+            "status",
+            statusOptions()
+          )
+        }
       </FilterContainer>
     );
   }, [monitorsQuery.data, terminalThermometersQuery.data, vehicleThermometersQuery.data]);

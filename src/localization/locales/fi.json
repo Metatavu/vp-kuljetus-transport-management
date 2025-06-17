@@ -594,7 +594,8 @@
     "title": "Hälytykset",
     "filters": {
       "monitor": "Vahti",
-      "thermometer": "Lämpöanturi"
+      "thermometer": "Lämpöanturi",
+      "status": "Tila"
     },
     "columns": {
       "monitor": "Vahti",
