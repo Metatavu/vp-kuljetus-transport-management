@@ -1,9 +1,12 @@
-import { MenuItem, Stack, styled, TextField } from "@mui/material";
+import { MenuItem, Paper, Stack, styled, TextField } from "@mui/material";
+import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { getListThermalMonitorsQueryOptions } from "hooks/use-queries";
+import GenericDataGrid from "components/generic/generic-data-grid";
+import { ThermalMonitorIncident } from "generated/client";
+import { getListIncidentsQueryOptions, getListThermalMonitorsQueryOptions } from "hooks/use-queries";
 import { t } from "i18next";
-import { ReactNode, useCallback, useMemo } from "react";
+import { ReactNode, useCallback, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Breadcrumb, LocalizedLabelKey } from "src/types";
 
@@ -46,12 +49,19 @@ interface IncidentFilters {
 
 const Incidents = () => {
   const monitorsQuery = useQuery(getListThermalMonitorsQueryOptions({}));
+
   const { watch, register } = useForm<IncidentFilters>({
     mode: "onChange",
     defaultValues: {
       monitor: "ALL"
     },
   });
+
+  const monitorFilter = watch("monitor");
+  const [{ page, pageSize }, setPaginationModel] = useState<GridPaginationModel>({ page: 0, pageSize: 25 });
+  const incidentsQuery = useQuery(getListIncidentsQueryOptions({
+    monitorId: monitorFilter == "ALL" ? undefined : monitorFilter
+  }));
 
   const thermalMonitorOptions = () => {
     const monitors = monitorsQuery.data?.thermalMonitors.map(thermalMonitor => {
@@ -100,9 +110,40 @@ const Incidents = () => {
     );
   }, [monitorsQuery.data?.thermalMonitors]);
 
+  const columns = (): GridColDef<ThermalMonitorIncident>[] => [
+    {
+        valueGetter: (params) => params.row.monitorId,
+        field: "monitorId",
+        headerAlign: "center",
+        headerName: t("workingHours.workingHourBalances.number"),
+        sortable: false,
+        width: 80,
+        align: "center",
+      }
+  ]
+
   return (
     <Root>
       { renderFilters() }
+      <Paper sx={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+        <Stack sx={{ flex: 1, overflowY: "auto" }}>
+          <GenericDataGrid
+            fullScreen
+            autoHeight={false}
+            columns={columns()}
+            pagination
+            showCellVerticalBorder
+            showColumnVerticalBorder
+            disableColumnSelector
+            loading={incidentsQuery.isFetching}
+            rowCount={incidentsQuery.data?.totalResults ?? 0}
+            rows={incidentsQuery.data?.incidents || []}
+            getRowId={(row) => row.id}
+            paginationModel={{ page, pageSize }}
+            onPaginationModelChange={setPaginationModel}
+          />
+        </Stack>
+      </Paper>
     </Root>
   );
 }

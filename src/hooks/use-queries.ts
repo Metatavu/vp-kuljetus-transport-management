@@ -21,6 +21,7 @@ import type {
   ListSitesRequest,
   ListTasksRequest,
   ListTerminalThermometersRequest,
+  ListThermalMonitorIncidentsRequest,
   ListThermalMonitorsRequest,
   ListTowableTemperaturesRequest,
   ListTruckOrTowableThermometersRequest,
@@ -62,6 +63,7 @@ export const QUERY_KEYS = {
   PAYROLL_EXPORTS: "payroll-exports",
   EMPLOYEES_AGGREGATED_HOURS: "employees-aggregated-hours",
   EMPLOYEE_AGGREGATED_HOURS: "employee-aggregated-hours",
+  THERMAL_MONITOR_INCIDENTS: "thermal-monitor-incidents"
 } as const;
 
 export const getListSitesQueryOptions = (requestParams: ListSitesRequest = {}, enabled = true) =>
@@ -376,6 +378,18 @@ export const getListThermalMonitorsQueryOptions = (params: ListThermalMonitorsRe
       return { thermalMonitors, totalResults };
     },
   });
+
+export const getListIncidentsQueryOptions = (params: ListThermalMonitorIncidentsRequest) => 
+  queryOptions({
+    queryKey: [QUERY_KEYS.THERMAL_MONITOR_INCIDENTS, params],
+    enabled: true,
+    queryFn: async () => {
+      const [incidents, headers] = await api.incidents.listThermalMonitorIncidentsWithHeaders(params);
+      const totalResults = getTotalResultsFromHeaders(headers);
+
+      return { incidents, totalResults };
+    }
+  })
 
 export const getFindThermalMonitorQueryOptions = ({ thermalMonitorId }: FindThermalMonitorRequest) =>
   queryOptions({
