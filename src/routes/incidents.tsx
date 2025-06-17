@@ -3,7 +3,7 @@ import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import GenericDataGrid from "components/generic/generic-data-grid";
-import { ThermalMonitorIncidentStatus } from "generated/client";
+import { TerminalThermometer, ThermalMonitorIncidentStatus, TruckOrTowableThermometer } from "generated/client";
 import { getListIncidentsQueryOptions, getListTerminalThermometersQueryOptions, getListThermalMonitorsQueryOptions, getListTruckOrTowableThermometersQueryOptions } from "hooks/use-queries";
 import { t } from "i18next";
 import { ReactNode, useCallback, useMemo, useState } from "react";
@@ -47,6 +47,7 @@ const FilterContainer = styled(Stack, {
 
 interface IncidentFilters {
   monitor: string;
+  thermometer: string;
 }
 
 interface IncidentRow {
@@ -66,16 +67,19 @@ const Incidents = () => {
   const { watch, register } = useForm<IncidentFilters>({
     mode: "onChange",
     defaultValues: {
-      monitor: "ALL"
+      monitor: "ALL",
+      thermometer: "ALL"
     },
   });
 
   const monitorFilter = watch("monitor");
+  const thermometerFilter = watch("thermometer");
   const [{ page, pageSize }, setPaginationModel] = useState<GridPaginationModel>({ page: 0, pageSize: 25 });
   const [first, max] = usePaginationToFirstAndMax({ page, pageSize });
   
   const incidentsQuery = useQuery(getListIncidentsQueryOptions({
     monitorId: monitorFilter == "ALL" ? undefined : monitorFilter,
+    thermometerId: thermometerFilter == "ALL" ? undefined : thermometerFilter,
     max: max,
     first: first
   }));
@@ -96,6 +100,24 @@ const Incidents = () => {
       ...monitors.map(item => <MenuItem key={item.id} value={item.id}>{item.name}</MenuItem>)
     ]
   }
+
+  const thermometerOptions = () => {
+    const thermometers =  ( [] as (TerminalThermometer | TruckOrTowableThermometer)[]).concat(terminalThermometersQuery.data || []).concat(vehicleThermometersQuery.data || []).map(thermalMonitor => {
+      const id: string = thermalMonitor.id!!;
+      if (thermalMonitor.name && thermalMonitor.name.length > 0) {
+        return {name: thermalMonitor.name, id: id };
+      } else {
+         return {name: id, id: id }
+      }
+    }); 
+    return [
+       <MenuItem key="ALL" value="ALL">
+        {t("all")}
+      </MenuItem>,
+      ...thermometers.map(item => <MenuItem key={item.id} value={item.id}>{item.name}</MenuItem>)
+    ]
+  }
+
 
   const renderSelectFilter = useCallback(
     (label: LocalizedLabelKey, key: keyof IncidentFilters, menuItems: ReactNode) => (
@@ -123,9 +145,14 @@ const Incidents = () => {
           "monitor",
           thermalMonitorOptions(),
         )}
+        {renderSelectFilter(
+          "incidents.filters.thermometer",
+          "thermometer",
+          thermometerOptions(),
+        )}
       </FilterContainer>
     );
-  }, [monitorsQuery.data]);
+  }, [monitorsQuery.data, terminalThermometersQuery.data, vehicleThermometersQuery.data]);
 
   const incidentRows = useMemo<IncidentRow[]>(() => {
     const incidents = incidentsQuery.data?.incidents || [];

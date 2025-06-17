@@ -593,11 +593,12 @@
   "incidents": {
     "title": "Hälytykset",
     "filters": {
-      "monitor": "Vahti"
+      "monitor": "Vahti",
+      "thermometer": "Lämpöanturi"
     },
     "columns": {
       "monitor": "Vahti",
-      "thermometer": "Sensori",
+      "thermometer": "Lämpöanturi",
       "status": "Tila",
       "temperature": "Hälytyslämpötila °C",
       "time": "Hälytysaika"

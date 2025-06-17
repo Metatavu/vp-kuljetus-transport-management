@@ -487,11 +487,12 @@
   "incidents": {
     "title": "Incidents",
     "filters": {
-      "monitor": "Monitor"
+      "monitor": "Monitor",
+      "thermometer": "Thermometer"
     },
     "columns": {
       "monitor": "Monitor",
-      "thermometer": "Sensor",
+      "thermometer": "Thermometer",
       "status": "Status",
       "temperature": "Incident temperature °C",
       "time": "Incident time"
