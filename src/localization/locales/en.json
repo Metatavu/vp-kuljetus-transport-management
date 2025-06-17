@@ -484,6 +484,9 @@
   "errorHandling": {
     "vehicleListing": "Error when listing vehicles"
   },
+  "incidents": {
+    "title": "Hälytykset"
+  },
   "workingHours": {
     "title": "Working hours",
     "workingHourBalances": {

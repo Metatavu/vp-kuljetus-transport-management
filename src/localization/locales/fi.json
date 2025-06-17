@@ -590,6 +590,12 @@
   "errorHandling": {
     "vehicleListing": "Ajoneuvolistauksessa tapahtui virhe"
   },
+  "incidents": {
+    "title": "Hälytykset",
+    "filters": {
+      "monitor": "Vahti"
+    }
+  },
   "workingHours": {
     "title": "Työaika",
     "workingHourBalances": {

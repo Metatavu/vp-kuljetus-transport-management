@@ -368,6 +368,7 @@ export const getFindPagingPolicyContactQueryOptions = (params: FindPagingPolicyC
 export const getListThermalMonitorsQueryOptions = (params: ListThermalMonitorsRequest) =>
   queryOptions({
     queryKey: [QUERY_KEYS.THERMAL_MONITORS, params],
+    enabled: true,
     queryFn: async () => {
       const [thermalMonitors, headers] = await api.thermalMonitors.listThermalMonitorsWithHeaders(params);
       const totalResults = getTotalResultsFromHeaders(headers);
