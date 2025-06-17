@@ -594,6 +594,9 @@
     "title": "Hälytykset",
     "filters": {
       "monitor": "Vahti"
+    },
+    "columns": {
+      "monitor": "Vahti"
     }
   },
   "workingHours": {

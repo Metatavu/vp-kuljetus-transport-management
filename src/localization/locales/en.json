@@ -488,6 +488,9 @@
     "title": "Incidents",
     "filters": {
       "monitor": "Monitor"
+    },
+    "columns": {
+      "monitor": "Vahti"
     }
   },
   "workingHours": {

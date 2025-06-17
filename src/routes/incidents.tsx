@@ -3,7 +3,6 @@ import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import GenericDataGrid from "components/generic/generic-data-grid";
-import { ThermalMonitorIncident } from "generated/client";
 import { getListIncidentsQueryOptions, getListThermalMonitorsQueryOptions } from "hooks/use-queries";
 import { t } from "i18next";
 import { ReactNode, useCallback, useMemo, useState } from "react";
@@ -45,7 +44,12 @@ const FilterContainer = styled(Stack, {
 }));
 
 interface IncidentFilters {
-  monitor: string
+  monitor: string;
+  id: string;
+}
+
+interface IncidentRow {
+  thermalMonitorName: String;
 }
 
 const Incidents = () => {
@@ -113,19 +117,27 @@ const Incidents = () => {
         )}
       </FilterContainer>
     );
-  }, [monitorsQuery.data?.thermalMonitors]);
+  }, [monitorsQuery.data]);
 
-  const columns = (): GridColDef<ThermalMonitorIncident>[] => [
+  const incidentRows = useMemo(() => {
+    const incidents = incidentsQuery.data?.incidents || [];
+    return incidents.map(incident => ({
+      thermalMonitorName: monitorsQuery.data?.thermalMonitors.find(monitor => monitor.id == incident.monitorId)?.name || incident.monitorId,
+      id: incident.id
+    }));
+  }, [incidentsQuery.data]);
+
+  const columns = useMemo((): GridColDef<IncidentRow>[] => [
     {
-        valueGetter: (params) => params.row.monitorId,
-        field: "monitorId",
+        valueGetter: (params) => params.row.thermalMonitorName,
+        field: "thermalMonitorName",
         headerAlign: "center",
-        headerName: t("workingHours.workingHourBalances.number"),
+        headerName: t("incidents.columns.monitor"),
         sortable: false,
-        width: 80,
+        width: 200,
         align: "center",
       }
-  ]
+  ], [t]);
 
   return (
     <Root>
@@ -135,14 +147,14 @@ const Incidents = () => {
           <GenericDataGrid
             fullScreen
             autoHeight={false}
-            columns={columns()}
+            columns={columns}
             pagination
             showCellVerticalBorder
             showColumnVerticalBorder
             disableColumnSelector
             loading={incidentsQuery.isFetching}
             rowCount={incidentsQuery.data?.totalResults ?? 0}
-            rows={incidentsQuery.data?.incidents || []}
+            rows={incidentRows}
             getRowId={(row) => row.id}
             paginationModel={{ page, pageSize }}
             onPaginationModelChange={setPaginationModel}
