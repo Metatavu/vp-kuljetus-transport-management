@@ -500,7 +500,8 @@
       "acknowledged": "Acknowledged",
       "resolved": "Resolved",
       "triggered": "Triggered"
-    }
+    },
+    "lostConnectionToSensor": "No connection to sensor"
   },
   "workingHours": {
     "title": "Working hours",

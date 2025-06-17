@@ -53,7 +53,7 @@ interface IncidentRow {
   thermalMonitorName: String;
   thermometerName: String;
   status: ThermalMonitorIncidentStatus;
-  temperature?: Number;
+  temperature: String | Number;
   id: string;
   incidentTime: string;
 }
@@ -134,7 +134,7 @@ const Incidents = () => {
       thermometerName: terminalThermometersQuery.data?.find(thermometer => thermometer.id == incident.thermometerId)?.name ||
       vehicleThermometersQuery.data?.find(thermometer => thermometer.id == incident.thermometerId)?.name || incident.thermometerId!!,
       status: incident.status!!,
-      temperature: incident.temperature,
+      temperature: incident.temperature || t("incidents.lostConnectionToSensor"),
       id: incident.id!!,
       incidentTime: `${incident.timestamp!!.getDate()}.${incident.timestamp!!.getMonth()}.${incident.timestamp!!.getFullYear()} ${(incident.timestamp!!.getHours() < 10 ? "0" : "")+ incident.timestamp!!.getHours()}:${incident.timestamp!!.getMinutes() == 0 ? "00" : incident.timestamp!!.getMinutes()}`
     }));

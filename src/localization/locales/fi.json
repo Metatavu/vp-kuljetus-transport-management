@@ -606,7 +606,8 @@
       "acknowledged": "Kuitattu",
       "resolved": "Ratkaistu",
       "triggered": "Odottaa"
-    }
+    },
+    "lostConnectionToSensor": "Ei yhteyttä sensoriin"
   },
   "workingHours": {
     "title": "Työaika",
