@@ -485,7 +485,10 @@
     "vehicleListing": "Error when listing vehicles"
   },
   "incidents": {
-    "title": "Hälytykset"
+    "title": "Incidents",
+    "filters": {
+      "monitor": "Monitor"
+    }
   },
   "workingHours": {
     "title": "Working hours",

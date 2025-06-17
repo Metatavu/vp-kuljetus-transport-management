@@ -9,6 +9,7 @@ import { t } from "i18next";
 import { ReactNode, useCallback, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Breadcrumb, LocalizedLabelKey } from "src/types";
+import { usePaginationToFirstAndMax } from "src/utils/server-side-pagination-utils";
 
 // Styled root component
 const Root = styled(Stack, {
@@ -29,7 +30,7 @@ const Root = styled(Stack, {
 
 // Styled filter container component
 const FilterContainer = styled(Stack, {
-  label: "working-hours-filters",
+  label: "incident-filters",
 })(({ theme }) => ({
   flexDirection: "row",
   justifyContent: "space-between",
@@ -59,8 +60,12 @@ const Incidents = () => {
 
   const monitorFilter = watch("monitor");
   const [{ page, pageSize }, setPaginationModel] = useState<GridPaginationModel>({ page: 0, pageSize: 25 });
+  const [first, max] = usePaginationToFirstAndMax({ page, pageSize });
+  
   const incidentsQuery = useQuery(getListIncidentsQueryOptions({
-    monitorId: monitorFilter == "ALL" ? undefined : monitorFilter
+    monitorId: monitorFilter == "ALL" ? undefined : monitorFilter,
+    max: max,
+    first: first
   }));
 
   const thermalMonitorOptions = () => {
