@@ -490,7 +490,16 @@
       "monitor": "Monitor"
     },
     "columns": {
-      "monitor": "Vahti"
+      "monitor": "Monitor",
+      "thermometer": "Sensor",
+      "status": "Status",
+      "temperature": "Incident temperature °C",
+      "time": "Incident time"
+    },
+    "status": {
+      "acknowledged": "Acknowledged",
+      "resolved": "Resolved",
+      "triggered": "Triggered"
     }
   },
   "workingHours": {

@@ -3,10 +3,12 @@ import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import GenericDataGrid from "components/generic/generic-data-grid";
-import { getListIncidentsQueryOptions, getListThermalMonitorsQueryOptions } from "hooks/use-queries";
+import { ThermalMonitorIncidentStatus } from "generated/client";
+import { getListIncidentsQueryOptions, getListTerminalThermometersQueryOptions, getListThermalMonitorsQueryOptions, getListTruckOrTowableThermometersQueryOptions } from "hooks/use-queries";
 import { t } from "i18next";
 import { ReactNode, useCallback, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
+import { theme } from "src/theme";
 import { Breadcrumb, LocalizedLabelKey } from "src/types";
 import { usePaginationToFirstAndMax } from "src/utils/server-side-pagination-utils";
 
@@ -24,7 +26,7 @@ const Root = styled(Stack, {
   // Apply padding for larger screens using breakpoints
   [theme.breakpoints.up(1800)]: {
     padding: theme.spacing(2),
-  },
+  }
 }));
 
 // Styled filter container component
@@ -45,15 +47,21 @@ const FilterContainer = styled(Stack, {
 
 interface IncidentFilters {
   monitor: string;
-  id: string;
 }
 
 interface IncidentRow {
   thermalMonitorName: String;
+  thermometerName: String;
+  status: ThermalMonitorIncidentStatus;
+  temperature?: Number;
+  id: string;
+  incidentTime: string;
 }
 
 const Incidents = () => {
   const monitorsQuery = useQuery(getListThermalMonitorsQueryOptions({}));
+  const terminalThermometersQuery = useQuery(getListTerminalThermometersQueryOptions({}));
+  const vehicleThermometersQuery = useQuery(getListTruckOrTowableThermometersQueryOptions({}));
 
   const { watch, register } = useForm<IncidentFilters>({
     mode: "onChange",
@@ -119,24 +127,77 @@ const Incidents = () => {
     );
   }, [monitorsQuery.data]);
 
-  const incidentRows = useMemo(() => {
+  const incidentRows = useMemo<IncidentRow[]>(() => {
     const incidents = incidentsQuery.data?.incidents || [];
-    return incidents.map(incident => ({
-      thermalMonitorName: monitorsQuery.data?.thermalMonitors.find(monitor => monitor.id == incident.monitorId)?.name || incident.monitorId,
-      id: incident.id
+    return incidents.map<IncidentRow>(incident => ({
+      thermalMonitorName: monitorsQuery.data?.thermalMonitors.find(monitor => monitor.id == incident.monitorId)?.name || incident.monitorId!!,
+      thermometerName: terminalThermometersQuery.data?.find(thermometer => thermometer.id == incident.thermometerId)?.name ||
+      vehicleThermometersQuery.data?.find(thermometer => thermometer.id == incident.thermometerId)?.name || incident.thermometerId!!,
+      status: incident.status!!,
+      temperature: incident.temperature,
+      id: incident.id!!,
+      incidentTime: `${incident.timestamp!!.getDate()}.${incident.timestamp!!.getMonth()}.${incident.timestamp!!.getFullYear()} ${(incident.timestamp!!.getHours() < 10 ? "0" : "")+ incident.timestamp!!.getHours()}:${incident.timestamp!!.getMinutes() == 0 ? "00" : incident.timestamp!!.getMinutes()}`
     }));
   }, [incidentsQuery.data]);
+
+  const getLocalizedIncidentStatus = (incident: ThermalMonitorIncidentStatus) => {
+    switch (incident) {
+      case "TRIGGERED":
+        return t("incidents.status.triggered");
+      case "ACKNOWLEDGED":
+        return t("incidents.status.acknowledged");
+      case "RESOLVED":
+        return t("incidents.status.resolved");
+    }
+  }
 
   const columns = useMemo((): GridColDef<IncidentRow>[] => [
     {
         valueGetter: (params) => params.row.thermalMonitorName,
         field: "thermalMonitorName",
-        headerAlign: "center",
+        headerAlign: "left",
         headerName: t("incidents.columns.monitor"),
         sortable: false,
-        width: 200,
-        align: "center",
-      }
+        align: "left",
+        flex: 1
+    },
+    {
+        valueGetter: (params) => params.row.thermometerName,
+        field: "thermometerName",
+        headerAlign: "left",
+        headerName: t("incidents.columns.thermometer"),
+        sortable: false,
+        align: "left",
+        flex: 1
+    },
+    {
+      valueGetter: (params) => getLocalizedIncidentStatus(params.row.status),
+      field: "status",
+      headerAlign: "left",
+      headerName: t("incidents.columns.status"),
+      sortable: false,
+      align: "left",
+      flex: 1,
+      cellClassName: (params) => params.row.status
+    },
+    {
+      valueGetter: (params) => params.row.temperature,
+      field: "temperature",
+      headerAlign: "left",
+      headerName: t("incidents.columns.temperature"),
+      sortable: false,
+      align: "left",
+      flex: 1
+    },
+    {
+      valueGetter: (params) => params.row.incidentTime,
+      field: "time",
+      headerAlign: "left",
+      headerName: t("incidents.columns.time"),
+      sortable: false,
+      align: "left",
+      flex: 1
+    },
   ], [t]);
 
   return (
@@ -158,6 +219,14 @@ const Incidents = () => {
             getRowId={(row) => row.id}
             paginationModel={{ page, pageSize }}
             onPaginationModelChange={setPaginationModel}
+            sx={{
+              [".TRIGGERED"]: {
+                color: theme.palette.error.main
+              },
+              [".RESOLVED"]: {
+                color: theme.palette.success.main
+              }
+            }}
           />
         </Stack>
       </Paper>

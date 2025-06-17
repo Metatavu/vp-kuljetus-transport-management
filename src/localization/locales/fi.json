@@ -596,7 +596,16 @@
       "monitor": "Vahti"
     },
     "columns": {
-      "monitor": "Vahti"
+      "monitor": "Vahti",
+      "thermometer": "Sensori",
+      "status": "Tila",
+      "temperature": "Hälytyslämpötila °C",
+      "time": "Hälytysaika"
+    },
+    "status": {
+      "acknowledged": "Kuitattu",
+      "resolved": "Ratkaistu",
+      "triggered": "Odottaa"
     }
   },
   "workingHours": {
