@@ -1,3 +1,4 @@
+import { HorizontalRule } from "@mui/icons-material";
 import { MenuItem, Paper, Stack, styled, TextField } from "@mui/material";
 import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import { DatePicker } from "@mui/x-date-pickers";
@@ -52,6 +53,7 @@ interface IncidentFilters {
   thermometer: string;
   status: string;
   triggeredBefore?: string;
+  triggeredAfter?: string;
 }
 
 interface IncidentRow {
@@ -80,6 +82,7 @@ const Incidents = () => {
   const monitorFilter = watch("monitor");
   const thermometerFilter = watch("thermometer");
   const triggeredBeforeFilter = watch("triggeredBefore");
+  const triggeredAfterFilter = watch("triggeredAfter");
   const statusFilter = watch("status");
   const [{ page, pageSize }, setPaginationModel] = useState<GridPaginationModel>({ page: 0, pageSize: 25 });
   const [first, max] = usePaginationToFirstAndMax({ page, pageSize });
@@ -88,7 +91,8 @@ const Incidents = () => {
     monitorId: monitorFilter == "ALL" ? undefined : monitorFilter,
     thermometerId: thermometerFilter == "ALL" ? undefined : thermometerFilter,
     incidentStatus: statusFilter == "ALL" ? undefined : statusFilter as ThermalMonitorIncidentStatus,
-    before: triggeredBeforeFilter === undefined ? undefined : DateTime.fromISO(triggeredBeforeFilter).toJSDate(),
+    before: triggeredBeforeFilter === undefined ? undefined : DateTime.fromISO(triggeredBeforeFilter).endOf("day").toJSDate(),
+    after: triggeredAfterFilter === undefined ? undefined : DateTime.fromISO(triggeredAfterFilter).startOf("day").toJSDate(),
     max: max,
     first: first
   }));
@@ -170,6 +174,32 @@ const Incidents = () => {
     [t, register, watch],
   );
 
+  const renderDateFilter = useCallback((label: LocalizedLabelKey | undefined, key: keyof IncidentFilters) => (
+    <Stack>
+      <Controller
+        name={key}
+        control={control}
+        render={({ field }) => (
+          <DatePicker
+            label={label ? t(label) : <span style={{ visibility: "hidden" }}>placeholder</span>}
+            value={field.value || null}
+            onChange={(date) => field.onChange(date)}
+            slotProps={{
+              openPickerButton: { size: "small", title: t("openCalendar") },
+              textField: {
+                size: "small",
+                InputProps: {
+                  sx: { width: 300, backgroundColor: "white" },
+                },
+              },
+            }}
+            sx={{ width: 300 }}
+          />
+        )}
+    />
+    </Stack>
+  ), [t, register, watch]);
+
   const renderFilters = () => useMemo(() => {
     return (
       <FilterContainer>
@@ -189,29 +219,21 @@ const Incidents = () => {
             statusOptions()
           )
         }
-        <Stack>
-           <Controller
-              name="triggeredBefore"
-              control={control}
-              render={({ field }) => (
-                <DatePicker
-                  label={t("incidents.filters.timePeriod")}
-                  value={field.value || null}
-                  onChange={(date) => field.onChange(date)}
-                  slotProps={{
-                    openPickerButton: { size: "small", title: t("openCalendar") },
-                    textField: {
-                      size: "small",
-                      InputProps: {
-                        sx: { width: 300, backgroundColor: "white" },
-                      },
-                    },
-                  }}
-                  sx={{ width: 300 }}
-                />
-              )}
-            />
-        </Stack>
+        {
+          renderDateFilter(
+            "incidents.filters.timePeriod",
+            "triggeredAfter"
+          )
+        }
+        <span style={{ marginTop: 23 }}>
+          <HorizontalRule htmlColor="grey"/>
+        </span>
+        {
+          renderDateFilter(
+            undefined,
+            "triggeredBefore"
+          )
+        }
       </FilterContainer>
     );
   }, [monitorsQuery.data, terminalThermometersQuery.data, vehicleThermometersQuery.data]);
