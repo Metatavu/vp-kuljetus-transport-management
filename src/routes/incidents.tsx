@@ -1,13 +1,15 @@
 import { MenuItem, Paper, Stack, styled, TextField } from "@mui/material";
 import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
+import { DatePicker } from "@mui/x-date-pickers";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import GenericDataGrid from "components/generic/generic-data-grid";
 import { TerminalThermometer, ThermalMonitorIncidentStatus, TruckOrTowableThermometer } from "generated/client";
 import { getListIncidentsQueryOptions, getListTerminalThermometersQueryOptions, getListThermalMonitorsQueryOptions, getListTruckOrTowableThermometersQueryOptions } from "hooks/use-queries";
 import { t } from "i18next";
+import { DateTime } from "luxon";
 import { ReactNode, useCallback, useMemo, useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { theme } from "src/theme";
 import { Breadcrumb, LocalizedLabelKey } from "src/types";
 import { usePaginationToFirstAndMax } from "src/utils/server-side-pagination-utils";
@@ -49,6 +51,7 @@ interface IncidentFilters {
   monitor: string;
   thermometer: string;
   status: string;
+  triggeredBefore?: string;
 }
 
 interface IncidentRow {
@@ -65,7 +68,7 @@ const Incidents = () => {
   const terminalThermometersQuery = useQuery(getListTerminalThermometersQueryOptions({}));
   const vehicleThermometersQuery = useQuery(getListTruckOrTowableThermometersQueryOptions({}));
 
-  const { watch, register } = useForm<IncidentFilters>({
+  const { watch, register, control } = useForm<IncidentFilters>({
     mode: "onChange",
     defaultValues: {
       monitor: "ALL",
@@ -76,6 +79,7 @@ const Incidents = () => {
 
   const monitorFilter = watch("monitor");
   const thermometerFilter = watch("thermometer");
+  const triggeredBeforeFilter = watch("triggeredBefore");
   const statusFilter = watch("status");
   const [{ page, pageSize }, setPaginationModel] = useState<GridPaginationModel>({ page: 0, pageSize: 25 });
   const [first, max] = usePaginationToFirstAndMax({ page, pageSize });
@@ -84,6 +88,7 @@ const Incidents = () => {
     monitorId: monitorFilter == "ALL" ? undefined : monitorFilter,
     thermometerId: thermometerFilter == "ALL" ? undefined : thermometerFilter,
     incidentStatus: statusFilter == "ALL" ? undefined : statusFilter as ThermalMonitorIncidentStatus,
+    before: triggeredBeforeFilter === undefined ? undefined : DateTime.fromISO(triggeredBeforeFilter).toJSDate(),
     max: max,
     first: first
   }));
@@ -184,9 +189,47 @@ const Incidents = () => {
             statusOptions()
           )
         }
+        <Stack>
+           <Controller
+              name="triggeredBefore"
+              control={control}
+              render={({ field }) => (
+                <DatePicker
+                  label={t("incidents.filters.timePeriod")}
+                  value={field.value || null}
+                  onChange={(date) => field.onChange(date)}
+                  slotProps={{
+                    openPickerButton: { size: "small", title: t("openCalendar") },
+                    textField: {
+                      size: "small",
+                      InputProps: {
+                        sx: { width: 300, backgroundColor: "white" },
+                      },
+                    },
+                  }}
+                  sx={{ width: 300 }}
+                />
+              )}
+            />
+        </Stack>
       </FilterContainer>
     );
   }, [monitorsQuery.data, terminalThermometersQuery.data, vehicleThermometersQuery.data]);
+
+  const formattedDateString = (date: Date): string => {
+    const dateString = date.toLocaleString("fi-FI", {
+        month: "2-digit",
+        day: "2-digit",
+        year: "numeric"
+    });
+
+    const timeString = date.toLocaleString("fi-FI", {
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+
+    return `${dateString} ${timeString}`;
+  }
 
   const incidentRows = useMemo<IncidentRow[]>(() => {
     const incidents = incidentsQuery.data?.incidents || [];
@@ -197,7 +240,7 @@ const Incidents = () => {
       status: incident.status!!,
       temperature: incident.temperature || t("incidents.lostConnectionToSensor"),
       id: incident.id!!,
-      incidentTime: `${incident.timestamp!!.getDate()}.${incident.timestamp!!.getMonth()}.${incident.timestamp!!.getFullYear()} ${(incident.timestamp!!.getHours() < 10 ? "0" : "")+ incident.timestamp!!.getHours()}:${incident.timestamp!!.getMinutes() == 0 ? "00" : incident.timestamp!!.getMinutes()}`
+      incidentTime: incident.timestamp ? formattedDateString(incident.timestamp) : ""
     }));
   }, [incidentsQuery.data]);
 

@@ -489,7 +489,8 @@
     "filters": {
       "monitor": "Monitor",
       "thermometer": "Thermometer",
-      "status": "Status"
+      "status": "Status",
+      "timePeriod": "Period"
     },
     "columns": {
       "monitor": "Monitor",

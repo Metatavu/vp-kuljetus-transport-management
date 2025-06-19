@@ -595,7 +595,8 @@
     "filters": {
       "monitor": "Vahti",
       "thermometer": "Lämpöanturi",
-      "status": "Tila"
+      "status": "Tila",
+      "timePeriod": "Ajanjakso"
     },
     "columns": {
       "monitor": "Vahti",
