@@ -52,8 +52,8 @@ interface IncidentFilters {
   monitor: string;
   thermometer: string;
   status: string;
-  triggeredBefore?: string;
-  triggeredAfter?: string;
+  triggeredBefore?: DateTime;
+  triggeredAfter?: DateTime;
 }
 
 interface IncidentRow {
@@ -70,12 +70,17 @@ const Incidents = () => {
   const terminalThermometersQuery = useQuery(getListTerminalThermometersQueryOptions({}));
   const vehicleThermometersQuery = useQuery(getListTruckOrTowableThermometersQueryOptions({}));
 
+
+  const triggeredBeforeUrlFilter = Route.useSearch({ select: (search: any) => decodeURIComponent(search.triggeredBefore)});
+  const triggeredAfterUrlFilter = Route.useSearch({ select: (search: any) => decodeURIComponent(search.triggeredAfter)});
   const { watch, register, control } = useForm<IncidentFilters>({
     mode: "onChange",
     defaultValues: {
-      monitor: "ALL",
-      thermometer: "ALL",
-      status: "ALL"
+      monitor: Route.useSearch({ select: (search: any) => search.monitor }) || "ALL",
+      thermometer: Route.useSearch({ select: (search: any) => search.thermometer }) || "ALL",
+      status: Route.useSearch({ select: (search: any) => search.status }) || "ALL",
+      triggeredAfter: triggeredAfterUrlFilter == "undefined" ? undefined : DateTime.fromISO(triggeredAfterUrlFilter).startOf("day"),
+      triggeredBefore: triggeredBeforeUrlFilter == "undefined" ? undefined : DateTime.fromISO(triggeredBeforeUrlFilter).startOf("day")
     },
   });
 
@@ -91,8 +96,8 @@ const Incidents = () => {
     monitorId: monitorFilter == "ALL" ? undefined : monitorFilter,
     thermometerId: thermometerFilter == "ALL" ? undefined : thermometerFilter,
     incidentStatus: statusFilter == "ALL" ? undefined : statusFilter as ThermalMonitorIncidentStatus,
-    before: triggeredBeforeFilter === undefined ? undefined : DateTime.fromISO(triggeredBeforeFilter).endOf("day").toJSDate(),
-    after: triggeredAfterFilter === undefined ? undefined : DateTime.fromISO(triggeredAfterFilter).startOf("day").toJSDate(),
+    before: triggeredBeforeFilter === undefined ? undefined : triggeredBeforeFilter.endOf("day").toJSDate(),
+    after: triggeredAfterFilter === undefined ? undefined : triggeredAfterFilter.startOf("day").toJSDate(),
     max: max,
     first: first
   }));
@@ -155,6 +160,16 @@ const Incidents = () => {
     ]
   }
 
+  const handleUrlFilterChange = (key: keyof IncidentFilters, value: string | null) => {
+    const url = new URL(window.location.href);
+    if (value == null) {
+      url.searchParams.delete(key);
+    } else {
+      url.searchParams.set(key, value);
+    }
+    window.history.replaceState({}, '', url);
+  }
+
 
   const renderSelectFilter = useCallback(
     (label: LocalizedLabelKey, key: keyof IncidentFilters, menuItems: ReactNode) => (
@@ -166,6 +181,10 @@ const Incidents = () => {
         label={t(label)}
         InputProps={{
           ...register(key),
+          onChange: (event) => {
+            register(key).onChange(event);
+            handleUrlFilterChange(key, event.target.value);
+          }
         }}
       >
         {menuItems}
@@ -182,8 +201,11 @@ const Incidents = () => {
         render={({ field }) => (
           <DatePicker
             label={label ? t(label) : <span style={{ visibility: "hidden" }}>placeholder</span>}
-            value={field.value || null}
-            onChange={(date) => field.onChange(date)}
+            value={field.value as any || null}
+            onChange={(value: DateTime | null) => {
+              handleUrlFilterChange(key, value?.toString() || null);
+              field.onChange(value);
+            }}
             slotProps={{
               openPickerButton: { size: "small", title: t("openCalendar") },
               textField: {
