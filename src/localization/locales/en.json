@@ -484,6 +484,28 @@
   "errorHandling": {
     "vehicleListing": "Error when listing vehicles"
   },
+  "incidents": {
+    "title": "Incidents",
+    "filters": {
+      "monitor": "Monitor",
+      "thermometer": "Thermometer",
+      "status": "Status",
+      "timePeriod": "Period"
+    },
+    "columns": {
+      "monitor": "Monitor",
+      "thermometer": "Thermometer",
+      "status": "Status",
+      "temperature": "Incident temperature °C",
+      "time": "Incident time"
+    },
+    "status": {
+      "acknowledged": "Acknowledged",
+      "resolved": "Resolved",
+      "triggered": "Triggered"
+    },
+    "lostConnectionToSensor": "No connection to sensor"
+  },
   "workingHours": {
     "title": "Working hours",
     "workingHourBalances": {

@@ -13,6 +13,7 @@
 import { Route as rootRoute } from "./../../routes/__root";
 import { Route as VehiclesImport } from "./../../routes/vehicles";
 import { Route as ManagementImport } from "./../../routes/management";
+import { Route as IncidentsImport } from "./../../routes/incidents";
 import { Route as DrivePlanningImport } from "./../../routes/drive-planning";
 import { Route as IndexImport } from "./../../routes/index";
 import { Route as WorkingHoursIndexImport } from "./../../routes/working-hours.index";
@@ -62,6 +63,12 @@ const VehiclesRoute = VehiclesImport.update({
 const ManagementRoute = ManagementImport.update({
   id: "/management",
   path: "/management",
+  getParentRoute: () => rootRoute,
+} as any);
+
+const IncidentsRoute = IncidentsImport.update({
+  id: "/incidents",
+  path: "/incidents",
   getParentRoute: () => rootRoute,
 } as any);
 
@@ -319,6 +326,13 @@ declare module "@tanstack/react-router" {
       path: "/drive-planning";
       fullPath: "/drive-planning";
       preLoaderRoute: typeof DrivePlanningImport;
+      parentRoute: typeof rootRoute;
+    };
+    "/incidents": {
+      id: "/incidents";
+      path: "/incidents";
+      fullPath: "/incidents";
+      preLoaderRoute: typeof IncidentsImport;
       parentRoute: typeof rootRoute;
     };
     "/management": {
@@ -754,6 +768,7 @@ const WorkingHoursEmployeeIdWorkShiftsRouteWithChildren =
 export interface FileRoutesByFullPath {
   "/": typeof IndexRoute;
   "/drive-planning": typeof DrivePlanningRouteWithChildren;
+  "/incidents": typeof IncidentsRoute;
   "/management": typeof ManagementRouteWithChildren;
   "/vehicles": typeof VehiclesRouteWithChildren;
   "/drive-planning/freights": typeof DrivePlanningFreightsRouteWithChildren;
@@ -796,6 +811,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   "/": typeof IndexRoute;
   "/drive-planning": typeof DrivePlanningRouteWithChildren;
+  "/incidents": typeof IncidentsRoute;
   "/management": typeof ManagementRouteWithChildren;
   "/vehicles": typeof VehiclesRouteWithChildren;
   "/drive-planning/freights": typeof DrivePlanningFreightsRouteWithChildren;
@@ -839,6 +855,7 @@ export interface FileRoutesById {
   __root__: typeof rootRoute;
   "/": typeof IndexRoute;
   "/drive-planning": typeof DrivePlanningRouteWithChildren;
+  "/incidents": typeof IncidentsRoute;
   "/management": typeof ManagementRouteWithChildren;
   "/vehicles": typeof VehiclesRouteWithChildren;
   "/drive-planning/freights": typeof DrivePlanningFreightsRouteWithChildren;
@@ -883,6 +900,7 @@ export interface FileRouteTypes {
   fullPaths:
     | "/"
     | "/drive-planning"
+    | "/incidents"
     | "/management"
     | "/vehicles"
     | "/drive-planning/freights"
@@ -924,6 +942,7 @@ export interface FileRouteTypes {
   to:
     | "/"
     | "/drive-planning"
+    | "/incidents"
     | "/management"
     | "/vehicles"
     | "/drive-planning/freights"
@@ -965,6 +984,7 @@ export interface FileRouteTypes {
     | "__root__"
     | "/"
     | "/drive-planning"
+    | "/incidents"
     | "/management"
     | "/vehicles"
     | "/drive-planning/freights"
@@ -1008,6 +1028,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute;
   DrivePlanningRoute: typeof DrivePlanningRouteWithChildren;
+  IncidentsRoute: typeof IncidentsRoute;
   ManagementRoute: typeof ManagementRouteWithChildren;
   VehiclesRoute: typeof VehiclesRouteWithChildren;
   TerminalsIndexRoute: typeof TerminalsIndexRoute;
@@ -1019,6 +1040,7 @@ export interface RootRouteChildren {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DrivePlanningRoute: DrivePlanningRouteWithChildren,
+  IncidentsRoute: IncidentsRoute,
   ManagementRoute: ManagementRouteWithChildren,
   VehiclesRoute: VehiclesRouteWithChildren,
   TerminalsIndexRoute: TerminalsIndexRoute,
@@ -1040,6 +1062,7 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/drive-planning",
+        "/incidents",
         "/management",
         "/vehicles",
         "/terminals/",
@@ -1057,6 +1080,9 @@ export const routeTree = rootRoute
         "/drive-planning/freights",
         "/drive-planning/routes"
       ]
+    },
+    "/incidents": {
+      "filePath": "incidents.tsx"
     },
     "/management": {
       "filePath": "management.tsx",
