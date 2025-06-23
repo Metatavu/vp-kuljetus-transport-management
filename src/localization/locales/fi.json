@@ -608,7 +608,7 @@
     "status": {
       "acknowledged": "Kuitattu",
       "resolved": "Ratkaistu",
-      "triggered": "Odottaa"
+      "triggered": "Lauennut"
     },
     "lostConnectionToSensor": "Ei yhteyttä sensoriin"
   },
