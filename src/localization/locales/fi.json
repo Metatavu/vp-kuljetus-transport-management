@@ -606,9 +606,9 @@
       "time": "Hälytysaika"
     },
     "status": {
-      "acknowledged": "Kuitattu",
-      "resolved": "Ratkaistu",
-      "triggered": "Lauennut"
+      "ACKNOWLEDGED": "Kuitattu",
+      "RESOLVED": "Ratkaistu",
+      "TRIGGERED": "Lauennut"
     },
     "lostConnectionToSensor": "Ei yhteyttä sensoriin"
   },

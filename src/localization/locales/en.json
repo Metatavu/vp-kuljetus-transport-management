@@ -500,9 +500,9 @@
       "time": "Incident time"
     },
     "status": {
-      "acknowledged": "Acknowledged",
-      "resolved": "Resolved",
-      "triggered": "Triggered"
+      "ACKNOWLEDGED": "Acknowledged",
+      "RESOLVED": "Resolved",
+      "TRIGGERED": "Triggered"
     },
     "lostConnectionToSensor": "No connection to sensor"
   },

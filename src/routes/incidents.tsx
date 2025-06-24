@@ -1,19 +1,45 @@
 import { HorizontalRule } from "@mui/icons-material";
-import { MenuItem, Paper, Stack, styled, TextField } from "@mui/material";
-import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
+import { Autocomplete, Box, MenuItem, Stack, styled, TextField, type TextFieldProps } from "@mui/material";
+import type { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import { DatePicker } from "@mui/x-date-pickers";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import GenericDataGrid from "components/generic/generic-data-grid";
-import { TerminalThermometer, ThermalMonitorIncidentStatus, TruckOrTowableThermometer } from "generated/client";
-import { getListIncidentsQueryOptions, getListTerminalThermometersQueryOptions, getListThermalMonitorsQueryOptions, getListTruckOrTowableThermometersQueryOptions } from "hooks/use-queries";
+import { type ThermalMonitorIncident, ThermalMonitorIncidentStatus } from "generated/client";
+import {
+  getListIncidentsQueryOptions,
+  getListTerminalThermometersQueryOptions,
+  getListThermalMonitorsQueryOptions,
+  getListTruckOrTowableThermometersQueryOptions,
+} from "hooks/use-queries";
 import { t } from "i18next";
 import { DateTime } from "luxon";
-import { ReactNode, useCallback, useMemo, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { theme } from "src/theme";
-import { Breadcrumb, LocalizedLabelKey } from "src/types";
+import type { Breadcrumb } from "src/types";
+import DataValidation from "src/utils/data-validation-utils";
 import { usePaginationToFirstAndMax } from "src/utils/server-side-pagination-utils";
+import { z } from "zod/v4";
+
+const incidentSearchSchema = z.object({
+  monitorId: z.uuidv4().optional(),
+  thermometerId: z.uuidv4().optional(),
+  status: z.enum(Object.values(ThermalMonitorIncidentStatus)).optional(),
+  triggeredBefore: z.iso.datetime({ offset: true }).optional().pipe(DataValidation.validDatetimeTransform),
+  triggeredAfter: z.iso.datetime({ offset: true }).optional().pipe(DataValidation.validDatetimeTransform),
+});
+
+type IncidentSearchSchema = z.infer<typeof incidentSearchSchema>;
+
+export const Route = createFileRoute("/incidents")({
+  component: Incidents,
+  loader: () => {
+    const breadcrumbs: Breadcrumb[] = [{ label: t("incidents.title") }];
+    return { breadcrumbs };
+  },
+  validateSearch: incidentSearchSchema,
+});
 
 // Styled root component
 const Root = styled(Stack, {
@@ -21,15 +47,14 @@ const Root = styled(Stack, {
 })(({ theme }) => ({
   height: "100%",
   width: "100%",
-  backgroundColor: theme.palette.background.default,
+  backgroundColor: "#00414F1A",
   flexDirection: "column",
-  gap: theme.spacing(2),
   // Default padding for smaller screens
   padding: 0,
   // Apply padding for larger screens using breakpoints
   [theme.breakpoints.up(1800)]: {
     padding: theme.spacing(2),
-  }
+  },
 }));
 
 // Styled filter container component
@@ -38,321 +63,227 @@ const FilterContainer = styled(Stack, {
 })(({ theme }) => ({
   flexDirection: "row",
   justifyContent: "space-between",
+  alignItems: "end",
   maxWidth: 1440,
   gap: theme.spacing(2),
   // Default padding for smaller screens
-  padding: theme.spacing(2),
+  padding: theme.spacing(1),
   // Apply padding for larger screens using breakpoints
   [theme.breakpoints.up(1800)]: {
     padding: theme.spacing(0),
   },
 }));
 
-interface IncidentFilters {
-  monitor: string;
-  thermometer: string;
-  status: string;
-  triggeredBefore?: DateTime;
-  triggeredAfter?: DateTime;
-}
-
-interface IncidentRow {
-  thermalMonitorName: String;
-  thermometerName: String;
-  status: ThermalMonitorIncidentStatus;
-  temperature: String | Number;
-  id: string;
-  incidentTime: string;
-}
-
-const Incidents = () => {
-  const monitorsQuery = useQuery(getListThermalMonitorsQueryOptions({}));
-  const terminalThermometersQuery = useQuery(getListTerminalThermometersQueryOptions({}));
-  const vehicleThermometersQuery = useQuery(getListTruckOrTowableThermometersQueryOptions({}));
-
-
-  const triggeredBeforeUrlFilter = Route.useSearch({ select: (search: any) => decodeURIComponent(search.triggeredBefore)});
-  const triggeredAfterUrlFilter = Route.useSearch({ select: (search: any) => decodeURIComponent(search.triggeredAfter)});
-  const { watch, register, control } = useForm<IncidentFilters>({
-    mode: "onChange",
-    defaultValues: {
-      monitor: Route.useSearch({ select: (search: any) => search.monitor }) || "ALL",
-      thermometer: Route.useSearch({ select: (search: any) => search.thermometer }) || "ALL",
-      status: Route.useSearch({ select: (search: any) => search.status }) || "ALL",
-      triggeredAfter: triggeredAfterUrlFilter == "undefined" ? undefined : DateTime.fromISO(triggeredAfterUrlFilter).startOf("day"),
-      triggeredBefore: triggeredBeforeUrlFilter == "undefined" ? undefined : DateTime.fromISO(triggeredBeforeUrlFilter).startOf("day")
+const FilterField = styled((props: Omit<TextFieldProps, "variant">) => <TextField variant="filled" {...props} />, {
+  label: "incident-filter-field",
+})(({ theme }) => ({
+  "& .MuiFilledInput-root": {
+    backgroundColor: "#fff !important",
+    borderRadius: 4,
+    border: "1px solid",
+    borderColor: "#ddd !important",
+    "&:hover": {
+      backgroundColor: "#f7f7f7 !important",
     },
-  });
+    "&.Mui-focused": {
+      borderColor: theme.palette.primary.main,
+    },
+  },
+}));
 
-  const monitorFilter = watch("monitor");
-  const thermometerFilter = watch("thermometer");
-  const triggeredBeforeFilter = watch("triggeredBefore");
-  const triggeredAfterFilter = watch("triggeredAfter");
-  const statusFilter = watch("status");
-  const [{ page, pageSize }, setPaginationModel] = useState<GridPaginationModel>({ page: 0, pageSize: 25 });
-  const [first, max] = usePaginationToFirstAndMax({ page, pageSize });
-  
-  const incidentsQuery = useQuery(getListIncidentsQueryOptions({
-    monitorId: monitorFilter == "ALL" ? undefined : monitorFilter,
-    thermometerId: thermometerFilter == "ALL" ? undefined : thermometerFilter,
-    incidentStatus: statusFilter == "ALL" ? undefined : statusFilter as ThermalMonitorIncidentStatus,
-    before: triggeredBeforeFilter === undefined ? undefined : triggeredBeforeFilter.endOf("day").toJSDate(),
-    after: triggeredAfterFilter === undefined ? undefined : triggeredAfterFilter.startOf("day").toJSDate(),
-    max: max,
-    first: first
-  }));
+function Incidents() {
+  const { t } = useTranslation();
+  const navigate = Route.useNavigate();
+  const filters = Route.useSearch();
 
-  const statusOptions = () => {
-    const options = [
-      {
-        "value": "TRIGGERED",
-        "text": t("incidents.status.triggered")
-      },
-      {
-        "value": "ACKNOWLEDGED",
-        "text": t("incidents.status.acknowledged")
-      },
-      {
-        "value": "RESOLVED",
-        "text": t("incidents.status.resolved")
-      },
-    ]
-
-    return [
-      <MenuItem key="ALL" value="ALL">
-        {t("all")}
-      </MenuItem>,
-      ...options.map(item => <MenuItem key={item.value} value={item.value}>{item.text}</MenuItem>)
-    ]
-  }
-
-  const thermalMonitorOptions = () => {
-    const monitors = monitorsQuery.data?.thermalMonitors.map(thermalMonitor => {
-      const id: string = thermalMonitor.id!!;
-      if (thermalMonitor.name.length > 0) {
-        return {name: thermalMonitor.name, id: id };
-      } else {
-         return {name: id, id: id }
-      }
-    }) || []; 
-    return [
-       <MenuItem key="ALL" value="ALL">
-        {t("all")}
-      </MenuItem>,
-      ...monitors.map(item => <MenuItem key={item.id} value={item.id}>{item.name}</MenuItem>)
-    ]
-  }
-
-  const thermometerOptions = () => {
-    const thermometers =  ( [] as (TerminalThermometer | TruckOrTowableThermometer)[]).concat(terminalThermometersQuery.data || []).concat(vehicleThermometersQuery.data || []).map(thermalMonitor => {
-      const id: string = thermalMonitor.id!!;
-      if (thermalMonitor.name && thermalMonitor.name.length > 0) {
-        return {name: thermalMonitor.name, id: id };
-      } else {
-         return {name: id, id: id }
-      }
-    }); 
-    return [
-       <MenuItem key="ALL" value="ALL">
-        {t("all")}
-      </MenuItem>,
-      ...thermometers.map(item => <MenuItem key={item.id} value={item.id}>{item.name}</MenuItem>)
-    ]
-  }
-
-  const handleUrlFilterChange = (key: keyof IncidentFilters, value: string | null) => {
-    const url = new URL(window.location.href);
-    if (value == null) {
-      url.searchParams.delete(key);
-    } else {
-      url.searchParams.set(key, value);
-    }
-    window.history.replaceState({}, '', url);
-  }
-
-
-  const renderSelectFilter = useCallback(
-    (label: LocalizedLabelKey, key: keyof IncidentFilters, menuItems: ReactNode) => (
-      <TextField
-        key={key}
-        select
-        defaultValue={watch(key)}
-        variant="standard"
-        label={t(label)}
-        InputProps={{
-          ...register(key),
-          onChange: (event) => {
-            register(key).onChange(event);
-            handleUrlFilterChange(key, event.target.value);
-          }
-        }}
-      >
-        {menuItems}
-      </TextField>
-    ),
-    [t, register, watch],
+  const monitorsQuery = useQuery(getListThermalMonitorsQueryOptions({ first: 0, max: 10000 }));
+  const terminalThermometersQuery = useQuery(
+    getListTerminalThermometersQueryOptions({ first: 0, max: 10000, includeArchived: true }),
+  );
+  const vehicleThermometersQuery = useQuery(
+    getListTruckOrTowableThermometersQueryOptions({ first: 0, max: 10000, includeArchived: true }),
   );
 
-  const renderDateFilter = useCallback((label: LocalizedLabelKey | undefined, key: keyof IncidentFilters) => (
-    <Stack>
-      <Controller
-        name={key}
-        control={control}
-        render={({ field }) => (
-          <DatePicker
-            label={label ? t(label) : <span style={{ visibility: "hidden" }}>placeholder</span>}
-            value={field.value as any || null}
-            onChange={(value: DateTime | null) => {
-              handleUrlFilterChange(key, value?.toString() || null);
-              field.onChange(value);
-            }}
-            slotProps={{
-              openPickerButton: { size: "small", title: t("openCalendar") },
-              textField: {
-                size: "small",
-                InputProps: {
-                  sx: { width: 300, backgroundColor: "white" },
-                },
-              },
-            }}
-            sx={{ width: 300 }}
-          />
-        )}
-    />
-    </Stack>
-  ), [t, register, watch]);
+  const [{ page, pageSize }, setPaginationModel] = useState<GridPaginationModel>({ page: 0, pageSize: 25 });
+  const [first, max] = usePaginationToFirstAndMax({ page, pageSize });
 
-  const renderFilters = () => useMemo(() => {
-    return (
-      <FilterContainer>
-        {renderSelectFilter(
-          "incidents.filters.monitor",
-          "monitor",
-          thermalMonitorOptions(),
-        )}
-        {renderSelectFilter(
-          "incidents.filters.thermometer",
-          "thermometer",
-          thermometerOptions(),
-        )}
-        {renderSelectFilter(
-            "incidents.filters.status",
-            "status",
-            statusOptions()
-          )
-        }
-        {
-          renderDateFilter(
-            "incidents.filters.timePeriod",
-            "triggeredAfter"
-          )
-        }
-        <span style={{ marginTop: 23 }}>
-          <HorizontalRule htmlColor="grey"/>
-        </span>
-        {
-          renderDateFilter(
-            undefined,
-            "triggeredBefore"
-          )
-        }
-      </FilterContainer>
-    );
-  }, [monitorsQuery.data, terminalThermometersQuery.data, vehicleThermometersQuery.data]);
+  const incidentsQuery = useQuery(
+    getListIncidentsQueryOptions({
+      monitorId: filters.monitorId,
+      thermometerId: filters.thermometerId,
+      incidentStatus: filters.status,
+      before: filters.triggeredBefore?.startOf("day").toJSDate(),
+      after: filters.triggeredAfter?.startOf("day").toJSDate(),
+      first: first,
+      max: max,
+    }),
+  );
 
-  const formattedDateString = (date: Date): string => {
-    const dateString = date.toLocaleString("fi-FI", {
-        month: "2-digit",
-        day: "2-digit",
-        year: "numeric"
+  const handleUrlFilterChange = <T extends keyof IncidentSearchSchema>(
+    key: T,
+    value: IncidentSearchSchema[T] | undefined,
+  ) => {
+    navigate({
+      search: (prevSearch) => {
+        const newSearch = { ...prevSearch };
+
+        if (value === undefined || (value instanceof DateTime && !value.isValid)) {
+          delete newSearch[key];
+        } else {
+          newSearch[key] = value;
+        }
+
+        return newSearch;
+      },
     });
+  };
 
-    const timeString = date.toLocaleString("fi-FI", {
-      hour: "2-digit",
-      minute: "2-digit"
-    });
+  const thermometers = useMemo(
+    () =>
+      [...(terminalThermometersQuery.data ?? []), ...(vehicleThermometersQuery.data ?? [])].toSorted((a, b) =>
+        (a.name ?? a.id ?? "").localeCompare(b.name ?? b.id ?? ""),
+      ),
+    [terminalThermometersQuery.data, vehicleThermometersQuery.data],
+  );
 
-    return `${dateString} ${timeString}`;
-  }
-
-  const incidentRows = useMemo<IncidentRow[]>(() => {
-    const incidents = incidentsQuery.data?.incidents || [];
-    return incidents.map<IncidentRow>(incident => ({
-      thermalMonitorName: monitorsQuery.data?.thermalMonitors.find(monitor => monitor.id == incident.monitorId)?.name || incident.monitorId!!,
-      thermometerName: terminalThermometersQuery.data?.find(thermometer => thermometer.id == incident.thermometerId)?.name ||
-      vehicleThermometersQuery.data?.find(thermometer => thermometer.id == incident.thermometerId)?.name || incident.thermometerId!!,
-      status: incident.status!!,
-      temperature: incident.temperature || t("incidents.lostConnectionToSensor"),
-      id: incident.id!!,
-      incidentTime: incident.timestamp ? formattedDateString(incident.timestamp) : ""
+  const monitorOptions = useMemo(() => {
+    return (monitorsQuery.data?.thermalMonitors ?? []).map((monitor) => ({
+      label: monitor.name || monitor.id,
+      id: monitor.id,
     }));
-  }, [incidentsQuery.data]);
+  }, [monitorsQuery.data]);
 
-  const getLocalizedIncidentStatus = (incident: ThermalMonitorIncidentStatus) => {
-    switch (incident) {
-      case "TRIGGERED":
-        return t("incidents.status.triggered");
-      case "ACKNOWLEDGED":
-        return t("incidents.status.acknowledged");
-      case "RESOLVED":
-        return t("incidents.status.resolved");
-    }
-  }
+  const selectedMonitor = useMemo(() => {
+    return monitorOptions.find((option) => option.id === filters.monitorId) ?? { label: t("all"), id: "ALL" };
+  }, [t, filters.monitorId, monitorOptions]);
 
-  const columns = useMemo((): GridColDef<IncidentRow>[] => [
-    {
-        valueGetter: (params) => params.row.thermalMonitorName,
+  const thermometerOptions = useMemo(() => {
+    return thermometers.map((thermometer) => ({
+      label: thermometer.name || thermometer.id,
+      id: thermometer.id,
+    }));
+  }, [thermometers]);
+
+  const selectedThermometer = useMemo(() => {
+    return thermometerOptions.find((option) => option.id === filters.thermometerId) ?? { label: t("all"), id: "ALL" };
+  }, [t, filters.thermometerId, thermometerOptions]);
+
+  const columns = useMemo(
+    (): GridColDef<ThermalMonitorIncident>[] => [
+      {
         field: "thermalMonitorName",
         headerAlign: "left",
         headerName: t("incidents.columns.monitor"),
         sortable: false,
         align: "left",
-        flex: 1
-    },
-    {
-        valueGetter: (params) => params.row.thermometerName,
+        flex: 1,
+        valueGetter: ({ row }) =>
+          monitorsQuery.data?.thermalMonitors.find((monitor) => monitor.id === row.monitorId)?.name ?? "",
+      },
+      {
         field: "thermometerName",
         headerAlign: "left",
         headerName: t("incidents.columns.thermometer"),
         sortable: false,
         align: "left",
-        flex: 1
-    },
-    {
-      valueGetter: (params) => getLocalizedIncidentStatus(params.row.status),
-      field: "status",
-      headerAlign: "left",
-      headerName: t("incidents.columns.status"),
-      sortable: false,
-      align: "left",
-      flex: 1,
-      cellClassName: (params) => params.row.status
-    },
-    {
-      valueGetter: (params) => params.row.temperature,
-      field: "temperature",
-      headerAlign: "left",
-      headerName: t("incidents.columns.temperature"),
-      sortable: false,
-      align: "left",
-      flex: 1
-    },
-    {
-      valueGetter: (params) => params.row.incidentTime,
-      field: "time",
-      headerAlign: "left",
-      headerName: t("incidents.columns.time"),
-      sortable: false,
-      align: "left",
-      flex: 1
-    },
-  ], [t]);
+        flex: 1,
+        valueGetter: ({ row }) =>
+          terminalThermometersQuery.data?.find((thermometer) => thermometer.id === row.thermometerId)?.name ??
+          vehicleThermometersQuery.data?.find((thermometer) => thermometer.id === row.thermometerId)?.name ??
+          row.thermometerId,
+      },
+      {
+        field: "status",
+        headerAlign: "left",
+        headerName: t("incidents.columns.status"),
+        sortable: false,
+        align: "left",
+        flex: 1,
+        valueFormatter: ({ value }) => t(`incidents.status.${value as ThermalMonitorIncidentStatus}`),
+        cellClassName: ({ row }) => row.status ?? "",
+      },
+      {
+        field: "temperature",
+        headerAlign: "left",
+        headerName: t("incidents.columns.temperature"),
+        sortable: false,
+        align: "left",
+        flex: 1,
+        valueGetter: ({ row }) => row.temperature ?? t("incidents.lostConnectionToSensor"),
+      },
+      {
+        field: "timestamp",
+        headerAlign: "left",
+        headerName: t("incidents.columns.time"),
+        sortable: false,
+        align: "left",
+        flex: 1,
+        valueFormatter: ({ value }) => value?.toLocaleString("fi-FI") ?? "",
+      },
+    ],
+    [t, monitorsQuery.data, terminalThermometersQuery.data, vehicleThermometersQuery.data],
+  );
 
   return (
     <Root>
-      { renderFilters() }
-      <Paper sx={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
-        <Stack sx={{ flex: 1, overflowY: "auto" }}>
+      <FilterContainer>
+        <Autocomplete
+          value={selectedMonitor}
+          options={monitorOptions}
+          isOptionEqualToValue={(option, value) => option.id === value.id}
+          onChange={(_, newValue) =>
+            handleUrlFilterChange("monitorId", newValue?.id === "ALL" ? undefined : newValue?.id)
+          }
+          renderInput={(params) => <FilterField {...params} label={t("incidents.filters.monitor")} />}
+        />
+        <Autocomplete
+          value={selectedThermometer}
+          options={thermometerOptions}
+          isOptionEqualToValue={(option, value) => option.id === value.id}
+          onChange={(_, newValue) =>
+            handleUrlFilterChange("thermometerId", newValue?.id === "ALL" ? undefined : newValue?.id)
+          }
+          renderInput={(params) => <FilterField {...params} label={t("incidents.filters.thermometer")} />}
+        />
+        <FilterField
+          select
+          label={t("incidents.filters.status")}
+          value={filters.status || "ALL"}
+          onChange={(event) =>
+            handleUrlFilterChange(
+              "status",
+              event.target.value === "ALL" ? undefined : (event.target.value as ThermalMonitorIncidentStatus),
+            )
+          }
+        >
+          <MenuItem key="ALL" value="ALL">
+            {t("all")}
+          </MenuItem>
+          {...Object.values(ThermalMonitorIncidentStatus).map((status) => (
+            <MenuItem key={status} value={status}>
+              {t(`incidents.status.${status}`)}
+            </MenuItem>
+          ))}
+        </FilterField>
+        <DatePicker
+          label={t("incidents.filters.timePeriod")}
+          slots={{ textField: FilterField }}
+          slotProps={{ openPickerButton: { sx: { padding: 0.5, marginLeft: 0, marginRight: 0.5 } } }}
+          value={filters.triggeredAfter || null}
+          onChange={(value: DateTime | null) => handleUrlFilterChange("triggeredAfter", value ?? undefined)}
+        />
+        <Box mx={-1}>
+          <HorizontalRule sx={{ fontSize: 16, color: "text.disabled" }} />
+        </Box>
+        <DatePicker
+          value={filters.triggeredBefore || null}
+          slots={{ textField: FilterField }}
+          slotProps={{ openPickerButton: { sx: { padding: 0.5, marginLeft: 0, marginRight: 0.5 } } }}
+          onChange={(value: DateTime | null) => handleUrlFilterChange("triggeredBefore", value ?? undefined)}
+        />
+      </FilterContainer>
+      <Box flex="1" display="flex" flexDirection="column" overflow="hidden" bgcolor="background.paper">
+        <Stack flex="1" overflow="auto">
           <GenericDataGrid
             fullScreen
             autoHeight={false}
@@ -363,29 +294,17 @@ const Incidents = () => {
             disableColumnSelector
             loading={incidentsQuery.isFetching}
             rowCount={incidentsQuery.data?.totalResults ?? 0}
-            rows={incidentRows}
+            rows={incidentsQuery.data?.incidents ?? []}
             getRowId={(row) => row.id}
             paginationModel={{ page, pageSize }}
             onPaginationModelChange={setPaginationModel}
             sx={{
-              [".TRIGGERED"]: {
-                color: theme.palette.error.main
-              },
-              [".RESOLVED"]: {
-                color: theme.palette.success.main
-              }
+              ".TRIGGERED": { color: theme.palette.error.main },
+              ".RESOLVED": { color: theme.palette.success.main },
             }}
           />
         </Stack>
-      </Paper>
+      </Box>
     </Root>
   );
 }
-
-export const Route = createFileRoute("/incidents")({
-  component: Incidents,
-  loader: () => {
-    const breadcrumbs: Breadcrumb[] = [{ label: t("incidents.title") }];
-    return { breadcrumbs };
-  }
-});

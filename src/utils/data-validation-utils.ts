@@ -1,6 +1,7 @@
-import { Towable, Truck, TruckTypeEnum } from "generated/client";
+import { type Towable, type Truck, TruckTypeEnum } from "generated/client";
 import { t } from "i18next";
 import { DateTime } from "luxon";
+import z from "zod/v4";
 
 namespace DataValidation {
   export const validateValueIsNotUndefinedNorNull = <T>(value: null | undefined | T): value is T => {
@@ -48,6 +49,25 @@ namespace DataValidation {
     }
     return true;
   };
+
+  export const validDatetimeTransform = z.transform<string | undefined, DateTime<true> | undefined>(
+    (value, context) => {
+      if (!value) return undefined;
+
+      const datetime = DateTime.fromISO(value);
+
+      if (!datetime.isValid) {
+        context.issues.push({
+          code: "invalid_format",
+          format: "datetime",
+          input: value,
+        });
+        return z.NEVER;
+      }
+
+      return datetime;
+    },
+  );
 }
 
 export default DataValidation;
