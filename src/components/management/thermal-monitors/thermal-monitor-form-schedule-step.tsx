@@ -1,14 +1,14 @@
 import { Checkbox, FormControlLabel, Stack, Typography } from "@mui/material";
 import { TimePicker } from "@mui/x-date-pickers";
 import { useStore } from "@tanstack/react-form";
-import { RadioOption } from "components/form/radio-group";
-import { ThermalMonitorSchedulePeriod, ThermalMonitorScheduleWeekDay, ThermalMonitorType } from "generated/client";
+import type { RadioOption } from "components/form/radio-group";
+import { type ThermalMonitorSchedulePeriod, ThermalMonitorScheduleWeekDay, ThermalMonitorType } from "generated/client";
 import { withForm } from "hooks/form";
-import { DateTime, HourNumbers, Interval, MinuteNumbers, WeekdayNumbers } from "luxon";
+import { DateTime, type HourNumbers, Interval, type MinuteNumbers, type WeekdayNumbers } from "luxon";
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import TimeUtils from "src/utils/time-utils";
-import { ThermalMonitorFormValues } from "./thermal-monitor-form-dialog";
+import type { ThermalMonitorFormValues } from "./thermal-monitor-form-dialog";
 
 type WeekdaySchedule = {
   weekday: ThermalMonitorScheduleWeekDay;
@@ -260,9 +260,8 @@ const ThermalMonitorFormScheduleStep = withForm({
       <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
         <Stack spacing={2} sx={{ width: 300 }}>
           <Typography variant="h6">{t("management.thermalMonitors.defineMonitorActiveTimes")}</Typography>
-          <form.AppField
-            name="type"
-            children={(field) => (
+          <form.AppField name="type">
+            {(field) => (
               <field.FormRadioGroup
                 options={Object.values(ThermalMonitorType).map<RadioOption>((value) => ({
                   label: t(`management.thermalMonitors.type.${value}`),
@@ -270,11 +269,10 @@ const ThermalMonitorFormScheduleStep = withForm({
                 }))}
               />
             )}
-          />
+          </form.AppField>
         </Stack>
-        <form.Subscribe
-          selector={(state) => state.values.type === ThermalMonitorType.Scheduled}
-          children={(isScheduled) =>
+        <form.Subscribe selector={(state) => state.values.type === ThermalMonitorType.Scheduled}>
+          {(isScheduled) =>
             isScheduled ? (
               <>
                 <Stack width={300}>
@@ -308,7 +306,7 @@ const ThermalMonitorFormScheduleStep = withForm({
               </>
             ) : null
           }
-        />
+        </form.Subscribe>
       </Stack>
     );
   },
