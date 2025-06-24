@@ -228,7 +228,7 @@ function Incidents() {
         sortable: false,
         align: "left",
         flex: 1,
-        valueFormatter: ({ value }) => value?.toLocaleString("fi-FI") ?? "",
+        valueFormatter: ({ value }) => (value as Date | undefined)?.toLocaleString("fi-FI") ?? "",
       },
     ],
     [t, monitorsQuery.data, terminalThermometersQuery.data, vehicleThermometersQuery.data],
