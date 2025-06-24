@@ -8,25 +8,25 @@ import type {
   FindTruckRequest,
   GetSalaryPeriodTotalWorkHoursRequest,
   ListClientAppsRequest,
+  ListEmployeesRequest,
   ListEmployeeWorkEventsRequest,
   ListEmployeeWorkShiftsRequest,
-  ListEmployeesRequest,
   ListFreightUnitsRequest,
   ListHolidaysRequest,
   ListPagingPoliciesRequest,
   ListPagingPolicyContactsRequest,
   ListPayrollExportsRequest,
   ListRoutesRequest,
-  ListSiteTemperaturesRequest,
   ListSitesRequest,
+  ListSiteTemperaturesRequest,
   ListTasksRequest,
   ListTerminalThermometersRequest,
   ListThermalMonitorIncidentsRequest,
   ListThermalMonitorsRequest,
   ListTowableTemperaturesRequest,
   ListTruckOrTowableThermometersRequest,
-  ListTruckTemperaturesRequest,
   ListTrucksRequest,
+  ListTruckTemperaturesRequest,
   ListWorkShiftChangeSetsRequest,
   ListWorkShiftHoursRequest,
 } from "generated/client";
@@ -63,7 +63,7 @@ export const QUERY_KEYS = {
   PAYROLL_EXPORTS: "payroll-exports",
   EMPLOYEES_AGGREGATED_HOURS: "employees-aggregated-hours",
   EMPLOYEE_AGGREGATED_HOURS: "employee-aggregated-hours",
-  THERMAL_MONITOR_INCIDENTS: "thermal-monitor-incidents"
+  THERMAL_MONITOR_INCIDENTS: "thermal-monitor-incidents",
 } as const;
 
 export const getListSitesQueryOptions = (requestParams: ListSitesRequest = {}, enabled = true) =>
@@ -367,7 +367,7 @@ export const getFindPagingPolicyContactQueryOptions = (params: FindPagingPolicyC
       api.pagingPolicyContacts.findPagingPolicyContact({ pagingPolicyContactId: params.pagingPolicyContactId }),
   });
 
-export const getListThermalMonitorsQueryOptions = (params: ListThermalMonitorsRequest) =>
+export const getListThermalMonitorsQueryOptions = (params: ListThermalMonitorsRequest = {}) =>
   queryOptions({
     queryKey: [QUERY_KEYS.THERMAL_MONITORS, params],
     enabled: true,
@@ -379,7 +379,7 @@ export const getListThermalMonitorsQueryOptions = (params: ListThermalMonitorsRe
     },
   });
 
-export const getListIncidentsQueryOptions = (params: ListThermalMonitorIncidentsRequest) => 
+export const getListIncidentsQueryOptions = (params: ListThermalMonitorIncidentsRequest) =>
   queryOptions({
     queryKey: [QUERY_KEYS.THERMAL_MONITOR_INCIDENTS, params],
     enabled: true,
@@ -388,8 +388,8 @@ export const getListIncidentsQueryOptions = (params: ListThermalMonitorIncidents
       const totalResults = getTotalResultsFromHeaders(headers);
 
       return { incidents, totalResults };
-    }
-  })
+    },
+  });
 
 export const getFindThermalMonitorQueryOptions = ({ thermalMonitorId }: FindThermalMonitorRequest) =>
   queryOptions({
