@@ -164,6 +164,12 @@ export interface SalaryPeriodTotalWorkHours {
      * @type {number}
      * @memberof SalaryPeriodTotalWorkHours
      */
+    amountOfWorkshifts: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof SalaryPeriodTotalWorkHours
+     */
     amountOfApprovedWorkshifts: number;
     /**
      * 
@@ -201,6 +207,7 @@ export function instanceOfSalaryPeriodTotalWorkHours(value: object): boolean {
     isInstance = isInstance && "frozenAllowance" in value;
     isInstance = isInstance && "salaryPeriodStartDate" in value;
     isInstance = isInstance && "salaryPeriodEndDate" in value;
+    isInstance = isInstance && "amountOfWorkshifts" in value;
     isInstance = isInstance && "amountOfApprovedWorkshifts" in value;
     isInstance = isInstance && "employeeId" in value;
 
@@ -240,6 +247,7 @@ export function SalaryPeriodTotalWorkHoursFromJSONTyped(json: any, ignoreDiscrim
         'frozenAllowance': json['frozenAllowance'],
         'salaryPeriodStartDate': (new Date(json['salaryPeriodStartDate'])),
         'salaryPeriodEndDate': (new Date(json['salaryPeriodEndDate'])),
+        'amountOfWorkshifts': json['amountOfWorkshifts'],
         'amountOfApprovedWorkshifts': json['amountOfApprovedWorkshifts'],
         'employeeId': json['employeeId'],
     };
@@ -277,6 +285,7 @@ export function SalaryPeriodTotalWorkHoursToJSON(value?: SalaryPeriodTotalWorkHo
         'frozenAllowance': value.frozenAllowance,
         'salaryPeriodStartDate': (value.salaryPeriodStartDate.toISOString().substring(0,10)),
         'salaryPeriodEndDate': (value.salaryPeriodEndDate.toISOString().substring(0,10)),
+        'amountOfWorkshifts': value.amountOfWorkshifts,
         'amountOfApprovedWorkshifts': value.amountOfApprovedWorkshifts,
         'employeeId': value.employeeId,
     };
