@@ -146,27 +146,37 @@ function Incidents() {
     [terminalThermometersQuery.data, vehicleThermometersQuery.data],
   );
 
-  const monitorOptions = useMemo(() => {
-    return (monitorsQuery.data?.thermalMonitors ?? []).map((monitor) => ({
-      label: monitor.name || monitor.id,
-      id: monitor.id,
-    }));
-  }, [monitorsQuery.data]);
+  const monitorOptions = useMemo(
+    () => [
+      { label: t("all"), id: "ALL" },
+      ...(monitorsQuery.data?.thermalMonitors ?? []).map((monitor) => ({
+        label: monitor.name || monitor.id,
+        id: monitor.id,
+      })),
+    ],
+    [t, monitorsQuery.data],
+  );
 
-  const selectedMonitor = useMemo(() => {
-    return monitorOptions.find((option) => option.id === filters.monitorId) ?? { label: t("all"), id: "ALL" };
-  }, [t, filters.monitorId, monitorOptions]);
+  const selectedMonitor = useMemo(
+    () => monitorOptions.find((option) => option.id === filters.monitorId) ?? { label: t("all"), id: "ALL" },
+    [t, filters.monitorId, monitorOptions],
+  );
 
-  const thermometerOptions = useMemo(() => {
-    return thermometers.map((thermometer) => ({
-      label: thermometer.name || thermometer.id,
-      id: thermometer.id,
-    }));
-  }, [thermometers]);
+  const thermometerOptions = useMemo(
+    () => [
+      { label: t("all"), id: "ALL" },
+      ...thermometers.map((thermometer) => ({
+        label: thermometer.name || thermometer.id,
+        id: thermometer.id,
+      })),
+    ],
+    [t, thermometers],
+  );
 
-  const selectedThermometer = useMemo(() => {
-    return thermometerOptions.find((option) => option.id === filters.thermometerId) ?? { label: t("all"), id: "ALL" };
-  }, [t, filters.thermometerId, thermometerOptions]);
+  const selectedThermometer = useMemo(
+    () => thermometerOptions.find((option) => option.id === filters.thermometerId) ?? { label: t("all"), id: "ALL" },
+    [t, filters.thermometerId, thermometerOptions],
+  );
 
   const columns = useMemo(
     (): GridColDef<ThermalMonitorIncident>[] => [
