@@ -52,7 +52,7 @@ const getDefine = async ({ mode }: UserConfig) => {
     if (key.startsWith("VITE_")) {
       acc[`import.meta.env.${key}`] = JSON.stringify(value);
     }
-    
+
     return acc;
   }, {});
 };
