@@ -103,7 +103,7 @@ function ManagementEquipment() {
         headerAlign: "left",
         headerName: t("management.equipment.costCenter"),
         sortable: false,
-        width: 150
+        width: 150,
       },
       {
         field: "vin",

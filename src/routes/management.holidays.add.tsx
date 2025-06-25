@@ -37,14 +37,8 @@ function AddHoliday() {
       toast.success(t("management.holidays.successToast", { count: 1 }));
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.HOLIDAYS] });
     },
-    onError: () =>
-      toast.error(t("management.holidays.errorToast", { count: 1 })),
+    onError: () => toast.error(t("management.holidays.errorToast", { count: 1 })),
   });
 
-  return (
-    <AddHolidayDialog
-      onSave={createHoliday}
-      onClose={() => navigate({ to: ".." })}
-    />
-  );
+  return <AddHolidayDialog onSave={createHoliday} onClose={() => navigate({ to: ".." })} />;
 }

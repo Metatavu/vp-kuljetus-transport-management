@@ -1,18 +1,18 @@
 import PrintIcon from "@mui/icons-material/Print";
 import { Button, Dialog, DialogActions, DialogContent, Stack } from "@mui/material";
 import { BlobProvider } from "@react-pdf/renderer";
-import { UseMutationResult, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { type UseMutationResult, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { api } from "api/index";
 import DialogHeader from "components/generic/dialog-header";
 import LoaderWrapper from "components/generic/loader-wrapper";
-import { Freight, FreightUnit, Task } from "generated/client";
+import type { Freight, FreightUnit, Task } from "generated/client";
 import { useCreateFreight, useCreateFreightUnit } from "hooks/use-mutations";
 import {
-  QUERY_KEYS,
   getListFreightUnitsQueryOptions,
   getListSitesQueryOptions,
   getListTasksQueryOptions,
+  QUERY_KEYS,
 } from "hooks/use-queries";
 import { useCallback, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";

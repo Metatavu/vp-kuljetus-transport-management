@@ -1,5 +1,5 @@
 import { Box, Divider, Stack } from "@mui/material";
-import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
+import type { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { api } from "api/index";
@@ -7,14 +7,21 @@ import clsx from "clsx";
 import DatePickerWithArrows from "components/generic/date-picker-with-arrows";
 import GenericDataGrid from "components/generic/generic-data-grid";
 import { VehicleInfoBar } from "components/vehicles/vehicle-info-bar";
-import { Employee, Site, Task, TaskType, TruckDriveState, TruckDriveStateEnum } from "generated/client";
+import {
+  type Employee,
+  type Site,
+  type Task,
+  type TaskType,
+  type TruckDriveState,
+  TruckDriveStateEnum,
+} from "generated/client";
 import { getFindTruckQueryOptions } from "hooks/use-queries";
 import { t } from "i18next";
 import { DateTime, Duration, Interval } from "luxon";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { queryClient } from "src/main";
-import { Breadcrumb } from "src/types";
+import type { Breadcrumb } from "src/types";
 import DataValidation from "src/utils/data-validation-utils";
 import { getEquipmentDisplayName } from "src/utils/format-utils";
 import { z } from "zod/v4";

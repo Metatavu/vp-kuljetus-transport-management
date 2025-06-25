@@ -64,13 +64,7 @@ const ThermometersTable = forwardRef(
       },
     }));
 
-    const handleThermometerNameChange = ({
-      newName,
-      thermometerId,
-    }: {
-      newName: string;
-      thermometerId: string;
-    }) => {
+    const handleThermometerNameChange = ({ newName, thermometerId }: { newName: string; thermometerId: string }) => {
       // Find the original name for this thermometer
       const originalThermometer = thermometers.find((t) => t.id === thermometerId);
       const originalName = originalThermometer?.name ?? "";
