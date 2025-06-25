@@ -29,7 +29,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import DragAndDropUtils, { TRouteTasks } from "src/utils/drag-and-drop-utils";
 import DataValidation from "utils/data-validation-utils";
-import { z } from "zod";
+import { z } from "zod/v4";
 import { Breadcrumb, DraggableType, DraggedTaskData, DroppableType } from "../types";
 
 // Styled components
@@ -43,7 +43,7 @@ const Root = styled(Paper, {
 }));
 
 export const drivePlanningRoutesSearchSchema = z.object({
-  date: z.string().datetime({ offset: true }).transform(DataValidation.parseValidDateTime).optional(),
+  date: z.iso.datetime({ offset: true }).transform(DataValidation.parseValidDateTime).optional(),
   freightId: z.string().uuid().optional(),
 });
 

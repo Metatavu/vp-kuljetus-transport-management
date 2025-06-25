@@ -17,7 +17,7 @@ import { queryClient } from "src/main";
 import { Breadcrumb } from "src/types";
 import DataValidation from "src/utils/data-validation-utils";
 import { getEquipmentDisplayName } from "src/utils/format-utils";
-import { z } from "zod";
+import { z } from "zod/v4";
 import LocalizationUtils from "../utils/localization-utils";
 
 type DriveStatesTableRow = {
@@ -29,7 +29,7 @@ type DriveStatesTableRow = {
 };
 
 export const vehicleInfoRouteSearchSchema = z.object({
-  date: z.string().datetime({ offset: true }).transform(DataValidation.parseValidDateTime).optional(),
+  date: z.iso.datetime({ offset: true }).transform(DataValidation.parseValidDateTime).optional(),
 });
 
 export const Route = createFileRoute("/vehicles_/$truckId/details")({
@@ -151,7 +151,7 @@ function VehicleInfo() {
     }
 
     return `${employee.firstName} ${employee.lastName}`;
-  }
+  };
 
   const previousDayDriveStateParams = {
     truckId: truckId,
@@ -160,9 +160,9 @@ function VehicleInfo() {
   };
 
   const previousDayDriveStates = useQuery({
-      queryKey: ["previousDayDriveStates", previousDayDriveStateParams],
-      queryFn: () => api.trucks.listDriveStates(previousDayDriveStateParams),
-      select: (data) => data.sort((a, b) => a.timestamp - b.timestamp),
+    queryKey: ["previousDayDriveStates", previousDayDriveStateParams],
+    queryFn: () => api.trucks.listDriveStates(previousDayDriveStateParams),
+    select: (data) => data.sort((a, b) => a.timestamp - b.timestamp),
   });
 
   const driveStatesQueryParams = {
@@ -272,15 +272,18 @@ function VehicleInfo() {
    */
   const driveStateRows = useMemo(() => {
     if (!driveStates.data) return [];
-    
+
     const firstEventContainer = [];
     if (previousDayDriveStates.data && previousDayDriveStates.data.length > 0) {
       const newStartTimeForFirstEvent = selectedDate.startOf("day");
-      firstEventContainer.push({...previousDayDriveStates.data[previousDayDriveStates.data.length - 1 ], timestamp: newStartTimeForFirstEvent.toSeconds()})
+      firstEventContainer.push({
+        ...previousDayDriveStates.data[previousDayDriveStates.data.length - 1],
+        timestamp: newStartTimeForFirstEvent.toSeconds(),
+      });
     }
 
     const driveStateListFinal = [...firstEventContainer, ...driveStates.data];
-    
+
     const tableRows = driveStateListFinal.reduce<DriveStatesTableRow[]>((rows, driveState, index, driveStates) => {
       const nextState = driveStates.at(index + 1);
 
@@ -316,7 +319,15 @@ function VehicleInfo() {
     }, []);
 
     return tableRows.reverse();
-  }, [driveStates.data, uniqueTasks, getRowsToAdd, getTaskRows, getDriveStateInterval, previousDayDriveStates.data]);
+  }, [
+    driveStates.data,
+    uniqueTasks,
+    getRowsToAdd,
+    getTaskRows,
+    getDriveStateInterval,
+    previousDayDriveStates.data,
+    selectedDate,
+  ]);
 
   const columns: GridColDef<DriveStatesTableRow>[] = useMemo(
     () => [
@@ -390,7 +401,7 @@ function VehicleInfo() {
         valueGetter: ({ row }) => employeesDataMap.data?.get(row.driverId ?? "")?.driverCardId ?? "",
       },
     ],
-    [t, customerSitesMap.data, employeesDataMap.data],
+    [t, customerSitesMap.data, employeesDataMap.data, getDisplayName],
   );
 
   return (
