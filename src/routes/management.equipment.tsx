@@ -1,17 +1,16 @@
 import { Add } from "@mui/icons-material";
 import { Button, Stack, styled } from "@mui/material";
-import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
-import { gridClasses } from "@mui/x-data-grid";
+import { type GridColDef, type GridPaginationModel, gridClasses } from "@mui/x-data-grid";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { api } from "api/index";
 import GenericDataGrid from "components/generic/generic-data-grid";
 import ToolbarRow from "components/generic/toolbar-row";
-import { Towable, Truck } from "generated/client";
+import type { Towable, Truck } from "generated/client";
 import { t } from "i18next";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Breadcrumb } from "src/types";
+import type { Breadcrumb } from "src/types";
 import LocalizationUtils from "utils/localization-utils";
 
 export const Route = createFileRoute("/management/equipment")({
@@ -35,21 +34,16 @@ const Root = styled(Stack, {
 function ManagementEquipment() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-
-  const [totalTruckResults, setTotalTruckResults] = useState(0);
-  const [totalTowableResults, setTotalTowableResults] = useState(0);
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({ page: 0, pageSize: 25 });
 
   const listTrucksQuery = useQuery({
     queryKey: ["trucks", paginationModel],
     queryFn: async () => {
-      const [trucks, headers] = await api.trucks.listTrucksWithHeaders({
+      const [trucks] = await api.trucks.listTrucksWithHeaders({
         first: paginationModel.pageSize * paginationModel.page,
         max: paginationModel.pageSize * paginationModel.page + paginationModel.pageSize,
       });
-      const count = parseInt(headers.get("x-total-count") ?? "0");
 
-      setTotalTruckResults(count);
       return trucks;
     },
   });
@@ -57,13 +51,11 @@ function ManagementEquipment() {
   const listTowablesQuery = useQuery({
     queryKey: ["towables", paginationModel],
     queryFn: async () => {
-      const [towables, headers] = await api.towables.listTowablesWithHeaders({
+      const [towables] = await api.towables.listTowablesWithHeaders({
         first: paginationModel.pageSize * paginationModel.page,
         max: paginationModel.pageSize * paginationModel.page + paginationModel.pageSize,
       });
-      const count = parseInt(headers.get("x-total-count") ?? "0");
 
-      setTotalTowableResults(count);
       return towables;
     },
   });
@@ -198,7 +190,7 @@ function ManagementEquipment() {
           loading={false}
           paginationMode="server"
           pageSizeOptions={[25, 50, 100]}
-          rowCount={totalTruckResults + totalTowableResults}
+          rowCount={equipment.length}
           paginationModel={paginationModel}
           onPaginationModelChange={setPaginationModel}
         />
