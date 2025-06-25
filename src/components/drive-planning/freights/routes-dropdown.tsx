@@ -1,9 +1,9 @@
 import { List, ListItemButton, ListItemText, Paper, Popper, Stack, styled } from "@mui/material";
-import { GridCellModes, GridEditInputCell, GridRenderEditCellParams } from "@mui/x-data-grid";
+import { GridCellModes, GridEditInputCell, type GridRenderEditCellParams } from "@mui/x-data-grid";
 import DatePickerWithArrows from "components/generic/date-picker-with-arrows";
-import { Route, Task } from "generated/client";
+import type { Route, Task } from "generated/client";
 import { DateTime } from "luxon";
-import { Dispatch, SetStateAction, useCallback } from "react";
+import { type Dispatch, type SetStateAction, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { theme } from "../../../theme";
 
@@ -30,14 +30,14 @@ const RoutesDropdown = (props: Props) => {
   const { api, colDef, id, field, routes, cellMode } = rest;
   const { getCellElement, setEditCellValue, stopRowEditMode } = api;
 
-  if (!colDef) return null;
-
-  const domElement = getCellElement(id, field);
-
   const getSelectedValue = useCallback(
     () => routes.find((route) => route.id === props.value)?.name ?? t("noSelection"),
     [routes, t, props],
   );
+
+  if (!colDef) return null;
+
+  const domElement = getCellElement(id, field);
 
   return (
     <>

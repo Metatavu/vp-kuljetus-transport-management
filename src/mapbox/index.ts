@@ -1,4 +1,4 @@
-import { SessionToken } from "@mapbox/search-js-core";
+import type { SessionToken } from "@mapbox/search-js-core";
 import config from "../app/config";
 
 /**

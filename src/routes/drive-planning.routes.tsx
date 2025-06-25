@@ -1,18 +1,18 @@
 import {
-  Active,
+  type Active,
   DndContext,
-  DragEndEvent,
-  DragOverEvent,
+  type DragEndEvent,
+  type DragOverEvent,
   DragOverlay,
-  DragStartEvent,
+  type DragStartEvent,
   MeasuringStrategy,
 } from "@dnd-kit/core";
 import { Add, Refresh } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
-import { Button, Paper, Stack, Typography, styled } from "@mui/material";
-import { GridPaginationModel } from "@mui/x-data-grid";
+import { Button, Paper, Stack, styled, Typography } from "@mui/material";
+import type { GridPaginationModel } from "@mui/x-data-grid";
 import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Outlet, createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { api } from "api/index";
 import RootFreightDialog from "components/drive-planning/freights/root-freight-dialog";
 import DraggedTaskOverlay from "components/drive-planning/routes/dragged-task-overlay";
@@ -20,17 +20,17 @@ import RoutesTable from "components/drive-planning/routes/routes-table";
 import UnallocatedTasksDrawer from "components/drive-planning/routes/unallocated-tasks-drawer";
 import DatePickerWithArrows from "components/generic/date-picker-with-arrows";
 import ToolbarRow from "components/generic/toolbar-row";
-import { Route as TRoute, Task } from "generated/client";
-import { QUERY_KEYS, getListRoutesQueryOptions, getListSitesQueryOptions } from "hooks/use-queries";
+import type { Task, Route as TRoute } from "generated/client";
+import { getListRoutesQueryOptions, getListSitesQueryOptions, QUERY_KEYS } from "hooks/use-queries";
 import { t } from "i18next";
 import { DateTime } from "luxon";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import DragAndDropUtils, { TRouteTasks } from "src/utils/drag-and-drop-utils";
+import DragAndDropUtils, { type TRouteTasks } from "src/utils/drag-and-drop-utils";
 import DataValidation from "utils/data-validation-utils";
 import { z } from "zod/v4";
-import { Breadcrumb, DraggableType, DraggedTaskData, DroppableType } from "../types";
+import { type Breadcrumb, DraggableType, type DraggedTaskData, DroppableType } from "../types";
 
 // Styled components
 const Root = styled(Paper, {
@@ -44,7 +44,7 @@ const Root = styled(Paper, {
 
 export const drivePlanningRoutesSearchSchema = z.object({
   date: z.iso.datetime({ offset: true }).transform(DataValidation.parseValidDateTime).optional(),
-  freightId: z.string().uuid().optional(),
+  freightId: z.string().optional(),
 });
 
 export const Route = createFileRoute("/drive-planning/routes")({

@@ -1,6 +1,6 @@
 import { Add, ExpandLess, ExpandMore, UnfoldLess, UnfoldMore } from "@mui/icons-material";
 import { IconButton, MenuItem, Stack, TextField, Tooltip, Typography } from "@mui/material";
-import {
+import type {
   GridCellParams,
   GridColDef,
   GridPaginationModel,
@@ -11,7 +11,7 @@ import { TimePicker } from "@mui/x-date-pickers";
 import { useQuery } from "@tanstack/react-query";
 import { deepEqual } from "@tanstack/react-router";
 import GenericDataGrid from "components/generic/generic-data-grid";
-import { Driver, Route, Task, Truck } from "generated/client";
+import type { Driver, Route, Task, Truck } from "generated/client";
 import { getListDriversQueryOptions, getListSitesQueryOptions, getListTrucksQueryOptions } from "hooks/use-queries";
 import { useSingleClickCellEditMode } from "hooks/use-single-click-cell-edit-mode";
 import { DateTime } from "luxon";
@@ -217,12 +217,12 @@ const RoutesTable = ({
       },
     ],
     [
-      t,
-      trucksQuery.data?.trucks,
-      driversQuery.data?.drivers,
-      renderTruckSingleSelectCell,
-      renderDriverSingleSelectCell,
-      expandedRows,
+      t, 
+      trucksQuery.data?.trucks, 
+      driversQuery.data?.drivers, 
+      renderTruckSingleSelectCell, 
+      renderDriverSingleSelectCell, 
+      expandedRows, tasksByRoute[id ?? ""]?.length
     ],
   );
 

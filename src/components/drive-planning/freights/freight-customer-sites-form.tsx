@@ -1,9 +1,9 @@
 import { Box, Grid, MenuItem, TextField } from "@mui/material";
-import { Freight, Site } from "generated/client";
+import type { Freight, Site } from "generated/client";
 import { useMemo } from "react";
 import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { LocalizedLabelKey } from "src/types";
+import type { LocalizedLabelKey } from "src/types";
 
 type Props = {
   freight?: Freight;

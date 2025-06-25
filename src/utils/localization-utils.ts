@@ -1,4 +1,4 @@
-import {
+import type {
   AbsenceType,
   CompensationType,
   EmployeeType,
@@ -11,7 +11,7 @@ import {
   WorkShiftChangeReason,
   WorkType,
 } from "generated/client";
-import { TFunction } from "i18next";
+import type { TFunction } from "i18next";
 
 namespace LocalizationUtils {
   export const getLocalizedTaskType = (type: TaskType, t: TFunction) =>

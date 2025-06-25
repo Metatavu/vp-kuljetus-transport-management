@@ -4,7 +4,7 @@ import { useGridApiContext } from "@mui/x-data-grid";
 import { t } from "i18next";
 import { useCallback } from "react";
 import { theme } from "src/theme";
-import { GroupedTask } from "../../../types";
+import type { GroupedTask } from "../../../types";
 import DraggableRoutesTasksTableRow from "./draggable-routes-tasks-table-row";
 
 const EmptyCell = styled(TableCell, {

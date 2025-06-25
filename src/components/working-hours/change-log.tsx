@@ -11,16 +11,16 @@ import {
   Typography,
 } from "@mui/material";
 import {
-  AbsenceType,
-  Employee,
-  PerDiemAllowanceType,
-  WorkEvent,
-  WorkEventType,
-  WorkShiftChange,
+  type AbsenceType,
+  type Employee,
+  type PerDiemAllowanceType,
+  type WorkEvent,
+  type WorkEventType,
+  type WorkShiftChange,
   WorkShiftChangeReason,
-  WorkShiftChangeSet,
-  WorkShiftHours,
-  WorkType,
+  type WorkShiftChangeSet,
+  type WorkShiftHours,
+  type WorkType,
 } from "generated/client";
 import { DateTime } from "luxon";
 import { useTranslation } from "react-i18next";

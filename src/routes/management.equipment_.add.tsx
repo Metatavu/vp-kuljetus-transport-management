@@ -2,11 +2,11 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { api } from "api/index";
 import Equipment from "components/management/equipment/equipment";
-import { Towable, TowableTypeEnum, Truck } from "generated/client";
+import { type Towable, TowableTypeEnum, type Truck } from "generated/client";
 import { t } from "i18next";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { Breadcrumb } from "src/types";
+import type { Breadcrumb } from "src/types";
 
 export const Route = createFileRoute("/management/equipment_/add")({
   component: () => <EquipmentAdd />,

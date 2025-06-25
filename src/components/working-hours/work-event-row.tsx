@@ -1,10 +1,10 @@
 import { MenuItem, TableCell, TableRow, TextField, styled } from "@mui/material";
-import { WorkEvent, WorkEventType } from "generated/client";
-import { TFunction } from "i18next";
+import { type WorkEvent, WorkEventType } from "generated/client";
+import type { TFunction } from "i18next";
 import { DateTime, Duration } from "luxon";
-import { Key, useCallback, useMemo } from "react";
+import { type Key, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { WorkShiftDialogWorkEventRow } from "src/types";
+import type { WorkShiftDialogWorkEventRow } from "src/types";
 import LocalizationUtils from "src/utils/localization-utils";
 
 type Props = {

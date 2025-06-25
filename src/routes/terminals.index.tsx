@@ -8,7 +8,7 @@ import { SiteType } from "generated/client";
 import { getListSitesQueryOptions } from "hooks/use-queries";
 import { t } from "i18next";
 import { useMemo } from "react";
-import { Breadcrumb } from "src/types";
+import type { Breadcrumb } from "src/types";
 
 export const Route = createFileRoute("/terminals/")({
   component: TerminalsListLayoutComponent,

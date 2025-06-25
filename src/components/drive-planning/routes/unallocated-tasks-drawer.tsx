@@ -2,7 +2,7 @@ import { useDroppable } from "@dnd-kit/core";
 import { AssignmentSharp, ExpandLess, ExpandMore } from "@mui/icons-material";
 import { Collapse, Stack } from "@mui/material";
 import DialogHeader from "components/generic/dialog-header";
-import { Site } from "generated/client";
+import type { Site } from "generated/client";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { theme } from "src/theme";

@@ -3,7 +3,7 @@ import { Button, Dialog, DialogActions, DialogContent, Stack, TextField, Typogra
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "api/index";
 import DialogHeader from "components/generic/dialog-header";
-import { ClientApp, ClientAppStatus } from "generated/client";
+import { type ClientApp, ClientAppStatus } from "generated/client";
 import { QUERY_KEYS } from "hooks/use-queries";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";

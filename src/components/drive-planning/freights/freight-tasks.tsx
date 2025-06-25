@@ -1,15 +1,15 @@
 import ClearIcon from "@mui/icons-material/Clear";
 import { IconButton, Stack } from "@mui/material";
-import { GridColDef, GridRenderCellParams, useGridApiRef } from "@mui/x-data-grid";
+import { type GridColDef, type GridRenderCellParams, useGridApiRef } from "@mui/x-data-grid";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { deepEqual } from "@tanstack/react-router";
 import { api } from "api/index";
 import GenericDataGrid from "components/generic/generic-data-grid";
-import { Route, Site, Task } from "generated/client";
+import type { Route, Site, Task } from "generated/client";
 import { QUERY_KEYS, getListRoutesQueryOptions } from "hooks/use-queries";
 import { useSingleClickRowEditMode } from "hooks/use-single-click-row-edit-mode";
 import { DateTime } from "luxon";
-import { MouseEvent, useCallback, useMemo, useState } from "react";
+import { type MouseEvent, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import LocalizationUtils from "utils/localization-utils";
 import AsyncDataGridCell from "../../generic/async-data-grid-cell";

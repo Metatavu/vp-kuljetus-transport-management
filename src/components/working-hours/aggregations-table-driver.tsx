@@ -1,5 +1,5 @@
-import { Table, TableBody, TableCell, TableRow, Typography, styled } from "@mui/material";
-import { Employee, SalaryPeriodTotalWorkHours } from "generated/client";
+import { styled, Table, TableBody, TableCell, TableRow, Typography } from "@mui/material";
+import type { Employee, SalaryPeriodTotalWorkHours } from "generated/client";
 import { useTranslation } from "react-i18next";
 import WorkShiftsUtils from "src/utils/workshift-utils";
 
@@ -17,8 +17,8 @@ type Props = {
 };
 
 function AggregationsTableForDriver({ employee, employeeAggregatedHours }: Props) {
-  if (!employee) return null;
   const { t } = useTranslation();
+  if (!employee) return null;
 
   return (
     <Table>

@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { api } from "api/index";
 import AddAlarmContactFormDialog from "components/management/alarm-contacts/add-alarm-contact-dialog";
-import { PagingPolicyContact } from "generated/client";
+import type { PagingPolicyContact } from "generated/client";
 import { QUERY_KEYS } from "hooks/use-queries";
 import { DateTime } from "luxon";
 import { useTranslation } from "react-i18next";

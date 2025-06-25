@@ -1,7 +1,5 @@
 import { createTheme } from "@mui/material";
-import type {} from "@mui/x-data-grid/themeAugmentation";
 import { fiFI } from "@mui/x-date-pickers";
-import type {} from "@mui/x-date-pickers/themeAugmentation";
 
 /**
  * Extend theme with custom variables in here

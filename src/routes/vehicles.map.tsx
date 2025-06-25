@@ -15,14 +15,14 @@ import { useQueries, useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { api } from "api/index";
 import { VehicleInfoBar } from "components/vehicles/vehicle-info-bar";
-import { TruckLocation } from "generated/client";
+import type { TruckLocation } from "generated/client";
 import { t } from "i18next";
-import { Map as LeafletMap, divIcon, latLng } from "leaflet";
+import { divIcon, latLng, type Map as LeafletMap } from "leaflet";
 import { DateTime } from "luxon";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { MapContainer, Marker, TileLayer, Tooltip } from "react-leaflet";
-import { Breadcrumb } from "src/types";
+import type { Breadcrumb } from "src/types";
 import config from "../app/config";
 
 export const Route = createFileRoute("/vehicles/map")({
@@ -78,7 +78,7 @@ function VehiclesMap() {
         truckId: truck.id!,
         location: (
           await api.trucks.listTruckLocations({
-            // biome-ignore lint/style/noNonNullAssertion: <explanation>
+            // biome-ignore lint/style/noNonNullAssertion: id must exist in trucks from API
             truckId: truck.id!,
             max: 1,
             first: 0,

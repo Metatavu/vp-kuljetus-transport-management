@@ -1,4 +1,4 @@
-import { GridCellModes, GridCellModesModel, GridCellParams } from "@mui/x-data-grid";
+import { GridCellModes, type GridCellModesModel, type GridCellParams } from "@mui/x-data-grid";
 import { useState } from "react";
 
 /**
@@ -22,11 +22,11 @@ export const useSingleClickCellEditMode = (onCellClick?: (params: GridCellParams
       return {
         ...Object.keys(prevModel).reduce(
           (acc, id) => ({
-            // biome-ignore lint/performance/noAccumulatingSpread: <explanation>
+            // biome-ignore lint/performance/noAccumulatingSpread: // We need to reset all other cells to view mode
             ...acc,
             [id]: Object.keys(prevModel[id]).reduce(
               (acc2, field) => ({
-                // biome-ignore lint/performance/noAccumulatingSpread: <explanation>
+                // biome-ignore lint/performance/noAccumulatingSpread: // We need to reset all other fields to view mode
                 ...acc2,
                 [field]: { mode: GridCellModes.View },
               }),
@@ -38,7 +38,7 @@ export const useSingleClickCellEditMode = (onCellClick?: (params: GridCellParams
         [params.id]: {
           ...Object.keys(prevModel[params.id] || {}).reduce(
             (acc, field) => ({
-              // biome-ignore lint/performance/noAccumulatingSpread: <explanation>
+              // biome-ignore lint/performance/noAccumulatingSpread: // We need to reset all other fields to view mode
               ...acc,
               [field]: { mode: GridCellModes.View },
             }),

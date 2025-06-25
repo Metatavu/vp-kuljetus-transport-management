@@ -88,22 +88,28 @@ const FreightDialog = ({ freight, onSave, onClose }: Props) => {
         await createFreightUnit.mutateAsync({ ...freightUnit, id: undefined, freightId: createdFreight.id });
       }
       navigate({ to: "/drive-planning/freights", search: { freightId: createdFreight.id } });
-    } catch (error) {
+    } catch (_error) {
       toast.error(t("drivePlanning.freights.copyErrorToast"));
     }
   };
 
-  const onEditFreightUnit = (updatedFreightUnit: FreightUnit) => {
-    const filteredTempFreightUnits = pendingFreightUnits.filter(
-      (freightUnit) => freightUnit.id !== updatedFreightUnit.id,
-    );
-    setPendingFreightUnits([...filteredTempFreightUnits, updatedFreightUnit]);
-  };
+  const onEditFreightUnit = useCallback(
+    (updatedFreightUnit: FreightUnit) => {
+      const filteredTempFreightUnits = pendingFreightUnits.filter(
+        (freightUnit) => freightUnit.id !== updatedFreightUnit.id,
+      );
+      setPendingFreightUnits([...filteredTempFreightUnits, updatedFreightUnit]);
+    },
+    [pendingFreightUnits],
+  );
 
-  const onEditTask = (updatedTask: Task) => {
-    const filteredTempTasks = pendingTasks.filter((task) => task.id !== updatedTask.id);
-    setPendingTasks([...filteredTempTasks, updatedTask]);
-  };
+  const onEditTask = useCallback(
+    (updatedTask: Task) => {
+      const filteredTempTasks = pendingTasks.filter((task) => task.id !== updatedTask.id);
+      setPendingTasks([...filteredTempTasks, updatedTask]);
+    },
+    [pendingTasks],
+  );
 
   const onSaveClick = async (freight: Freight) => {
     if (!onSave) return;

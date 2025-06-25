@@ -1,9 +1,9 @@
 import { Button, Dialog, DialogActions, DialogContent, MenuItem, TextField } from "@mui/material";
-import { UseMutationResult } from "@tanstack/react-query";
+import type { UseMutationResult } from "@tanstack/react-query";
 import DialogHeader from "components/generic/dialog-header";
-import { PagingPolicyContact, PagingPolicyType } from "generated/client";
-import { TFunction } from "i18next";
-import { Key, useCallback } from "react";
+import { type PagingPolicyContact, PagingPolicyType } from "generated/client";
+import type { TFunction } from "i18next";
+import { type Key, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import LocalizationUtils from "src/utils/localization-utils";

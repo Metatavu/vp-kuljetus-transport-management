@@ -1,10 +1,10 @@
-import { Document, Image, Page, Styles, Text, View } from "@react-pdf/renderer";
+import { Document, Image, Page, type Styles, Text, View } from "@react-pdf/renderer";
 import logo from "assets/vp-kuljetus-logo.jpeg";
-import { Freight, FreightUnit, Site, Task, TaskType } from "generated/client";
+import { type Freight, type FreightUnit, type Site, type Task, TaskType } from "generated/client";
 import JsBarcode from "jsbarcode";
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { LocalizedLabelKey } from "src/types";
+import type { LocalizedLabelKey } from "src/types";
 import TimeUtils from "src/utils/time-utils";
 
 type WaybillPage = {

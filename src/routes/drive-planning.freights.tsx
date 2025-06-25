@@ -1,6 +1,6 @@
 import { Add } from "@mui/icons-material";
 import { Button, Stack, styled } from "@mui/material";
-import { GridColDef, GridPaginationModel, GridRenderCellParams, GridTreeNodeWithRender } from "@mui/x-data-grid";
+import type { GridColDef, GridPaginationModel, GridRenderCellParams, GridTreeNodeWithRender } from "@mui/x-data-grid";
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { Outlet, createFileRoute } from "@tanstack/react-router";
 import { api } from "api/index";
@@ -8,12 +8,12 @@ import RootFreightDialog from "components/drive-planning/freights/root-freight-d
 import GenericDataGrid from "components/generic/generic-data-grid";
 import LoaderWrapper from "components/generic/loader-wrapper";
 import ToolbarRow from "components/generic/toolbar-row";
-import { Freight } from "generated/client";
+import type { Freight } from "generated/client";
 import { getListFreightsQueryOptions, getListSitesQueryOptions } from "hooks/use-queries";
 import { t } from "i18next";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Breadcrumb } from "src/types";
+import type { Breadcrumb } from "src/types";
 import DataValidation from "utils/data-validation-utils";
 import { z } from "zod/v4";
 

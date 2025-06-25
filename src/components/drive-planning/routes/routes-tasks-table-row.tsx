@@ -6,16 +6,16 @@ import {
   ListItemText,
   ListSubheader,
   Popover,
+  styled,
   TableCell,
   TableRow,
-  styled,
 } from "@mui/material";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { api } from "api/index";
-import { Site, Task, TaskType } from "generated/client";
-import { QUERY_KEYS, getListFreightsQueryOptions } from "hooks/use-queries";
-import { ForwardedRef, forwardRef, useCallback, useState } from "react";
+import type { Site, Task, TaskType } from "generated/client";
+import { getListFreightsQueryOptions, QUERY_KEYS } from "hooks/use-queries";
+import { type ForwardedRef, forwardRef, useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import LocalizationUtils from "utils/localization-utils";
 
@@ -159,11 +159,7 @@ const RoutesTasksTableRow = forwardRef(
         >
           <List
             dense
-            subheader={
-              <ListSubheader component="div" id="nested-list-subheader">
-                {t("drivePlanning.routes.tasksTable.removeTask")}
-              </ListSubheader>
-            }
+            subheader={<ListSubheader component="div">{t("drivePlanning.routes.tasksTable.removeTask")}</ListSubheader>}
           >
             {renderPopoverContent()}
           </List>

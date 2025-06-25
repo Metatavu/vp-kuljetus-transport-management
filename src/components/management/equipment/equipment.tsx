@@ -5,7 +5,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { api } from "api/index";
 import ToolbarRow from "components/generic/toolbar-row";
 import { useConfirmDialog } from "components/providers/confirm-dialog-provider";
-import { Towable, Truck } from "generated/client";
+import type { Towable, Truck } from "generated/client";
 import { useRef, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";

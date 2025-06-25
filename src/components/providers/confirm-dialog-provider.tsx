@@ -1,6 +1,6 @@
-import { Button, ButtonOwnProps, Dialog, DialogActions, DialogContent } from "@mui/material";
+import { Button, type ButtonOwnProps, Dialog, DialogActions, DialogContent } from "@mui/material";
 import DialogHeader from "components/generic/dialog-header";
-import { ReactNode, createContext, useContext, useState } from "react";
+import { type ReactNode, createContext, useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 type ConfirmDialogOptions = {

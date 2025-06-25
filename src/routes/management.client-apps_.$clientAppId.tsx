@@ -19,13 +19,13 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { api } from "api/index";
 import { useConfirmDialog } from "components/providers/confirm-dialog-provider";
-import { ClientApp } from "generated/client";
+import type { ClientApp } from "generated/client";
 import { QUERY_KEYS, getFindClientAppQueryOptions } from "hooks/use-queries";
 import { t } from "i18next";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { queryClient } from "src/main";
-import { Breadcrumb } from "src/types";
+import type { Breadcrumb } from "src/types";
 import { getClientAppTag } from "src/utils/format-utils";
 
 export const Route = createFileRoute("/management/client-apps_/$clientAppId")({

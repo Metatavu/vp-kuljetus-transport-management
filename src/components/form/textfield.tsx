@@ -1,4 +1,4 @@
-import { TextField, TextFieldProps } from "@mui/material";
+import { TextField, type TextFieldProps } from "@mui/material";
 import { useFieldContext } from "hooks/form";
 
 type Props = Omit<TextFieldProps, "name" | "value" | "onChange" | "onBlur">;

@@ -1,5 +1,5 @@
 import { Button, Paper, Stack } from "@mui/material";
-import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
+import type { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { api } from "api/index";
@@ -7,9 +7,9 @@ import clsx from "clsx";
 import GenericDataGrid from "components/generic/generic-data-grid";
 import { t } from "i18next";
 import { DateTime } from "luxon";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Breadcrumb } from "src/types";
+import type { Breadcrumb } from "src/types";
 import LocalizationUtils from "../utils/localization-utils";
 
 export const Route = createFileRoute("/vehicles/list")({
@@ -36,7 +36,7 @@ function VehicleListVehicles() {
         first: paginationModel.pageSize * paginationModel.page,
         max: paginationModel.pageSize * paginationModel.page + paginationModel.pageSize,
       });
-      const count = parseInt(headers.get("x-total-count") ?? "0");
+      const count = Number.parseInt(headers.get("x-total-count") ?? "0");
 
       setTotalTruckResults(count);
       return trucks;
@@ -64,6 +64,16 @@ function VehicleListVehicles() {
     combine: (results) => results.map((result) => result.data),
   });
 
+  const [currentTime, setTime] = useState(DateTime.now());
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTime(DateTime.now());
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   /**
    * Render the drive state cell with a timer that shows how long the truck has been in the current drive state
    *
@@ -71,27 +81,20 @@ function VehicleListVehicles() {
    * @param timestamp timestamp of the latest drive state
    * @returns
    */
-  const getDriveStateWithTimer = (driveState: string, timestamp: number | undefined) => {
-    const [currentTime, setTime] = useState(DateTime.now());
+  const getDriveStateWithTimer = useCallback(
+    (driveState: string, timestamp: number | undefined, currentTime: DateTime) => {
+      if (!driveState || !timestamp) {
+        return "";
+      }
 
-    useEffect(() => {
-      const interval = setInterval(() => {
-        setTime(DateTime.now());
-      }, 1000);
+      const dateFromTimestamp = DateTime.fromSeconds(timestamp);
+      const timePassedInCurrentDriveState = currentTime.diff(dateFromTimestamp, ["seconds", "minutes", "hours"]);
+      const formattedTimeString = `(${timePassedInCurrentDriveState.toFormat("hh:mm:ss")})`;
 
-      return () => clearInterval(interval);
-    }, []);
-
-    if (!driveState || !timestamp) {
-      return "";
-    }
-
-    const dateFromTimestamp = DateTime.fromSeconds(timestamp);
-    const timePassedInCurrentDriveState = currentTime.diff(dateFromTimestamp, ["seconds", "minutes", "hours"]);
-    const formattedTimeString = `(${timePassedInCurrentDriveState.toFormat("hh:mm:ss")})`;
-
-    return formattedTimeString;
-  };
+      return formattedTimeString;
+    },
+    [],
+  );
 
   const columns: GridColDef[] = useMemo(
     () => [
@@ -164,6 +167,7 @@ function VehicleListVehicles() {
             {getDriveStateWithTimer(
               params.value,
               trucksDriveStates.find((driveState) => driveState?.truckId === params.row.id)?.driveState?.timestamp,
+              currentTime,
             )}
           </Stack>
         ),
@@ -183,7 +187,7 @@ function VehicleListVehicles() {
         flex: 1,
       },
     ],
-    [t, navigate, getDriveStateWithTimer],
+    [t, navigate, trucksDriveStates.find, getDriveStateWithTimer, currentTime],
   );
 
   /**

@@ -1,17 +1,17 @@
 import { Add, Edit, PauseCircle, PlayCircle } from "@mui/icons-material";
 import { Button, IconButton, Stack, styled } from "@mui/material";
-import { GridColDef, GridPaginationModel, useGridApiRef } from "@mui/x-data-grid";
+import { type GridColDef, type GridPaginationModel, useGridApiRef } from "@mui/x-data-grid";
 import { useQuery } from "@tanstack/react-query";
 import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router";
 import GenericDataGrid from "components/generic/generic-data-grid";
 import LoaderWrapper from "components/generic/loader-wrapper";
 import ToolbarRow from "components/generic/toolbar-row";
-import { ThermalMonitor, ThermalMonitorStatus, ThermalMonitorType } from "generated/client";
+import { type ThermalMonitor, ThermalMonitorStatus, ThermalMonitorType } from "generated/client";
 import { getListThermalMonitorsQueryOptions } from "hooks/use-queries";
 import { t } from "i18next";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Breadcrumb } from "src/types";
+import type { Breadcrumb } from "src/types";
 import { useResizeObserver } from "usehooks-ts";
 
 export const Route = createFileRoute("/management/thermal-monitors")({

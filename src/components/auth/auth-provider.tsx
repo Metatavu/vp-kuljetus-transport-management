@@ -1,7 +1,7 @@
 import NotAuthorizedView from "components/generic/not-authorized-view";
 import { useAtom, useSetAtom } from "jotai";
 import Keycloak from "keycloak-js";
-import { ReactNode, useCallback, useEffect, useState } from "react";
+import { type ReactNode, useCallback, useEffect, useState } from "react";
 import config from "../../app/config";
 import { authAtom, userProfileAtom } from "../../atoms/auth";
 

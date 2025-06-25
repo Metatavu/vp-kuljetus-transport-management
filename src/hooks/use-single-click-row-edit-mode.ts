@@ -1,4 +1,4 @@
-import { GridCellParams, GridRowModes, GridRowModesModel } from "@mui/x-data-grid";
+import { type GridCellParams, GridRowModes, type GridRowModesModel } from "@mui/x-data-grid";
 import { useState } from "react";
 
 /**
@@ -18,7 +18,7 @@ export const useSingleClickRowEditMode = () => {
     setRowModesModel((previousModel) => ({
       ...Object.keys(previousModel).reduce(
         (acc, id) => ({
-          // biome-ignore lint/performance/noAccumulatingSpread: <explanation>
+          // biome-ignore lint/performance/noAccumulatingSpread: // We need to reset all other rows to view mode
           ...acc,
           [id]: { mode: GridRowModes.View },
         }),

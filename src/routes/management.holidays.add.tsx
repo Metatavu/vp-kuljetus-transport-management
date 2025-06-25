@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { api } from "api/index";
 import AddHolidayDialog from "components/management/holidays/add-holiday-dialog";
-import { Holiday as THoliday } from "generated/client";
+import type { Holiday as THoliday } from "generated/client";
 import { QUERY_KEYS } from "hooks/use-queries";
 import { DateTime } from "luxon";
 import { useTranslation } from "react-i18next";

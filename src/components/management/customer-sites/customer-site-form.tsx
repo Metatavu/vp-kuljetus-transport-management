@@ -4,11 +4,11 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { api } from "api/index";
 import { useConfirmDialog } from "components/providers/confirm-dialog-provider";
-import { Site } from "generated/client";
+import type { Site } from "generated/client";
 import { useDebounce } from "hooks/use-debounce";
 import Mapbox from "mapbox/index";
-import { SyntheticEvent, useState } from "react";
-import { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from "react-hook-form";
+import { type SyntheticEvent, useState } from "react";
+import type { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { stringify } from "wellknown";
 

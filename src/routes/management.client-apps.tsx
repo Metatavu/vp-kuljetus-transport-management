@@ -1,5 +1,5 @@
 import { Button, Stack, styled } from "@mui/material";
-import { GridColDef } from "@mui/x-data-grid";
+import type { GridColDef } from "@mui/x-data-grid";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { api } from "api/index";
@@ -7,12 +7,12 @@ import GenericDataGrid from "components/generic/generic-data-grid";
 import ToolbarRow from "components/generic/toolbar-row";
 import { ApproveClientAppDialog } from "components/management/client-apps/approve-client-app-dialog";
 import { useConfirmDialog } from "components/providers/confirm-dialog-provider";
-import { ClientApp, ClientAppStatus } from "generated/client";
+import { type ClientApp, ClientAppStatus } from "generated/client";
 import { QUERY_KEYS, getListClientAppsQueryOptions } from "hooks/use-queries";
 import { t } from "i18next";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Breadcrumb } from "src/types";
+import type { Breadcrumb } from "src/types";
 import { getClientAppTag } from "src/utils/format-utils";
 
 export const Route = createFileRoute("/management/client-apps")({

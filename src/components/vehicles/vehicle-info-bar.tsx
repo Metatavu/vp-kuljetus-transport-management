@@ -2,7 +2,7 @@ import { ChevronLeft, GpsOff, SignalCellularConnectedNoInternet0Bar } from "@mui
 import GpsFixedIcon from "@mui/icons-material/GpsFixed";
 import SignalCellularAltIcon from "@mui/icons-material/SignalCellularAlt";
 import { Box, Chip, IconButton, Stack, Tooltip, Typography } from "@mui/material";
-import { Truck, TruckLocation, TruckSpeed } from "generated/client";
+import type { Truck, TruckLocation, TruckSpeed } from "generated/client";
 import { useTranslation } from "react-i18next";
 import TimeUtils from "../../utils/time-utils";
 

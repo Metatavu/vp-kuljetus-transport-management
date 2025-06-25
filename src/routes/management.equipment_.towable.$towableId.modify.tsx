@@ -2,12 +2,12 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { api } from "api/index";
 import Equipment from "components/management/equipment/equipment";
-import { Towable } from "generated/client";
+import type { Towable } from "generated/client";
 import { QUERY_KEYS, getFindTowableQueryOptions } from "hooks/use-queries";
 import { t } from "i18next";
 import { toast } from "react-toastify";
 import { queryClient } from "src/main";
-import { Breadcrumb } from "src/types";
+import type { Breadcrumb } from "src/types";
 import { getEquipmentDisplayName } from "src/utils/format-utils";
 
 export const Route = createFileRoute("/management/equipment_/towable/$towableId/modify")({
@@ -34,7 +34,7 @@ function TowableModify() {
   const { towable } = Route.useLoaderData();
   const { towableId } = Route.useParams();
   const queryClient = useQueryClient();
-  const navigate = Route.useNavigate();
+  const _navigate = Route.useNavigate();
 
   const updateTowable = useMutation({
     mutationFn: (towable: Towable) => api.towables.updateTowable({ towableId, towable }),

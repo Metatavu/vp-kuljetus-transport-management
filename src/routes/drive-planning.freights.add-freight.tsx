@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import FreightDialog from "components/drive-planning/freights/freight-dialog";
-import { Freight } from "generated/client";
+import type { Freight } from "generated/client";
 import { useCreateFreight } from "hooks/use-mutations";
 
 export const Route = createFileRoute("/drive-planning/freights/add-freight")({

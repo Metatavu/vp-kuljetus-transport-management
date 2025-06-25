@@ -24,7 +24,7 @@ import {
 } from "hooks/use-queries";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ThermalMonitorFormValues } from "./thermal-monitor-form-dialog";
+import type { ThermalMonitorFormValues } from "./thermal-monitor-form-dialog";
 
 type ThermometerWithRelatedEntityName = {
   id: string;
