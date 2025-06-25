@@ -590,6 +590,28 @@
   "errorHandling": {
     "vehicleListing": "Ajoneuvolistauksessa tapahtui virhe"
   },
+  "incidents": {
+    "title": "Hälytykset",
+    "filters": {
+      "monitor": "Vahti",
+      "thermometer": "Lämpöanturi",
+      "status": "Tila",
+      "timePeriod": "Ajanjakso"
+    },
+    "columns": {
+      "monitor": "Vahti",
+      "thermometer": "Lämpöanturi",
+      "status": "Tila",
+      "temperature": "Hälytyslämpötila °C",
+      "time": "Hälytysaika"
+    },
+    "status": {
+      "ACKNOWLEDGED": "Kuitattu",
+      "RESOLVED": "Ratkaistu",
+      "TRIGGERED": "Lauennut"
+    },
+    "lostConnectionToSensor": "Ei yhteyttä sensoriin"
+  },
   "workingHours": {
     "title": "Työaika",
     "workingHourBalances": {

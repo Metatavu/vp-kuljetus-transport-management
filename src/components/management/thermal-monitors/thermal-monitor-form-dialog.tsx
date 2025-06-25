@@ -1,6 +1,10 @@
 import { Button, Dialog, DialogActions, DialogContent, Step, StepLabel, Stepper } from "@mui/material";
 import DialogHeader from "components/generic/dialog-header";
-import { ThermalMonitorPagingPolicy, ThermalMonitorSchedulePeriod, ThermalMonitorType } from "generated/client";
+import {
+  type ThermalMonitorPagingPolicy,
+  type ThermalMonitorSchedulePeriod,
+  ThermalMonitorType,
+} from "generated/client";
 import { useAppForm } from "hooks/form";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -12,6 +16,10 @@ import ThermalMonitorFormThermometersStep from "./thermal-monitor-form-thermomet
 const FORM_STEPS = ["monitor", "thermometers", "schedule", "pagingPolicies"] as const;
 type FormStep = (typeof FORM_STEPS)[number];
 
+type ThermalMonitorPagingPolicyFormItem = Omit<ThermalMonitorPagingPolicy, "id" | "priority" | "thermalMonitorId"> & {
+  id: string;
+};
+
 export type ThermalMonitorFormValues = {
   name?: string;
   lowerThresholdTemperature?: number;
@@ -21,7 +29,7 @@ export type ThermalMonitorFormValues = {
   activeFrom?: Date;
   activeTo?: Date;
   schedule?: ThermalMonitorSchedulePeriod[];
-  pagingPolicies: ThermalMonitorPagingPolicy[];
+  pagingPolicies: ThermalMonitorPagingPolicyFormItem[];
 };
 
 type Props = {
@@ -113,9 +121,8 @@ const ThermalMonitorFormDialog = ({ existingThermalMonitorFormValues, onSave, on
         }}
       >
         <DialogContent sx={{ p: 3 }} style={{ height: "calc(100dvh * 2 / 3)" }}>
-          <form.Subscribe
-            selector={(state) => state.values}
-            children={(values) => (
+          <form.Subscribe selector={(state) => state.values}>
+            {(values) => (
               <Stepper activeStep={activeStepIndex}>
                 {FORM_STEPS.map((step, index) => (
                   <Step key={step} completed={isStepComplete(step, values)} onClick={() => setActiveStepIndex(index)}>
@@ -124,7 +131,7 @@ const ThermalMonitorFormDialog = ({ existingThermalMonitorFormValues, onSave, on
                 ))}
               </Stepper>
             )}
-          />
+          </form.Subscribe>
           {renderStepContent(FORM_STEPS[activeStepIndex])}
         </DialogContent>
         <DialogActions sx={{ p: 2, gap: 1 }}>

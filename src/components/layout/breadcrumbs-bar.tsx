@@ -1,4 +1,4 @@
-import { Breadcrumbs, Typography, styled } from "@mui/material";
+import { Breadcrumbs, styled, Typography } from "@mui/material";
 import { Stack } from "@mui/system";
 import { Link, useLoaderData, useMatches } from "@tanstack/react-router";
 
@@ -23,19 +23,16 @@ const BreadcrumbsBar = () => {
     <BreadCrumbBar>
       <Breadcrumbs aria-label="breadcrumb" sx={{ color: "#ffffff" }}>
         {breadcrumbs.map(({ label, route }, index) => {
+          const key = `breadcrumb-${index}`;
+
           return route ? (
-            <Link href={route} key={`breadcrumb-${index}`} style={{ color: "#fff" }}>
+            <Link href={route} key={key} style={{ color: "#fff" }}>
               <Typography variant="h6" sx={{ userSelect: "none" }}>
                 {label}
               </Typography>
             </Link>
           ) : (
-            <Typography
-              key={`breadcrumb-${index}`}
-              color="#ffffff"
-              variant={index === 0 ? "body2" : "h6"}
-              sx={{ userSelect: "none" }}
-            >
+            <Typography key={key} color="#ffffff" variant={index === 0 ? "body2" : "h6"} sx={{ userSelect: "none" }}>
               {label}
             </Typography>
           );

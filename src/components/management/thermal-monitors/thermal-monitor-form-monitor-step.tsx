@@ -2,7 +2,7 @@ import { Stack } from "@mui/material";
 import { withForm } from "hooks/form";
 import { useTranslation } from "react-i18next";
 import { z } from "zod/v4";
-import { ThermalMonitorFormValues } from "./thermal-monitor-form-dialog";
+import type { ThermalMonitorFormValues } from "./thermal-monitor-form-dialog";
 
 const ThermalMonitorFormMonitorStep = withForm({
   defaultValues: {} as ThermalMonitorFormValues,

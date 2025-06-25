@@ -23,6 +23,7 @@ const TopNavigation = () => {
     { route: "/drive-planning/routes", label: "drivePlanning.title" },
     { route: "/working-hours", label: "workingHours.title", date: DateTime.now() },
     { route: "/management/terminals", label: "management.title" },
+    { route: "/incidents", label: "incidents.title" }
   ];
 
   const selectedRouteIndex = routeLinks.findIndex(({ route }) =>

@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { api } from "api/index";
 import ThermalMonitorFormDialog, {
-  ThermalMonitorFormValues,
+  type ThermalMonitorFormValues,
 } from "components/management/thermal-monitors/thermal-monitor-form-dialog";
 import { ThermalMonitorStatus } from "generated/client";
 import { QUERY_KEYS } from "hooks/use-queries";
@@ -61,5 +61,5 @@ function ManagementThermalMonitorsAdd() {
     },
   });
 
-  return <ThermalMonitorFormDialog onSave={createThermalMonitorMutation.mutate} onClose={handleClose} />;
+  return <ThermalMonitorFormDialog onSave={createThermalMonitorMutation.mutateAsync} onClose={handleClose} />;
 }
