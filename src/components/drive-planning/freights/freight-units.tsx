@@ -1,11 +1,11 @@
 import { Add } from "@mui/icons-material";
 import { Button } from "@mui/material";
-import { GridColDef } from "@mui/x-data-grid";
+import type { GridColDef } from "@mui/x-data-grid";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deepEqual } from "@tanstack/react-router";
 import { api } from "api/index";
 import GenericDataGrid from "components/generic/generic-data-grid";
-import { FreightUnit } from "generated/client";
+import type { FreightUnit } from "generated/client";
 import { useCreateFreightUnit } from "hooks/use-mutations";
 import { QUERY_KEYS } from "hooks/use-queries";
 import { useSingleClickRowEditMode } from "hooks/use-single-click-row-edit-mode";
@@ -66,7 +66,7 @@ const FreightUnits = ({ freightUnits, freightId, onEditFreightUnit }: Props) => 
   const parseEditCellNumberValue = useCallback((value: unknown) => {
     if (value === null || value === undefined || value === "") return undefined;
 
-    return parseFloat(value as string);
+    return Number.parseFloat(value as string);
   }, []);
 
   const columns: GridColDef[] = useMemo(

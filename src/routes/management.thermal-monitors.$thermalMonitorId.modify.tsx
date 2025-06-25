@@ -2,13 +2,13 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { api } from "api/index";
 import ThermalMonitorFormDialog, {
-  ThermalMonitorFormValues,
+  type ThermalMonitorFormValues,
 } from "components/management/thermal-monitors/thermal-monitor-form-dialog";
 import { ThermalMonitorStatus, ThermalMonitorType } from "generated/client";
 import {
-  QUERY_KEYS,
   getFindThermalMonitorQueryOptions,
   getListThermalMonitorPagingPoliciesQueryOptions,
+  QUERY_KEYS,
 } from "hooks/use-queries";
 import { useCallback, useMemo } from "react";
 
@@ -117,7 +117,12 @@ function ModifyThermalMonitor() {
       activeFrom: thermalMonitor?.activeFrom,
       activeTo: thermalMonitor?.activeTo,
       schedule: thermalMonitor?.schedule,
-      pagingPolicies: pagingPolicies,
+      pagingPolicies: pagingPolicies.map((policy) => ({
+        // biome-ignore lint/style/noNonNullAssertion: API entity must have ID.
+        id: policy.id!,
+        contactId: policy.contactId,
+        escalationDelaySeconds: policy.escalationDelaySeconds,
+      })),
     };
   }, [findThermalMonitor.data, listThermalMonitorPagingPolicies.data]);
 

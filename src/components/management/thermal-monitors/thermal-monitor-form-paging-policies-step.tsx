@@ -1,5 +1,5 @@
-import { DndContext, PointerSensor, closestCenter, useSensor, useSensors } from "@dnd-kit/core";
-import { SortableContext, arrayMove, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import { closestCenter, DndContext, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
+import { arrayMove, SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { Button, Card, CardActions, CardContent } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { withForm } from "hooks/form";
@@ -7,7 +7,7 @@ import { getListPagingPolicyContactsQueryOptions } from "hooks/use-queries";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { v4 as uuid } from "uuid";
-import { ThermalMonitorFormValues } from "./thermal-monitor-form-dialog";
+import type { ThermalMonitorFormValues } from "./thermal-monitor-form-dialog";
 import ThermalMonitorPagingPolicyCard from "./thermal-monitor-paging-policy-card";
 
 const ThermalMonitorFormPagingPoliciesStep = withForm({
@@ -59,7 +59,6 @@ const ThermalMonitorFormPagingPoliciesStep = withForm({
                 onClick={() =>
                   listField.pushValue({
                     id: uuid(),
-                    name: "",
                     contactId: pagingPolicyContacts.at(0)?.id ?? "",
                     escalationDelaySeconds: 0,
                   })
