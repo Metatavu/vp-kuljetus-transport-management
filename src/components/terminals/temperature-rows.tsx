@@ -1,6 +1,6 @@
 import { Box, Divider, Stack, Typography } from "@mui/material";
 import { useQueries } from "@tanstack/react-query";
-import { TerminalTemperature, TerminalThermometer } from "generated/client";
+import type { TerminalTemperature, TerminalThermometer } from "generated/client";
 import { getListTerminalTemperaturesQueryOptions } from "hooks/use-queries";
 
 type Props = {

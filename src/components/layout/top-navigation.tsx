@@ -7,7 +7,7 @@ import { useAtomValue } from "jotai";
 import { DateTime } from "luxon";
 import { bindMenu, bindTrigger, usePopupState } from "material-ui-popup-state/hooks";
 import { useTranslation } from "react-i18next";
-import { NavigationItem } from "src/types";
+import type { NavigationItem } from "src/types";
 
 const TopNavigation = () => {
   const auth = useAtomValue(authAtom);

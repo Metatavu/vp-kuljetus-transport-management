@@ -2,7 +2,7 @@ import { Stack, Tab, Tabs, styled } from "@mui/material";
 import { Outlet, createFileRoute, useMatches, useNavigate } from "@tanstack/react-router";
 import ViewContainer from "components/layout/view-container";
 import { useTranslation } from "react-i18next";
-import { NavigationItem } from "src/types";
+import type { NavigationItem } from "src/types";
 
 export const Route = createFileRoute("/vehicles")({ component: VehicleListLayoutComponent });
 

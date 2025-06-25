@@ -3,7 +3,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { api } from "api/index";
 import { useConfirmDialog } from "components/providers/confirm-dialog-provider";
 import WorkShiftDialog from "components/working-hours/work-shift-dialog";
-import { WorkEvent, WorkEventType } from "generated/client";
+import type { WorkEvent, WorkEventType } from "generated/client";
 import {
   QUERY_KEYS,
   getFindEmployeeWorkShiftQueryOptions,
@@ -14,7 +14,7 @@ import { t } from "i18next";
 import { DateTime } from "luxon";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
-import { Breadcrumb } from "src/types";
+import type { Breadcrumb } from "src/types";
 import DataValidation from "src/utils/data-validation-utils";
 import { v4 as uuidv4 } from "uuid";
 

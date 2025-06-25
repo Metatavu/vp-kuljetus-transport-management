@@ -1,5 +1,5 @@
 import { MenuItem, Stack, TextField, styled } from "@mui/material";
-import { Towable, TowableTypeEnum, Truck, TruckTypeEnum } from "generated/client";
+import { type Towable, TowableTypeEnum, type Truck, TruckTypeEnum } from "generated/client";
 import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import LocalizationUtils from "utils/localization-utils";

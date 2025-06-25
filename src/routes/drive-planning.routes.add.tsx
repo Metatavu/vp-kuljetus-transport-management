@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { api } from "api/index";
 import RouteDialog from "components/drive-planning/routes/route-dialog";
-import { Route as TRoute } from "generated/client";
+import type { Route as TRoute } from "generated/client";
 import { QUERY_KEYS } from "hooks/use-queries";
 import { DateTime } from "luxon";
 import { useTranslation } from "react-i18next";

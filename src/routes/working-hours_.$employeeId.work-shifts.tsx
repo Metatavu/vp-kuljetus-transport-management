@@ -10,14 +10,14 @@ import {
   Paper,
   Skeleton,
   Stack,
+  styled,
   TextField,
   Typography,
-  styled,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { BlobProvider } from "@react-pdf/renderer";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Outlet, createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { api } from "api/index";
 import { useConfirmDialog } from "components/providers/confirm-dialog-provider";
 import AggregationsTableForDriver from "components/working-hours/aggregations-table-driver";
@@ -36,11 +36,11 @@ import {
   WorkType,
 } from "generated/client";
 import {
-  QUERY_KEYS,
   getFindEmployeeAggregatedWorkHoursQueryOptions,
   getFindPayrollExportQueryOptions,
   getListEmployeesQueryOptions,
   getListWorkShiftChangeSetsQueryOptions,
+  QUERY_KEYS,
 } from "hooks/use-queries";
 import { t } from "i18next";
 import { DateTime } from "luxon";
@@ -433,7 +433,7 @@ function WorkShifts() {
       const additionalWorkShiftIds = updatedWorkShiftHours.map((h) => h.employeeWorkShiftId);
       const additionalWorkShifts = workShiftsDataWithWorkingPeriodDates
         .map((row) => row.workShift)
-        // biome-ignore lint/style/noNonNullAssertion: <explanation>
+        // biome-ignore lint/style/noNonNullAssertion: Work shift ID is always defined
         .filter((ws) => additionalWorkShiftIds.includes(ws.id!))
         .filter((ws) => !allWorkShifts.find((existing) => existing.id === ws.id));
 
@@ -505,7 +505,7 @@ function WorkShifts() {
 
         await api.employeeWorkShifts.updateEmployeeWorkShift({
           employeeId,
-          // biome-ignore lint/style/noNonNullAssertion: <explanation>
+          // biome-ignore lint/style/noNonNullAssertion: Work shift id is always defined
           workShiftId: workShift.id!,
           employeeWorkShift: workShift,
           workShiftChangeSetId: changeSetId,

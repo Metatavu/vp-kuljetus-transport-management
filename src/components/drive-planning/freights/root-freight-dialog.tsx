@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { deepEqual, useNavigate, useSearch } from "@tanstack/react-router";
 import { api } from "api/index";
-import { Freight } from "generated/client";
+import type { Freight } from "generated/client";
 import { QUERY_KEYS, getFindFreightQueryOptions } from "hooks/use-queries";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";

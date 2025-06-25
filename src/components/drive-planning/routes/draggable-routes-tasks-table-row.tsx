@@ -1,9 +1,9 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Site, Task, TaskType } from "generated/client";
+import type { Site, Task, TaskType } from "generated/client";
 import { useMemo } from "react";
 import { theme } from "../../../theme";
-import { DraggableType, DraggedTaskData } from "../../../types";
+import { DraggableType, type DraggedTaskData } from "../../../types";
 import RoutesTasksTableRow from "./routes-tasks-table-row";
 
 type Props = {

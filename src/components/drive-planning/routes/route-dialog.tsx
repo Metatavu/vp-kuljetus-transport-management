@@ -1,13 +1,13 @@
 import { Button, Dialog, DialogActions, DialogContent, MenuItem, Stack, TextField } from "@mui/material";
 import { TimePicker } from "@mui/x-date-pickers";
-import { UseMutationResult, useQuery } from "@tanstack/react-query";
+import { type UseMutationResult, useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { api } from "api/index";
 import DialogHeader from "components/generic/dialog-header";
 import LoaderWrapper from "components/generic/loader-wrapper";
-import { Driver, Route, Truck } from "generated/client";
+import type { Driver, Route, Truck } from "generated/client";
 import { QUERY_KEYS } from "hooks/use-queries";
-import { DateTime } from "luxon";
+import type { DateTime } from "luxon";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";

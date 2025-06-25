@@ -1,5 +1,5 @@
 import { Backdrop, CircularProgress } from "@mui/material";
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 
 type Props = {
   loading: boolean;

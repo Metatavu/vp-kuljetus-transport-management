@@ -1,17 +1,17 @@
 import { DragHandle } from "@mui/icons-material";
 import { IconButton } from "@mui/material";
-import { GridColDef, GridRowProps } from "@mui/x-data-grid";
+import type { GridColDef, GridRowProps } from "@mui/x-data-grid";
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { api } from "api/index";
 import GenericDataGrid from "components/generic/generic-data-grid";
-import { Site, Task } from "generated/client";
+import type { Site, Task } from "generated/client";
 import { QUERY_KEYS, getListTasksQueryOptions } from "hooks/use-queries";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import DataValidation from "utils/data-validation-utils";
 import LocalizationUtils from "utils/localization-utils";
-import { UnallocatedTasksRowDragHandles } from "../../../types";
+import type { UnallocatedTasksRowDragHandles } from "../../../types";
 import DraggableUnallocatedTasksTableRow from "./draggable-unallocated-tasks-table-row";
 
 type Props = {

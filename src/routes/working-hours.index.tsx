@@ -1,5 +1,5 @@
 import SearchIcon from "@mui/icons-material/Search";
-import { Link, MenuItem, Paper, Stack, TextField, Typography, styled } from "@mui/material";
+import { Link, MenuItem, Paper, Stack, styled, TextField, Typography } from "@mui/material";
 import type { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import { DatePicker } from "@mui/x-date-pickers";
 import { useQueries, useQuery } from "@tanstack/react-query";
@@ -9,7 +9,7 @@ import LoadingCellValue from "components/generic/loading-cell-value";
 import { type Employee, EmployeeType, Office, SalaryGroup, type SalaryPeriodTotalWorkHours } from "generated/client";
 import { useDebounce } from "hooks/use-debounce";
 import { getFindEmployeeAggregatedWorkHoursQueryOptions, getListEmployeesQueryOptions } from "hooks/use-queries";
-import { type TFunction, t } from "i18next";
+import { t, type TFunction } from "i18next";
 import { DateTime } from "luxon";
 import { type Key, type ReactNode, useCallback, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -507,7 +507,6 @@ function WorkingHours() {
           renderLocalizedMenuItems(Object.values(Office), LocalizationUtils.getLocalizedOffice),
         )}
         <TextField
-          id="searchEmployee"
           onChange={({ target: { value } }) => setSearchTerm(value)}
           variant="standard"
           label={t("workingHours.workingHourBalances.nameSearch")}

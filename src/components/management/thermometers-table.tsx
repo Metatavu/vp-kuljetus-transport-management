@@ -9,12 +9,12 @@ import {
   DialogTitle,
   TextField,
 } from "@mui/material";
-import { GridColDef, useGridApiRef } from "@mui/x-data-grid";
+import { type GridColDef, useGridApiRef } from "@mui/x-data-grid";
 import { api } from "api/index";
 import GenericDataGrid from "components/generic/generic-data-grid";
 import ToolbarRow from "components/generic/toolbar-row";
-import { TerminalTemperature, TerminalThermometer, TruckOrTowableThermometer } from "generated/client";
-import { Temperature } from "generated/client/models/Temperature";
+import type { TerminalTemperature, TerminalThermometer, TruckOrTowableThermometer } from "generated/client";
+import type { Temperature } from "generated/client/models/Temperature";
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import TimeUtils from "src/utils/time-utils";
@@ -64,29 +64,32 @@ const ThermometersTable = forwardRef(
       },
     }));
 
-    const handleThermometerNameChange = ({ newName, thermometerId }: { newName: string; thermometerId: string }) => {
-      // Find the original name for this thermometer
-      const originalThermometer = thermometers.find((t) => t.id === thermometerId);
-      const originalName = originalThermometer?.name ?? "";
+    const handleThermometerNameChange = useCallback(
+      ({ newName, thermometerId }: { newName: string; thermometerId: string }) => {
+        // Find the original name for this thermometer
+        const originalThermometer = thermometers.find((t) => t.id === thermometerId);
+        const originalName = originalThermometer?.name ?? "";
 
-      setChangedTerminalThermometerNames((prev) => {
-        const index = prev.findIndex((item) => item.thermometerId === thermometerId);
+        setChangedTerminalThermometerNames((prev) => {
+          const index = prev.findIndex((item) => item.thermometerId === thermometerId);
 
-        // If new name is the same as original name, remove it from the list if it exists
-        if (newName === originalName) {
-          if (index === -1) return prev;
+          // If new name is the same as original name, remove it from the list if it exists
+          if (newName === originalName) {
+            if (index === -1) return prev;
+            const updated = [...prev];
+            updated.splice(index, 1);
+            return updated;
+          }
+
+          // Name has changed → add or update
+          if (index === -1) return [...prev, { newName, thermometerId }];
           const updated = [...prev];
-          updated.splice(index, 1);
+          updated[index] = { newName, thermometerId };
           return updated;
-        }
-
-        // Name has changed → add or update
-        if (index === -1) return [...prev, { newName, thermometerId }];
-        const updated = [...prev];
-        updated[index] = { newName, thermometerId };
-        return updated;
-      });
-    };
+        });
+      },
+      [thermometers, setChangedTerminalThermometerNames],
+    );
 
     const fetchTemperatures = useCallback(async () => {
       if (!firstThermometer || !type) return;
@@ -186,7 +189,6 @@ const ThermometersTable = forwardRef(
           headerName: t("management.terminals.thermometers.activeMonitors"),
           flex: 1,
           cellClassName: "clickable",
-          valueFormatter: () => "-",
         },
       ],
       [t, temperatures, handleThermometerNameChange],

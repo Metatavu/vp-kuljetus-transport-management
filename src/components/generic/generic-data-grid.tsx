@@ -1,5 +1,5 @@
 import { styled } from "@mui/material";
-import { DataGrid, DataGridProps, fiFI } from "@mui/x-data-grid";
+import { DataGrid, type DataGridProps, fiFI } from "@mui/x-data-grid";
 
 type StyledDataGridProps = {
   fullScreen?: boolean;

@@ -1,10 +1,10 @@
 import { Menu } from "@mui/icons-material";
-import { Paper, Tab, Tabs, styled } from "@mui/material";
+import { Paper, styled, Tab, Tabs } from "@mui/material";
 import { useMatches, useNavigate } from "@tanstack/react-router";
 import { sideNavigationCollapsedAtom } from "atoms/side-navigation";
 import { useAtom } from "jotai";
 import { useTranslation } from "react-i18next";
-import { NavigationItem } from "src/types";
+import type { NavigationItem } from "src/types";
 
 type Props = {
   navigationItems: NavigationItem[];

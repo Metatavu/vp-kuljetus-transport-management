@@ -11,7 +11,7 @@
     "preview": "vite preview",
     "lint": "biome check",
     "lint:check": "biome check",
-    "lint:fix": "biome format --write ./src"
+    "lint:fix": "biome lint --write --unsafe . && biome format --write ."
   },
   "dependencies": {
     "@dnd-kit/core": "6.1.0",

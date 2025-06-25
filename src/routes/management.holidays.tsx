@@ -8,29 +8,29 @@ import {
   DialogContentText,
   MenuItem,
   Stack,
+  styled,
   TextField,
   Typography,
-  styled,
 } from "@mui/material";
-import { GridColDef, GridPaginationModel, GridRenderEditCellParams } from "@mui/x-data-grid";
+import type { GridColDef, GridPaginationModel, GridRenderEditCellParams } from "@mui/x-data-grid";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Outlet, createFileRoute, deepEqual, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, deepEqual, Outlet, useNavigate } from "@tanstack/react-router";
 import { api } from "api/index";
 import DialogHeader from "components/generic/dialog-header";
 import GenericDataGrid from "components/generic/generic-data-grid";
 import LoaderWrapper from "components/generic/loader-wrapper";
 import ToolbarRow from "components/generic/toolbar-row";
 import { useConfirmDialog } from "components/providers/confirm-dialog-provider";
-import Holidays, { HolidaysTypes } from "date-holidays";
-import { CompensationType, Holiday } from "generated/client";
-import { QUERY_KEYS, getListHolidaysQueryOptions } from "hooks/use-queries";
+import Holidays, { type HolidaysTypes } from "date-holidays";
+import { CompensationType, type Holiday } from "generated/client";
+import { getListHolidaysQueryOptions, QUERY_KEYS } from "hooks/use-queries";
 import { useSingleClickCellEditMode } from "hooks/use-single-click-cell-edit-mode";
 import { t } from "i18next";
 import { DateTime } from "luxon";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { Breadcrumb } from "src/types";
+import type { Breadcrumb } from "src/types";
 import LocalizationUtils from "src/utils/localization-utils";
 
 // Styled root component
@@ -121,24 +121,27 @@ function ManagementHolidays() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.HOLIDAYS] }),
   });
 
-  const renderCompensationTypeSingleSelectCell = ({ api, id, field, value }: GridRenderEditCellParams) => {
-    const { setEditCellValue } = api;
+  const renderCompensationTypeSingleSelectCell = useCallback(
+    ({ api, id, field, value }: GridRenderEditCellParams) => {
+      const { setEditCellValue } = api;
 
-    return (
-      <TextField
-        select
-        SelectProps={{ defaultOpen: true }}
-        defaultValue={value}
-        onChange={({ target: { value } }) => setEditCellValue({ id: id, field: field, value: value })}
-      >
-        {[CompensationType.DayOffWorkAllowance, CompensationType.PublicHolidayAllowance].map((compensationType) => (
-          <MenuItem key={compensationType} value={compensationType}>
-            {LocalizationUtils.getLocalizedCompensationType(compensationType, t)}
-          </MenuItem>
-        ))}
-      </TextField>
-    );
-  };
+      return (
+        <TextField
+          select
+          SelectProps={{ defaultOpen: true }}
+          defaultValue={value}
+          onChange={({ target: { value } }) => setEditCellValue({ id: id, field: field, value: value })}
+        >
+          {[CompensationType.DayOffWorkAllowance, CompensationType.PublicHolidayAllowance].map((compensationType) => (
+            <MenuItem key={compensationType} value={compensationType}>
+              {LocalizationUtils.getLocalizedCompensationType(compensationType, t)}
+            </MenuItem>
+          ))}
+        </TextField>
+      );
+    },
+    [t],
+  );
 
   const columns: GridColDef<Holiday>[] = useMemo(
     () => [

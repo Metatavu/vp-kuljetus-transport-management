@@ -1,5 +1,5 @@
 import { atom } from "jotai";
-import { KeycloakProfile, KeycloakTokenParsed } from "keycloak-js";
+import type { KeycloakProfile, KeycloakTokenParsed } from "keycloak-js";
 
 export type Auth = {
   tokenRaw: string;

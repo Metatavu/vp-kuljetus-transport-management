@@ -1,4 +1,4 @@
-import { Task } from "generated/client";
+import type { Task } from "generated/client";
 
 export type TRouteTasks = Record<string, Task[]>;
 

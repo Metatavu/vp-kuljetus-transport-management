@@ -1,5 +1,5 @@
 import { latLng } from "leaflet";
-import { GeoJSONPoint, parse } from "wellknown";
+import { type GeoJSONPoint, parse } from "wellknown";
 
 namespace LocationUtils {
   export const geoJsonPointToLatLng = ({ coordinates }: GeoJSONPoint) => latLng(coordinates);

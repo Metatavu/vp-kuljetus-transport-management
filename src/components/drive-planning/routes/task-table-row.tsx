@@ -12,8 +12,8 @@ import {
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { api } from "api/index";
-import { Site, Task, TaskType } from "generated/client";
-import { QUERY_KEYS, getListFreightsQueryOptions } from "hooks/use-queries";
+import type { Site, Task, TaskType } from "generated/client";
+import { getListFreightsQueryOptions, QUERY_KEYS } from "hooks/use-queries";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import LocalizationUtils from "utils/localization-utils";
@@ -117,9 +117,7 @@ const TaskTableRow = ({ tasks, type, site, groupNumber, taskCount }: Props) => {
         <List
           dense
           subheader={
-            <ListSubheader component="div" id="nested-list-subheader">
-              {t("drivePlanning.routes.tasksTable.selectWaybill")}
-            </ListSubheader>
+            <ListSubheader component="div">{t("drivePlanning.routes.tasksTable.selectWaybill")}</ListSubheader>
           }
         >
           {renderPopoverContent()}

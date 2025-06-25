@@ -9,10 +9,10 @@ import {
   WarehouseRounded,
 } from "@mui/icons-material";
 import { Stack } from "@mui/material";
-import { Outlet, createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
 import SideNavigation from "components/layout/side-navigation";
 import ViewContainer from "components/layout/view-container";
-import { NavigationItem } from "src/types";
+import type { NavigationItem } from "src/types";
 
 export const Route = createFileRoute("/management")({ component: ManagementLayoutComponent });
 

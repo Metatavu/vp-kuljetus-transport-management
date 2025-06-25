@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 type Props<T> = {
   promise: Promise<T>;
@@ -8,7 +8,12 @@ type Props<T> = {
 const AsyncDataGridCell = <T,>({ promise, valueGetter }: Props<T>) => {
   const [value, setValue] = useState<string | undefined>(undefined);
 
-  const getValue = async (promise: Promise<T>) => setValue(valueGetter(await promise));
+  const getValue = useCallback(
+    async (promise: Promise<T>) => {
+      setValue(valueGetter(await promise));
+    },
+    [valueGetter],
+  );
 
   useEffect(() => {
     getValue(promise);

@@ -14,11 +14,18 @@ import {
   TableRow,
 } from "@mui/material";
 import DialogHeader from "components/generic/dialog-header";
-import { Truck, TruckLocation, TruckOdometerReading, TruckSpeed, WorkEvent, WorkEventType } from "generated/client";
+import type {
+  Truck,
+  TruckLocation,
+  TruckOdometerReading,
+  TruckSpeed,
+  WorkEvent,
+  WorkEventType,
+} from "generated/client";
 import { DateTime } from "luxon";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { WorkShiftDialogWorkEventRow } from "src/types";
+import type { WorkShiftDialogWorkEventRow } from "src/types";
 import WorkEventRow from "./work-event-row";
 import WorkShiftMap from "./work-shift-map";
 

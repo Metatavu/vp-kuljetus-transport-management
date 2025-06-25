@@ -1,10 +1,10 @@
 import { Restore, SaveAlt } from "@mui/icons-material";
 import { Box, Button, Paper, Stack } from "@mui/material";
-import { UseMutationResult } from "@tanstack/react-query";
+import type { UseMutationResult } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import LoaderWrapper from "components/generic/loader-wrapper";
 import ToolbarRow from "components/generic/toolbar-row";
-import { Employee } from "generated/client";
+import type { Employee } from "generated/client";
 import { useCallback } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";

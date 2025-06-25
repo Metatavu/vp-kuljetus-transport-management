@@ -1,5 +1,5 @@
 import { ListItem, ListItemText } from "@mui/material";
-import { Site, Task, TaskType } from "generated/client";
+import type { Site, Task, TaskType } from "generated/client";
 import { useTranslation } from "react-i18next";
 import LocalizationUtils from "utils/localization-utils";
 

@@ -3,12 +3,12 @@ import { createFileRoute } from "@tanstack/react-router";
 import { api } from "api/index";
 import LoaderWrapper from "components/generic/loader-wrapper";
 import Equipment from "components/management/equipment/equipment";
-import { Truck } from "generated/client";
+import type { Truck } from "generated/client";
 import { getFindTruckQueryOptions } from "hooks/use-queries";
 import { t } from "i18next";
 import { toast } from "react-toastify";
 import { queryClient } from "src/main";
-import { Breadcrumb } from "src/types";
+import type { Breadcrumb } from "src/types";
 import { getEquipmentDisplayName } from "src/utils/format-utils";
 
 export const Route = createFileRoute("/management/equipment_/truck/$truckId/modify")({

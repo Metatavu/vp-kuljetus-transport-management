@@ -9,7 +9,7 @@ import { getListPagingPolicyContactsQueryOptions } from "hooks/use-queries";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import z from "zod";
-import { ThermalMonitorFormValues } from "./thermal-monitor-form-dialog";
+import type { ThermalMonitorFormValues } from "./thermal-monitor-form-dialog";
 
 const DELAY_OPTIONS = [0, 60, 120, 300, 600, 900, 1800, 3600, 7200, 14400, 28800, 86400] as const;
 

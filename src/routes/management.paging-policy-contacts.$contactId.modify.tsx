@@ -3,8 +3,8 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { api } from "api/index";
 import LoaderWrapper from "components/generic/loader-wrapper";
 import ModifyAlarmContactFormDialog from "components/management/alarm-contacts/modify-alarm-contact-dialog";
-import { PagingPolicyContact } from "generated/client";
-import { QUERY_KEYS, getFindPagingPolicyContactQueryOptions } from "hooks/use-queries";
+import type { PagingPolicyContact } from "generated/client";
+import { getFindPagingPolicyContactQueryOptions, QUERY_KEYS } from "hooks/use-queries";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
@@ -18,9 +18,6 @@ function ModifyAlarmContact() {
   const { t } = useTranslation();
   const { contactId } = Route.useParams();
 
-  if (!contactId) {
-    return null;
-  }
   const pagingPolicyContactQuery = useQuery(
     getFindPagingPolicyContactQueryOptions({
       pagingPolicyContactId: contactId,

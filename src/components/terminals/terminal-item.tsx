@@ -1,6 +1,6 @@
 import { Box, Card, CardHeader, Divider, Typography } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
-import { TerminalThermometer } from "generated/client";
+import type { TerminalThermometer } from "generated/client";
 import { getListTerminalThermometersQueryOptions } from "hooks/use-queries";
 import { useMemo } from "react";
 import TemperatureRows from "./temperature-rows";

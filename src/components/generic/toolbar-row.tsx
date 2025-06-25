@@ -1,6 +1,6 @@
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { IconButton, Stack, Theme, Typography, styled } from "@mui/material";
-import { ReactNode, useCallback } from "react";
+import { IconButton, Stack, type Theme, Typography, styled } from "@mui/material";
+import { type ReactNode, useCallback } from "react";
 
 // Styled components
 const Root = styled(Stack, {

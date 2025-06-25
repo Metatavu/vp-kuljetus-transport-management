@@ -1,11 +1,11 @@
 import { Button, Dialog, DialogActions, DialogContent, MenuItem, TextField } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
-import { UseMutationResult } from "@tanstack/react-query";
+import type { UseMutationResult } from "@tanstack/react-query";
 import DialogHeader from "components/generic/dialog-header";
-import { CompensationType, Holiday } from "generated/client";
-import { TFunction } from "i18next";
+import { CompensationType, type Holiday } from "generated/client";
+import type { TFunction } from "i18next";
 import { DateTime } from "luxon";
-import { Key, useCallback } from "react";
+import { type Key, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import LocalizationUtils from "src/utils/localization-utils";

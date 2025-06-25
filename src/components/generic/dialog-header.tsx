@@ -1,6 +1,6 @@
 import { Close } from "@mui/icons-material";
 import { IconButton, Stack, Typography, styled } from "@mui/material";
-import { ElementType } from "react";
+import type { ElementType } from "react";
 import { theme } from "../../theme";
 
 const StyledDialogHeader = styled(Stack, {

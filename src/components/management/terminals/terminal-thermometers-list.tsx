@@ -13,8 +13,8 @@ import {
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { api } from "api/index";
 import ToolbarRow from "components/generic/toolbar-row";
-import { Site } from "generated/client";
-import { QUERY_KEYS, getListTerminalThermometersQueryOptions } from "hooks/use-queries";
+import type { Site } from "generated/client";
+import { getListTerminalThermometersQueryOptions, QUERY_KEYS } from "hooks/use-queries";
 import { forwardRef, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
@@ -102,7 +102,6 @@ const TerminalThermometersList = forwardRef(({ site, setChangedTerminalThermomet
           autoFocus
           required
           margin="dense"
-          id="deviceIdentifier"
           name="deviceIdentifier"
           label={t("management.terminals.macAddress")}
           type="text"

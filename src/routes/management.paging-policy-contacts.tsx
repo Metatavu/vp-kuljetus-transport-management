@@ -1,20 +1,20 @@
 import { Add } from "@mui/icons-material";
 import { Button, Stack, styled } from "@mui/material";
-import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
+import type { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
 import { api } from "api/index";
 import GenericDataGrid from "components/generic/generic-data-grid";
 import LoaderWrapper from "components/generic/loader-wrapper";
 import ToolbarRow from "components/generic/toolbar-row";
 import { useConfirmDialog } from "components/providers/confirm-dialog-provider";
-import { PagingPolicyContact, PagingPolicyType } from "generated/client";
-import { QUERY_KEYS, getListPagingPolicyContactsQueryOptions } from "hooks/use-queries";
+import type { PagingPolicyContact, PagingPolicyType } from "generated/client";
+import { getListPagingPolicyContactsQueryOptions, QUERY_KEYS } from "hooks/use-queries";
 import { t } from "i18next";
 import { DateTime } from "luxon";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Breadcrumb } from "src/types";
+import type { Breadcrumb } from "src/types";
 import LocalizationUtils from "src/utils/localization-utils";
 
 // Styled root component
@@ -97,7 +97,7 @@ function ManagementAlarmContacts() {
               variant="outlined"
               onClick={() =>
                 navigate({
-                  to: `/management/alarm-contacts/${row.id}/modify`,
+                  to: `/management/paging-policy-contacts/${row.id}/modify`,
                   params: { contactId: row.id },
                 })
               }

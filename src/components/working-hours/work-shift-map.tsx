@@ -1,7 +1,7 @@
 import { Stack, Typography, styled } from "@mui/material";
 import config from "app/config";
-import { TruckLocation, TruckOdometerReading, TruckSpeed } from "generated/client";
-import { LatLng, LatLngBounds, LatLngTuple, Map as LeafletMap, latLng } from "leaflet";
+import type { TruckLocation, TruckOdometerReading, TruckSpeed } from "generated/client";
+import { LatLng, LatLngBounds, type LatLngTuple, type Map as LeafletMap, latLng } from "leaflet";
 import { useCallback, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { MapContainer, Marker, Polyline, Popup, TileLayer } from "react-leaflet";
