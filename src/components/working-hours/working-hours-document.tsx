@@ -1,8 +1,8 @@
 import { Document, Image, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
-import { Employee, SalaryPeriodTotalWorkHours, WorkType } from "generated/client";
+import { type Employee, type SalaryPeriodTotalWorkHours, WorkType } from "generated/client";
 import { DateTime } from "luxon";
 import { useTranslation } from "react-i18next";
-import { EmployeeWorkHoursFormRow } from "src/types";
+import type { EmployeeWorkHoursFormRow } from "src/types";
 import LocalizationUtils from "src/utils/localization-utils";
 import WorkShiftsUtils from "src/utils/workshift-utils";
 import logo from "../../assets/vp-kuljetus-logo.jpeg";
@@ -101,10 +101,11 @@ const WorkingHoursDocument = ({
   workingPeriodsForEmployee,
   employeeAggregatedHours,
 }: Props) => {
+  const { t } = useTranslation();
+
   if (!employee || !workShiftsData || !employeeAggregatedHours) {
     return null;
   }
-  const { t } = useTranslation();
 
   const renderAggregationsTableTitle = () => {
     if (!workingPeriodsForEmployee) return null;

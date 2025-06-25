@@ -7,23 +7,23 @@ import {
   FormControlLabel,
   MenuItem,
   Stack,
+  styled,
   TextField,
   Typography,
-  styled,
 } from "@mui/material";
-import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
+import type { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import GenericDataGrid from "components/generic/generic-data-grid";
 import ToolbarRow from "components/generic/toolbar-row";
-import { Employee, EmployeeType, Office, SalaryGroup } from "generated/client";
+import { type Employee, EmployeeType, Office, SalaryGroup } from "generated/client";
 import { useDebounce } from "hooks/use-debounce";
 import { getListEmployeesQueryOptions } from "hooks/use-queries";
-import { TFunction, t } from "i18next";
-import { Key, ReactNode, useCallback, useMemo, useState } from "react";
+import { type TFunction, t } from "i18next";
+import { type Key, type ReactNode, useCallback, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { Breadcrumb, LocalizedLabelKey } from "src/types";
+import type { Breadcrumb, LocalizedLabelKey } from "src/types";
 import LocalizationUtils from "src/utils/localization-utils";
 
 export const Route = createFileRoute("/management/employees")({
@@ -96,7 +96,9 @@ function ManagementEmployees() {
 
   const renderLocalizedMenuItems = useCallback(
     <T extends string>(items: string[], labelResolver: (value: T, t: TFunction) => string) => [
-      <MenuItem value="ALL">{t("all")}</MenuItem>,
+      <MenuItem key="ALL" value="ALL">
+        {t("all")}
+      </MenuItem>,
       ...items.map((item) => renderLocalizedMenuItem(item as T, labelResolver)),
     ],
     [t, renderLocalizedMenuItem],

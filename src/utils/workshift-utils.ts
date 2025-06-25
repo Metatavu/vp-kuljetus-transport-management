@@ -1,13 +1,13 @@
 import {
   AbsenceType,
-  Employee,
-  EmployeeWorkShift,
-  PerDiemAllowanceType,
-  WorkShiftHours,
+  type Employee,
+  type EmployeeWorkShift,
+  type PerDiemAllowanceType,
+  type WorkShiftHours,
   WorkType,
 } from "generated/client";
 import { DateTime } from "luxon";
-import { EmployeeWorkHoursFormRow } from "src/types";
+import type { EmployeeWorkHoursFormRow } from "src/types";
 
 namespace WorkShiftsUtils {
   export const getWorkShiftHoursWithWorkTypes = (workShiftHours: WorkShiftHours[]) => {
@@ -83,14 +83,14 @@ namespace WorkShiftsUtils {
 
     const workTypes = [WorkType.PaidWork, WorkType.SickLeave];
     const totalPaidWorkHours = workTypes
-      .map((type) => parseFloat(getWorkHoursInWorkPeriodByType(shiftsInWorkPeriod, type)))
+      .map((type) => Number.parseFloat(getWorkHoursInWorkPeriodByType(shiftsInWorkPeriod, type)))
       .reduce((sum, hours) => sum + hours, 0);
     if (totalPaidWorkHours >= regularWorkingHours) return 0;
 
     // Absence types that are included in the calculation
     const absenceTypes: (keyof typeof AbsenceType)[] = ["Vacation", "CompensatoryLeave"];
     const totalAbsenceHours = absenceTypes
-      .map((type) => parseFloat(getTotalHoursByAbsenseType(shiftsInWorkPeriod, AbsenceType[type])))
+      .map((type) => Number.parseFloat(getTotalHoursByAbsenseType(shiftsInWorkPeriod, AbsenceType[type])))
       .reduce((sum, hours) => sum + hours, 0);
 
     const fillingHours = regularWorkingHours - totalPaidWorkHours - totalAbsenceHours;
@@ -99,17 +99,17 @@ namespace WorkShiftsUtils {
 
   export const getOverTimeHoursForDriver = (shiftsInWorkPeriod: EmployeeWorkHoursFormRow[], employee: Employee) => {
     if (!employee?.regularWorkingHours) return { overTimeHalf: 0, overTimeFull: 0 };
-    const vacationHours = parseFloat(getTotalHoursByAbsenseType(shiftsInWorkPeriod, AbsenceType.Vacation));
+    const vacationHours = Number.parseFloat(getTotalHoursByAbsenseType(shiftsInWorkPeriod, AbsenceType.Vacation));
     // Check if the employee has more than 40 hours of vacation in work period and adjust the limit for full overtime
     const overTimeFullLimit = vacationHours > 40 ? 10 : 12;
     const regularWorkingHours = getRegularWorkingHoursOnWorkPeriod(employee, 0);
     // Calculate paid work hours without training hours (training hours does not cumulate overtime)
     const paidWorkHoursFromWorkTypes =
-      parseFloat(getWorkHoursInWorkPeriodByType(shiftsInWorkPeriod, WorkType.PaidWork)) -
-      parseFloat(getWorkHoursInWorkPeriodByType(shiftsInWorkPeriod, WorkType.Training));
+      Number.parseFloat(getWorkHoursInWorkPeriodByType(shiftsInWorkPeriod, WorkType.PaidWork)) -
+      Number.parseFloat(getWorkHoursInWorkPeriodByType(shiftsInWorkPeriod, WorkType.Training));
     const paidVacationAndCompensatoryLeaveHours =
-      parseFloat(getTotalHoursByAbsenseType(shiftsInWorkPeriod, AbsenceType.Vacation)) +
-      parseFloat(getTotalHoursByAbsenseType(shiftsInWorkPeriod, AbsenceType.CompensatoryLeave));
+      Number.parseFloat(getTotalHoursByAbsenseType(shiftsInWorkPeriod, AbsenceType.Vacation)) +
+      Number.parseFloat(getTotalHoursByAbsenseType(shiftsInWorkPeriod, AbsenceType.CompensatoryLeave));
     const paidWorkHours = paidWorkHoursFromWorkTypes + paidVacationAndCompensatoryLeaveHours;
 
     if (paidWorkHours <= regularWorkingHours) {

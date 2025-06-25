@@ -57,5 +57,5 @@ export const api = {
   thermalMonitors: new ThermalMonitorsApi(configuration),
   thermalMonitorPagingPolicies: new ThermalMonitorPagingPoliciesApi(configuration),
   payrollExports: new PayrollExportsApi(configuration),
-  incidents: new ThermalMonitorIncidentsApi(configuration)
+  incidents: new ThermalMonitorIncidentsApi(configuration),
 };

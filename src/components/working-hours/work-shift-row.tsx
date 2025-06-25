@@ -1,11 +1,17 @@
-import { Checkbox, Link, MenuItem, Stack, TextField, Typography, styled } from "@mui/material";
+import { Checkbox, Link, MenuItem, Stack, styled, TextField, Typography } from "@mui/material";
 import { useNavigate, useParams } from "@tanstack/react-router";
-import { AbsenceType, EmployeeWorkShift, PerDiemAllowanceType, WorkShiftHours, WorkType } from "generated/client";
+import {
+  AbsenceType,
+  type EmployeeWorkShift,
+  PerDiemAllowanceType,
+  type WorkShiftHours,
+  WorkType,
+} from "generated/client";
 import { DateTime } from "luxon";
 import { useCallback, useMemo, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { EmployeeWorkHoursForm } from "src/types";
+import type { EmployeeWorkHoursForm } from "src/types";
 import LocalizationUtils from "src/utils/localization-utils";
 import WorkShiftsUtils from "src/utils/workshift-utils";
 
@@ -98,7 +104,7 @@ function WorkShiftRow({ index, date, workShiftId }: Props) {
           placeholder={workShiftHours?.[workType]?.calculatedHours?.toFixed(2).toString() ?? ""}
           value={workShiftHours?.[workType]?.actualHours ?? null}
           onChange={(event) =>
-            setValue(`${index}.workShiftHours.${workType}.actualHours`, parseFloat(event.target.value), {
+            setValue(`${index}.workShiftHours.${workType}.actualHours`, Number.parseFloat(event.target.value), {
               shouldDirty: true,
               shouldValidate: true,
               shouldTouch: true,

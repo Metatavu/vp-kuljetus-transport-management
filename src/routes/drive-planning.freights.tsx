@@ -15,7 +15,7 @@ import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Breadcrumb } from "src/types";
 import DataValidation from "utils/data-validation-utils";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 export const drivePlanningFreightsRouteSearchSchema = z.object({
   freightId: z.string().optional(),
